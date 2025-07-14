@@ -53,3 +53,61 @@ class EconomyDataFrameOuput:
     Income_Level : str
     Capital_Of_Country: str
     Country_ID: str
+
+@dataclass
+class EconomyInfoOutput:
+    Country_ID: str
+    Country_Name: str
+    Aggregate: bool
+    Longitude: Decimal 
+    Latitude: Decimal
+    Region: str	
+    Admin_Region: str	
+    Lending_Type: str
+    Income_Level : str
+    Capital_Of_Country: str
+    
+
+@dataclass
+class EconomyGetOutput:
+    Country_ID: str
+    Country_Name: str
+    Aggregate: bool
+    Longitude: Decimal 
+    Latitude: Decimal
+    Region: str	
+    Admin_Region: str	
+    Lending_Type: str
+    Income_Level : str
+    Capital_Of_Country: str
+
+@dataclass
+class EconomySeriesOutput:
+    Country_ID: str
+    Country_Name: str
+
+@dataclass
+class EconomyMetadataOuput:
+    Two_Alpha_Code: str
+    Balance_Of_Payments_Manual_In_Use: str
+    Currency_Unit: str
+    Government_Accounting_Concept: str
+    IMF_Data_Dissemination_Standard: str
+    Income_Group: str
+    Latest_Agricultural_Census: str
+    Latest_Industrial_Data: str
+    Latest_Population_Census: str
+    Latest_Trade_Data: str
+    Long_Name: str
+    National_Accounts_Base_Year: str
+    National_Accounts_Reference_Year: str
+    PPP_Survey_Year: str
+    Region: str
+    Short_Name: str
+    SNA_Price_Valuation: str
+    Source_Of_Most_Recent_Income_And_Expenditure_Data: str
+    System_Of_National_Accounts: str
+    System_Of_Trade: str
+    Table_Name: str
+    Vital_Registration_Complete: str
+    WB_Two_Code: str

@@ -64,7 +64,6 @@ class wbapi_series:
 
         try:
             res_temp = self.series.get(input.id, input.db)
-            print(res_temp)
             res = pd.DataFrame([res_temp])
             return dataframe_rename_by_dataclass(res, SeriesDataOutput)
         except Exception as e:
@@ -101,23 +100,6 @@ class wbapi_economy:
             self.logger.error(f"Error fetching coder for {input.id}: {e}")
             return None
 
-
-    def get_iso2(self, input:EconomyISO2Input):
-        """
-        Retrieve the ISO2 code for a specific economy.
-
-        Args:
-            input (EconomyISO2Input): An object containing the id attribute of the economy.
-
-        Returns:
-            The ISO2 code of the specified economy or None if there is an error.
-        """
-
-        try:
-            return self.economy.iso2(input.id)
-        except Exception as e:
-            self.logger.error(f"Error fetching iso2 for {input.id}: {e}")
-            return None
     
     def dataframe_display(self, input:EconomyDataFrameInput):
         """
@@ -152,7 +134,10 @@ class wbapi_economy:
         """
 
         try:
-            return self.economy.info(input.id, input.q, input.skipAggs, input.db)
+            res = self.economy.info(input.id, input.q, input.skipAggs, input.db)
+            df = pd.DataFrame(res.items)
+            return dataframe_rename_by_dataclass(df, EconomyInfoOutput)
+            
         except Exception as e:
             self.logger.error(f"Error fetching economy info for {input.id}: {e}")
             return None
@@ -168,7 +153,9 @@ class wbapi_economy:
             A dictionary with data for the specified economy or None if there is an error.
         """
         try:
-            return self.economy.get(input.id, input.labels, input.db)
+            res = self.economy.get(input.id, input.labels, input.db)
+            df = pd.DataFrame([res])
+            return dataframe_rename_by_dataclass(df, EconomyGetOutput)
         except Exception as e:
             self.logger.error(f"Error fetching economy data for {input.id}: {e}")
             return None
@@ -185,7 +172,10 @@ class wbapi_economy:
         """
 
         try:
-            return self.economy.Series(input.id, input.q, input.skipAggs, input.db, input.name)
+            res = self.economy.Series(input.id, input.q, input.skipAggs, input.db, input.name).to_frame()
+            id_columns = list(res.index)
+            res['id']= id_columns
+            return dataframe_rename_by_dataclass(res.reset_index(drop=True), EconomySeriesOutput)
         except Exception as e:
             self.logger.error(f"Error fetching economy series for {input.id}: {e}")
             return None
@@ -201,7 +191,10 @@ class wbapi_economy:
             A dictionary with metadata for the specified economy or None if there is an error.
         """
         try:
-            return self.economy.metadata.get(input.id, series=input.series, db=input.db)
+            res = self.economy.metadata.get(input.id, series=input.series, db=input.db)
+            df = pd.DataFrame([res.metadata])
+            return dataframe_rename_by_dataclass(df, EconomyMetadataOuput)
+            return 
         except Exception as e:
             self.logger.error(f"Error fetching metadata for economy {input.id}: {e}")
             return None
