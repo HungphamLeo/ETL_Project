@@ -11,15 +11,15 @@ class SeriesFetchOutput:
 @dataclass
 class SeriesMetadataOutput:
     IndicatorName: str
-    LongDefinition: str
+    Longdefinition: str
     Topic: str
-    AggregationMethod: str
+    Aggregationmethod: str
     Periodicity: str
-    UnitOfMeasure: str
+    Unitofmeasure: str
     Source: str
     License_Type: str
     License_URL: str
-    DevelopmentRelevance: str
-    GeneralComments: str
-    LimitationsAndExceptions: str
-    StatisticalConceptAndMethodology: str
+    Developmentrelevance: str
+    Generalcomments: str
+    Limitationsandexceptions: str
+    Statisticalconceptandmethodology: str

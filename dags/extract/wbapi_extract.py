@@ -1,5 +1,5 @@
 import wbgapi as wb
-from utils import dataframe_rename_by_dataclass , parse_metadata_to_df
+from utils import dataframe_rename_by_dataclass , auto_parse_metadata_to_df
 from config.load_config import load_config
 from src.logger import setup_logging
 from models import *
@@ -25,9 +25,11 @@ class wbapi_series:
             res =  self.series.metadata.get(
                 id = input.id, economies=input.economies, time=input.time, db=input.db
             )
-            return parse_metadata_to_df(res, SeriesMetadataOutput)
+            meta_dict = res.__dict__
+            df = pd.DataFrame([meta_dict])
+            return df
         except Exception as e:
-            print(e)
+            # print(e)
             self.logger.error(f"Error fetching metadata for series {input.id}: {e}")
             return None
 
@@ -45,7 +47,7 @@ class wbapi_series:
 
         try:
             return self.series.metadata.fetch(
-                input.id, economic=input.economic, time=input.time, db=input.db
+                input.id, economies=input.economies, time=input.time, db=input.db
             )
         except Exception as e:
             self.logger.error(f"Error fetching series metadata for {input.id}: {e}")
