@@ -1,6 +1,6 @@
 import wbgapi as wb
 from config.load_config import load_config
-from src.logger import setup_logging
+from src.logger import FastLogger
 from dags.extract.wbapi_extract import (
     wbapi_series, wbapi_economy, wbapi_topic,
     wbapi_time, wbapi_source, wbapi_region,
@@ -17,7 +17,7 @@ class wbapi_main:
         self.region = wbapi_region()
         self.income = wbapi_income()
         self.lending = wbapi_lending()
-        self.logger = setup_logging(load_config(), 'wbgapi_main_topic')
+        self.logger = FastLogger(load_config()).get_logger()
     
 
 

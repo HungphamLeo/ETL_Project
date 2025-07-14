@@ -4,10 +4,14 @@ project:
   owner: hung_hdbank
   env: dev
 logging:
-  level: "INFO"
-  format: "json"                  # hoặc "console"
-  output: "stdout"               # hoặc "file"
-  file_path: "logger_storage"
+  "level": "INFO"
+  "storage_path": "C:/Users/Admin/Downloads/Project/Github/ETL_Project/logger_storage"
+  "files": {
+      "debug": "debug.log",
+      "info": "info.log",
+      "warning": "warning.log",
+      "error": "error.log"
+  }
   max_size_mb: 100
   backup_count: 5
   loki_enabled: false

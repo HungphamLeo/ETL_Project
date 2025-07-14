@@ -1,13 +1,13 @@
 import wbgapi as wb
-from utils import dataframe_rename_by_dataclass , auto_parse_metadata_to_df
+from utils import dataframe_rename_by_dataclass
 from config.load_config import load_config
-from src.logger import setup_logging
+from src.logger import FastLogger
 from models import *
 
 class wbapi_series:
     def __init__(self):
         self.series = wb.series
-        self.logger = setup_logging(load_config(), 'wbapi_series')
+        self.logger = FastLogger(load_config()).get_logger()
 
     def get_series_metadata(self, input: SeriesMetadataInput):
         """
@@ -64,6 +64,7 @@ class wbapi_series:
 
         try:
             res_temp = self.series.get(input.id, input.db)
+            print(res_temp)
             res = pd.DataFrame([res_temp])
             return dataframe_rename_by_dataclass(res, SeriesDataOutput)
         except Exception as e:
@@ -91,36 +92,54 @@ class wbapi_series:
 class wbapi_economy:
     def __init__(self):
         self.economy = wb.economy
-        self.logger = setup_logging(load_config(), 'wbapi_economy')
-
-    def get_list(self, input: EconomyListInput):
-        """
-        Returns a list of economies in the current database
-
-        Arguments:
-            id:         an economy identifier or list-like
-
-            q:          search string (on economy name)
-
-            labels:     return both codes and labels for regions, income and lending groups
-
-            skipAggs:   skip aggregates
-
-            db:         database: pass None to access the global database
-
-        Returns:
-            a generator object
-
-        Example:
-            for elem in wbapi_economy.get_list():
-                print(elem['id'], elem['value'])
-        """
+        self.logger = FastLogger(load_config()).get_logger()
+    
+    def check_coder(self, input: EconomyCheckCoderInput):
         try:
-            return self.economy.list(input.id, input.q, input.labels, input.skipAggs, input.db)
+            return self.economy.coder(input.name, input.summary,input.debug)
         except Exception as e:
-            self.logger.error(f"Error fetching economy list: {e}")
+            self.logger.error(f"Error fetching coder for {input.id}: {e}")
             return None
 
+
+    def get_iso2(self, input:EconomyISO2Input):
+        """
+        Retrieve the ISO2 code for a specific economy.
+
+        Args:
+            input (EconomyISO2Input): An object containing the id attribute of the economy.
+
+        Returns:
+            The ISO2 code of the specified economy or None if there is an error.
+        """
+
+        try:
+            return self.economy.iso2(input.id)
+        except Exception as e:
+            self.logger.error(f"Error fetching iso2 for {input.id}: {e}")
+            return None
+    
+    def dataframe_display(self, input:EconomyDataFrameInput):
+        """
+        Retrieve a pandas DataFrame containing data for a specific economy.
+
+        Args:
+            input (EconomyDataFrameInput): An object containing id, labels, skipAggs, and db attributes.
+
+        Returns:
+            A pandas DataFrame with data for the specified economy or None if there is an error.
+        """
+        try:
+            res = self.economy.DataFrame(input.id, input.labels, input.skipAggs, input.db)
+            id_columns = list(res.index)
+            res['id']= id_columns
+            return dataframe_rename_by_dataclass(res.reset_index(drop=True), EconomyDataFrameOuput)
+        except Exception as e:
+            self.logger.error(f"Error fetching dataframe for {input.id}: {e}")
+            return None
+
+
+        
     def get_info(self, input: EconomyInfoInput):
         """
         Retrieve information about a specific economy.
@@ -187,27 +206,11 @@ class wbapi_economy:
             self.logger.error(f"Error fetching metadata for economy {input.id}: {e}")
             return None
 
-    def fetch_metadata(self, input: EconomyMetadataInput):
-        """
-        Fetches metadata for a specific economy.
-
-        Args:
-            input (EconomyMetadataInput): An object containing id, series, and db attributes.
-
-        Returns:
-            A dictionary with metadata for the specified economy or None if there is an error.
-        """
-
-        try:
-            return self.economy.metadata.fetch(input.id, series=input.series, db=input.db)
-        except Exception as e:
-            self.logger.error(f"Error fetching metadata for economy {input.id}: {e}")
-            return None
-
+    
 class wbapi_topic:
     def __init__(self):
         self.topic = wb.topic
-        self.logger = setup_logging(load_config(), 'wbapi_topic')
+        self.logger = FastLogger(load_config()).get_logger()
 
     def get_list(self, input: TopicListInput):
         """
@@ -300,7 +303,7 @@ class wbapi_topic:
 class wbapi_time:
     def __init__(self):
         self.time = wb.time
-        self.logger = setup_logging(load_config(), 'wbapi_time')
+        self.logger = FastLogger(load_config()).get_logger()
 
     def get_list(self, input: TimeListInput):
         """
@@ -389,7 +392,7 @@ class wbapi_time:
 class wbapi_source:
     def __init__(self):
         self.source = wb.source
-        self.logger = setup_logging(load_config(), 'wbapi_source')
+        self.logger = FastLogger(load_config()).get_logger()
 
     def get_list(self, input: SourceListInput):
         """
@@ -528,7 +531,7 @@ class wbapi_source:
 class wbapi_region:
     def __init__(self):
         self.region = wb.region
-        self.logger = setup_logging(load_config(), 'wbapi_region')
+        self.logger = FastLogger(load_config()).get_logger()
 
     def get_list(self, input: RegionListInput):
         """
@@ -615,7 +618,7 @@ class wbapi_region:
 class wbapi_income:
     def __init__(self):
         self.income = wb.income
-        self.logger = setup_logging(load_config(), 'wbapi_income')
+        self.logger = FastLogger(load_config()).get_logger()
 
     def get_list(self, input: IncomeListInput):
         """
@@ -704,7 +707,7 @@ class wbapi_income:
 class wbapi_lending:
     def __init__(self):
         self.lending = wb.lending
-        self.logger = setup_logging(load_config(), 'wbapi_lending')
+        self.logger = FastLogger(load_config()).get_logger()
 
     def get_list(self, input: LendingListInput):
         """

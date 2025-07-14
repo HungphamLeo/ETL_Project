@@ -1,13 +1,28 @@
 from dataclasses import dataclass, field
 from typing import Optional, Any, List
 
+
+#economy
+
 @dataclass
-class EconomyListInput:
+class EconomyISO2Input:
+    id: str
+
+    
+@dataclass
+class EconomyCheckCoderInput:
+    name: str
+    summary: bool = False
+    debug: Optional[Any] = None
+
+
+@dataclass
+class EconomyDataFrameInput:
     id: str = "all"
-    q: Optional[Any] = None 
-    labels: bool = False
+    labels:  bool = False
     skipAggs: bool = False
     db: Optional[Any] = None
+
 
 @dataclass
 class EconomyInfoInput:

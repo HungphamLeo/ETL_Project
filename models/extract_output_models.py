@@ -1,8 +1,11 @@
 import pandas as pd
 from dataclasses import dataclass, asdict
 from typing import Optional
+from decimal import Decimal
 
 
+
+# Series
 @dataclass
 class SeriesFetchOutput:
     ID: str
@@ -34,3 +37,19 @@ class SeriesInfoOutput:
 class SeriesDataOutput:
     ID: str
     Value: str
+
+
+
+# Economy
+@dataclass
+class EconomyDataFrameOuput:
+    Country_Name: str
+    Aggregate: bool
+    Longitude: Decimal 
+    Latitude: Decimal
+    Region: str	
+    Admin_Region: str	
+    Lending_Type: str
+    Income_Level : str
+    Capital_Of_Country: str
+    Country_ID: str
