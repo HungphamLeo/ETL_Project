@@ -129,13 +129,6 @@ class SeriesMetadataInput:
     db: Optional[Any] = None
 
 @dataclass
-class SeriesListInput:
-    id: str = "all"
-    q: Optional[Any] = None
-    topic: Optional[Any] = None
-    db: Optional[Any] = None
-
-@dataclass
 class SeriesInfoInput:
     id: str = "all"
     q: Optional[Any] = None
@@ -148,7 +141,7 @@ class SeriesDataInput:
     db: Any
 
 @dataclass
-class SeriesFetchInput:
+class SeriesGetInput:
     id: str = "all"
     q: Optional[Any] = None
     topic: Optional[Any] = None

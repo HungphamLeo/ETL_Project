@@ -10,16 +10,22 @@ class SeriesFetchOutput:
 
 @dataclass
 class SeriesMetadataOutput:
-    IndicatorName: str
-    Longdefinition: str
-    Topic: str
-    Aggregationmethod: str
-    Periodicity: str
-    Unitofmeasure: str
-    Source: str
-    License_Type: str
-    License_URL: str
-    Developmentrelevance: str
-    Generalcomments: str
-    Limitationsandexceptions: str
-    Statisticalconceptandmethodology: str
+    Aggregationmethod: Optional[str]
+    Dataset: Optional[str]
+    Developmentrelevance: Optional[str]
+    Generalcomments: Optional[str]
+    IndicatorName: Optional[str]
+    License_Type: Optional[str]
+    License_URL: Optional[str]
+    Limitationsandexceptions: Optional[str]
+    Longdefinition: Optional[str]
+    Periodicity: Optional[str]
+    Source: Optional[str]
+    Statisticalconceptandmethodology: Optional[str]
+    Topic: Optional[str]
+    Unitofmeasure: Optional[str]
+
+@dataclass
+class SeriesInfoOutput:
+    ID: str
+    Value: str

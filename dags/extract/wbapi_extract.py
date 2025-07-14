@@ -22,52 +22,15 @@ class wbapi_series:
         """
 
         try:
-            res =  self.series.metadata.get(
+            res_temp =  self.series.metadata.get(
                 id = input.id, economies=input.economies, time=input.time, db=input.db
             )
-            meta_dict = res.__dict__
-            df = pd.DataFrame([meta_dict])
-            return df
+            meta_dict = res_temp.metadata
+            res = pd.DataFrame([meta_dict])            
+            return dataframe_rename_by_dataclass(res, SeriesMetadataOutput)
         except Exception as e:
             # print(e)
             self.logger.error(f"Error fetching metadata for series {input.id}: {e}")
-            return None
-
-    def fetch_series_metadata(self, input: SeriesMetadataInput):
-        """
-        Fetches metadata for a specific series.
-
-        Args:
-            input (SeriesMetadataInput): object with id, economic, time and db
-                attributes.
-
-        Returns:
-            a dictionary with metadata for the given series
-        """
-
-        try:
-            return self.series.metadata.fetch(
-                input.id, economies=input.economies, time=input.time, db=input.db
-            )
-        except Exception as e:
-            self.logger.error(f"Error fetching series metadata for {input.id}: {e}")
-            return None
-
-    def get_list(self, input: SeriesListInput):
-        """
-        Retrieve a list of series.
-
-        Args:
-            input (SeriesListInput): object with id, q, topic, and db attributes.
-
-        Returns:
-            a list of series matching the given criteria
-        """
-
-        try:
-            return self.series.list(input.id, input.q, input.topic, input.db)
-        except Exception as e:
-            self.logger.error(f"Error fetching series list: {e}")
             return None
 
     def get_info(self, input: SeriesInfoInput):
@@ -81,7 +44,11 @@ class wbapi_series:
             a dictionary with information about the specified series or None if there is an error
         """
         try:
-            return self.series.info(input.id, input.q, input.topic, input.db)
+            res_temp = self.series.info(input.id, input.q, input.topic, input.db)
+            res = pd.DataFrame(res_temp.items)
+            print(type(res))
+            print(res)
+            return dataframe_rename_by_dataclass(res, SeriesInfoOutput)
         except Exception as e:
             self.logger.error(f"Error fetching series info for {input.id}: {e}")
             return None
@@ -103,7 +70,7 @@ class wbapi_series:
             self.logger.error(f"Error fetching data for series {input.id}: {e}")
             return None
 
-    def get_series(self, input: SeriesFetchInput):
+    def get_series(self, input: SeriesGetInput):
         """
         Retrieve information about a specific series.
 
