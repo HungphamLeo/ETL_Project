@@ -138,7 +138,7 @@ class SeriesInfoInput:
 @dataclass
 class SeriesDataInput:
     id: str
-    db: Any
+    db: Optional[Any] = None
 
 @dataclass
 class SeriesGetInput:

@@ -46,8 +46,6 @@ class wbapi_series:
         try:
             res_temp = self.series.info(input.id, input.q, input.topic, input.db)
             res = pd.DataFrame(res_temp.items)
-            print(type(res))
-            print(res)
             return dataframe_rename_by_dataclass(res, SeriesInfoOutput)
         except Exception as e:
             self.logger.error(f"Error fetching series info for {input.id}: {e}")
@@ -65,7 +63,9 @@ class wbapi_series:
         """
 
         try:
-            return self.series.get(input.id, input.db)
+            res_temp = self.series.get(input.id, input.db)
+            res = pd.DataFrame([res_temp])
+            return dataframe_rename_by_dataclass(res, SeriesDataOutput)
         except Exception as e:
             self.logger.error(f"Error fetching data for series {input.id}: {e}")
             return None

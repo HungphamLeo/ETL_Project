@@ -29,3 +29,8 @@ class SeriesMetadataOutput:
 class SeriesInfoOutput:
     ID: str
     Value: str
+
+@dataclass
+class SeriesDataOutput:
+    ID: str
+    Value: str
