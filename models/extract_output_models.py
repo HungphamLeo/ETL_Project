@@ -8,7 +8,7 @@ from decimal import Decimal
 # Series
 @dataclass
 class SeriesFetchOutput:
-    ID: str
+    Series_ID: str
     Topic_Name: str
 
 @dataclass
@@ -30,12 +30,12 @@ class SeriesMetadataOutput:
 
 @dataclass
 class SeriesInfoOutput:
-    ID: str
+    Series_ID: str
     Value: str
 
 @dataclass
 class SeriesDataOutput:
-    ID: str
+    Series_ID: str
     Value: str
 
 
@@ -111,3 +111,21 @@ class EconomyMetadataOuput:
     Table_Name: str
     Vital_Registration_Complete: str
     WB_Two_Code: str
+
+
+#topic
+@dataclass
+class TopicSeriesOutput:
+    Topic_Name: str
+    Topic_ID: int
+    
+@dataclass
+class TopicInfoOutput:
+    Topic_ID: int
+    Topic_Name: str
+    Topic_Description: str
+
+@dataclass
+class TopicMembersOutput:
+    Member_ID: int
+    Series_ID: int

@@ -7,7 +7,7 @@ from dags.extract.wbapi_extract import (
     wbapi_income, wbapi_lending
 )
 
-class wbapi_main:
+class wbapi_extract:
     def __init__(self):
         self.series = wbapi_series()
         self.economy = wbapi_economy()

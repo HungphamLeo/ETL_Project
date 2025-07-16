@@ -205,27 +205,6 @@ class wbapi_topic:
         self.topic = wb.topic
         self.logger = FastLogger(load_config()).get_logger()
 
-    def get_list(self, input: TopicListInput):
-        """
-        Returns a list of topics in the current database
-
-        Arguments:
-            id:         a topic identifier or list-like
-
-            q:          search string (on topic name)
-
-        Returns:
-            a generator object
-
-        Example:
-            for elem in wbapi_topic.get_list():
-                print(elem['id'], elem['value'])
-        """
-        try:
-            return self.topic.list(input.id, input.q)
-        except Exception as e:
-            self.logger.error(f"Error fetching topic list: {e}")
-            return None
 
     def get_info(self, input: TopicInfoInput):
         """
@@ -238,26 +217,11 @@ class wbapi_topic:
             A dictionary with information about the specified topic or None if there is an error.
         """
         try:
-            return self.topic.info(input.id, input.q)
+            res = self.topic.info(input.id, input.q)
+            df = pd.DataFrame(res.items)
+            return dataframe_rename_by_dataclass(df, TopicInfoOutput)
         except Exception as e:
             self.logger.error(f"Error fetching topic info for {input.id}: {e}")
-            return None
-
-    def get_data(self, input: TopicGetInput):
-        """
-        Retrieve data for a specific topic.
-
-        Args:
-            input (TopicGetInput): An object containing id attribute.
-
-        Returns:
-            A dictionary with data for the specified topic or None if there is an error.
-        """
-        
-        try:
-            return self.topic.get(input.id)
-        except Exception as e:
-            self.logger.error(f"Error fetching topic data for {input.id}: {e}")
             return None
 
     def get_series(self, input: TopicSeriesInput):
@@ -272,7 +236,11 @@ class wbapi_topic:
         """
         
         try:
-            return self.topic.Series(input.id, input.q, input.name)
+            res = self.topic.Series(input.id, input.q, input.name).to_frame()
+            id_columns = list(res.index)
+            res['id']= id_columns
+            return dataframe_rename_by_dataclass(res.reset_index(drop=True), TopicSeriesOutput)
+
         except Exception as e:
             self.logger.error(f"Error fetching topic series for {input.id}: {e}")
             return None
@@ -282,13 +250,38 @@ class wbapi_topic:
         Retrieve a list of members for a specific topic.
 
         Args:
-            input (TopicMembersInput): An object containing id attribute.
+            input (TopicMembersInput): An object containing `id` and `maximum_member_id`.
 
         Returns:
-            A list of members matching the given criteria or None if there is an error.
+            A pandas DataFrame of members or None if error.
         """
         try:
-            return self.topic.members(input.id)
+            from dataclasses import fields
+            import pandas as pd
+
+            # Lấy tên các field từ dataclass TopicMembersOutput
+            columns = [f.name for f in fields(TopicMembersOutput)]
+            data = []
+
+            for member_id in range(input.maximum_member_id):
+                try:
+                    series_list = self.topic.members(member_id)
+                    if not series_list:
+                        break  # Ngắt nếu không còn series nào
+
+                    for series_id in series_list:
+                        data.append({
+                            "Member_ID": member_id,
+                            "Series_ID": series_id
+                        })
+
+                except Exception as inner_e:
+                    self.logger.warning(f"Error fetching member {member_id}: {inner_e}")
+                    continue  # Bỏ qua lỗi từng member
+
+            df = pd.DataFrame(data, columns=columns)
+            return df
+
         except Exception as e:
             self.logger.error(f"Error fetching topic members for {input.id}: {e}")
             return None

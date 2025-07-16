@@ -7,7 +7,7 @@ from typing import Optional, Any, List
 @dataclass
 class EconomyISO2Input:
     id: str
-
+    
     
 @dataclass
 class EconomyCheckCoderInput:
@@ -258,3 +258,4 @@ class TopicSeriesInput:
 @dataclass
 class TopicMembersInput:
     id: str
+    maximum_member_id: Optional[int] = 100

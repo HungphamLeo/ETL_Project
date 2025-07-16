@@ -1,1 +1,1 @@
-from .base_wbgapi import wbapi_main
+from .base_wbapi_extract import wbapi_extract
