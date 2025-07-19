@@ -1,7 +1,10 @@
 import wbgapi as wb
-from config.load_config import load_config
+import os
+import sys
+
+from internal.config.load_config import load_config
 from src.logger import FastLogger
-from dags.extract.wbapi_extract import (
+from .wbapi_extract import (
     wbapi_series, wbapi_economy, wbapi_topic,
     wbapi_time, wbapi_source, wbapi_region,
     wbapi_income, wbapi_lending

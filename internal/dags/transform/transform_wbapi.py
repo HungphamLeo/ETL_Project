@@ -2,9 +2,9 @@ from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.functions import col, when, lit, round as spark_round
 from pyspark.sql.types import *
 from src.logger import FastLogger
-from config.load_config import load_config
-from dags.extract import wbapi_extract
-from models import EconomyTransformDataFrameOutput
+from internal.config.load_config import load_config
+from internal.dags.extract import wbapi_extract
+from internal.models import EconomyTransformDataFrameOutput
 
 
 class TransformEconomy:

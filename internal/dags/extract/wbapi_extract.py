@@ -1,8 +1,10 @@
 import wbgapi as wb
+import os
+print("PYTHONPATH =", os.environ.get("PYTHONPATH"))
 from utils import dataframe_rename_by_dataclass
-from config.load_config import load_config
+from internal.config.load_config import load_config
 from src.logger import FastLogger
-from models import *
+from internal.models import *
 
 class wbapi_series:
     def __init__(self):
