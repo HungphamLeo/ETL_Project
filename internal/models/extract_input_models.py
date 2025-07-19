@@ -233,6 +233,8 @@ class TimeSeriesInput:
 @dataclass
 class TimePeriodsInput:
     db: Optional[Any] = None
+    max: int = 16
+    min: int = 1
 
 #topic
 @dataclass

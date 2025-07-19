@@ -293,58 +293,8 @@ class wbapi_time:
         self.time = wb.time
         self.logger = FastLogger(load_config()).get_logger()
 
-    def get_list(self, input: TimeListInput):
-        """
-        Retrieve a list of time periods.
 
-        Args:
-            input (TimeListInput): An object containing id and q attributes.
-
-        Returns:
-            A list of time periods matching the given criteria or None if there is an error.
-        """
-
-        try:
-            return self.time.list(input.id, input.q)
-        except Exception as e:
-            self.logger.error(f"Error fetching time list: {e}")
-            return None
-
-    def get_info(self, input: TimeInfoInput):
-        """
-        Retrieve information about a specific time period.
-
-        Args:
-            input (TimeInfoInput): An object containing id, q, and db attributes.
-
-        Returns:
-            A dictionary with information about the specified time period or None if there is an error.
-        """
-
-        try:
-            return self.time.info(input.id, input.q, input.db)
-        except Exception as e:
-            self.logger.error(f"Error fetching time info for {input.id}: {e}")
-            return None
-
-    def get_data(self, input: TimeGetInput):
-        """
-        Retrieve data for a specific time period.
-
-        Args:
-            input (TimeGetInput): An object containing id and db attributes.
-
-        Returns:
-            A dictionary with data for the specified time period or None if there is an error.
-        """
-
-        try:
-            return self.time.get(input.id, input.db)
-        except Exception as e:
-            self.logger.error(f"Error fetching time data for {input.id}: {e}")
-            return None
-
-    def get_series(self, input: TimeSeriesInput):
+    def get_time_periods_series(self, input: TimeSeriesInput):
         """
         Retrieve a list of series for a specific time period.
 
@@ -355,48 +305,21 @@ class wbapi_time:
             A list of series matching the given criteria or None if there is an error.
         """
         try:
-            return self.time.Series(input.id, input.q, input.db, input.name)
+            res = self.time.Series(input.id, input.q, input.db, input.name).to_frame()
+            id_columns = list(res.index)
+            res['id']= id_columns
+            
+            return dataframe_rename_by_dataclass(res.reset_index(drop=True), TimeSeriesOutput)  
+            
         except Exception as e:
             self.logger.error(f"Error fetching time series for {input.id}: {e}")
             return None
 
-    def get_periods(self, input: TimePeriodsInput):
-        """
-        Retrieve time periods from the database.
-
-        Args:
-            input (TimePeriodsInput): An object containing the db attribute.
-
-        Returns:
-            A list of time periods from the specified database or None if there is an error.
-        """
-
-        try:
-            return self.time.periods(input.db)
-        except Exception as e:
-            self.logger.error(f"Error fetching time periods: {e}")
-            return None
 
 class wbapi_source:
     def __init__(self):
         self.source = wb.source
         self.logger = FastLogger(load_config()).get_logger()
-
-    def get_list(self, input: SourceListInput):
-        """
-        Retrieve a list of sources from the database.
-
-        Args:
-            input (SourceListInput): An object containing id and q attributes.
-
-        Returns:
-            A list of sources matching the given criteria or None if there is an error.
-        """
-        try:
-            return self.source.list(input.id, input.q)
-        except Exception as e:
-            self.logger.error(f"Error fetching source list: {e}")
-            return None
 
     def get_info(self, input: SourceInfoInput):
         """
@@ -410,26 +333,12 @@ class wbapi_source:
         """
         
         try:
-            return self.source.info(input.id, input.q)
+            res = self.source.info(input.id, input.q)
+            df = pd.DataFrame(res.items)
+            s = dataframe_rename_by_dataclass(df, SourceInfoOutput)
+            return s
         except Exception as e:
             self.logger.error(f"Error fetching source info for {input.id}: {e}")
-            return None
-
-    def get_data(self, input: SourceGetInput):
-        """
-        Retrieve data for a specific source.
-
-        Args:
-            input (SourceGetInput): An object containing the db attribute.
-
-        Returns:
-            The data for the specified source or None if there is an error.
-        """
-
-        try:
-            return self.source.get(input.db)
-        except Exception as e:
-            self.logger.error(f"Error fetching source data: {e}")
             return None
 
     def get_series(self, input: SourceSeriesInput):
@@ -444,131 +353,38 @@ class wbapi_source:
         """
 
         try:
-            return self.source.Series(input.id, input.q, input.name)
+            res = self.source.Series(input.id, input.q, input.name).to_frame()
+            id_columns = list(res.index)
+            res['id']= id_columns
+            return dataframe_rename_by_dataclass(res.reset_index(drop=True), SourceSeriesOutput)
+             
         except Exception as e:
             self.logger.error(f"Error fetching source series for {input.id}: {e}")
             return None
 
-    def has_metadata(self, input: SourceHasMetadataInput):
-        """
-        Check if metadata exists for a specific source.
 
-        Args:
-            input (SourceHasMetadataInput): An object containing the db attribute.
+    # def get_concepts(self, input: SourceConceptsInput):
+    #     """
+    #     Retrieve concepts for a specific source.
 
-        Returns:
-            A boolean indicating whether metadata exists for the specified source or None if there is an error.
-        """
+    #     Args:
+    #         input (SourceConceptsInput): An object containing the db attribute.
 
-        try:
-            return self.source.has_metadata(input.db)
-        except Exception as e:
-            self.logger.error(f"Error checking metadata existence: {e}")
-            return None
+    #     Returns:
+    #         A list of concepts from the specified source or None if there is an error.
+    #     """
 
-    def get_concepts(self, input: SourceConceptsInput):
-        """
-        Retrieve concepts for a specific source.
+    #     try:
+    #         return self.source.concepts(input.db)
+    #     except Exception as e:
+    #         self.logger.error(f"Error fetching source concepts: {e}")
+    #         return None
 
-        Args:
-            input (SourceConceptsInput): An object containing the db attribute.
-
-        Returns:
-            A list of concepts from the specified source or None if there is an error.
-        """
-
-        try:
-            return self.source.concepts(input.db)
-        except Exception as e:
-            self.logger.error(f"Error fetching source concepts: {e}")
-            return None
-
-    def get_feature(self, input: SourceFeatureInput):
-        """
-        Retrieve a feature for a specific source.
-
-        Args:
-            input (SourceFeatureInput): An object containing concept, id, and db attributes.
-
-        Returns:
-            The feature for the specified concept and id or None if there is an error.
-        """
-        try:
-            return self.source.feature(input.concept, input.id, input.db)
-        except Exception as e:
-            self.logger.error(f"Error fetching source feature '{input.concept}/{input.id}': {e}")
-            return None
-
-    def get_features(self, input: SourceFeaturesInput):
-        """
-        Retrieve features for a specific concept and id from a source.
-
-        Args:
-            input (SourceFeaturesInput): An object containing concept, id, and db attributes.
-
-        Returns:
-            The features for the specified concept and id or None if there is an error.
-        """
-
-        try:
-            return self.source.features(input.concept, input.id, input.db)
-        except Exception as e:
-            self.logger.error(f"Error fetching features for concept '{input.concept}' and id '{input.id}': {e}")
-            return None
 
 class wbapi_region:
     def __init__(self):
         self.region = wb.region
         self.logger = FastLogger(load_config()).get_logger()
-
-    def get_list(self, input: RegionListInput):
-        """
-        Retrieve a list of regions from the database.
-
-        Args:
-            input (RegionListInput): An object containing id, q, and group attributes.
-
-        Returns:
-            A list of regions matching the given criteria or None if there is an error.
-        """
-        try:
-            return self.region.list(input.id, input.q, input.group)
-        except Exception as e:
-            self.logger.error(f"Error fetching region list: {e}")
-            return None
-
-    def get_info(self, input: RegionInfoInput):
-        """
-        Retrieve information about a specific region.
-
-        Args:
-            input (RegionInfoInput): An object containing id, q, and group attributes.
-
-        Returns:
-            A dictionary with information about the specified region or None if there is an error.
-        """
-        try:
-            return self.region.info(input.id, input.q, input.group)
-        except Exception as e:
-            self.logger.error(f"Error fetching region info for {input.id}: {e}")
-            return None
-
-    def get_data(self, input: RegionGetInput):
-        """
-        Retrieve data for a specific region.
-
-        Args:
-            input (RegionGetInput): An object containing the id attribute.
-
-        Returns:
-            The data for the specified region or None if there is an error.
-        """
-
-        try:
-            return self.region.get(input.id)
-        except Exception as e:
-            self.logger.error(f"Error fetching region data for {input.id}: {e}")
-            return None
 
     def get_series(self, input: RegionSeriesInput):
         """
@@ -582,81 +398,20 @@ class wbapi_region:
         """
 
         try:
-            return self.region.Series(input.id, input.q, input.group, input.name)
+            res = self.region.Series(input.id, input.q, input.group, input.name).to_frame()
+            id_columns = list(res.index)
+            res['id']= id_columns
+            return dataframe_rename_by_dataclass(res.reset_index(drop=True), RegionSeriesOutput)
+            
         except Exception as e:
             self.logger.error(f"Error fetching region series for {input.id}: {e}")
             return None
 
-    def get_members(self, input: RegionMembersInput):
-        """
-        Retrieve a list of members for a specific region.
-
-        Args:
-            input (RegionMembersInput): An object containing id and param attributes.
-
-        Returns:
-            A list of members for the specified region or None if there is an error.
-        """
-        try:
-            return self.region.members(input.id, input.param)
-        except Exception as e:
-            self.logger.error(f"Error fetching members for region {input.id}: {e}")
-            return None
 
 class wbapi_income:
     def __init__(self):
         self.income = wb.income
         self.logger = FastLogger(load_config()).get_logger()
-
-    def get_list(self, input: IncomeListInput):
-        """
-        Retrieve a list of income levels from the database.
-
-        Args:
-            input (IncomeListInput): An object containing id and q attributes.
-
-        Returns:
-            A list of income levels matching the given criteria or None if there is an error.
-        """
-        try:
-            return self.income.list(input.id, input.q)
-        except Exception as e:
-            self.logger.error(f"Error fetching income list: {e}")
-            return None
-
-    def get_info(self, input: IncomeInfoInput):
-        """
-        Retrieve information about a specific income level.
-
-        Args:
-            input (IncomeInfoInput): An object containing id and q attributes.
-
-        Returns:
-            A dictionary with information about the specified income level or None if there is an error.
-        """
-        try:
-            return self.income.info(input.id, input.q)
-        except Exception as e:
-            self.logger.error(f"Error fetching income info for {input.id}: {e}")
-            return None
-
-    def get_data(self, input: IncomeGetInput):
-        """
-        Retrieve data for a specific income level.
-
-        Args:
-            input (IncomeGetInput): An object containing the id attribute.
-
-        Returns:
-            The data for the specified income level or None if there is an error.
-        """
-
-        
-        try:
-            return self.income.get(input.id)
-        except Exception as e:
-            self.logger.error(f"Error fetching income data for {input.id}: {e}")
-            return None
 
     def get_series(self, input: IncomeSeriesInput):
         """
@@ -670,83 +425,18 @@ class wbapi_income:
         """
 
         try:
-            return self.income.Series(input.id, input.q, input.name)
+            res = self.income.Series(input.id, input.q, input.name).to_frame()
+            id_columns = list(res.index)
+            res['id']= id_columns
+            return dataframe_rename_by_dataclass(res.reset_index(drop=True), IncomeSeriesOutput)
         except Exception as e:
             self.logger.error(f"Error fetching income series for {input.id}: {e}")
             return None
 
-    def get_members(self, input: IncomeMembersInput):
-        """
-        Retrieve a list of members for a specific income level.
-
-        Args:
-            input (IncomeMembersInput): An object containing id attribute.
-
-        Returns:
-            A list of members for the specified income level or None if there is an error.
-        """
-        try:
-            return self.income.members(input.id)
-        except Exception as e:
-            self.logger.error(f"Error fetching income members for {input.id}: {e}")
-            return None
-        
-        
 class wbapi_lending:
     def __init__(self):
         self.lending = wb.lending
         self.logger = FastLogger(load_config()).get_logger()
-
-    def get_list(self, input: LendingListInput):
-        """
-        Retrieve a list of lending types from the database.
-
-        Args:
-            input (LendingListInput): An object containing id and q attributes.
-
-        Returns:
-            A list of lending types matching the given criteria or None if there is an error.
-        """
-
-        try:
-            return self.lending.list(input.id, input.q)
-        except Exception as e:
-            self.logger.error(f"Error fetching lending list: {e}")
-            return None
-
-    def get_info(self, input: LendingInfoInput):
-        """
-        Retrieve information about a specific lending type.
-
-        Args:
-            input (LendingInfoInput): An object containing id and q attributes.
-
-        Returns:
-            A dictionary with information about the specified lending type or None if there is an error.
-        """
-        
-        try:
-            return self.lending.info(input.id, input.q)
-        except Exception as e:
-            self.logger.error(f"Error fetching lending info for {input.id}: {e}")
-            return None
-
-    def get_data(self, input: LendingGetInput):
-        """
-        Retrieve data for a specific lending type.
-
-        Args:
-            input (LendingGetInput): An object containing the id attribute.
-
-        Returns:
-            The data for the specified lending type or None if there is an error.
-        """
-
-        try:
-            return self.lending.get(input.id)
-        except Exception as e:
-            self.logger.error(f"Error fetching lending data for {input.id}: {e}")
-            return None
 
     def get_series(self, input: LendingSeriesInput):
         """
@@ -760,23 +450,10 @@ class wbapi_lending:
         """
 
         try:
-            return self.lending.Series(input.id, input.q, input.name)
+            res = self.lending.Series(input.id, input.q, input.name).to_frame()
+            id_columns = list(res.index)
+            res['id']= id_columns
+            return dataframe_rename_by_dataclass(res.reset_index(drop=True), LendingSeriesOutput)
         except Exception as e:
             self.logger.error(f"Error fetching lending series for {input.id}: {e}")
-            return None
-
-    def get_members(self, input: LendingMembersInput):
-        """
-        Retrieve a list of members for a specific lending type.
-
-        Args:
-            input (LendingMembersInput): An object containing id attribute.
-
-        Returns:
-            A list of members for the specified lending type or None if there is an error.
-        """
-        try:
-            return self.lending.members(input.id)
-        except Exception as e:
-            self.logger.error(f"Error fetching lending members for {input.id}: {e}")
             return None

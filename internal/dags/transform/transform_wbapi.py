@@ -5,6 +5,7 @@ from src.logger import FastLogger
 from internal.config.load_config import load_config
 from internal.dags.extract import wbapi_extract
 from internal.models import EconomyTransformDataFrameOutput
+import pandas as pd
 
 
 class TransformEconomy:
@@ -12,41 +13,51 @@ class TransformEconomy:
         self.logger = FastLogger(load_config()).get_logger()
         self.extract_object = wbapi_extract()
 
-    def transform_economy_dataframe(self, spark_session: SparkSession, df: DataFrame) -> DataFrame:
+    def transform_economy_dataframe(self, spark: SparkSession, df: pd.DataFrame) -> pd.DataFrame:
+        """
+        Chuyển đổi DataFrame kinh tế:
+        - Nếu dữ liệu nhỏ → xử lý bằng Pandas
+        - Nếu dữ liệu lớn → convert sang PySpark để xử lý hiệu quả hơn
+        """
+        from pyspark.sql.functions import col, when, round as spark_round, lit
+        from pyspark.sql.types import DoubleType
+
         try:
             rules = EconomyTransformDataFrameOutput.ECONOMY_DF_RULES
-
-            # Step 1: Drop columns
             drop_cols = rules.get("drop_columns", [])
-            df = df.drop(*drop_cols) if drop_cols else df
 
-            # Step 2: Apply column-specific rules
-            column_rules = rules.get("columns", {})
-            for col_name, rule in column_rules.items():
-                if col_name in df.columns:
-                    expr = col(col_name)
+            if len(df) < rules.get("switch_pyspark", 100_000):
+                df = df.drop(columns=[c for c in drop_cols if c in df.columns]) if drop_cols else df
 
-                    # Replace null values
-                    if "replace_null_with" in rule:
-                        expr = when(expr.isNull(), lit(rule["replace_null_with"])).otherwise(expr)
+                for col_name, rule in rules.items():
+                    if col_name == "drop_columns":
+                        continue
+                    if col_name in df.columns:
+                        if "replace_null_with" in rule:
+                            df[col_name] = df[col_name].fillna(rule["replace_null_with"])
+                        if "round" in rule:
+                            df[col_name] = df[col_name].round(rule["round"])
+                return df
 
-                    # Round values
-                    if "round" in rule:
-                        expr = spark_round(expr, rule["round"])
+            else:
+                spark_df = spark.createDataFrame(df)
+                drop_cols_spark = [c for c in drop_cols if c in spark_df.columns]
+                spark_df = spark_df.drop(*drop_cols_spark)
 
-                    # Cast type
-                    if "cast" in rule:
-                        expr = expr.cast(rule["cast"])
+                for col_name, rule in rules.items():
+                    if col_name == "drop_columns":
+                        continue
+                    if col_name in spark_df.columns:
+                        expr = col(col_name)
 
-                    # Rename column (optional)
-                    new_col_name = rule.get("rename", col_name)
-                    df = df.withColumn(new_col_name, expr)
+                        if "replace_null_with" in rule:
+                            expr = when(expr.isNull(), lit(rule["replace_null_with"])).otherwise(expr)
+                        if "round" in rule:
+                            expr = spark_round(expr, rule["round"])
 
-                    # Drop old column if renamed
-                    if new_col_name != col_name:
-                        df = df.drop(col_name)
+                        spark_df = spark_df.withColumn(col_name, expr)
 
-            return df
+                return spark_df.toPandas()
 
         except Exception as e:
             self.logger.error(f"Error transforming economy dataframe: {e}")

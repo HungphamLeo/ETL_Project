@@ -5,6 +5,7 @@ from decimal import Decimal
 
 
 
+
 # Series
 @dataclass
 class SeriesFetchOutput:
@@ -129,3 +130,54 @@ class TopicInfoOutput:
 class TopicMembersOutput:
     Member_ID: int
     Series_ID: int
+
+
+
+#time
+@dataclass
+class TimeSeriesOutput:
+    Year: int
+    Year_Time_ID: str
+    
+
+#source
+@dataclass
+class SourceSeriesOutput:
+    Source_Name: str
+    Source_ID: int
+
+@dataclass
+class SourceInfoOutput:
+    Source_ID: int
+    Last_Updated: str
+    Source_Name: str
+    Code: str
+    Data_ID:str
+    Description: str
+    URL: str
+    Data_Availability:str
+    Metadata_Availability:str
+    Source_Concept:int
+    
+
+
+#region
+@dataclass
+class RegionSeriesOutput:
+    Series_Region_Name: str
+    Region_Code: str
+
+
+#income
+@dataclass
+class IncomeSeriesOutput:
+    Income_Group_Name: str
+    Income_Group_ID: int
+
+
+# lending
+
+@dataclass
+class LendingSeriesOutput:
+    Lending_Type_Name: str
+    Lending_Type_ID: str
