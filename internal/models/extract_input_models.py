@@ -4,17 +4,6 @@ from typing import Optional, Any, List
 
 #economy
 
-@dataclass
-class EconomyISO2Input:
-    id: str
-    
-    
-@dataclass
-class EconomyCheckCoderInput:
-    name: str
-    summary: bool = False
-    debug: Optional[Any] = None
-
 
 @dataclass
 class EconomyDataFrameInput:
@@ -25,27 +14,6 @@ class EconomyDataFrameInput:
 
 
 @dataclass
-class EconomyInfoInput:
-    id: str = "all"
-    q: Optional[Any] = None
-    skipAggs: bool = False
-    db: Optional[Any] = None
-
-@dataclass
-class EconomyGetInput:
-    id: str
-    labels: bool = False
-    db: Optional[Any] = None
-
-@dataclass
-class EconomySeriesInput:
-    id: str = "all"
-    q: Optional[Any] = None
-    skipAggs: bool = False
-    db: Optional[Any] = None
-    name: str = "EconomyName"
-
-@dataclass
 class EconomyMetadataInput:
     id: str
     series: List[str] = field(default_factory=list)
@@ -54,19 +22,6 @@ class EconomyMetadataInput:
 
 
 # income
-@dataclass
-class IncomeListInput:
-    id: str = "all"
-    q: Optional[str] = None
-
-@dataclass
-class IncomeInfoInput:
-    id: str = "all"
-    q: Optional[str] = None
-
-@dataclass
-class IncomeGetInput:
-    id: str
 
 @dataclass
 class IncomeSeriesInput:
@@ -74,66 +29,23 @@ class IncomeSeriesInput:
     q: Optional[str] = None
     name: str = "IncomeGroupName"
 
-@dataclass
-class IncomeMembersInput:
-    id: str
-
 
 
 # lending
-
-@dataclass
-class LendingListInput:
-    id: str = "all"
-    q: Optional[str] = None
-
-@dataclass
-class LendingInfoInput:
-    id: str = "all"
-    q: Optional[str] = None
-
-@dataclass
-class LendingGetInput:
-    id: str
-
 @dataclass
 class LendingSeriesInput:
     id: str = "all"
     q: Optional[str] = None
     name: str = "LendingGroupName"
 
-@dataclass
-class LendingMembersInput:
-    id: str
 
 #region
-@dataclass
-class RegionListInput:
-    id: str = "all"
-    q: Optional[str] = None
-    group: Optional[str] = None
-
-@dataclass
-class RegionInfoInput:
-    id: str = "all"
-    q: Optional[str] = None
-    group: Optional[str] = None
-
-@dataclass
-class RegionGetInput:
-    id: str
-
 @dataclass
 class RegionSeriesInput:
     id: str = "all"
     q: Optional[str] = None
     group: Optional[str] = None
     name: str = "RegionName"
-
-@dataclass
-class RegionMembersInput:
-    id: str
-    param: str = "region"
 
 #series
 @dataclass
@@ -143,17 +55,6 @@ class SeriesMetadataInput:
     time: Optional[List[str]] = None
     db: Optional[Any] = None
 
-@dataclass
-class SeriesInfoInput:
-    id: str = "all"
-    q: Optional[Any] = None
-    topic: Optional[Any] = None
-    db: Optional[Any] = None
-
-@dataclass
-class SeriesDataInput:
-    id: str
-    db: Optional[Any] = None
 
 @dataclass
 class SeriesGetInput:
@@ -165,10 +66,6 @@ class SeriesGetInput:
 
 
 #source
-@dataclass
-class SourceListInput:
-    id: str = "all"
-    q: Optional[str] = None
 
 @dataclass
 class SourceInfoInput:
@@ -176,52 +73,14 @@ class SourceInfoInput:
     q: Optional[str] = None
 
 @dataclass
-class SourceGetInput:
-    db: Optional[Any] = None
-
-@dataclass
 class SourceSeriesInput:
     id: str = "all"
     q: Optional[str] = None
     name: str = "SourceName"
 
-@dataclass
-class SourceHasMetadataInput:
-    db: Optional[Any] = None
-
-@dataclass
-class SourceConceptsInput:
-    db: Optional[Any] = None
-
-@dataclass
-class SourceFeatureInput:
-    concept: str
-    id: str
-    db: Optional[Any] = None
-
-@dataclass
-class SourceFeaturesInput:
-    concept: str
-    id: str = "all"
-    db: Optional[Any] = None
 
 
 #time
-@dataclass
-class TimeListInput:
-    id: str = "all"
-    q: Optional[str] = None
-
-@dataclass
-class TimeInfoInput:
-    id: str = "all"
-    q: Optional[str] = None
-    db: Optional[Any] = None
-
-@dataclass
-class TimeGetInput:
-    id: str
-    db: Optional[Any] = None
 
 @dataclass
 class TimeSeriesInput:
@@ -230,11 +89,6 @@ class TimeSeriesInput:
     db: Optional[Any] = None
     name: str = "TimePeriodName"
 
-@dataclass
-class TimePeriodsInput:
-    db: Optional[Any] = None
-    max: int = 16
-    min: int = 1
 
 #topic
 @dataclass

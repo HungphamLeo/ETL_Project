@@ -35,42 +35,6 @@ class wbapi_series:
             self.logger.error(f"Error fetching metadata for series {input.id}: {e}")
             return None
 
-    def get_info(self, input: SeriesInfoInput):
-        """
-        Retrieve information about a specific series.
-
-        Args:
-            input (SeriesInfoInput): object with id, q, topic, and db attributes.
-
-        Returns:
-            a dictionary with information about the specified series or None if there is an error
-        """
-        try:
-            res_temp = self.series.info(input.id, input.q, input.topic, input.db)
-            res = pd.DataFrame(res_temp.items)
-            return dataframe_rename_by_dataclass(res, SeriesInfoOutput)
-        except Exception as e:
-            self.logger.error(f"Error fetching series info for {input.id}: {e}")
-            return None
-
-    def get_data(self, input: SeriesDataInput):
-        """
-        Retrieve data for a specific series.
-
-        Arguments:
-            input: A SeriesDataInput object containing the series ID and database.
-
-        Returns:
-            The data for the specified series or None if there is an error.
-        """
-
-        try:
-            res_temp = self.series.get(input.id, input.db)
-            res = pd.DataFrame([res_temp])
-            return dataframe_rename_by_dataclass(res, SeriesDataOutput)
-        except Exception as e:
-            self.logger.error(f"Error fetching data for series {input.id}: {e}")
-            return None
 
     def get_series(self, input: SeriesGetInput):
         """
@@ -95,14 +59,6 @@ class wbapi_economy:
         self.economy = wb.economy
         self.logger = FastLogger(load_config()).get_logger()
     
-    def check_coder(self, input: EconomyCheckCoderInput):
-        try:
-            return self.economy.coder(input.name, input.summary,input.debug)
-        except Exception as e:
-            self.logger.error(f"Error fetching coder for {input.id}: {e}")
-            return None
-
-    
     def dataframe_display(self, input:EconomyDataFrameInput):
         """
         Retrieve a pandas DataFrame containing data for a specific economy.
@@ -122,66 +78,6 @@ class wbapi_economy:
             self.logger.error(f"Error fetching dataframe for {input.id}: {e}")
             return None
 
-
-        
-    def get_info(self, input: EconomyInfoInput):
-        """
-        Retrieve information about a specific economy.
-
-        Args:
-            input (EconomyInfoInput): An object containing id, q, skipAggs, and db attributes.
-
-        Returns:
-            A dictionary with information about the specified economy or None if there is an error.
-        """
-
-        try:
-            res = self.economy.info(input.id, input.q, input.skipAggs, input.db)
-            df = pd.DataFrame(res.items)
-            return dataframe_rename_by_dataclass(df, EconomyInfoOutput)
-            
-        except Exception as e:
-            self.logger.error(f"Error fetching economy info for {input.id}: {e}")
-            return None
-
-    def get_data(self, input: EconomyGetInput):
-        """
-        Retrieve data for a specific economy.
-
-        Args:
-            input (EconomyGetInput): An object containing id, labels, and db attributes.
-
-        Returns:
-            A dictionary with data for the specified economy or None if there is an error.
-        """
-        try:
-            res = self.economy.get(input.id, input.labels, input.db)
-            df = pd.DataFrame([res])
-            return dataframe_rename_by_dataclass(df, EconomyGetOutput)
-        except Exception as e:
-            self.logger.error(f"Error fetching economy data for {input.id}: {e}")
-            return None
-
-    def get_series(self, input: EconomySeriesInput):
-        """
-        Retrieve a list of series for a specific economy.
-
-        Args:
-            input (EconomySeriesInput): An object containing id, q, skipAggs, db, and name attributes.
-
-        Returns:
-            A list of series matching the given criteria or None if there is an error.
-        """
-
-        try:
-            res = self.economy.Series(input.id, input.q, input.skipAggs, input.db, input.name).to_frame()
-            id_columns = list(res.index)
-            res['id']= id_columns
-            return dataframe_rename_by_dataclass(res.reset_index(drop=True), EconomySeriesOutput)
-        except Exception as e:
-            self.logger.error(f"Error fetching economy series for {input.id}: {e}")
-            return None
-
     def get_metadata(self, input: EconomyMetadataInput):
         """
         Retrieve metadata for a specific economy.
@@ -196,7 +92,7 @@ class wbapi_economy:
             res = self.economy.metadata.get(input.id, series=input.series, db=input.db)
             df = pd.DataFrame([res.metadata])
             return dataframe_rename_by_dataclass(df, EconomyMetadataOuput)
-            return 
+             
         except Exception as e:
             self.logger.error(f"Error fetching metadata for economy {input.id}: {e}")
             return None

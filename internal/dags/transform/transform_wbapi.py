@@ -23,10 +23,15 @@ class TransformEconomy:
         from pyspark.sql.types import DoubleType
 
         try:
-            rules = EconomyTransformDataFrameOutput.ECONOMY_DF_RULES
+            rules = EconomyTransformDataFrameOutput.ECONOMY_DF_RULES.get("transform_economy_dataframe", {})
+            switch = EconomyTransformDataFrameOutput.ECONOMY_DF_RULES.get("switch_pyspark", 100000)
+            if not isinstance(df, pd.DataFrame):
+                self.logger.error("Input df is not a pandas DataFrame")
+                return None
+            
             drop_cols = rules.get("drop_columns", [])
 
-            if len(df) < rules.get("switch_pyspark", 100_000):
+            if len(df) < switch:
                 df = df.drop(columns=[c for c in drop_cols if c in df.columns]) if drop_cols else df
 
                 for col_name, rule in rules.items():
