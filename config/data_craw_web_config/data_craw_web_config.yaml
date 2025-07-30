@@ -1,0 +1,156 @@
+project:
+  name: vietdata_pipeline
+  version: 1.0
+  owner: hung_hdbank
+  env: dev
+logging:
+  "level": "INFO"
+  "storage_path": "C:/Users/Admin/Downloads/Project/Github/ETL_Project/logger_storage"
+  "files": {
+      "debug": "debug.log",
+      "info": "info.log",
+      "warning": "warning.log",
+      "error": "error.log"
+  }
+  max_size_mb: 100
+  backup_count: 5
+  loki_enabled: false
+  loki_url: "http://loki.monitoring.svc.cluster.local:3100/loki/api/v1/push"
+  service_name: "data-api-go"
+  environment: "prod"
+  loki_auth:
+    username: "loki_user"
+    password: "loki_password"
+
+sources:
+  - name: world_bank
+    url: https://data.worldbank.org/country/vietnam
+    type: api
+    fetch_method: json
+    enabled: true
+    frequency: monthly
+    category: "macro"
+
+#   - name: imf
+#     url: https://www.imf.org/en/Countries/VNM
+#     type: html
+#     fetch_method: scrape
+#     enabled: true
+#     frequency: quarterly
+#     category: "macro"
+
+#   - name: cafef
+#     url: https://cafef.vn
+#     type: html
+#     fetch_method: scrape
+#     enabled: true
+#     frequency: daily
+#     category: "stock, macro"
+#     kafka_topic: "cafef_prices"
+
+#   - name: vietstock
+#     url: https://vietstock.vn
+#     type: html
+#     fetch_method: scrape
+#     enabled: true
+#     frequency: daily
+#     category: "stock"
+#     kafka_topic: "vietstock_prices"
+
+#   - name: quochoi
+#     url: https://quochoi.vn
+#     type: html
+#     fetch_method: scrape
+#     enabled: true
+#     frequency: monthly
+#     category: "policy"
+
+#   - name: chinhphu
+#     url: https://vpcp.chinhphu.vn
+#     type: html
+#     fetch_method: scrape
+#     enabled: true
+#     frequency: weekly
+#     category: "government"
+
+#   - name: mpi
+#     url: https://www.mpi.gov.vn
+#     type: html
+#     fetch_method: scrape
+#     enabled: true
+#     frequency: monthly
+#     category: "investment"
+
+#   - name: customs
+#     url: https://www.customs.gov.vn
+#     type: html
+#     fetch_method: scrape
+#     enabled: true
+#     frequency: monthly
+#     category: "trade"
+
+#   - name: sbv
+#     url: https://www.sbv.gov.vn
+#     type: html
+#     fetch_method: scrape
+#     enabled: true
+#     frequency: weekly
+#     category: "monetary"
+
+#   - name: gso
+#     url: https://www.gso.gov.vn
+#     type: html
+#     fetch_method: scrape
+#     enabled: true
+#     frequency: monthly
+#     category: "statistics"
+
+# storage:
+#   raw_zone:
+#     type: mongodb
+#     uri: mongodb://mongo:27017
+#     db: vietdata_raw
+#   lake:
+#     type: hdfs
+#     path: /data/lake
+#   warehouse:
+#     type: postgres
+#     host: postgres
+#     port: 5432
+#     db: vietdata_dw
+#     user: postgres
+#     password: your_secure_password
+#   mart:
+#     type: postgres
+#     db: vietdata_mart
+
+# kafka:
+#   bootstrap_servers: localhost:9092
+#   topics:
+#     - cafef_prices
+#     - vietstock_prices
+
+# etl:
+#   airflow_dags_path: dags/
+#   dbt_project_path: dbt_models/
+#   spark_master: local[*]
+
+# ml:
+#   feature_store: /ml/features
+#   model_store: /ml/models
+#   framework: pytorch
+#   monitoring_ui: streamlit
+
+# logging:
+#   log_level: INFO
+#   log_path: logs/
+#   watch_ui: true
+
+# docker:
+#   compose_file: docker-compose.yml
+#   env_file: .env
+
+# scheduler:
+#   timezone: Asia/Ho_Chi_Minh
+#   default_retry: 3
+#   retry_delay_minutes: 10
