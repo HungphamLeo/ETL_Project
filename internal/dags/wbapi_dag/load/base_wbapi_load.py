@@ -1,7 +1,7 @@
-from internal.config.load_config import load_config
+from cmd.load_config import load_config
 from src.logger import FastLogger
 from internal.dags.load.wbapi_load import DatabaseConfig, SecurityManager
-from internal.config.load_config import load_config
+from cmd.load_config import load_config
 
 
 class BaseDBLoader(DatabaseConfig, SecurityManager):

@@ -17,7 +17,7 @@ from sqlalchemy import create_engine, text, MetaData, Table
 from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy.pool import QueuePool
 from cryptography.fernet import Fernet
-from internal.config.load_config import load_config
+from cmd.load_config import load_config
 
 logger = FastLogger(load_config()).get_logger()
 

@@ -2,7 +2,7 @@ import wbgapi as wb
 import os
 print("PYTHONPATH =", os.environ.get("PYTHONPATH"))
 from utils import dataframe_rename_by_dataclass
-from internal.config.load_config import load_config
+from cmd.load_config import load_config
 from src.logger import FastLogger
 from internal.models import *
 

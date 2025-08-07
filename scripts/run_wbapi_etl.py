@@ -1,15 +1,27 @@
+import os
+import sys
+from datetime import datetime, timedelta
+from typing import Dict, List, Any, Optional, Tuple
+import logging
+import json
+import yaml
+from pathlib import Path
+
+
+
+
 import wbgapi as wb   # I use wb as a namespace in all my work
 import os
 # print("PYTHONPATH =", os.environ.get("PYTHONPATH"))
 from internal.models import *
-from internal.dags.extract import wbapi_extract
-from internal.dags.transform import wbapi_transform
-from internal.dags.load import BaseDBLoader
+from internal.dags.wbai_dag.extract import wbapi_extract
+from internal.dags.wbai_dag.transform import wbapi_transform
+from internal.dags.wbai_dag.load import BaseDBLoader
 from internal.models.transform_models import (
     EconomyTransform, SeriesTransform, TopicTransform, TimeTransform,
     SourceTransform, RegionTransform, IncomeTransform, LendingTransform
 )
-from internal.config.load_config import load_config
+from cmd.load_config import load_config
 from src.utils import TableCreator
 from src.logger import FastLogger
 
@@ -40,8 +52,8 @@ def run_pipeline():
     try:
         economy_data_df = extract_obj.economy.dataframe_display(EconomyDataFrameInput(id='all'))
         economy_metadata_df = extract_obj.economy.get_metadata(EconomyMetadataInput(id='all'))
-        series_data_df = extract_obj.economy.dataframe_display(EconomyDataFrameInput(id='all'))
-        series_metadata_df = extract_obj.economy.get_metadata(EconomyMetadataInput(id='all'))
+        series_data_df = extract_obj.series.get_series(SeriesGetInput(id='all'))
+        series_metadata_df = extract_obj.series.get_series_metadata(SeriesMetadataInput(id='all'))
         topic_info_df = extract_obj.topic.get_info(TopicInfoInput(id='all'))
         topic_series_df = extract_obj.topic.get_series(TopicSeriesInput(id='all'))
         topic_metadata_df = extract_obj.topic.get_members(TopicMembersInput(id='all'))
@@ -59,8 +71,8 @@ def run_pipeline():
     # Transform
     transform_obj = wbapi_transform()
     try:
-        transformed_economy_df = transform_obj.economy.transform_economy_dataframe(spark = spark, economy_data_df=series_data_df)
-        transformed_economy_metadata_df = transform_obj.economy.transform_economy_metadata(spark = spark, economy_metadata_df=series_metadata_df)
+        transformed_economy_df = transform_obj.economy.transform_economy_dataframe(spark = spark, economy_data_df=economy_data_df)
+        transformed_economy_metadata_df = transform_obj.economy.transform_economy_metadata(spark = spark, economy_metadata_df=economy_metadata_df)
         transformed_series_data = transform_obj.series.transform_series_dataframe(spark = spark, series_data_df=series_data_df)
         transformed_series_metadata = transform_obj.series.transform_series_metadata(spark = spark, series_metadata_df=series_metadata_df)
         transformed_topic_info_df = transform_obj.topic.transform_topic_info_dataframe(spark = spark, topic_info_df=topic_info_df)
