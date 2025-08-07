@@ -1,4 +1,95 @@
 
+class HDFSRepository:
+    """Repository for HDFS operations"""
+    
+    def __init__(self, config: Dict[str, Any], logger: logging.Logger):
+        self.config = config
+        self.logger = logger
+        self.client = None
+        self._connect()
+    
+    def _connect(self):
+        """Establish HDFS client connection"""
+        try:
+            namenode_url = f"http://{self.config['namenode']}:{self.config.get('webhdfs_port', 9870)}"
+            self.client = InsecureClient(namenode_url)
+            
+            # Test connection
+            self.client.list('/')
+            
+            self.logger.info(f"HDFS client connected to {namenode_url}")
+            
+        except Exception as e:
+            self.logger.error(f"Failed to connect to HDFS: {str(e)}")
+            raise
+    
+    def write_parquet(self, hdfs_path: str, df: pd.DataFrame):
+        """Write DataFrame as Parquet file to HDFS"""
+        try:
+            # Ensure directory exists
+            directory = str(Path(hdfs_path).parent)
+            self.client.makedirs(directory)
+            
+            # Convert to PyArrow table
+            table = pa.Table.from_pandas(df)
+            
+            # Write to temporary local file first
+            temp_file = f"/tmp/{Path(hdfs_path).name}"
+            pq.write_table(table, temp_file, compression='snappy')
+            
+            # Upload to HDFS
+            with open(temp_file, 'rb') as local_file:
+                self.client.write(hdfs_path, local_file, overwrite=True)
+            
+            # Cleanup temp file
+            os.remove(temp_file)
+            
+            self.logger.info(f"Successfully wrote {len(df)} records to HDFS: {hdfs_path}")
+            
+        except Exception as e:
+            self.logger.error(f"Failed to write Parquet to HDFS {hdfs_path}: {str(e)}")
+            raise
+    
+    def read_parquet(self, hdfs_path: str) -> pd.DataFrame:
+        """Read Parquet file from HDFS as DataFrame"""
+        try:
+            # Download to temporary local file
+            temp_file = f"/tmp/{Path(hdfs_path).name}"
+            
+            with open(temp_file, 'wb') as local_file:
+                self.client.read(hdfs_path, local_file)
+            
+            # Read Parquet file
+            df = pd.read_parquet(temp_file)
+            
+            # Cleanup temp file
+            os.remove(temp_file)
+            
+            self.logger.info(f"Successfully read {len(df)} records from HDFS: {hdfs_path}")
+            
+            return df
+            
+        except Exception as e:
+            self.logger.error(f"Failed to read Parquet from HDFS {hdfs_path}: {str(e)}")
+            raise
+    
+    def list_directory(self, hdfs_path: str) -> list:
+        """List files in HDFS directory"""
+        try:
+            return self.client.list(hdfs_path)
+        except Exception as e:
+            self.logger.error(f"Failed to list HDFS directory {hdfs_path}: {str(e)}")
+            return []
+    
+    def delete_path(self, hdfs_path: str, recursive: bool = False):
+        """Delete path from HDFS"""
+        try:
+            self.client.delete(hdfs_path, recursive=recursive)
+            self.logger.info(f"Deleted HDFS path: {hdfs_path}")
+        except Exception as e:
+            self.logger.error(f"Failed to delete HDFS path {hdfs_path}: {str(e)}")
+            raise
+
 class HDFSStorageService(BaseETLProcessor):
     """HDFS storage service for long-term data archival"""
     

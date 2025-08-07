@@ -1,3 +1,71 @@
+import json
+from typing import Dict, Any, Optional
+from kafka import KafkaProducer
+from kafka.errors import KafkaError
+import logging
+from datetime import datetime
+
+
+class WorldBankKafkaProducer:
+    """Kafka producer for World Bank data with error handling and retry logic"""
+    
+    def __init__(self, config: Dict[str, Any], logger: logging.Logger):
+        self.config = config
+        self.logger = logger
+        self.producer = None
+        self._connect()
+    
+    def _connect(self):
+        """Establish Kafka producer connection"""
+        try:
+            self.producer = KafkaProducer(
+                bootstrap_servers=self.config['bootstrap_servers'],
+                key_serializer=lambda x: x.encode('utf-8') if x else None,
+                value_serializer=lambda x: json.dumps(x, default=str).encode('utf-8'),
+                acks='all',
+                retries=3,
+                retry_backoff_ms=1000,
+                batch_size=16384,
+                linger_ms=10,
+                compression_type='snappy'
+            )
+            
+            self.logger.info("Kafka producer connected successfully")
+            
+        except Exception as e:
+            self.logger.error(f"Failed to connect Kafka producer: {str(e)}")
+            raise
+    
+    def publish_message(self, topic: str, message: Dict[str, Any], key: Optional[str] = None):
+        """Publish message to Kafka topic"""
+        try:
+            if not self.producer:
+                self._connect()
+            
+            # Add metadata
+            message['published_at'] = datetime.now().isoformat()
+            
+            # Send message
+            future = self.producer.send(topic, value=message, key=key)
+            
+            # Wait for confirmation (blocking)
+            record_metadata = future.get(timeout=30)
+            
+            self.logger.debug(f"Message published to {topic}: partition={record_metadata.partition}, offset={record_metadata.offset}")
+            
+        except KafkaError as e:
+            self.logger.error(f"Kafka error publishing to {topic}: {str(e)}")
+            raise
+        except Exception as e:
+            self.logger.error(f"Error publishing message to {topic}: {str(e)}")
+            raise
+    
+    def close(self):
+        """Close Kafka producer"""
+        if self.producer:
+            self.producer.flush()
+            self.producer.close()
+            self.logger.info("Kafka producer closed")
 class KafkaPublisherService(BaseETLProcessor):
     """Kafka publishing service for real-time data streaming"""
     
