@@ -1,0 +1,1045 @@
+"""
+Cophieu68 Crawler với BeautifulSoup
+Nhanh hơn, ổn định hơn, ít tài nguyên hơn Selenium
+"""
+
+import requests
+import time
+import json
+import re
+from typing import Optional, Dict, List, Any, Union
+from dataclasses import dataclass, asdict, field
+from bs4 import BeautifulSoup
+import pandas as pd
+import concurrent.futures
+from urllib.parse import urljoin, urlparse
+import logging
+
+
+# Setup logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
+
+
+@dataclass
+class StockBasicInfo:
+    """Thông tin cơ bản của cổ phiếu"""
+    symbol: str
+    company_name: str = ""
+    current_price: str = ""
+    price_change: str = ""
+    percent_change: str = ""
+    reference_price: str = ""
+    open_price: str = ""
+    high_price: str = ""
+    low_price: str = ""
+    volume: str = ""
+    timestamp: str = ""
+
+
+@dataclass
+class StockFinancialRatios:
+    """Các chỉ số tài chính"""
+    symbol: str
+    book_value: str = ""  # Giá sổ sách
+    eps: str = ""
+    pe_ratio: str = ""
+    pb_ratio: str = ""
+    roa: str = ""
+    roe: str = ""
+    beta: str = ""
+    market_cap: str = ""  # Vốn thị trường
+    listed_volume: str = ""  # KL niêm yết
+    avg_volume_52w: str = ""  # KLGD 52w
+    high_low_52w: str = ""  # Cao-thấp 52w
+
+
+@dataclass
+class StockBalanceSheet:
+    """Cấu trúc tài chính"""
+    symbol: str
+    total_debt: str = ""  # Nợ
+    owner_equity: str = ""  # Vốn CSH
+    debt_equity_ratio: str = ""  # %Nợ/VốnCSH
+    equity_asset_ratio: str = ""  # %Vốn CSH/TàiSản
+    cash: str = ""  # Tiền mặt
+
+
+@dataclass
+class StockPowerRatings:
+    """Sức mạnh các chỉ số"""
+    symbol: str
+    eps_power: str = ""
+    roe_power: str = ""
+    investment_efficiency: str = ""
+    pb_power: str = ""
+    price_growth_power: str = ""
+
+
+@dataclass
+class TradingData:
+    """Dữ liệu giao dịch"""
+    symbol: str
+    buy_orders: List[Dict] = field(default_factory=list)
+    sell_orders: List[Dict] = field(default_factory=list)
+    foreign_buy: str = ""
+    foreign_sell: str = ""
+
+
+@dataclass
+class FinancialStatement:
+    """Báo cáo tài chính"""
+    symbol: str
+    period: str = ""
+    revenue: str = ""
+    profit_before_tax: str = ""
+    net_profit: str = ""
+    parent_profit: str = ""
+    total_assets: str = ""
+    total_debt: str = ""
+    owner_equity: str = ""
+
+
+@dataclass
+class BusinessPlan:
+    """Kế hoạch kinh doanh"""
+    symbol: str
+    year: str = ""
+    revenue_plan: str = ""
+    revenue_achievement: str = ""
+    profit_plan: str = ""
+    profit_achievement: str = ""
+
+
+@dataclass
+class IndustryInfo:
+    """Thông tin ngành"""
+    symbol: str
+    industry_name: str = ""
+    market_name: str = ""
+    industry_influence_percent: str = ""
+
+
+@dataclass
+class CompanyProfile:
+    """Thông tin chi tiết công ty"""
+    symbol: str
+    full_name: str = ""
+    english_name: str = ""
+    short_name: str = ""
+    address: str = ""
+    phone: str = ""
+    fax: str = ""
+    website: str = ""
+    email: str = ""
+    established_date: str = ""
+    listed_date: str = ""
+    chartered_capital: str = ""
+    business_license: str = ""
+    tax_code: str = ""
+
+
+@dataclass
+class CompleteStockData:
+    """Dữ liệu hoàn chỉnh của một cổ phiếu"""
+    basic_info: Optional[StockBasicInfo] = None
+    financial_ratios: Optional[StockFinancialRatios] = None
+    balance_sheet: Optional[StockBalanceSheet] = None
+    power_ratings: Optional[StockPowerRatings] = None
+    trading_data: Optional[TradingData] = None
+    financial_statements: List[FinancialStatement] = field(default_factory=list)
+    business_plans: List[BusinessPlan] = field(default_factory=list)
+    industry_info: Optional[IndustryInfo] = None
+    company_profile: Optional[CompanyProfile] = None
+
+
+class Cophieu68BeautifulSoupCrawler:
+    """Crawler sử dụng BeautifulSoup cho cophieu68.vn"""
+    
+    def __init__(self, delay: float = 1.0, timeout: int = 30):
+        self.delay = delay
+        self.timeout = timeout
+        self.session = requests.Session()
+        
+        # Setup headers để tránh bị block
+        self.session.headers.update({
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+            'Accept-Language': 'en-US,en;q=0.5',
+            'Accept-Encoding': 'gzip, deflate',
+            'Connection': 'keep-alive',
+            'Upgrade-Insecure-Requests': '1',
+        })
+        
+        # URLs mapping
+        self.urls = {
+            "base_url": "https://www.cophieu68.vn",
+            "summary": "https://www.cophieu68.vn/quote/summary.php?id=",
+            "financial": "https://www.cophieu68.vn/quote/financial.php?id=",
+            "financial_detail": "https://www.cophieu68.vn/quote/financial_detail.php?id=",
+            "profile": "https://www.cophieu68.vn/quote/profile.php?id=",
+            "history": "https://www.cophieu68.vn/quote/history.php?id=",
+            "events": "https://www.cophieu68.vn/quote/event.php?id=",
+            "chart": "https://www.cophieu68.vn/chart/chart.php?id=",
+            "market_data": "https://www.cophieu68.vn/market/markets.php",
+            "categories": "https://www.cophieu68.vn/category/category_index.php",
+            "foreigner": "https://www.cophieu68.vn/stats/foreigner.php",
+            "volume_buzz": "https://www.cophieu68.vn/stats/volume_buzz.php",
+            "stats": "https://www.cophieu68.vn/stats/stats.php",
+        }
+        
+        logger.info("✅ Cophieu68 BeautifulSoup Crawler initialized")
+    
+    def get_soup(self, url: str, retries: int = 3) -> Optional[BeautifulSoup]:
+        """Lấy BeautifulSoup object từ URL"""
+        for attempt in range(retries):
+            try:
+                logger.info(f"🔍 Fetching: {url} (attempt {attempt + 1})")
+                
+                response = self.session.get(url, timeout=self.timeout)
+                response.raise_for_status()
+                response.encoding = 'utf-8'
+                
+                soup = BeautifulSoup(response.text, 'html.parser')
+                
+                # Delay để tránh spam
+                time.sleep(self.delay)
+                
+                return soup
+                
+            except Exception as e:
+                logger.warning(f"❌ Error fetching {url} (attempt {attempt + 1}): {e}")
+                if attempt < retries - 1:
+                    time.sleep(2 ** attempt)  # Exponential backoff
+                continue
+        
+        logger.error(f"❌ Failed to fetch {url} after {retries} attempts")
+        return None
+    
+    def safe_extract_text(self, soup: BeautifulSoup, selector: str, multiple: bool = False) -> Union[str, List[str]]:
+        """Trích xuất text an toàn từ selector"""
+        try:
+            if multiple:
+                elements = soup.select(selector)
+                return [el.get_text(strip=True) for el in elements]
+            else:
+                element = soup.select_one(selector)
+                return element.get_text(strip=True) if element else ""
+        except Exception:
+            return [] if multiple else ""
+    
+    def extract_number(self, text: str) -> str:
+        """Trích xuất số từ text"""
+        if not text:
+            return ""
+        cleaned = re.sub(r'[^\d.,\-]', '', text)
+        return cleaned
+    
+    def crawl_basic_info(self, symbol: str) -> Optional[StockBasicInfo]:
+        """Crawl thông tin cơ bản"""
+        url = f"{self.urls['summary']}{symbol.upper()}"
+        soup = self.get_soup(url)
+        
+        if not soup:
+            return None
+        
+        try:
+            logger.info(f"🔍 Extracting basic info for {symbol.upper()}")
+            
+            # Tên công ty từ h1
+            h1_element = soup.find('h1')
+            company_name = ""
+            if h1_element:
+                company_name = h1_element.get_text(strip=True)
+                if "(" in company_name:
+                    company_name = company_name.split("(")[0].strip()
+            
+            # Giá hiện tại và thay đổi
+            current_price = self.safe_extract_text(soup, "#stockname_close")
+            price_change = self.safe_extract_text(soup, "#stockname_price_change")
+            percent_change = self.safe_extract_text(soup, "#stockname_percent_change")
+            
+            # Thông tin giao dịch
+            volume = self.safe_extract_text(soup, "#stockname_volume")
+            highest = self.safe_extract_text(soup, "#stockname_price_highest")
+            lowest = self.safe_extract_text(soup, "#stockname_price_lowest")
+            
+            # Thông tin chi tiết từ các div
+            reference_price = ""
+            open_price = ""
+            
+            flex_detail_divs = soup.select(".flex_detail")
+            if len(flex_detail_divs) >= 2:
+                # Div đầu có labels, div thứ 2 có values
+                value_div = flex_detail_divs[1]
+                value_elements = value_div.find_all('div')
+                if len(value_elements) >= 2:
+                    reference_price = value_elements[0].get_text(strip=True)
+                    open_price = value_elements[1].get_text(strip=True)
+            
+            return StockBasicInfo(
+                symbol=symbol.upper(),
+                company_name=company_name,
+                current_price=current_price,
+                price_change=price_change,
+                percent_change=percent_change,
+                reference_price=reference_price,
+                open_price=open_price,
+                high_price=highest,
+                low_price=lowest,
+                volume=volume,
+                timestamp=str(int(time.time()))
+            )
+            
+        except Exception as e:
+            logger.error(f"❌ Error extracting basic info for {symbol}: {e}")
+            return None
+    
+    def crawl_financial_ratios(self, symbol: str, soup: BeautifulSoup = None) -> Optional[StockFinancialRatios]:
+        """Crawl các chỉ số tài chính"""
+        if not soup:
+            url = f"{self.urls['summary']}{symbol.upper()}"
+            soup = self.get_soup(url)
+        
+        if not soup:
+            return None
+        
+        try:
+            logger.info(f"💰 Extracting financial ratios for {symbol.upper()}")
+            
+            ratios = StockFinancialRatios(symbol=symbol.upper())
+            
+            # Tìm tất cả các sections chứa dữ liệu tài chính
+            flex_rows = soup.select(".flex_row")
+            
+            for row in flex_rows:
+                try:
+                    label_div = row.select_one(".flex_detail")
+                    value_div = row.select_one(".flex_detail.bold")
+                    
+                    if not label_div or not value_div:
+                        continue
+                    
+                    labels = [div.get_text(strip=True) for div in label_div.find_all('div')]
+                    values = [div.get_text(strip=True) for div in value_div.find_all('div')]
+                    
+                    # Map labels to values
+                    for i, label in enumerate(labels):
+                        if i < len(values):
+                            value = values[i]
+                            
+                            if "Giá sổ sách" in label:
+                                ratios.book_value = value
+                            elif "EPS" in label and "title" not in label.lower():
+                                ratios.eps = value
+                            elif "PE" in label and "title" not in label.lower():
+                                ratios.pe_ratio = value
+                            elif "PB" in label and "title" not in label.lower():
+                                ratios.pb_ratio = value
+                            elif "ROA" in label:
+                                # ROA có thể có format "6% # 13%"
+                                ratios.roa = value.split("#")[0].strip()
+                            elif "ROE" in label:
+                                if "#" in value:
+                                    ratios.roe = value.split("#")[1].strip()
+                                else:
+                                    ratios.roe = value
+                            elif "Beta" in label:
+                                ratios.beta = value
+                            elif "Vốn thị trường" in label:
+                                ratios.market_cap = value
+                            elif "KL niêm yết" in label:
+                                ratios.listed_volume = value
+                            elif "KLGD 52w" in label:
+                                ratios.avg_volume_52w = value
+                            elif "Cao - thấp 52w" in label:
+                                ratios.high_low_52w = value
+                                
+                except Exception:
+                    continue
+            
+            return ratios
+            
+        except Exception as e:
+            logger.error(f"❌ Error extracting financial ratios for {symbol}: {e}")
+            return None
+    
+    def crawl_balance_sheet(self, symbol: str, soup: BeautifulSoup = None) -> Optional[StockBalanceSheet]:
+        """Crawl cấu trúc tài chính"""
+        if not soup:
+            url = f"{self.urls['summary']}{symbol.upper()}"
+            soup = self.get_soup(url)
+        
+        if not soup:
+            return None
+        
+        try:
+            logger.info(f"📊 Extracting balance sheet for {symbol.upper()}")
+            
+            balance_sheet = StockBalanceSheet(symbol=symbol.upper())
+            
+            # Tìm section có thông tin nợ/vốn
+            flex_rows = soup.select(".flex_row")
+            
+            for row in flex_rows:
+                try:
+                    row_text = row.get_text()
+                    if "Nợ" in row_text and "Vốn CSH" in row_text:
+                        label_div = row.select_one(".flex_detail")
+                        value_div = row.select_one(".flex_detail.bold")
+                        
+                        if not label_div or not value_div:
+                            continue
+                        
+                        labels = [div.get_text(strip=True) for div in label_div.find_all('div')]
+                        values = [div.get_text(strip=True) for div in value_div.find_all('div')]
+                        
+                        for i, label in enumerate(labels):
+                            if i < len(values):
+                                value = values[i]
+                                
+                                if label == "Nợ":
+                                    balance_sheet.total_debt = value
+                                elif label == "Vốn CSH":
+                                    balance_sheet.owner_equity = value
+                                elif "%Nợ/VốnCSH" in label:
+                                    balance_sheet.debt_equity_ratio = value
+                                elif "%Vốn CSH/TàiSản" in label:
+                                    balance_sheet.equity_asset_ratio = value
+                                elif "Tiền mặt" in label:
+                                    balance_sheet.cash = value
+                        break
+                        
+                except Exception:
+                    continue
+            
+            return balance_sheet
+            
+        except Exception as e:
+            logger.error(f"❌ Error extracting balance sheet for {symbol}: {e}")
+            return None
+    
+    def crawl_power_ratings(self, symbol: str, soup: BeautifulSoup = None) -> Optional[StockPowerRatings]:
+        """Crawl sức mạnh các chỉ số"""
+        if not soup:
+            url = f"{self.urls['summary']}{symbol.upper()}"
+            soup = self.get_soup(url)
+        
+        if not soup:
+            return None
+        
+        try:
+            logger.info(f"⚡ Extracting power ratings for {symbol.upper()}")
+            
+            power_ratings = StockPowerRatings(symbol=symbol.upper())
+            
+            # Tìm section có icon bolt (fa-bolt)
+            flex_rows = soup.select(".flex_row")
+            
+            for row in flex_rows:
+                if "fa-bolt" in str(row) or "fa-solid fa-bolt" in str(row):
+                    try:
+                        # Extract percentages từ text
+                        row_text = row.get_text()
+                        percentages = re.findall(r'(\d+)%', row_text)
+                        
+                        if len(percentages) >= 5:
+                            power_ratings.eps_power = f"{percentages[0]}%"
+                            power_ratings.roe_power = f"{percentages[1]}%"
+                            power_ratings.pb_power = f"{percentages[3]}%"
+                            power_ratings.price_growth_power = f"{percentages[4]}%"
+                        
+                        # Đặc biệt cho đầu tư hiệu quả (rating sao)
+                        star_elements = row.select(".fa-star")
+                        if star_elements:
+                            # Đếm số sao có màu xanh
+                            filled_stars = len([star for star in star_elements 
+                                             if "color: #006600" in star.get('style', '')])
+                            power_ratings.investment_efficiency = f"{filled_stars}/5 stars"
+                        elif len(percentages) >= 3:
+                            power_ratings.investment_efficiency = f"{percentages[2]}%"
+                        
+                        break
+                        
+                    except Exception:
+                        continue
+            
+            return power_ratings
+            
+        except Exception as e:
+            logger.error(f"❌ Error extracting power ratings for {symbol}: {e}")
+            return None
+    
+    def crawl_trading_data(self, symbol: str, soup: BeautifulSoup = None) -> Optional[TradingData]:
+        """Crawl dữ liệu giao dịch"""
+        if not soup:
+            url = f"{self.urls['summary']}{symbol.upper()}"
+            soup = self.get_soup(url)
+        
+        if not soup:
+            return None
+        
+        try:
+            logger.info(f"📈 Extracting trading data for {symbol.upper()}")
+            
+            trading_data = TradingData(symbol=symbol.upper())
+            
+            # Tìm bảng giao dịch
+            tables = soup.find_all('table')
+            trading_table = None
+            
+            for table in tables:
+                table_text = table.get_text()
+                if "MUA" in table_text and "BÁN" in table_text:
+                    trading_table = table
+                    break
+            
+            if trading_table:
+                rows = trading_table.find_all('tr')
+                
+                # Skip header, lấy 5 rows đầu
+                for row in rows[1:6]:
+                    cells = row.find_all('td')
+                    if len(cells) >= 4:
+                        buy_price = cells[0].get_text(strip=True)
+                        buy_volume = cells[1].get_text(strip=True)
+                        sell_price = cells[2].get_text(strip=True)
+                        sell_volume = cells[3].get_text(strip=True)
+                        
+                        if buy_price and buy_volume:
+                            trading_data.buy_orders.append({
+                                "price": buy_price,
+                                "volume": buy_volume
+                            })
+                        
+                        if sell_price and sell_volume:
+                            trading_data.sell_orders.append({
+                                "price": sell_price,
+                                "volume": sell_volume
+                            })
+                
+                # Thông tin nước ngoài
+                foreign_buy_element = soup.select_one("#foreigner_buy_volume")
+                foreign_sell_element = soup.select_one("#foreigner_sell_volume")
+                
+                if foreign_buy_element:
+                    trading_data.foreign_buy = foreign_buy_element.get_text(strip=True)
+                if foreign_sell_element:
+                    trading_data.foreign_sell = foreign_sell_element.get_text(strip=True)
+            
+            return trading_data
+            
+        except Exception as e:
+            logger.error(f"❌ Error extracting trading data for {symbol}: {e}")
+            return None
+    
+    def crawl_financial_statements(self, symbol: str, soup: BeautifulSoup = None) -> List[FinancialStatement]:
+        """Crawl báo cáo tài chính"""
+        if not soup:
+            url = f"{self.urls['summary']}{symbol.upper()}"
+            soup = self.get_soup(url)
+        
+        if not soup:
+            return []
+        
+        try:
+            logger.info(f"📋 Extracting financial statements for {symbol.upper()}")
+            
+            statements = []
+            
+            # Tìm bảng báo cáo tài chính
+            financial_table = soup.find('table', {'id': 'financial_brief'})
+            
+            if not financial_table:
+                return []
+            
+            rows = financial_table.find_all('tr')
+            if len(rows) < 2:
+                return []
+            
+            # Header row - các periods
+            header_row = rows[0]
+            period_cells = header_row.find_all('td')[1:]  # Skip first cell
+            periods = [cell.get_text(strip=True) for cell in period_cells]
+            
+            # Data rows
+            data_rows = {}
+            for row in rows[1:]:
+                cells = row.find_all('td')
+                if len(cells) > 1:
+                    indicator = cells[0].get_text(strip=True)
+                    values = [cell.get_text(strip=True) for cell in cells[1:]]
+                    data_rows[indicator] = values
+            
+            # Tạo FinancialStatement cho mỗi period
+            for i, period in enumerate(periods):
+                statement = FinancialStatement(
+                    symbol=symbol.upper(),
+                    period=period
+                )
+                
+                # Map indicators to fields
+                for indicator, values in data_rows.items():
+                    if i < len(values):
+                        value = values[i]
+                        
+                        if "Doanh thu" in indicator:
+                            statement.revenue = value
+                        elif "Tổng lợi nhuận trước thuế" in indicator:
+                            statement.profit_before_tax = value
+                        elif "Lợi nhuận sau thuế" in indicator and "công ty mẹ" not in indicator:
+                            statement.net_profit = value
+                        elif "Lợi nhuận sau thuế của công ty mẹ" in indicator:
+                            statement.parent_profit = value
+                        elif "Tổng tài sản" in indicator:
+                            statement.total_assets = value
+                        elif "Tổng nợ" in indicator:
+                            statement.total_debt = value
+                        elif "Vốn chủ sở hữu" in indicator:
+                            statement.owner_equity = value
+                
+                statements.append(statement)
+            
+            return statements
+            
+        except Exception as e:
+            logger.error(f"❌ Error extracting financial statements for {symbol}: {e}")
+            return []
+    
+    def crawl_business_plan(self, symbol: str, soup: BeautifulSoup = None) -> List[BusinessPlan]:
+        """Crawl kế hoạch kinh doanh"""
+        if not soup:
+            url = f"{self.urls['summary']}{symbol.upper()}"
+            soup = self.get_soup(url)
+        
+        if not soup:
+            return []
+        
+        try:
+            logger.info(f"📅 Extracting business plan for {symbol.upper()}")
+            
+            plans = []
+            
+            # Tìm section kế hoạch kinh doanh
+            business_plan_div = soup.find('div', {'id': 'business_plan'})
+            
+            if not business_plan_div:
+                return []
+            
+            table = business_plan_div.find('table')
+            if not table:
+                return []
+            
+            rows = table.find_all('tr')[1:]  # Skip header
+            
+            for row in rows:
+                cells = row.find_all('td')
+                if len(cells) >= 5:
+                    year = cells[0].get_text(strip=True)
+                    revenue_plan = cells[1].get_text(strip=True)
+                    revenue_achievement = cells[2].get_text(strip=True)
+                    profit_plan = cells[3].get_text(strip=True)
+                    profit_achievement = cells[4].get_text(strip=True)
+                    
+                    plan = BusinessPlan(
+                        symbol=symbol.upper(),
+                        year=year,
+                        revenue_plan=revenue_plan,
+                        revenue_achievement=revenue_achievement,
+                        profit_plan=profit_plan,
+                        profit_achievement=profit_achievement
+                    )
+                    plans.append(plan)
+            
+            return plans
+            
+        except Exception as e:
+            logger.error(f"❌ Error extracting business plan for {symbol}: {e}")
+            return []
+    
+    def crawl_industry_info(self, symbol: str, soup: BeautifulSoup = None) -> Optional[IndustryInfo]:
+        """Crawl thông tin ngành"""
+        if not soup:
+            url = f"{self.urls['summary']}{symbol.upper()}"
+            soup = self.get_soup(url)
+        
+        if not soup:
+            return None
+        
+        try:
+            logger.info(f"🏭 Extracting industry info for {symbol.upper()}")
+            
+            industry_info = IndustryInfo(symbol=symbol.upper())
+            
+            # Tìm thông tin ngành từ h2 "Ngành/Nhóm/Họ"
+            h2_elements = soup.find_all('h2')
+            
+            for h2 in h2_elements:
+                if "Ngành/Nhóm/Họ" in h2.get_text():
+                    # Tìm table ngay sau h2
+                    next_sibling = h2.find_next_sibling()
+                    if next_sibling:
+                        table = next_sibling.find('table')
+                        if table:
+                            cell = table.find('td')
+                            if cell:
+                                text = cell.get_text(strip=True)
+                                lines = text.split('\n')
+                                
+                                if len(lines) >= 1:
+                                    industry_info.market_name = lines[0].strip()
+                                if len(lines) >= 2:
+                                    # Loại bỏ phần trong ngoặc
+                                    industry_name = lines[1].strip()
+                                    if '(' in industry_name:
+                                        industry_name = industry_name.split('(')[0].strip()
+                                    industry_info.industry_name = industry_name
+                    break
+            
+            return industry_info
+            
+        except Exception as e:
+            logger.error(f"❌ Error extracting industry info for {symbol}: {e}")
+            return None
+    
+    def crawl_company_profile(self, symbol: str) -> Optional[CompanyProfile]:
+        """Crawl thông tin chi tiết công ty từ trang profile"""
+        url = f"{self.urls['profile']}{symbol.upper()}"
+        soup = self.get_soup(url)
+        
+        if not soup:
+            return None
+        
+        try:
+            logger.info(f"🏢 Extracting company profile for {symbol.upper()}")
+            
+            profile = CompanyProfile(symbol=symbol.upper())
+            
+            # Tìm các thông tin trong table hoặc div chứa thông tin công ty
+            # Cấu trúc có thể thay đổi, cần flexible parsing
+            
+            tables = soup.find_all('table')
+            for table in tables:
+                rows = table.find_all('tr')
+                for row in rows:
+                    cells = row.find_all(['td', 'th'])
+                    if len(cells) >= 2:
+                        label = cells[0].get_text(strip=True).lower()
+                        value = cells[1].get_text(strip=True)
+                        
+                        if "tên đầy đủ" in label or "tên công ty" in label:
+                            profile.full_name = value
+                        elif "tên tiếng anh" in label:
+                            profile.english_name = value
+                        elif "tên viết tắt" in label:
+                            profile.short_name = value
+                        elif "địa chỉ" in label:
+                            profile.address = value
+                        elif "điện thoại" in label:
+                            profile.phone = value
+                        elif "fax" in label:
+                            profile.fax = value
+                        elif "website" in label:
+                            profile.website = value
+                        elif "email" in label:
+                            profile.email = value
+                        elif "ngày thành lập" in label:
+                            profile.established_date = value
+                        elif "ngày niêm yết" in label:
+                            profile.listed_date = value
+                        elif "vốn điều lệ" in label:
+                            profile.chartered_capital = value
+                        elif "giấy phép kinh doanh" in label:
+                            profile.business_license = value
+                        elif "mã số thuế" in label:
+                            profile.tax_code = value
+            
+            return profile
+            
+        except Exception as e:
+            logger.error(f"❌ Error extracting company profile for {symbol}: {e}")
+            return None
+    
+    def crawl_complete_stock_data(self, symbol: str) -> CompleteStockData:
+        """Crawl tất cả dữ liệu của một cổ phiếu"""
+        logger.info(f"🎯 Starting complete crawl for {symbol.upper()}")
+        
+        # Lấy soup từ trang summary một lần để tái sử dụng
+        summary_url = f"{self.urls['summary']}{symbol.upper()}"
+        soup = self.get_soup(summary_url)
+        
+        complete_data = CompleteStockData()
+        
+        if soup:
+            # Crawl tất cả dữ liệu từ trang summary
+            complete_data.basic_info = self.crawl_basic_info(symbol)
+            complete_data.financial_ratios = self.crawl_financial_ratios(symbol, soup)
+            complete_data.balance_sheet = self.crawl_balance_sheet(symbol, soup)
+            complete_data.power_ratings = self.crawl_power_ratings(symbol, soup)
+            complete_data.trading_data = self.crawl_trading_data(symbol, soup)
+            complete_data.financial_statements = self.crawl_financial_statements(symbol, soup)
+            complete_data.business_plans = self.crawl_business_plan(symbol, soup)
+            complete_data.industry_info = self.crawl_industry_info(symbol, soup)
+        
+        # Crawl company profile từ trang riêng
+        complete_data.company_profile = self.crawl_company_profile(symbol)
+        
+        logger.info(f"✅ Completed crawl for {symbol.upper()}")
+        return complete_data
+    
+    def crawl_multiple_stocks(self, symbols: List[str], max_workers: int = 5) -> Dict[str, CompleteStockData]:
+        """Crawl nhiều cổ phiếu song song"""
+        logger.info(f"🚀 Starting batch crawl for {len(symbols)} symbols")
+        
+        results = {}
+        
+        # Sử dụng ThreadPoolExecutor để crawl song song
+        with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
+            # Submit tất cả tasks
+            future_to_symbol = {
+                executor.submit(self.crawl_complete_stock_data, symbol): symbol 
+                for symbol in symbols
+            }
+            
+            # Collect results
+            for future in concurrent.futures.as_completed(future_to_symbol):
+                symbol = future_to_symbol[future]
+                try:
+                    data = future.result()
+                    results[symbol.upper()] = data
+                    logger.info(f"✅ Completed {symbol.upper()}")
+                except Exception as e:
+                    logger.error(f"❌ Error crawling {symbol}: {e}")
+                    results[symbol.upper()] = CompleteStockData()
+        
+        logger.info(f"🎉 Batch crawl completed: {len(results)} symbols processed")
+        return results
+    
+    def crawl_market_list(self, market_type: str = "all") -> List[str]:
+        """Crawl danh sách mã cổ phiếu từ thị trường"""
+        url = f"{self.urls['market_data']}?market={market_type}"
+        soup = self.get_soup(url)
+        
+        if not soup:
+            return []
+        
+        try:
+            logger.info(f"📋 Extracting stock list from market: {market_type}")
+            
+            symbols = []
+            
+            # Tìm links có pattern /quote/summary.php?id=
+            links = soup.find_all('a', href=re.compile(r'/quote/summary\.php\?id='))
+            
+            for link in links:
+                href = link.get('href', '')
+                match = re.search(r'id=([A-Z0-9]+)', href)
+                if match:
+                    symbol = match.group(1).upper()
+                    if symbol not in symbols:
+                        symbols.append(symbol)
+            
+            logger.info(f"✅ Found {len(symbols)} symbols in {market_type} market")
+            return symbols
+            
+        except Exception as e:
+            logger.error(f"❌ Error extracting market list: {e}")
+            return []
+    
+    def crawl_industry_list(self) -> List[Dict[str, str]]:
+        """Crawl danh sách ngành"""
+        url = self.urls['categories']
+        soup = self.get_soup(url)
+        
+        if not soup:
+            return []
+        
+        try:
+            logger.info("🏭 Extracting industry list")
+            
+            industries = []
+            
+            # Tìm các links ngành
+            links = soup.find_all('a', href=re.compile(r'category'))
+            
+            for link in links[:20]:  # Giới hạn 20 ngành đầu
+                try:
+                    industry_name = link.get_text(strip=True)
+                    industry_url = link.get('href', '')
+                    
+                    if industry_name and industry_url:
+                        # Đảm bảo URL đầy đủ
+                        if not industry_url.startswith('http'):
+                            industry_url = urljoin(self.urls['base_url'], industry_url)
+                        
+                        industries.append({
+                            "name": industry_name,
+                            "url": industry_url
+                        })
+                except Exception:
+                    continue
+            
+            logger.info(f"✅ Found {len(industries)} industries")
+            return industries
+            
+        except Exception as e:
+            logger.error(f"❌ Error extracting industry list: {e}")
+            return []
+    
+    def save_results(self, data: Dict[str, CompleteStockData], output_dir: str = "results"):
+        """Lưu kết quả ra files"""
+        import os
+        
+        os.makedirs(output_dir, exist_ok=True)
+        
+        # Lưu từng loại dữ liệu riêng
+        basic_info_list = []
+        financial_ratios_list = []
+        balance_sheet_list = []
+        power_ratings_list = []
+        trading_data_list = []
+        financial_statements_list = []
+        business_plans_list = []
+        industry_info_list = []
+        company_profiles_list = []
+        
+        for symbol, stock_data in data.items():
+            if stock_data.basic_info:
+                basic_info_list.append(asdict(stock_data.basic_info))
+            
+            if stock_data.financial_ratios:
+                financial_ratios_list.append(asdict(stock_data.financial_ratios))
+            
+            if stock_data.balance_sheet:
+                balance_sheet_list.append(asdict(stock_data.balance_sheet))
+            
+            if stock_data.power_ratings:
+                power_ratings_list.append(asdict(stock_data.power_ratings))
+            
+            if stock_data.trading_data:
+                trading_data_list.append(asdict(stock_data.trading_data))
+            
+            if stock_data.financial_statements:
+                for stmt in stock_data.financial_statements:
+                    financial_statements_list.append(asdict(stmt))
+            
+            if stock_data.business_plans:
+                for plan in stock_data.business_plans:
+                    business_plans_list.append(asdict(plan))
+            
+            if stock_data.industry_info:
+                industry_info_list.append(asdict(stock_data.industry_info))
+            
+            if stock_data.company_profile:
+                company_profiles_list.append(asdict(stock_data.company_profile))
+        
+        # Lưu ra CSV files
+        datasets = {
+            "basic_info": basic_info_list,
+            "financial_ratios": financial_ratios_list,
+            "balance_sheet": balance_sheet_list,
+            "power_ratings": power_ratings_list,
+            "trading_data": trading_data_list,
+            "financial_statements": financial_statements_list,
+            "business_plans": business_plans_list,
+            "industry_info": industry_info_list,
+            "company_profiles": company_profiles_list
+        }
+        
+        for name, dataset in datasets.items():
+            if dataset:
+                df = pd.DataFrame(dataset)
+                csv_path = os.path.join(output_dir, f"{name}.csv")
+                df.to_csv(csv_path, index=False, encoding='utf-8')
+                logger.info(f"💾 Saved {len(dataset)} records to {csv_path}")
+        
+        # Lưu raw data dạng JSON
+        json_data = {}
+        for symbol, stock_data in data.items():
+            json_data[symbol] = {
+                "basic_info": asdict(stock_data.basic_info) if stock_data.basic_info else None,
+                "financial_ratios": asdict(stock_data.financial_ratios) if stock_data.financial_ratios else None,
+                "balance_sheet": asdict(stock_data.balance_sheet) if stock_data.balance_sheet else None,
+                "power_ratings": asdict(stock_data.power_ratings) if stock_data.power_ratings else None,
+                "trading_data": asdict(stock_data.trading_data) if stock_data.trading_data else None,
+                "financial_statements": [asdict(stmt) for stmt in stock_data.financial_statements],
+                "business_plans": [asdict(plan) for plan in stock_data.business_plans],
+                "industry_info": asdict(stock_data.industry_info) if stock_data.industry_info else None,
+                "company_profile": asdict(stock_data.company_profile) if stock_data.company_profile else None
+            }
+        
+        json_path = os.path.join(output_dir, "complete_data.json")
+        with open(json_path, 'w', encoding='utf-8') as f:
+            json.dump(json_data, f, ensure_ascii=False, indent=2)
+        
+        logger.info(f"💾 Saved complete data to {json_path}")
+
+
+def main():
+    """Hàm chính để test crawler"""
+    print("🚀 Cophieu68 BeautifulSoup Crawler")
+    print("=" * 50)
+    
+    # Khởi tạo crawler
+    crawler = Cophieu68BeautifulSoupCrawler(delay=1.0)
+    
+    # Test symbols
+    test_symbols = ["VCB", "VIC", "VHM", "HPG", "MSN", "DNN"]
+    
+    try:
+        # Test crawl một symbol đầy đủ
+        print(f"\n🎯 Test complete crawl for {test_symbols[0]}")
+        complete_data = crawler.crawl_complete_stock_data(test_symbols[0])
+        
+        # In thông tin cơ bản
+        if complete_data.basic_info:
+            print(f"  ✅ Basic Info: {complete_data.basic_info.company_name}")
+            print(f"     Price: {complete_data.basic_info.current_price}")
+            print(f"     Change: {complete_data.basic_info.price_change} ({complete_data.basic_info.percent_change})")
+        
+        if complete_data.financial_ratios:
+            print(f"  ✅ Financial Ratios: PE={complete_data.financial_ratios.pe_ratio}, PB={complete_data.financial_ratios.pb_ratio}")
+        
+        if complete_data.financial_statements:
+            print(f"  ✅ Financial Statements: {len(complete_data.financial_statements)} periods")
+        
+        if complete_data.industry_info:
+            print(f"  ✅ Industry: {complete_data.industry_info.market_name} - {complete_data.industry_info.industry_name}")
+        
+        # Test batch crawl
+        print(f"\n🚀 Test batch crawl for {len(test_symbols[:3])} symbols")
+        batch_results = crawler.crawl_multiple_stocks(test_symbols[:3], max_workers=3)
+        
+        for symbol, data in batch_results.items():
+            status = "✅" if data.basic_info else "❌"
+            company_name = data.basic_info.company_name if data.basic_info else "N/A"
+            print(f"  {status} {symbol}: {company_name}")
+        
+        # Test crawl market list
+        print(f"\n📋 Test market list crawl")
+        market_symbols = crawler.crawl_market_list("vnall")
+        print(f"  ✅ Found {len(market_symbols)} symbols in market")
+        if market_symbols:
+            print(f"  📝 Sample: {market_symbols[:10]}")
+        
+        # Test crawl industry list
+        print(f"\n🏭 Test industry list crawl")
+        industries = crawler.crawl_industry_list()
+        print(f"  ✅ Found {len(industries)} industries")
+        for industry in industries[:5]:
+            print(f"    - {industry.get('name', 'N/A')}")
+        
+        # Lưu kết quả
+        print(f"\n💾 Saving results...")
+        crawler.save_results(batch_results, "beautifulsoup_results")
+        
+        print(f"\n🎉 Test completed successfully!")
+        print(f"📁 Check results in 'beautifulsoup_results/' folder")
+        
+    except Exception as e:
+        logger.error(f"❌ Error in main: {e}")
+        raise
+
+
+if __name__ == "__main__":
+    main()
