@@ -1,7 +1,7 @@
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import col, when, lit, round as spark_round
 from src.logger import FastLogger
-from cmd.load_config import load_config
+from cmd_.load_config import load_config
 from internal.dags.extract import wbapi_extract
 from internal.models.transform_models import (
     EconomyTransform, SeriesTransform, TopicTransform, TimeTransform,

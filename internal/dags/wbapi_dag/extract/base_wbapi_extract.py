@@ -2,7 +2,7 @@ import wbgapi as wb
 import os
 import sys
 
-from cmd.load_config import load_config
+from cmd_.load_config import load_config
 from src.logger import FastLogger
 from .wbapi_extract import (
     wbapi_series, wbapi_economy, wbapi_topic,

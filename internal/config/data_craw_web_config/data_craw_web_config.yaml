@@ -3,15 +3,15 @@ project:
   version: 1.0
   owner: hung_hdbank
   env: dev
+
 logging:
-  "level": "INFO"
-  "storage_path": "C:/Users/Admin/Downloads/Project/Github/ETL_Project/logger_storage"
-  "files": {
-      "debug": "debug.log",
-      "info": "info.log",
-      "warning": "warning.log",
-      "error": "error.log"
-  }
+  level: "INFO"
+  storage_path: "C:/Users/Admin/Downloads/Project/Github/ETL_Project/logger_storage"
+  files:
+    debug: "debug.log"
+    info: "info.log"
+    warning: "warning.log"
+    error: "error.log"
   max_size_mb: 100
   backup_count: 5
   loki_enabled: false
@@ -24,133 +24,36 @@ logging:
 
 sources:
   - name: world_bank
-    url: https://data.worldbank.org/country/vietnam
+    url: "https://data.worldbank.org/country/vietnam"
     type: api
     fetch_method: json
     enabled: true
     frequency: monthly
     category: "macro"
 
-#   - name: imf
-#     url: https://www.imf.org/en/Countries/VNM
-#     type: html
-#     fetch_method: scrape
-#     enabled: true
-#     frequency: quarterly
-#     category: "macro"
+crawler:
+  delay: 1.0
+  timeout: 30
+  headers:
+    User-Agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+    Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8"
+    Accept-Language: "en-US,en;q=0.5"
+    Accept-Encoding: "gzip, deflate"
+    Connection: "keep-alive"
+    Upgrade-Insecure-Requests: "1"
 
-#   - name: cafef
-#     url: https://cafef.vn
-#     type: html
-#     fetch_method: scrape
-#     enabled: true
-#     frequency: daily
-#     category: "stock, macro"
-#     kafka_topic: "cafef_prices"
-
-#   - name: vietstock
-#     url: https://vietstock.vn
-#     type: html
-#     fetch_method: scrape
-#     enabled: true
-#     frequency: daily
-#     category: "stock"
-#     kafka_topic: "vietstock_prices"
-
-#   - name: quochoi
-#     url: https://quochoi.vn
-#     type: html
-#     fetch_method: scrape
-#     enabled: true
-#     frequency: monthly
-#     category: "policy"
-
-#   - name: chinhphu
-#     url: https://vpcp.chinhphu.vn
-#     type: html
-#     fetch_method: scrape
-#     enabled: true
-#     frequency: weekly
-#     category: "government"
-
-#   - name: mpi
-#     url: https://www.mpi.gov.vn
-#     type: html
-#     fetch_method: scrape
-#     enabled: true
-#     frequency: monthly
-#     category: "investment"
-
-#   - name: customs
-#     url: https://www.customs.gov.vn
-#     type: html
-#     fetch_method: scrape
-#     enabled: true
-#     frequency: monthly
-#     category: "trade"
-
-#   - name: sbv
-#     url: https://www.sbv.gov.vn
-#     type: html
-#     fetch_method: scrape
-#     enabled: true
-#     frequency: weekly
-#     category: "monetary"
-
-#   - name: gso
-#     url: https://www.gso.gov.vn
-#     type: html
-#     fetch_method: scrape
-#     enabled: true
-#     frequency: monthly
-#     category: "statistics"
-
-# storage:
-#   raw_zone:
-#     type: mongodb
-#     uri: mongodb://mongo:27017
-#     db: vietdata_raw
-#   lake:
-#     type: hdfs
-#     path: /data/lake
-#   warehouse:
-#     type: postgres
-#     host: postgres
-#     port: 5432
-#     db: vietdata_dw
-#     user: postgres
-#     password: your_secure_password
-#   mart:
-#     type: postgres
-#     db: vietdata_mart
-
-# kafka:
-#   bootstrap_servers: localhost:9092
-#   topics:
-#     - cafef_prices
-#     - vietstock_prices
-
-# etl:
-#   airflow_dags_path: dags/
-#   dbt_project_path: dbt_models/
-#   spark_master: local[*]
-
-# ml:
-#   feature_store: /ml/features
-#   model_store: /ml/models
-#   framework: pytorch
-#   monitoring_ui: streamlit
-
-# logging:
-#   log_level: INFO
-#   log_path: logs/
-#   watch_ui: true
-
-# docker:
-#   compose_file: docker-compose.yml
-#   env_file: .env
-
-# scheduler:
-#   timezone: Asia/Ho_Chi_Minh
-#   default_retry: 3
-#   retry_delay_minutes: 10
+cophieu68:
+  urls:
+    base_url: "https://www.cophieu68.vn"
+    summary: "https://www.cophieu68.vn/quote/summary.php?id="
+    financial: "https://www.cophieu68.vn/quote/financial.php?id="
+    financial_detail: "https://www.cophieu68.vn/quote/financial_detail.php?id="
+    profile: "https://www.cophieu68.vn/quote/profile.php?id="
+    history: "https://www.cophieu68.vn/quote/history.php?id="
+    events: "https://www.cophieu68.vn/quote/event.php?id="
+    chart: "https://www.cophieu68.vn/chart/chart.php?id="
+    market_data: "https://www.cophieu68.vn/market/markets.php"
+    categories: "https://www.cophieu68.vn/category/category_index.php"
+    foreigner: "https://www.cophieu68.vn/stats/foreigner.php"
+    volume_buzz: "https://www.cophieu68.vn/stats/volume_buzz.php"
+    stats: "https://www.cophieu68.vn/stats/stats.php"

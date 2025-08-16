@@ -21,7 +21,7 @@ from internal.models.transform_models import (
     EconomyTransform, SeriesTransform, TopicTransform, TimeTransform,
     SourceTransform, RegionTransform, IncomeTransform, LendingTransform
 )
-from cmd.load_config import load_config
+from cmd_.load_config import load_config
 from src.utils import TableCreator
 from src.logger import FastLogger
 

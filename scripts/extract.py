@@ -1,11 +1,10 @@
 from datetime import datetime
-import os
 from internal.models import *
 from internal.dags.wbapi_dag.extract import wbapi_extract
-import  airflow.operators as ops
+from airflow.providers.standard.operators.python import PythonOperator
 
 
-class WorldBankExtractOperator(ops.python.PythonOperator):
+class WorldBankExtractOperator(PythonOperator):
     """Custom operator cho World Bank API data extraction"""
     
     def __init__(self, pipeline_config, extract_type: str, **kwargs):

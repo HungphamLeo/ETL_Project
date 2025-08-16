@@ -1,9 +1,6 @@
 # shared/libs/python/base_service/logger_setup.
 import logging
-import logging.config
 from pathlib import Path
-from pythonjsonlogger import jsonlogger
-from python_loki_logger.Logger import LokiLogger
 from logging.handlers import RotatingFileHandler
 
 class FastLogger:

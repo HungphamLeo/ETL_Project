@@ -1,4 +1,15 @@
 
+import os
+import logging
+from pathlib import Path
+from typing import Dict, Any
+
+import pandas as pd
+import pyarrow as pa
+from pyarrow import parquet as pq
+from hdfs import InsecureClient
+
+
 class HDFSRepository:
     """Repository for HDFS operations"""
     

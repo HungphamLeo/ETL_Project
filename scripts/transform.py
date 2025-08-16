@@ -1,8 +1,9 @@
 # print("PYTHONPATH =", os.environ.get("PYTHONPATH"))
 from internal.models import *
-import  airflow.providers.standard.operators  as ops
+from airflow.providers.apache.spark.operators.spark_submit import SparkSubmitOperator
 
-class SparkTransformOperator(ops.SparkSubmitOperator):
+
+class SparkTransformOperator(SparkSubmitOperator):
     """Custom Spark operator cho data transformation"""
     
     def __init__(
