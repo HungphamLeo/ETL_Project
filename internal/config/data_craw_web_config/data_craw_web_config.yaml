@@ -3,7 +3,6 @@ project:
   version: 1.0
   owner: hung_hdbank
   env: dev
-
 logging:
   level: "INFO"
   storage_path: "C:/Users/Admin/Downloads/Project/Github/ETL_Project/logger_storage"
@@ -21,16 +20,6 @@ logging:
   loki_auth:
     username: "loki_user"
     password: "loki_password"
-
-sources:
-  - name: world_bank
-    url: "https://data.worldbank.org/country/vietnam"
-    type: api
-    fetch_method: json
-    enabled: true
-    frequency: monthly
-    category: "macro"
-
 crawler:
   delay: 1.0
   timeout: 30
@@ -41,19 +30,28 @@ crawler:
     Accept-Encoding: "gzip, deflate"
     Connection: "keep-alive"
     Upgrade-Insecure-Requests: "1"
+  sources_crawl:
+    - name: world_bank
+      url: "https://data.worldbank.org/country/vietnam"
+      type: api
+      fetch_method: json
+      enabled: true
+      frequency: monthly
+      category: "macro"
+    - name: cophieu68
+      urls:
+        base_url: "https://www.cophieu68.vn"
+        summary: "https://www.cophieu68.vn/quote/summary.php?id="
+        financial: "https://www.cophieu68.vn/quote/financial.php?id="
+        financial_detail: "https://www.cophieu68.vn/quote/financial_detail.php?id="
+        profile: "https://www.cophieu68.vn/quote/profile.php?id="
+        history: "https://www.cophieu68.vn/quote/history.php?id="
+        events: "https://www.cophieu68.vn/quote/event.php?id="
+        chart: "https://www.cophieu68.vn/chart/chart.php?id="
+        market_data: "https://www.cophieu68.vn/market/markets.php"
+        categories: "https://www.cophieu68.vn/category/category_index.php"
+        foreigner: "https://www.cophieu68.vn/stats/foreigner.php"
+        volume_buzz: "https://www.cophieu68.vn/stats/volume_buzz.php"
+        stats: "https://www.cophieu68.vn/stats/stats.php"
 
-cophieu68:
-  urls:
-    base_url: "https://www.cophieu68.vn"
-    summary: "https://www.cophieu68.vn/quote/summary.php?id="
-    financial: "https://www.cophieu68.vn/quote/financial.php?id="
-    financial_detail: "https://www.cophieu68.vn/quote/financial_detail.php?id="
-    profile: "https://www.cophieu68.vn/quote/profile.php?id="
-    history: "https://www.cophieu68.vn/quote/history.php?id="
-    events: "https://www.cophieu68.vn/quote/event.php?id="
-    chart: "https://www.cophieu68.vn/chart/chart.php?id="
-    market_data: "https://www.cophieu68.vn/market/markets.php"
-    categories: "https://www.cophieu68.vn/category/category_index.php"
-    foreigner: "https://www.cophieu68.vn/stats/foreigner.php"
-    volume_buzz: "https://www.cophieu68.vn/stats/volume_buzz.php"
-    stats: "https://www.cophieu68.vn/stats/stats.php"
+

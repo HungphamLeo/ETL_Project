@@ -12,14 +12,11 @@ class Cophieu68BeautifulSoupCrawler:
     def __init__(self):
         config = load_config()
         crawler_cfg = config["crawler"]
-        self.urls = config["urls"]
-
+        self.urls = crawler_cfg["sources_crawl"]["name"]["urls"] if crawler_cfg["sources_crawl"]["name"] == "cophieu68" else crawler_cfg["sources_crawl"]["urls"]
         self.delay = crawler_cfg.get("delay", 1.0)
         self.timeout = crawler_cfg.get("timeout", 30)
-
         self.session = requests.Session()
         self.session.headers.update(crawler_cfg.get("headers", {}))
-
         self.logger = FastLogger(config).get_logger()
         self.logger.info("Cophieu68 BeautifulSoup Crawler initialized")
 
