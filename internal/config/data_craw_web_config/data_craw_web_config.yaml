@@ -1,0 +1,57 @@
+project:
+  name: vietdata_pipeline
+  version: 1.0
+  owner: hung_hdbank
+  env: dev
+logging:
+  level: "INFO"
+  storage_path: "C:/Users/Admin/Downloads/Project/Github/ETL_Project/logger_storage"
+  files:
+    debug: "debug.log"
+    info: "info.log"
+    warning: "warning.log"
+    error: "error.log"
+  max_size_mb: 100
+  backup_count: 5
+  loki_enabled: false
+  loki_url: "http://loki.monitoring.svc.cluster.local:3100/loki/api/v1/push"
+  service_name: "data-api-go"
+  environment: "prod"
+  loki_auth:
+    username: "loki_user"
+    password: "loki_password"
+crawler:
+  delay: 1.0
+  timeout: 30
+  headers:
+    User-Agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+    Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8"
+    Accept-Language: "en-US,en;q=0.5"
+    Accept-Encoding: "gzip, deflate"
+    Connection: "keep-alive"
+    Upgrade-Insecure-Requests: "1"
+  sources_crawl:
+    - name: world_bank
+      url: "https://data.worldbank.org/country/vietnam"
+      type: api
+      fetch_method: json
+      enabled: true
+      frequency: monthly
+      category: "macro"
+    - name: cophieu68
+      urls:
+        base_url: "https://www.cophieu68.vn"
+        summary: "https://www.cophieu68.vn/quote/summary.php?id="
+        financial: "https://www.cophieu68.vn/quote/financial.php?id="
+        financial_detail: "https://www.cophieu68.vn/quote/financial_detail.php?id="
+        profile: "https://www.cophieu68.vn/quote/profile.php?id="
+        history: "https://www.cophieu68.vn/quote/history.php?id="
+        events: "https://www.cophieu68.vn/quote/event.php?id="
+        chart: "https://www.cophieu68.vn/chart/chart.php?id="
+        market_data: "https://www.cophieu68.vn/market/markets.php"
+        categories: "https://www.cophieu68.vn/category/category_index.php"
+        foreigner: "https://www.cophieu68.vn/stats/foreigner.php"
+        volume_buzz: "https://www.cophieu68.vn/stats/volume_buzz.php"
+        stats: "https://www.cophieu68.vn/stats/stats.php"
+
+
