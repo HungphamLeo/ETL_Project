@@ -4,7 +4,7 @@ print("PYTHONPATH =", os.environ.get("PYTHONPATH"))
 from src.utils import dataframe_rename_by_dataclass
 from cmd_.load_config import load_config
 from src.logger import FastLogger
-from internal.models import *
+from internal.models.wbgapi_model import *
 
 class wbapi_series:
     def __init__(self):

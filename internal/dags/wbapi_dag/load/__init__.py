@@ -1,1 +1,1 @@
-from .base_wbapi_load import BaseDBLoader
+from .wbapi_load_implement import BaseDBLoader
