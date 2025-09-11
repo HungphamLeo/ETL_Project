@@ -15,7 +15,7 @@ class HDFSRepository:
     
     def __init__(self, config: Dict[str, Any], logger: logging.Logger):
         self.config = config
-        self.logger = logger
+         = logger
         self.client = None
         self._connect()
     
@@ -28,10 +28,10 @@ class HDFSRepository:
             # Test connection
             self.client.list('/')
             
-            self.logger.info(f"HDFS client connected to {namenode_url}")
+            .info(f"HDFS client connected to {namenode_url}")
             
         except Exception as e:
-            self.logger.error(f"Failed to connect to HDFS: {str(e)}")
+            .error(f"Failed to connect to HDFS: {str(e)}")
             raise
     
     def write_parquet(self, hdfs_path: str, df: pd.DataFrame):
@@ -55,10 +55,10 @@ class HDFSRepository:
             # Cleanup temp file
             os.remove(temp_file)
             
-            self.logger.info(f"Successfully wrote {len(df)} records to HDFS: {hdfs_path}")
+            .info(f"Successfully wrote {len(df)} records to HDFS: {hdfs_path}")
             
         except Exception as e:
-            self.logger.error(f"Failed to write Parquet to HDFS {hdfs_path}: {str(e)}")
+            .error(f"Failed to write Parquet to HDFS {hdfs_path}: {str(e)}")
             raise
     
     def read_parquet(self, hdfs_path: str) -> pd.DataFrame:
@@ -76,12 +76,12 @@ class HDFSRepository:
             # Cleanup temp file
             os.remove(temp_file)
             
-            self.logger.info(f"Successfully read {len(df)} records from HDFS: {hdfs_path}")
+            .info(f"Successfully read {len(df)} records from HDFS: {hdfs_path}")
             
             return df
             
         except Exception as e:
-            self.logger.error(f"Failed to read Parquet from HDFS {hdfs_path}: {str(e)}")
+            .error(f"Failed to read Parquet from HDFS {hdfs_path}: {str(e)}")
             raise
     
     def list_directory(self, hdfs_path: str) -> list:
@@ -89,16 +89,16 @@ class HDFSRepository:
         try:
             return self.client.list(hdfs_path)
         except Exception as e:
-            self.logger.error(f"Failed to list HDFS directory {hdfs_path}: {str(e)}")
+            .error(f"Failed to list HDFS directory {hdfs_path}: {str(e)}")
             return []
     
     def delete_path(self, hdfs_path: str, recursive: bool = False):
         """Delete path from HDFS"""
         try:
             self.client.delete(hdfs_path, recursive=recursive)
-            self.logger.info(f"Deleted HDFS path: {hdfs_path}")
+            .info(f"Deleted HDFS path: {hdfs_path}")
         except Exception as e:
-            self.logger.error(f"Failed to delete HDFS path {hdfs_path}: {str(e)}")
+            .error(f"Failed to delete HDFS path {hdfs_path}: {str(e)}")
             raise
 
 class HDFSStorageService(BaseETLProcessor):
@@ -112,7 +112,7 @@ class HDFSStorageService(BaseETLProcessor):
         """Get HDFS client instance"""
         if self.hdfs_client is None:
             hdfs_config = self.config_manager.get_hdfs_config()
-            self.hdfs_client = HDFSRepository(hdfs_config, self.logger)
+            self.hdfs_client = HDFSRepository(hdfs_config, )
         return self.hdfs_client
     
     def _generate_hdfs_path(self, table_name: str, execution_date: datetime, layer: str = "processed") -> str:
@@ -135,7 +135,7 @@ class HDFSStorageService(BaseETLProcessor):
         elif isinstance(data, dict):
             return pd.DataFrame([data])
         else:
-            self.logger.warning(f"Unsupported data type for Parquet conversion: {type(data)}")
+            .warning(f"Unsupported data type for Parquet conversion: {type(data)}")
             return pd.DataFrame()
     
     def process(self, context: ETLContext, transform_results: Dict[str, Any]) -> ProcessingResult:
@@ -183,12 +183,12 @@ class HDFSStorageService(BaseETLProcessor):
                             stored_paths.append(file_path)
                             total_records += len(df)
                             
-                            self.logger.info(f"Stored {len(df)} records for {table_name} to HDFS: {file_path}")
+                            .info(f"Stored {len(df)} records for {table_name} to HDFS: {file_path}")
                         
                     except Exception as e:
                         error_msg = f"Failed to store {table_name} to HDFS: {str(e)}"
                         errors.append(error_msg)
-                        self.logger.error(error_msg)
+                        .error(error_msg)
             
             # Calculate execution time
             duration = (datetime.now() - start_time).total_seconds()
@@ -210,7 +210,7 @@ class HDFSStorageService(BaseETLProcessor):
         except Exception as e:
             duration = (datetime.now() - start_time).total_seconds()
             error_msg = f"HDFS storage failed: {str(e)}"
-            self.logger.error(error_msg)
+            .error(error_msg)
             
             return ProcessingResult(
                 success=False,

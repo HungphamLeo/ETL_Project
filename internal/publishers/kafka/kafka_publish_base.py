@@ -11,7 +11,7 @@ class WorldBankKafkaProducer:
     
     def __init__(self, config: Dict[str, Any], logger: logging.Logger):
         self.config = config
-        self.logger = logger
+         = logger
         self.producer = None
         self._connect()
     
@@ -30,10 +30,10 @@ class WorldBankKafkaProducer:
                 compression_type='snappy'
             )
             
-            self.logger.info("Kafka producer connected successfully")
+            .info("Kafka producer connected successfully")
             
         except Exception as e:
-            self.logger.error(f"Failed to connect Kafka producer: {str(e)}")
+            .error(f"Failed to connect Kafka producer: {str(e)}")
             raise
     
     def publish_message(self, topic: str, message: Dict[str, Any], key: Optional[str] = None):
@@ -51,13 +51,13 @@ class WorldBankKafkaProducer:
             # Wait for confirmation (blocking)
             record_metadata = future.get(timeout=30)
             
-            self.logger.debug(f"Message published to {topic}: partition={record_metadata.partition}, offset={record_metadata.offset}")
+            .debug(f"Message published to {topic}: partition={record_metadata.partition}, offset={record_metadata.offset}")
             
         except KafkaError as e:
-            self.logger.error(f"Kafka error publishing to {topic}: {str(e)}")
+            .error(f"Kafka error publishing to {topic}: {str(e)}")
             raise
         except Exception as e:
-            self.logger.error(f"Error publishing message to {topic}: {str(e)}")
+            .error(f"Error publishing message to {topic}: {str(e)}")
             raise
     
     def close(self):
@@ -65,7 +65,7 @@ class WorldBankKafkaProducer:
         if self.producer:
             self.producer.flush()
             self.producer.close()
-            self.logger.info("Kafka producer closed")
+            .info("Kafka producer closed")
 class KafkaPublisherService(BaseETLProcessor):
     """Kafka publishing service for real-time data streaming"""
     
@@ -77,7 +77,7 @@ class KafkaPublisherService(BaseETLProcessor):
         """Get Kafka producer instance"""
         if self.producer is None:
             producer_config = self.config_manager.get_kafka_producer_config()
-            self.producer = WorldBankKafkaProducer(producer_config, self.logger)
+            self.producer = WorldBankKafkaProducer(producer_config, )
         return self.producer
     
     def _create_kafka_message(self, table_name: str, data: Any, context: ETLContext) -> Dict[str, Any]:
@@ -155,12 +155,12 @@ class KafkaPublisherService(BaseETLProcessor):
                         # Publish message to Kafka
                         producer.publish_message(topic, message, key=f"{table_name}:{context.run_id}")
                         published_count += 1
-                        self.logger.info(f"Published {table_name} to Kafka topic {topic}")
+                        .info(f"Published {table_name} to Kafka topic {topic}")
                         
                     except Exception as e:
                         error_msg = f"Failed to publish {table_name} to Kafka: {str(e)}"
                         errors.append(error_msg)
-                        self.logger.error(error_msg)
+                        .error(error_msg)
             
             # Calculate execution time
             duration = (datetime.now() - start_time).total_seconds()
@@ -182,7 +182,7 @@ class KafkaPublisherService(BaseETLProcessor):
         except Exception as e:
             duration = (datetime.now() - start_time).total_seconds()
             error_msg = f"Kafka publishing failed: {str(e)}"
-            self.logger.error(error_msg)
+            .error(error_msg)
             
             return ProcessingResult(
                 success=False,

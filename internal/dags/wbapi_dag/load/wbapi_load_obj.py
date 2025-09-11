@@ -5,9 +5,6 @@ Handles database operations, data loading, and table management
 
 import pymysql
 from typing import Dict, Any, Optional, List
-from datetime import timedelta
-from cmd_.load_config import load_config
-from src.logger import FastLogger
 from src.utils import TableCreator
 from internal.models.wbgapi_model.transform_models import (
     EconomyTransform, SeriesTransform, TopicTransform, TimeTransform,
@@ -18,10 +15,12 @@ from internal.models.wbgapi_model.transform_models import (
 class BaseDBLoader:
     """Base database loader with core CRUD operations"""
     
-    def __init__(self, cursor, connection, logger=None):
+    def __init__(self, cursor, connection, pipeline_logger, pipeline_config):
         self.cursor = cursor
         self.connection = connection
-        self.logger = logger or FastLogger(load_config()).get_logger()
+        self.logger = pipeline_logger
+        self.config = pipeline_config
+        
 
     def execute(self, query: str, params: Optional[Dict] = None):
         """Execute SQL command"""
@@ -134,7 +133,7 @@ class DatabaseLoaderService:
                 cursorclass=pymysql.cursors.DictCursor
             )
             self.cursor = self.conn.cursor()
-            self.loader = BaseDBLoader(self.cursor, self.conn, self.logger)
+            self.loader = BaseDBLoader(self.cursor, self.conn, )
             self.logger.info("Database connection established")
         except Exception as e:
             self.logger.error(f"Database connection failed: {e}")

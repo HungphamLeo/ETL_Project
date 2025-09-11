@@ -16,140 +16,13 @@ from cmd_.load_config import load_config
 from src.logger import FastLogger
 
 
-class ETLPipelineConfig:
-    """Centralized configuration manager for ETL pipeline"""
-
-    def __init__(self, config_path: Optional[str] = None):
-        self.config_path = config_path
-        self.config = self._load_config()
-        self.logger = self._setup_logger()
-
-    def _load_config(self) -> Dict[str, Any]:
-        """Load configuration with Airflow Variable fallback"""
-        try:
-            # Try Airflow Variable first
-            etl_config = Variable.get(
-                "etl_pipeline_config", 
-                default_var=None, 
-                deserialize_json=True
-            )
-            if etl_config:
-                return etl_config
-        except Exception:
-            pass
-
-        # Fallback to YAML file
-        return load_config(self.config_path)
-
-    def _setup_logger(self) -> logging.Logger:
-        """Setup logger instance"""
-        return FastLogger(self.config).get_logger()
-
-    def get_database_url(self, use_replica: bool = False) -> str:
-        """Build database connection URL with SSL support"""
-        try:
-            db_config = self.config['database']
-            
-            # Choose primary or replica
-            if use_replica and db_config.get('read_replica', {}).get('enabled'):
-                replicas = db_config['read_replica']['hosts']
-                host_config = replicas[0]  # Simple selection
-                host, port = host_config['host'], host_config['port']
-            else:
-                primary = db_config['primary']
-                host, port = primary['host'], primary.get('port', 3306)
-
-            primary = db_config['primary']
-            url = (
-                f"mysql+pymysql://{primary['username']}:{primary['password']}"
-                f"@{host}:{port}/{primary['database']}"
-                f"?charset={primary.get('charset', 'utf8mb4')}"
-            )
-
-            # Add SSL parameters
-            ssl_config = db_config.get('ssl', {})
-            if ssl_config.get('enabled'):
-                ssl_params = [
-                    f"{k}={v}" for k, v in ssl_config.items() 
-                    if k != 'enabled' and v
-                ]
-                if ssl_params:
-                    url += "&" + "&".join(ssl_params)
-
-            return url
-        except Exception as e:
-            self.logger.error(f"Failed to build database URL: {e}")
-            raise
-
-    def get_kafka_config(self, consumer_group: Optional[str] = None) -> Dict[str, Any]:
-        """Get Kafka configuration for producer/consumer"""
-        kafka_config = self.config.get('kafka', {})
-        
-        config = {
-            **kafka_config.get('default_config', {}),
-            **kafka_config.get('producer_config', {})
-        }
-        
-        if consumer_group:
-            config.update({
-                'group_id': consumer_group,
-                **kafka_config.get('consumer_config', {})
-            })
-        
-        return config
-
-    def get_spark_config(self) -> Dict[str, Any]:
-        """Get Spark configuration with HDFS integration"""
-        spark_config = self.config.get('spark', {})
-        hdfs_config = self.config.get('hdfs', {})
-        
-        return {
-            'app_name': spark_config.get('app_name', 'ETL_Pipeline'),
-            'master': spark_config.get('master', 'local[*]'),
-            'packages': spark_config.get('packages', []),
-            'conf': {
-                **spark_config.get('conf', {}),
-                'spark.hadoop.fs.defaultFS': hdfs_config.get('namenode', 'hdfs://localhost:9000'),
-            }
-        }
-
-    def get_airflow_default_args(self) -> Dict[str, Any]:
-        """Get Airflow DAG default arguments"""
-        airflow_config = self.config.get('airflow', {}).get('default_args', {})
-        
-        return {
-            'owner': airflow_config.get('owner', 'data-engineering'),
-            'depends_on_past': airflow_config.get('depends_on_past', False),
-            'email_on_failure': airflow_config.get('email_on_failure', True),
-            'email_on_retry': airflow_config.get('email_on_retry', False),
-            'retries': airflow_config.get('retries', 1),
-            'retry_delay': timedelta(seconds=airflow_config.get('retry_delay_sec', 300)),
-            'execution_timeout': timedelta(seconds=airflow_config.get('execution_timeout_sec', 7200)),
-        }
-
-    def get_environment(self) -> str:
-        """Get current environment"""
-        return self.config.get('environment', 'development')
-
-    def is_production(self) -> bool:
-        return self.get_environment() == 'production'
-
-    def is_development(self) -> bool:
-        return self.get_environment() == 'development'
-
-    def get_monitoring_config(self) -> Dict[str, Any]:
-        """Get monitoring and alerting configuration"""
-        return self.config.get('monitoring', {})
-
 
 class DatabaseConfig:
     """Database configuration with encryption support"""
 
-    def __init__(self, config_path: str = "config/database.yaml"):
-        self.config_path = config_path
-        self.config = load_config(self.config_path)
-        self.logger = FastLogger(self.config).get_logger()
-        
+    def __init__(self, pipeline_config, pipeline_logger):
+        self.config = pipeline_config
+        self.logger = pipeline_logger
         # Initialize encryption
         self._encryption_key = self._get_or_create_encryption_key()
         self._cipher_suite = Fernet(self._encryption_key)
@@ -240,9 +113,11 @@ class DatabaseConfig:
 class SecurityManager:
     """Security manager for user authentication and authorization"""
 
-    def __init__(self, db_session: Session):
+    def __init__(self, pipeline_logger, pipeline_config, db_session):
         self.db_session = db_session
-        self.logger = FastLogger(load_config()).get_logger()
+        self.config = pipeline_config
+        self.logger = pipeline_logger
+
 
     def hash_password(self, password: str) -> str:
         """Hash password using bcrypt"""
@@ -300,7 +175,7 @@ class SecurityManager:
             return user_id
 
         except Exception as e:
-            self.logger.error(f"User creation failed: {e}")
+            self.loggers.error(f"User creation failed: {e}")
             self.db_session.rollback()
             raise
 
@@ -322,24 +197,24 @@ class SecurityManager:
             raise
 
 
-# Singleton pattern for configuration
-_pipeline_config: Optional[ETLPipelineConfig] = None
+# # Singleton pattern for configuration
+# _pipeline_config: Optional[ETLPipelineConfig] = None
 
-def get_pipeline_config() -> ETLPipelineConfig:
-    """Get singleton pipeline configuration instance"""
-    global _pipeline_config
-    if _pipeline_config is None:
-        _pipeline_config = ETLPipelineConfig()
-    return _pipeline_config
-
-
-# Factory function for database config
-def create_database_config(config_path: Optional[str] = None) -> DatabaseConfig:
-    """Create database configuration instance"""
-    return DatabaseConfig(config_path or "config/database.yaml")
+# def get_pipeline_config() -> ETLPipelineConfig:
+#     """Get singleton pipeline configuration instance"""
+#     global _pipeline_config
+#     if _pipeline_config is None:
+#         _pipeline_config = ETLPipelineConfig()
+#     return _pipeline_config
 
 
-# Factory function for security manager
-def create_security_manager(db_session: Session) -> SecurityManager:
-    """Create security manager instance"""
-    return SecurityManager(db_session)
+# # Factory function for database config
+# def create_database_config(config_path: Optional[str] = None) -> DatabaseConfig:
+#     """Create database configuration instance"""
+#     return DatabaseConfig(config_path or "config/database.yaml")
+
+
+# # Factory function for security manager
+# def create_security_manager(db_session: Session) -> SecurityManager:
+#     """Create security manager instance"""l
+#     return SecurityManager(db_session)

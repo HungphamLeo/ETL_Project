@@ -15,14 +15,20 @@ from internal.models.wbgapi_model.transform_models import (
 import pandas as pd
 
 
-class TransformEconomy:
+
+
+class base_obj:
+    def __init__(self, pipeline_logger):
+        self.logger = pipeline_logger
+
+
+class TransformEconomy(base_obj):
     """Economy data transformer - maintains existing logic with improvements"""
     
     def __init__(self):
-        self.logger = FastLogger(load_config()).get_logger()
         self.extract_object = wbapi_extract()
 
-    def transform_economy_dataframe(self, spark, economy_data_df):
+    def transform_economy_dataframe(self, spark: SparkSession, economy_data_df):
         """Transform Economy DataFrame using rules - improved version"""
         try:
             rules = EconomyTransform.ECONOMY_DF_RULES.get("transform_economy_dataframe", {})
@@ -122,11 +128,10 @@ class TransformEconomy:
             return None
 
 
-class TransformSeries:
+class TransformSeries(base_obj):
     """Series data transformer - maintains existing logic with improvements"""
     
     def __init__(self):
-        self.logger = FastLogger(load_config()).get_logger()
         self.extract_object = wbapi_extract()
 
     def transform_series_dataframe(self, spark: SparkSession, df: pd.DataFrame) -> pd.DataFrame:
@@ -191,11 +196,10 @@ class TransformSeries:
             return None
 
 
-class TransformTopic:
+class TransformTopic(base_obj):
     """Topic data transformer - maintains existing logic with improvements"""
     
     def __init__(self):
-        self.logger = FastLogger(load_config()).get_logger()
         self.extract_object = wbapi_extract()
 
     def transform_topic_info_dataframe(self, spark: SparkSession, df: pd.DataFrame) -> pd.DataFrame:
@@ -265,11 +269,10 @@ class TransformTopic:
             return spark_df.toPandas()
 
 
-class TransformTime:
+class TransformTime(base_obj):
     """Time data transformer - maintains existing logic with improvements"""
     
     def __init__(self):
-        self.logger = FastLogger(load_config()).get_logger()
         self.extract_object = wbapi_extract()
 
     def transform_time_dataframe(self, spark: SparkSession, df: pd.DataFrame) -> pd.DataFrame:
@@ -307,11 +310,10 @@ class TransformTime:
             return None
 
 
-class TransformSource:
+class TransformSource(base_obj):
     """Source data transformer - maintains existing logic with improvements"""
     
     def __init__(self):
-        self.logger = FastLogger(load_config()).get_logger()
         self.extract_object = wbapi_extract()
 
     def transform_source_info_dataframe(self, spark: SparkSession, df: pd.DataFrame) -> pd.DataFrame:
@@ -366,11 +368,10 @@ class TransformSource:
             return spark_df.toPandas()
 
 
-class TransformRegion:
+class TransformRegion(base_obj):
     """Region data transformer - maintains existing logic with improvements"""
     
     def __init__(self):
-        self.logger = FastLogger(load_config()).get_logger()
         self.extract_object = wbapi_extract()
 
     def transform_region_dataframe(self, spark: SparkSession, df: pd.DataFrame) -> pd.DataFrame:
@@ -408,11 +409,10 @@ class TransformRegion:
             return None
 
 
-class TransformIncome:
+class TransformIncome(base_obj):
     """Income data transformer - maintains existing logic with improvements"""
     
     def __init__(self):
-        self.logger = FastLogger(load_config()).get_logger()
         self.extract_object = wbapi_extract()
 
     def transform_income_dataframe(self, spark: SparkSession, df: pd.DataFrame) -> pd.DataFrame:
@@ -450,11 +450,10 @@ class TransformIncome:
             return None
 
 
-class TransformLending:
+class TransformLending(base_obj):
     """Lending data transformer - maintains existing logic with improvements"""
     
     def __init__(self):
-        self.logger = FastLogger(load_config()).get_logger()
         self.extract_object = wbapi_extract()
 
     def transform_lending_dataframe(self, spark: SparkSession, df: pd.DataFrame) -> pd.DataFrame:

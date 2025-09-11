@@ -21,7 +21,7 @@ from pyspark.sql import SparkSession
 class wbapi_transform:
     """Main transform service - refactored to support both local and Spark processing"""
     
-    def __init__(self, pipeline_config=None):
+    def __init__(self, pipeline_config=None, pipeline_logger = None):
         # Keep existing structure
         self.economy = TransformEconomy()
         self.topic = TransformTopic()
@@ -34,7 +34,7 @@ class wbapi_transform:
         
         # Add pipeline config support
         self.pipeline_config = pipeline_config
-        self.logger = FastLogger(load_config()).get_logger()
+        self.logger = pipeline_logger
         self._spark_session = None
     
     def get_or_create_spark_session(self):
@@ -313,28 +313,7 @@ class SparkTransformOperator(SparkSubmitOperator):
         """Build Spark configuration with overrides"""
         base_config = self.pipeline_config.get_spark_config() if self.pipeline_config else {}
         
-        default_spark_config = {
-            'conf': {
-                'spark.sql.adaptive.enabled': 'true',
-                'spark.sql.adaptive.coalescePartitions.enabled': 'true',
-                'spark.serializer': 'org.apache.spark.serializer.KryoSerializer',
-                'spark.sql.execution.arrow.pyspark.enabled': 'true',
-                'spark.sql.adaptive.advisoryPartitionSizeInBytes': '128MB',
-                **base_config.get('conf', {})
-            },
-            'packages': [
-                'org.apache.spark:spark-sql-kafka-0-10_2.12:3.3.0',
-                'mysql:mysql-connector-java:8.0.33',
-                *base_config.get('packages', [])
-            ],
-            'executor_cores': 2,
-            'executor_memory': '2g',
-            'driver_memory': '1g',
-            'num_executors': 2,
-            'conn_id': 'spark_default',
-            'verbose': True
-        }
-        
+        default_spark_config = self.pipeline_config.get('default_spark_config', {})
         spark_config = {**default_spark_config, **base_config}
         if config_override:
             spark_config.update(config_override)
@@ -369,7 +348,7 @@ class SparkTransformOperator(SparkSubmitOperator):
         """Build Spark application arguments"""
         args = [
             '--transform-type', self.transform_type,
-            '--config-path', './internal/config/data_craw_web_config/data_craw_web_config.yaml'
+            '--config-path', './internal/config/data_craw_web_config/world_bank_config.yaml'
         ]
         
         if input_data_path:
@@ -397,7 +376,7 @@ class SparkTransformOperator(SparkSubmitOperator):
     def execute(self, context):
         """Execute Spark transformation with enhanced logging"""
         if hasattr(self.pipeline_config, 'logger'):
-            self.pipeline_config.logger.info(
+            self.pipeline_config.loggerself.logger.info(
                 f"Starting Spark transformation for {self.transform_type}"
             )
         
@@ -405,7 +384,7 @@ class SparkTransformOperator(SparkSubmitOperator):
             result = super().execute(context)
             
             if hasattr(self.pipeline_config, 'logger'):
-                self.pipeline_config.logger.info(
+                self.pipeline_config.loggerself.logger.info(
                     f"Spark transformation completed successfully for {self.transform_type}"
                 )
             
@@ -413,84 +392,207 @@ class SparkTransformOperator(SparkSubmitOperator):
             
         except Exception as e:
             if hasattr(self.pipeline_config, 'logger'):
-                self.pipeline_config.logger.error(
+                self.pipeline_config.loggerself.logger.error(
                     f"Spark transformation failed for {self.transform_type}: {e}"
                 )
             raise
 
+class SparkTransformConfig:
+    """Configuration builder for Spark transforms, lấy config từ file YAML/dict"""
 
+    def __init__(self, spark_config: dict):
+        self.spark_config = spark_config
+
+    def get_default(self) -> dict:
+        return self.spark_config.get('default', {})
+
+    def get_small_dataset(self) -> dict:
+        return self.spark_config.get('small_dataset', self.get_default())
+
+    def get_large_dataset(self) -> dict:
+        return self.spark_config.get('large_dataset', self.get_default())
+
+    def get_streaming(self) -> dict:
+        return self.spark_config.get('streaming', self.get_default())
+
+    def get_config(self, mode: str = "default") -> dict:
+        return self.spark_config.get(mode, self.get_default())
+
+
+        
 class SparkTransformFactory:
-    """Factory for creating Spark transform operators"""
-    
+    """Factory for creating Spark transform operators."""
+
     @staticmethod
-    def create_economy_transform(pipeline_config, **kwargs) -> SparkTransformOperator:
+    def create_economy_transform(pipeline_config, **kwargs) -> "SparkTransformOperator":
         return SparkTransformOperator(
             pipeline_config=pipeline_config,
-            transform_type='economy',
-            task_id='spark_transform_economy',
+            transform_type="economy",
+            task_id="spark_transform_economy",
             **kwargs
         )
-    
+
     @staticmethod
-    def create_series_transform(pipeline_config, **kwargs) -> SparkTransformOperator:
+    def create_series_transform(pipeline_config, **kwargs) -> "SparkTransformOperator":
         return SparkTransformOperator(
             pipeline_config=pipeline_config,
-            transform_type='series',
-            task_id='spark_transform_series',
+            transform_type="series",
+            task_id="spark_transform_series",
             **kwargs
         )
-    
+
     @staticmethod
-    def create_all_transforms(pipeline_config, **kwargs) -> List[SparkTransformOperator]:
+    def create_topic_transform(pipeline_config, **kwargs) -> "SparkTransformOperator":
+        return SparkTransformOperator(
+            pipeline_config=pipeline_config,
+            transform_type="topic",
+            task_id="spark_transform_topic",
+            **kwargs
+        )
+
+    @staticmethod
+    def create_time_transform(pipeline_config, **kwargs) -> "SparkTransformOperator":
+        return SparkTransformOperator(
+            pipeline_config=pipeline_config,
+            transform_type="time",
+            task_id="spark_transform_time",
+            **kwargs
+        )
+
+    @staticmethod
+    def create_source_transform(pipeline_config, **kwargs) -> "SparkTransformOperator":
+        return SparkTransformOperator(
+            pipeline_config=pipeline_config,
+            transform_type="source",
+            task_id="spark_transform_source",
+            **kwargs
+        )
+
+    @staticmethod
+    def create_region_transform(pipeline_config, **kwargs) -> "SparkTransformOperator":
+        return SparkTransformOperator(
+            pipeline_config=pipeline_config,
+            transform_type="region",
+            task_id="spark_transform_region",
+            **kwargs
+        )
+
+    @staticmethod
+    def create_income_transform(pipeline_config, **kwargs) -> "SparkTransformOperator":
+        return SparkTransformOperator(
+            pipeline_config=pipeline_config,
+            transform_type="income",
+            task_id="spark_transform_income",
+            **kwargs
+        )
+
+    @staticmethod
+    def create_lending_transform(pipeline_config, **kwargs) -> "SparkTransformOperator":
+        return SparkTransformOperator(
+            pipeline_config=pipeline_config,
+            transform_type="lending",
+            task_id="spark_transform_lending",
+            **kwargs
+        )
+
+    @staticmethod
+    def create_all_transforms(pipeline_config, **kwargs) -> List["SparkTransformOperator"]:
+        """Create operators for all supported transform types."""
         operators = []
         for transform_type in SparkTransformOperator.SUPPORTED_TRANSFORMS:
-            operator = SparkTransformOperator(
-                pipeline_config=pipeline_config,
-                transform_type=transform_type,
-                task_id=f'spark_transform_{transform_type}',
-                **kwargs
+            operators.append(
+                SparkTransformOperator(
+                    pipeline_config=pipeline_config,
+                    transform_type=transform_type,
+                    task_id=f"spark_transform_{transform_type}",
+                    **kwargs
+                )
             )
-            operators.append(operator)
         return operators
 
 
-class SparkTransformConfig:
-    """Configuration builder for Spark transforms"""
+
+
+class HybridTransformService:
+    """Service that intelligently chooses between local and Spark processing"""
     
-    @staticmethod
-    def for_small_dataset() -> Dict[str, Any]:
-        return {
-            'executor_cores': 1,
-            'executor_memory': '1g',
-            'driver_memory': '512m',
-            'num_executors': 1,
-            'conf': {
-                'spark.sql.adaptive.advisoryPartitionSizeInBytes': '64MB'
-            }
-        }
+    def __init__(self, pipeline_config, pipeline_logger):
+        self.pipeline_config = pipeline_config
+        self.local_transformer = wbapi_transform(pipeline_config)
+        self.logger = pipeline_logger
     
-    @staticmethod
-    def for_large_dataset() -> Dict[str, Any]:
-        return {
-            'executor_cores': 4,
-            'executor_memory': '4g',
-            'driver_memory': '2g',
-            'num_executors': 4,
-            'conf': {
-                'spark.sql.adaptive.advisoryPartitionSizeInBytes': '256MB',
-                'spark.sql.adaptive.maxRecordsPerBatch': '10000'
-            }
-        }
+    def should_use_spark(self, data_size: int, data_type: str) -> bool:
+        """Decide whether to use Spark based on data characteristics"""
+        # Configurable thresholds
+        size_threshold = self.pipeline_config.config.get('spark_threshold', {}).get(data_type, 100000)
+        
+        return data_size > size_threshold
     
-    @staticmethod
-    def for_streaming() -> Dict[str, Any]:
-        return {
-            'executor_cores': 2,
-            'executor_memory': '2g',
-            'driver_memory': '1g',
-            'num_executors': 3,
-            'conf': {
-                'spark.streaming.kafka.maxRatePerPartition': '1000',
-                'spark.sql.streaming.checkpointLocation': '/tmp/spark-checkpoint'
-            }
+    def transform_data(self, data_type: str, raw_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Transform data using optimal processing method"""
+        # Estimate data size
+        data_size = self._estimate_data_size(raw_data)
+        
+        if self.should_use_spark(data_size, data_type):
+            self.logger.info(f"Using Spark for {data_type} (size: {data_size})")
+            return self._transform_with_spark(data_type, raw_data)
+        else:
+            self.logger.info(f"Using local processing for {data_type} (size: {data_size})")
+            return self._transform_locally(data_type, raw_data)
+    
+    def _estimate_data_size(self, raw_data: Dict[str, Any]) -> int:
+        """Estimate the size of raw data"""
+        total_size = 0
+        for key, value in raw_data.items():
+            if hasattr(value, 'shape'):
+                total_size += value.shape[0]
+            elif hasattr(value, '__len__'):
+                total_size += len(value)
+        return total_size
+    
+    def _transform_locally(self, data_type: str, raw_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Transform using local wbapi_transform"""
+        transform_methods = {
+            'economy': self.local_transformer.transform_economy_data,
+            'series': self.local_transformer.transform_series_data,
+            'topic': self.local_transformer.transform_topic_data,
+            'time': self.local_transformer.transform_time_data,
+            'source': self.local_transformer.transform_source_data,
+            'region': self.local_transformer.transform_region_data,
+            'income': self.local_transformer.transform_income_data,
+            'lending': self.local_transformer.transform_lending_data
         }
+        
+        if data_type in transform_methods:
+            return transform_methods[data_type](raw_data)
+        else:
+            raise ValueError(f"Unsupported transform type: {data_type}")
+    
+    def _transform_with_spark(self, data_type: str, raw_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Transform using Spark (could save to temp file and use SparkTransformOperator)"""
+        import tempfile
+        import pickle
+        
+        # Save raw data to temporary file
+        with tempfile.NamedTemporaryFile(suffix='.pkl', delete=False) as f:
+            pickle.dump(raw_data, f)
+            temp_input = f.name
+        
+        # Create output file path
+        temp_output = tempfile.mktemp(suffix='.pkl')
+        
+        # Create and execute Spark operator
+        spark_operator = SparkTransformOperator(
+            pipeline_config=self.pipeline_config,
+            transform_type=data_type,
+            raw_data_path=temp_input,
+            output_data_path=temp_output,
+            task_id=f'hybrid_spark_transform_{data_type}'
+        )
+        
+        # In a real Airflow context, this would be handled by the scheduler
+        # For now, we'll fall back to local processing
+        self.logger.warning("Spark execution in hybrid mode not fully implemented, falling back to local")
+        return self._transform_locally(data_type, raw_data)
+
+

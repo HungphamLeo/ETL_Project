@@ -9,7 +9,7 @@ class FastLogger:
         Custom logger with rotating file handlers and console output.
         """
         logger_config = logger_config['logging']
-        self.logger = logging.getLogger("AppLogger")
+        self.logger= logging.getLogger("AppLogger")
         self.logger.setLevel(logger_config['level'])
         self.logger.propagate = False
 
