@@ -21,7 +21,7 @@ class extract_cophieu68(Cophieu68BeautifulSoupCrawler):
         """
         url = f"{self.urls['financial']}{symbol.upper()}&type={report_type}"
         try:
-            self.logger.info(f"Fetching financial report: {report_type} for {symbol.upper()}")
+            .info(f"Fetching financial report: {report_type} for {symbol.upper()}")
             tables = pd.read_html(url, flavor="lxml")
             
             reports = []
@@ -36,7 +36,7 @@ class extract_cophieu68(Cophieu68BeautifulSoupCrawler):
                 )
             return reports
         except Exception as e:
-            self.logger.error(f"Error fetching {report_type} report for {symbol.upper()}: {e}")
+            .error(f"Error fetching {report_type} report for {symbol.upper()}: {e}")
             return None
 
     def crawl_income_statement(self, symbol: str) -> Optional[List[IncomeStatementReport]]:
@@ -60,7 +60,7 @@ class extract_cophieu68(Cophieu68BeautifulSoupCrawler):
             return None
 
         try:
-            self.logger.info(f"Extracting financial ratios for {symbol.upper()}")
+            .info(f"Extracting financial ratios for {symbol.upper()}")
             ratios = StockFinancialRatios(symbol=symbol.upper())
             flex_rows = soup.select(".flex_row")
 
@@ -93,7 +93,7 @@ class extract_cophieu68(Cophieu68BeautifulSoupCrawler):
             return ratios
 
         except Exception as e:
-            self.logger.error(f"Error extracting financial ratios for {symbol}: {e}")
+            .error(f"Error extracting financial ratios for {symbol}: {e}")
             return None
     
     def crawl_power_ratings(self, symbol: str, soup: BeautifulSoup = None) -> Optional[StockPowerRatings]:
@@ -106,7 +106,7 @@ class extract_cophieu68(Cophieu68BeautifulSoupCrawler):
             return None
         
         try:
-            self.logger.info(f"Extracting power ratings for {symbol.upper()}")
+            .info(f"Extracting power ratings for {symbol.upper()}")
             
             power_ratings = StockPowerRatings(symbol=symbol.upper())
             
@@ -144,7 +144,7 @@ class extract_cophieu68(Cophieu68BeautifulSoupCrawler):
             return power_ratings
             
         except Exception as e:
-            self.logger.error(f" Error extracting power ratings for {symbol}: {e}")
+            .error(f" Error extracting power ratings for {symbol}: {e}")
             return None
     
     def crawl_trading_data(self, symbol: str, soup: BeautifulSoup = None) -> Optional[TradingData]:
@@ -157,7 +157,7 @@ class extract_cophieu68(Cophieu68BeautifulSoupCrawler):
             return None
 
         try:
-            self.logger.info(f"Extracting trading data for {symbol.upper()}")
+            .info(f"Extracting trading data for {symbol.upper()}")
             trading_data = TradingData(symbol=symbol.upper())
 
             # Tìm bảng giao dịch theo keyword
@@ -189,7 +189,7 @@ class extract_cophieu68(Cophieu68BeautifulSoupCrawler):
             return trading_data
 
         except Exception as e:
-            self.logger.error(f"Error extracting trading data for {symbol}: {e}")
+            .error(f"Error extracting trading data for {symbol}: {e}")
             return None
 
     
@@ -204,7 +204,7 @@ class extract_cophieu68(Cophieu68BeautifulSoupCrawler):
             return []
 
         try:
-            self.logger.info(f"Extracting business plan for {symbol.upper()}")
+            .info(f"Extracting business plan for {symbol.upper()}")
             plans = []
 
             business_plan_div = soup.find('div', {'id': CRAWL_BUSINESS_PLAN_CONFIG["container_id"]})
@@ -233,7 +233,7 @@ class extract_cophieu68(Cophieu68BeautifulSoupCrawler):
             return plans
 
         except Exception as e:
-            self.logger.error(f"Error extracting business plan for {symbol}: {e}")
+            .error(f"Error extracting business plan for {symbol}: {e}")
             return []
 
     
@@ -247,7 +247,7 @@ class extract_cophieu68(Cophieu68BeautifulSoupCrawler):
             return None
 
         try:
-            self.logger.info(f"Extracting industry info for {symbol.upper()}")
+            .info(f"Extracting industry info for {symbol.upper()}")
             industry_info = IndustryInfo(symbol=symbol.upper())
 
             h2_elements = soup.find_all('h2')
@@ -270,7 +270,7 @@ class extract_cophieu68(Cophieu68BeautifulSoupCrawler):
             return industry_info
 
         except Exception as e:
-            self.logger.error(f"Error extracting industry info for {symbol}: {e}")
+            .error(f"Error extracting industry info for {symbol}: {e}")
             return None
 
     
@@ -283,7 +283,7 @@ class extract_cophieu68(Cophieu68BeautifulSoupCrawler):
             return None
 
         try:
-            self.logger.info(f"Extracting company profile for {symbol.upper()}")
+            .info(f"Extracting company profile for {symbol.upper()}")
             profile = CompanyProfile(symbol=symbol.upper())
 
             field_map = CRAWL_COMPANY_PROFILE_CONFIG["field_map"]
@@ -305,7 +305,7 @@ class extract_cophieu68(Cophieu68BeautifulSoupCrawler):
             return profile
 
         except Exception as e:
-            self.logger.error(f"Error extracting company profile for {symbol}: {e}")
+            .error(f"Error extracting company profile for {symbol}: {e}")
             return None
 
 
@@ -313,7 +313,7 @@ class extract_cophieu68(Cophieu68BeautifulSoupCrawler):
     def crawl_complete_stock_data(self, symbol: str) -> CompleteStockData:
         """Crawl tất cả dữ liệu của một cổ phiếu"""
 
-        self.logger.info(f"🎯 Starting complete crawl for {symbol.upper()}")
+        .info(f"🎯 Starting complete crawl for {symbol.upper()}")
         complete_data = CompleteStockData()
 
         # summary soup (dùng lại cho submodules)
@@ -327,7 +327,7 @@ class extract_cophieu68(Cophieu68BeautifulSoupCrawler):
                     try:
                         setattr(complete_data, method_name.replace("crawl_", ""), method(symbol, soup))
                     except Exception as e:
-                        self.logger.error(f"Error in {method_name} for {symbol}: {e}")
+                        .error(f"Error in {method_name} for {symbol}: {e}")
 
         # crawl profile riêng
         profile_method = getattr(self, CRAWL_COMPLETE_STOCK_CONFIG["profile_module"], None)
@@ -335,9 +335,9 @@ class extract_cophieu68(Cophieu68BeautifulSoupCrawler):
             try:
                 complete_data.company_profile = profile_method(symbol)
             except Exception as e:
-                self.logger.error(f"Error in company profile for {symbol}: {e}")
+                .error(f"Error in company profile for {symbol}: {e}")
 
-        self.logger.info(f"Completed crawl for {symbol.upper()}")
+        .info(f"Completed crawl for {symbol.upper()}")
         return complete_data
 
     
@@ -349,7 +349,7 @@ class extract_cophieu68(Cophieu68BeautifulSoupCrawler):
         if max_workers is None:
             max_workers = CRAWL_MULTIPLE_STOCKS_CONFIG["max_workers_default"]
 
-        self.logger.info(f"Starting batch crawl for {len(symbols)} symbols with {max_workers} workers")
+        .info(f"Starting batch crawl for {len(symbols)} symbols with {max_workers} workers")
         results = {}
 
         with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
@@ -363,12 +363,12 @@ class extract_cophieu68(Cophieu68BeautifulSoupCrawler):
                 try:
                     data = future.result()
                     results[symbol.upper()] = data
-                    self.logger.info(f"Completed {symbol.upper()}")
+                    .info(f"Completed {symbol.upper()}")
                 except Exception as e:
-                    self.logger.error(f"Error crawling {symbol}: {e}")
+                    .error(f"Error crawling {symbol}: {e}")
                     results[symbol.upper()] = CompleteStockData()
 
-        self.logger.info(f"🎉 Batch crawl completed: {len(results)} symbols processed")
+        .info(f"🎉 Batch crawl completed: {len(results)} symbols processed")
         return results
 
         
@@ -382,7 +382,7 @@ class extract_cophieu68(Cophieu68BeautifulSoupCrawler):
             return []
 
         try:
-            self.logger.info(f"Extracting stock list from market: {market_type}")
+            .info(f"Extracting stock list from market: {market_type}")
             symbols = []
 
             # Lấy link theo pattern từ config
@@ -395,11 +395,11 @@ class extract_cophieu68(Cophieu68BeautifulSoupCrawler):
                     if symbol not in symbols:
                         symbols.append(symbol)
 
-            self.logger.info(f"Found {len(symbols)} symbols in {market_type} market")
+            .info(f"Found {len(symbols)} symbols in {market_type} market")
             return symbols
 
         except Exception as e:
-            self.logger.error(f"Error extracting market list: {e}")
+            .error(f"Error extracting market list: {e}")
             return []
 
     
@@ -414,7 +414,7 @@ class extract_cophieu68(Cophieu68BeautifulSoupCrawler):
             return []
 
         try:
-            self.logger.info("🏭 Extracting industry list")
+            .info("🏭 Extracting industry list")
             industries = []
 
             # Lấy link theo pattern từ config
@@ -436,11 +436,11 @@ class extract_cophieu68(Cophieu68BeautifulSoupCrawler):
                 except Exception:
                     continue
 
-            self.logger.info(f"Found {len(industries)} industries")
+            .info(f"Found {len(industries)} industries")
             return industries
 
         except Exception as e:
-            self.logger.error(f"Error extracting industry list: {e}")
+            .error(f"Error extracting industry list: {e}")
             return []
 
     

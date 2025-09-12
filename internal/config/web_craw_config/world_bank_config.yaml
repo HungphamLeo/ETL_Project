@@ -1,0 +1,203 @@
+staging: false
+production: false
+local: true
+
+project_params:
+  name: world_bank
+  url: "https://data.worldbank.org"
+  version: 1.0
+  logger:
+    level: "INFO"
+    database_logger:
+      storage_path: "./logger_storage/worldbank_etl_logger/database_logger"
+      files:
+        debug: "database_debug.log"
+        info: "database_info.log"
+        warning: "database_warning.log"
+        error: "database_error.log"
+      max_size_mb: 100
+      backup_count: 5
+    etl_logger:
+      extract_log:
+        storage_path: "./logger_storage/worldbank_etl_logger/etl_logger/extract"
+        files:
+          debug: "extract_debug.log"
+          info: "extract_info.log"
+          warning: "extract_warning.log"
+          error: "extract_error.log"
+        max_size_mb: 100
+        backup_count: 5
+
+      transform_log:
+        storage_path: "./logger_storage/worldbank_etl_logger/etl_logger/transform"
+        files:
+          debug: "transform_debug.log"
+          info: "transform_info.log"
+          warning: "transform_warning.log"
+          error: "transform_error.log"
+        max_size_mb: 100
+        backup_count: 5
+      load_log:
+        storage_path: "./logger_storage/worldbank_etl_logger/etl_logger/load"
+        files:
+          debug: "load_debug.log"
+          info: "load_info.log"
+          warning: "load_warning.log"
+          error: "load_error.log"
+    max_size_mb: 100
+    backup_count: 5
+    loki_enabled: false
+    loki_url: "http://loki.monitoring.svc.cluster.local:3100/loki/api/v1/push"
+    service_name: "data-api-go"
+    loki_auth:
+      username: "loki_user"
+      password: "loki_password"
+  delay: 1.0
+  timeout: 30
+  headers:
+    User-Agent: "Mozilla/5.0 ..."
+    Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8"
+    Accept-Language: "en-US,en;q=0.5"
+    Accept-Encoding: "gzip, deflate"
+    Connection: "keep-alive"
+    Upgrade-Insecure-Requests: "1"
+  database:
+    primary:
+      type: "mysql"
+      host: "master-db-host"
+      port: 3306
+      username: "etl_user"
+      password: "etl_password"
+      database: "worldbank_etl"
+      charset: "utf8mb4"
+    read_replica:
+      enabled: true
+      hosts:
+        - host: "replica-db-1"
+          port: 3306
+        - host: "replica-db-2"
+          port: 3306
+    ssl:
+      enabled: true
+      ca_cert_path: "/etc/mysql/certs/ca.pem"
+      client_cert_path: "/etc/mysql/certs/client-cert.pem"
+      client_key_path: "/etc/mysql/certs/client-key.pem"
+  encryption_key_path: "internal/config/encryption.key"
+  airflow:
+    default_args:
+      owner: "data-engineering"
+      depends_on_past: false
+      email_on_failure: true
+      email_on_retry: false
+      retries: 2
+      retry_delay_sec: 300
+      execution_timeout_sec: 7200
+  spark:
+    app_name: "WorldBank_Transform"
+    conn_id: "spark_default"
+    verbose: true
+    default:
+      executor_cores: 2
+      executor_memory: "2g"
+      driver_memory: "1g"
+      num_executors: 2
+      packages:
+        - "org.apache.spark:spark-sql-kafka-0-10_2.12:3.3.0"
+        - "mysql:mysql-connector-java:8.0.33"
+      conf:
+        spark.sql.adaptive.enabled: "true"
+        spark.sql.adaptive.coalescePartitions.enabled: "true"
+        spark.serializer: "org.apache.spark.serializer.KryoSerializer"
+        spark.sql.execution.arrow.pyspark.enabled: "true"
+        spark.sql.adaptive.advisoryPartitionSizeInBytes: "128MB"
+
+    small_dataset:
+      executor_cores: 1
+      executor_memory: "1g"
+      driver_memory: "512m"
+      num_executors: 1
+      conf:
+        spark.sql.adaptive.advisoryPartitionSizeInBytes: "64MB"
+
+    large_dataset:
+      executor_cores: 4
+      executor_memory: "4g"
+      driver_memory: "2g"
+      num_executors: 4
+      conf:
+        spark.sql.adaptive.advisoryPartitionSizeInBytes: "256MB"
+        spark.sql.adaptive.maxRecordsPerBatch: "10000"
+
+    streaming:
+      executor_cores: 2
+      executor_memory: "2g"
+      driver_memory: "1g"
+      num_executors: 3
+      conf:
+        spark.streaming.kafka.maxRatePerPartition: "1000"
+        spark.sql.streaming.checkpointLocation: "/tmp/spark-checkpoint"
+  extract:
+    economy:
+      dataframe:
+        id: "all"
+        labels: false
+        skipAggs: false
+        db: null
+      metadata:
+        id: "all"
+        series: []
+        db: null
+    income:
+      id: "all"
+      q: null
+      name: "IncomeGroupName"
+    lending:
+      id: "all"
+      q: null
+      name: "LendingGroupName"
+    region:
+      id: "all"
+      q: null
+      group: null
+      name: "RegionName"
+    series:
+      metadata:
+        id: "all"
+        economies: null
+        time: null
+        db: null
+      get:
+        id: "all"
+        q: null
+        topic: null
+        db: null
+        name: "SeriesName"
+    source:
+      info:
+        id: "all"
+        q: null
+      series:
+        id: "all"
+        q: null
+        name: "SourceName"
+    time:
+      id: "all"
+      q: null
+      db: null
+      name: "TimePeriodName"
+    topic:
+      list:
+        id: "all"
+        q: null
+      info:
+        id: "all"
+        q: null
+      get:
+        id: "all"
+      series:
+        id: "all"
+        q: null
+        name: "TopicName"
+      members:
+        id: "all"
+        maximum_member_id: 15

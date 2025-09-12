@@ -17,13 +17,13 @@ class Cophieu68BeautifulSoupCrawler:
         self.timeout = crawler_cfg.get("timeout", 30)
         self.session = requests.Session()
         self.session.headers.update(crawler_cfg.get("headers", {}))
-        self.logger = FastLogger(config).get_logger()
-        self.logger.info("Cophieu68 BeautifulSoup Crawler initialized")
+         = FastLogger(config).get_logger()
+        .info("Cophieu68 BeautifulSoup Crawler initialized")
 
     def get_soup(self, url: str, retries: int = 3) -> Optional[BeautifulSoup]:
         for attempt in range(retries):
             try:
-                self.logger.info(f"Fetching: {url} (attempt {attempt + 1})")
+                .info(f"Fetching: {url} (attempt {attempt + 1})")
                 response = self.session.get(url, timeout=self.timeout)
                 response.raise_for_status()
                 response.encoding = "utf-8"
@@ -31,11 +31,11 @@ class Cophieu68BeautifulSoupCrawler:
                 time.sleep(self.delay)
                 return soup
             except Exception as e:
-                self.logger.warning(f"Error fetching {url} (attempt {attempt + 1}): {e}")
+                .warning(f"Error fetching {url} (attempt {attempt + 1}): {e}")
                 if attempt < retries - 1:
                     time.sleep(2 ** attempt)
                 continue
-        self.logger.error(f"Failed to fetch {url} after {retries} attempts")
+        .error(f"Failed to fetch {url} after {retries} attempts")
         return None
 
     def safe_extract_text(self, soup: BeautifulSoup, selector: str, multiple: bool = False) -> Union[str, List[str]]:
@@ -97,5 +97,5 @@ class Cophieu68BeautifulSoupCrawler:
                 timestamp=str(int(time.time()))
             )
         except Exception as e:
-            self.logger.error(f"Error extracting basic info for {symbol}: {e}")
+            .error(f"Error extracting basic info for {symbol}: {e}")
             return None

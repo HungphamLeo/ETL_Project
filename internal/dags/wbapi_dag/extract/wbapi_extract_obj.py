@@ -1,15 +1,20 @@
 import wbgapi as wb
 import os
-print("PYTHONPATH =", os.environ.get("PYTHONPATH"))
+# print("PYTHONPATH =", os.environ.get("PYTHONPATH"))
 from src.utils import dataframe_rename_by_dataclass
-from cmd_.load_config import load_config
-from src.logger import FastLogger
-from internal.models import *
+from internal.models.wbgapi_model import *
 
-class wbapi_series:
-    def __init__(self):
+
+
+class base_extract_logger_obj:
+    def __init__(self, pipeline_logger):
+        self.logger = pipeline_logger
+
+
+class wbapi_series(base_extract_logger_obj):
+    def __init__(self, pipeline_logger):
+        super().__init__(pipeline_logger)
         self.series = wb.series
-        self.logger = FastLogger(load_config()).get_logger()
 
     def get_series_metadata(self, input: SeriesMetadataInput):
         """
@@ -54,10 +59,10 @@ class wbapi_series:
             return None
 
 
-class wbapi_economy:
-    def __init__(self):
+class wbapi_economy(base_extract_logger_obj):
+    def __init__(self, pipeline_logger):
+        super().__init__(pipeline_logger)
         self.economy = wb.economy
-        self.logger = FastLogger(load_config()).get_logger()
     
     def dataframe_display(self, input:EconomyDataFrameInput):
         """
@@ -98,11 +103,10 @@ class wbapi_economy:
             return None
 
     
-class wbapi_topic:
-    def __init__(self):
+class wbapi_topic(base_extract_logger_obj):
+    def __init__(self, pipeline_logger):
+        super().__init__(pipeline_logger)
         self.topic = wb.topic
-        self.logger = FastLogger(load_config()).get_logger()
-
 
     def get_info(self, input: TopicInfoInput):
         """
@@ -184,11 +188,10 @@ class wbapi_topic:
             self.logger.error(f"Error fetching topic members for {input.id}: {e}")
             return None
 
-class wbapi_time:
-    def __init__(self):
+class wbapi_time(base_extract_logger_obj):
+    def __init__(self, pipeline_logger):
+        super().__init__(pipeline_logger)
         self.time = wb.time
-        self.logger = FastLogger(load_config()).get_logger()
-
 
     def get_time_periods_series(self, input: TimeSeriesInput):
         """
@@ -212,10 +215,10 @@ class wbapi_time:
             return None
 
 
-class wbapi_source:
-    def __init__(self):
+class wbapi_source(base_extract_logger_obj):
+    def __init__(self, pipeline_logger):
+        super().__init__(pipeline_logger)
         self.source = wb.source
-        self.logger = FastLogger(load_config()).get_logger()
 
     def get_info(self, input: SourceInfoInput):
         """
@@ -259,28 +262,10 @@ class wbapi_source:
             return None
 
 
-    # def get_concepts(self, input: SourceConceptsInput):
-    #     """
-    #     Retrieve concepts for a specific source.
-
-    #     Args:
-    #         input (SourceConceptsInput): An object containing the db attribute.
-
-    #     Returns:
-    #         A list of concepts from the specified source or None if there is an error.
-    #     """
-
-    #     try:
-    #         return self.source.concepts(input.db)
-    #     except Exception as e:
-    #         self.logger.error(f"Error fetching source concepts: {e}")
-    #         return None
-
-
-class wbapi_region:
-    def __init__(self):
+class wbapi_region(base_extract_logger_obj):
+    def __init__(self, pipeline_logger):
+        super().__init__(pipeline_logger)
         self.region = wb.region
-        self.logger = FastLogger(load_config()).get_logger()
 
     def get_series(self, input: RegionSeriesInput):
         """
@@ -304,10 +289,10 @@ class wbapi_region:
             return None
 
 
-class wbapi_income:
-    def __init__(self):
+class wbapi_income(base_extract_logger_obj):
+    def __init__(self, pipeline_logger):
+        super().__init__(pipeline_logger)
         self.income = wb.income
-        self.logger = FastLogger(load_config()).get_logger()
 
     def get_series(self, input: IncomeSeriesInput):
         """
@@ -329,10 +314,10 @@ class wbapi_income:
             self.logger.error(f"Error fetching income series for {input.id}: {e}")
             return None
 
-class wbapi_lending:
-    def __init__(self):
+class wbapi_lending(base_extract_logger_obj):
+    def __init__(self, pipeline_logger):
+        super().__init__(pipeline_logger)
         self.lending = wb.lending
-        self.logger = FastLogger(load_config()).get_logger()
 
     def get_series(self, input: LendingSeriesInput):
         """
