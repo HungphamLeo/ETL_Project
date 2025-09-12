@@ -1,6 +1,6 @@
 from datetime import datetime
 from airflow.operators.python import PythonOperator
-from .wbapi_extract_obj import (base_obj, 
+from .wbapi_extract_obj import (base_extract_logger_obj, 
     wbapi_series, wbapi_economy, wbapi_topic,
     wbapi_time, wbapi_source, wbapi_region,
     wbapi_income, wbapi_lending
@@ -9,22 +9,21 @@ from .wbapi_extract_obj import (base_obj,
 
 class wbapi_extract:
     def __init__(self, pipeline_logger = None):
-        self.base_config = base_obj(pipeline_logger)
-        self.series = wbapi_series(self.base_config)
-        self.series = wbapi_series(self.base_config)
-        self.economy = wbapi_economy(self.base_config)
-        self.topic = wbapi_topic(self.base_config)
-        self.time = wbapi_time(self.base_config)
-        self.source = wbapi_source(self.base_config)
-        self.region = wbapi_region(self.base_config)
-        self.income = wbapi_income(self.base_config)
-        self.lending = wbapi_lending(self.base_config)
+        self.series = wbapi_series(pipeline_logger)
+        self.series = wbapi_series(pipeline_logger)
+        self.economy = wbapi_economy(pipeline_logger)
+        self.topic = wbapi_topic(pipeline_logger)
+        self.time = wbapi_time(pipeline_logger)
+        self.source = wbapi_source(pipeline_logger)
+        self.region = wbapi_region(pipeline_logger)
+        self.income = wbapi_income(pipeline_logger)
+        self.lending = wbapi_lending(pipeline_logger)
 
 
 class WorldBankExtractOperator(PythonOperator):
     """Custom operator cho World Bank API data extraction"""
 
-    def __init__(self, pipeline_config, extract_type: str, config: dict, **kwargs):
+    def __init__(self, pipeline_config, pipeline_logger, extract_type: str, **kwargs):
         """
         :param pipeline_config: pipeline config
         :param extract_type: loại dữ liệu ('economy', 'series', ...)
@@ -32,13 +31,13 @@ class WorldBankExtractOperator(PythonOperator):
         """
         self.extract_type = extract_type
         self.pipeline_config = pipeline_config
-        self.params = config or {}
+        self.logger = pipeline_logger
+        self.params = pipeline_config or {}
         super().__init__(python_callable=self._extract_data, **kwargs)
 
     def _extract_data(self, **context):
-        logger = self.pipeline_config.logger
         try:
-            extract_obj = wbapi_extract(logger)
+            extract_obj = wbapi_extract(self.logger)
             extraction_map = {
                 "economy": self._extract_economy_data,
                 "series": self._extract_series_data,
@@ -67,7 +66,7 @@ class WorldBankExtractOperator(PythonOperator):
             }
 
         except Exception as e:
-            logger.error(f"Extraction failed for {self.extract_type}: {str(e)}")
+            self.logger.error(f"Extraction failed for {self.extract_type}: {str(e)}")
             raise
 
     def _extract_economy_data(self, extract_obj: wbapi_extract):

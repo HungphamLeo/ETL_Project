@@ -1,12 +1,7 @@
 import logging
-import sys
-import time
-import threading
-from pathlib import Path
-from typing import Dict, Any, Optional, Type
+from typing import Dict, Any, Optional
 
 import pandas as pd
-from dataclasses import fields
 from datetime import timedelta
 
 from airflow.models import Variable
@@ -28,12 +23,16 @@ class ETLPipelineConfig:
     """
 
     def __init__(self, config_path: Optional[str] = None):
+        print("Initializing ETLPipelineConfig...", config_path)
         self.config_path = config_path
         self.config = self._load_config()
-        self.logger = self._setup_logger()
-
+        self.database_logger = self._setup_logger("logger.database_logger")
+        self.etl_extract_logger = self._setup_logger("logger.etl_logger.extract_log")
+        self.etl_transform_logger = self._setup_logger("logger.etl_logger.transform_log")
+        self.etl_load_logger = self._setup_logger("logger.etl_logger.load_log")
         # Khởi tạo các config thành phần
-        self.database_config = DatabaseConfig(config_path=config_path)
+        self.database_config = DatabaseConfig(pipeline_config=self.config.get('database', {}),
+                                              pipeline_logger = self.database_logger)
         self.spark_config = SparkTransformConfig(self.config.get('spark', {}))
         self.security_manager: Optional[SecurityManager] = None
 
@@ -49,16 +48,19 @@ class ETLPipelineConfig:
                 default_var=None,
                 deserialize_json=True
             )
-            if etl_config:
-                print("etl_config loaded from Airflow Variable.", etl_config)
+            if etl_config is not None:
                 return etl_config
-        except Exception:
-            etl_config = load_config(self.config_path).get["project_params", {}]
+            else:
+                etl_config = load_config(self.config_path).get("project_params", {})
             return etl_config
+        except Exception:
+            return None
+            
+            
 
-    def _setup_logger(self) -> logging.Logger:
+    def _setup_logger(self, logger_type) -> logging.Logger:
         """Setup logger instance"""
-        return FastLogger(self.config).get_logger()
+        return FastLogger(self.config,logger_type).get_logger()
 
     # ========== Accessor Methods ==========
 

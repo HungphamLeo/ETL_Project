@@ -1,6 +1,6 @@
 """
 WorldBank Transform Objects - Refactored existing transform classes
-Maintains all existing transform logic while adding better error handling and logging
+Maintains all existing transform logic while adding better error handling and logger
 """
 
 from pyspark.sql import SparkSession
@@ -17,12 +17,12 @@ import pandas as pd
 
 
 
-class base_obj:
+class base_transform_logger_obj:
     def __init__(self, pipeline_logger):
         self.logger = pipeline_logger
 
 
-class TransformEconomy(base_obj):
+class TransformEconomy(base_transform_logger_obj):
     """Economy data transformer - maintains existing logic with improvements"""
     
     def __init__(self):
@@ -128,7 +128,7 @@ class TransformEconomy(base_obj):
             return None
 
 
-class TransformSeries(base_obj):
+class TransformSeries(base_transform_logger_obj):
     """Series data transformer - maintains existing logic with improvements"""
     
     def __init__(self):
@@ -196,7 +196,7 @@ class TransformSeries(base_obj):
             return None
 
 
-class TransformTopic(base_obj):
+class TransformTopic(base_transform_logger_obj):
     """Topic data transformer - maintains existing logic with improvements"""
     
     def __init__(self):
@@ -269,7 +269,7 @@ class TransformTopic(base_obj):
             return spark_df.toPandas()
 
 
-class TransformTime(base_obj):
+class TransformTime(base_transform_logger_obj):
     """Time data transformer - maintains existing logic with improvements"""
     
     def __init__(self):
@@ -310,7 +310,7 @@ class TransformTime(base_obj):
             return None
 
 
-class TransformSource(base_obj):
+class TransformSource(base_transform_logger_obj):
     """Source data transformer - maintains existing logic with improvements"""
     
     def __init__(self):
@@ -368,7 +368,7 @@ class TransformSource(base_obj):
             return spark_df.toPandas()
 
 
-class TransformRegion(base_obj):
+class TransformRegion(base_transform_logger_obj):
     """Region data transformer - maintains existing logic with improvements"""
     
     def __init__(self):
@@ -409,7 +409,7 @@ class TransformRegion(base_obj):
             return None
 
 
-class TransformIncome(base_obj):
+class TransformIncome(base_transform_logger_obj):
     """Income data transformer - maintains existing logic with improvements"""
     
     def __init__(self):
@@ -450,7 +450,7 @@ class TransformIncome(base_obj):
             return None
 
 
-class TransformLending(base_obj):
+class TransformLending(base_transform_logger_obj):
     """Lending data transformer - maintains existing logic with improvements"""
     
     def __init__(self):

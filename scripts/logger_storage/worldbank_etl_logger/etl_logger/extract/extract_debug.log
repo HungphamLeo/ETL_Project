@@ -1,0 +1,169 @@
+{"time":"2025-09-13T01:12:28", "level":"ERROR", "message":"Extraction failed for economy: wbapi_series.__init__() takes 1 positional argument but 2 were given", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/internal/dags/wbapi_dag/extract/wbapi_extract_implement.py:70"}
+{"time":"2025-09-13T01:12:28", "level":"ERROR", "message":"Extraction failed for economy: wbapi_series.__init__() takes 1 positional argument but 2 were given", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/internal/dags/wbapi_dag/extract/wbapi_extract_implement.py:70"}
+{"time":"2025-09-13T01:14:42", "level":"ERROR", "message":"Extraction failed for economy: EconomyMetadataInput.__init__() missing 1 required positional argument: 'id'", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/internal/dags/wbapi_dag/extract/wbapi_extract_implement.py:70"}
+{"time":"2025-09-13T01:42:12", "level":"INFO", "message":"Extracted 0 records for economy", "caller":"/tmp/ipykernel_59859/1340705123.py:35"}
+{"time":"2025-09-13T01:42:12", "level":"INFO", "message":"Extracted 0 records for economy", "caller":"/tmp/ipykernel_59859/1340705123.py:35"}
+{"time":"2025-09-13T01:42:12", "level":"INFO", "message":"Extracted 0 records for economy", "caller":"/tmp/ipykernel_59859/1340705123.py:35"}
+{"time":"2025-09-13T01:42:12", "level":"INFO", "message":"Extracted 0 records for economy", "caller":"/tmp/ipykernel_59859/1340705123.py:35"}
+{"time":"2025-09-13T01:42:14", "level":"INFO", "message":"Extracted 0 records for series", "caller":"/tmp/ipykernel_59859/1340705123.py:35"}
+{"time":"2025-09-13T01:42:14", "level":"INFO", "message":"Extracted 0 records for series", "caller":"/tmp/ipykernel_59859/1340705123.py:35"}
+{"time":"2025-09-13T01:42:14", "level":"INFO", "message":"Extracted 0 records for series", "caller":"/tmp/ipykernel_59859/1340705123.py:35"}
+{"time":"2025-09-13T01:42:14", "level":"INFO", "message":"Extracted 0 records for series", "caller":"/tmp/ipykernel_59859/1340705123.py:35"}
+{"time":"2025-09-13T01:42:15", "level":"ERROR", "message":"Extraction failed for topic: 'wbapi_topic' object has no attribute 'logger'", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/internal/dags/wbapi_dag/extract/wbapi_extract_implement.py:70"}
+{"time":"2025-09-13T01:42:15", "level":"ERROR", "message":"Extraction failed for topic: 'wbapi_topic' object has no attribute 'logger'", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/internal/dags/wbapi_dag/extract/wbapi_extract_implement.py:70"}
+{"time":"2025-09-13T01:42:15", "level":"ERROR", "message":"Extraction failed for topic: 'wbapi_topic' object has no attribute 'logger'", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/internal/dags/wbapi_dag/extract/wbapi_extract_implement.py:70"}
+{"time":"2025-09-13T01:42:15", "level":"ERROR", "message":"Extraction failed for topic: 'wbapi_topic' object has no attribute 'logger'", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/internal/dags/wbapi_dag/extract/wbapi_extract_implement.py:70"}
+{"time":"2025-09-13T02:01:05", "level":"ERROR", "message":"Extraction failed for economy: wbapi_series.__init__() missing 1 required positional argument: 'pipeline_logger'", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/internal/dags/wbapi_dag/extract/wbapi_extract_implement.py:70"}
+{"time":"2025-09-13T02:03:25", "level":"INFO", "message":"Extracted 0 records for economy", "caller":"/tmp/ipykernel_64004/1340705123.py:35"}
+{"time":"2025-09-13T02:03:27", "level":"INFO", "message":"Extracted 0 records for series", "caller":"/tmp/ipykernel_64004/1340705123.py:35"}
+{"time":"2025-09-13T02:03:29", "level":"WARNING", "message":"Error fetching member 0: APIError: Invalid value: The provided parameter value is not valid (https://api.worldbank.org/v2/en/topic/0/indicator?per_page=1000&source=2&page=1&format=json)", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/internal/dags/wbapi_dag/extract/wbapi_extract_obj.py:181"}
+{"time":"2025-09-13T02:03:39", "level":"INFO", "message":"Extracted 0 records for topic", "caller":"/tmp/ipykernel_64004/1340705123.py:35"}
+{"time":"2025-09-13T02:03:40", "level":"INFO", "message":"Extracted Year            65
+Year_Time_ID    65
+dtype: int64 records for time", "caller":"/tmp/ipykernel_64004/1340705123.py:35"}
+{"time":"2025-09-13T02:03:42", "level":"INFO", "message":"Extracted 0 records for source", "caller":"/tmp/ipykernel_64004/1340705123.py:35"}
+{"time":"2025-09-13T02:03:42", "level":"INFO", "message":"Extracted Series_Region_Name    44
+Region_Code           44
+dtype: int64 records for region", "caller":"/tmp/ipykernel_64004/1340705123.py:35"}
+{"time":"2025-09-13T02:03:43", "level":"INFO", "message":"Extracted Income_Group_Name    7
+Income_Group_ID      7
+dtype: int64 records for income", "caller":"/tmp/ipykernel_64004/1340705123.py:35"}
+{"time":"2025-09-13T02:03:43", "level":"INFO", "message":"Extracted Lending_Type_Name    4
+Lending_Type_ID      4
+dtype: int64 records for lending", "caller":"/tmp/ipykernel_64004/1340705123.py:35"}
+{"time":"2025-09-13T02:06:10", "level":"INFO", "message":"Extracted 0 records for economy", "caller":"/tmp/ipykernel_64004/636634453.py:35"}
+{"time":"2025-09-13T02:06:10", "level":"INFO", "message":"Extracted 0 records for economy", "caller":"/tmp/ipykernel_64004/636634453.py:35"}
+{"time":"2025-09-13T02:06:11", "level":"INFO", "message":"Extracted 0 records for series", "caller":"/tmp/ipykernel_64004/636634453.py:35"}
+{"time":"2025-09-13T02:06:11", "level":"INFO", "message":"Extracted 0 records for series", "caller":"/tmp/ipykernel_64004/636634453.py:35"}
+{"time":"2025-09-13T02:06:12", "level":"WARNING", "message":"Error fetching member 0: APIError: Invalid value: The provided parameter value is not valid (https://api.worldbank.org/v2/en/topic/0/indicator?per_page=1000&source=2&page=1&format=json)", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/internal/dags/wbapi_dag/extract/wbapi_extract_obj.py:181"}
+{"time":"2025-09-13T02:06:12", "level":"WARNING", "message":"Error fetching member 0: APIError: Invalid value: The provided parameter value is not valid (https://api.worldbank.org/v2/en/topic/0/indicator?per_page=1000&source=2&page=1&format=json)", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/internal/dags/wbapi_dag/extract/wbapi_extract_obj.py:181"}
+{"time":"2025-09-13T02:06:18", "level":"INFO", "message":"Extracted 0 records for topic", "caller":"/tmp/ipykernel_64004/636634453.py:35"}
+{"time":"2025-09-13T02:06:18", "level":"INFO", "message":"Extracted 0 records for topic", "caller":"/tmp/ipykernel_64004/636634453.py:35"}
+{"time":"2025-09-13T02:06:19", "level":"INFO", "message":"Extracted Year            65
+Year_Time_ID    65
+dtype: int64 records for time", "caller":"/tmp/ipykernel_64004/636634453.py:35"}
+{"time":"2025-09-13T02:06:19", "level":"INFO", "message":"Extracted Year            65
+Year_Time_ID    65
+dtype: int64 records for time", "caller":"/tmp/ipykernel_64004/636634453.py:35"}
+{"time":"2025-09-13T02:06:20", "level":"INFO", "message":"Extracted 0 records for source", "caller":"/tmp/ipykernel_64004/636634453.py:35"}
+{"time":"2025-09-13T02:06:20", "level":"INFO", "message":"Extracted 0 records for source", "caller":"/tmp/ipykernel_64004/636634453.py:35"}
+{"time":"2025-09-13T02:06:20", "level":"INFO", "message":"Extracted Series_Region_Name    44
+Region_Code           44
+dtype: int64 records for region", "caller":"/tmp/ipykernel_64004/636634453.py:35"}
+{"time":"2025-09-13T02:06:20", "level":"INFO", "message":"Extracted Series_Region_Name    44
+Region_Code           44
+dtype: int64 records for region", "caller":"/tmp/ipykernel_64004/636634453.py:35"}
+{"time":"2025-09-13T02:06:20", "level":"INFO", "message":"Extracted Income_Group_Name    7
+Income_Group_ID      7
+dtype: int64 records for income", "caller":"/tmp/ipykernel_64004/636634453.py:35"}
+{"time":"2025-09-13T02:06:20", "level":"INFO", "message":"Extracted Income_Group_Name    7
+Income_Group_ID      7
+dtype: int64 records for income", "caller":"/tmp/ipykernel_64004/636634453.py:35"}
+{"time":"2025-09-13T02:06:21", "level":"INFO", "message":"Extracted Lending_Type_Name    4
+Lending_Type_ID      4
+dtype: int64 records for lending", "caller":"/tmp/ipykernel_64004/636634453.py:35"}
+{"time":"2025-09-13T02:06:21", "level":"INFO", "message":"Extracted Lending_Type_Name    4
+Lending_Type_ID      4
+dtype: int64 records for lending", "caller":"/tmp/ipykernel_64004/636634453.py:35"}
+{"time":"2025-09-13T02:07:06", "level":"INFO", "message":"Extracted 0 records for economy", "caller":"/tmp/ipykernel_64004/262474008.py:35"}
+{"time":"2025-09-13T02:07:06", "level":"INFO", "message":"Extracted 0 records for economy", "caller":"/tmp/ipykernel_64004/262474008.py:35"}
+{"time":"2025-09-13T02:07:06", "level":"INFO", "message":"Extracted 0 records for economy", "caller":"/tmp/ipykernel_64004/262474008.py:35"}
+{"time":"2025-09-13T02:07:08", "level":"INFO", "message":"Extracted 0 records for series", "caller":"/tmp/ipykernel_64004/262474008.py:35"}
+{"time":"2025-09-13T02:07:08", "level":"INFO", "message":"Extracted 0 records for series", "caller":"/tmp/ipykernel_64004/262474008.py:35"}
+{"time":"2025-09-13T02:07:08", "level":"INFO", "message":"Extracted 0 records for series", "caller":"/tmp/ipykernel_64004/262474008.py:35"}
+{"time":"2025-09-13T02:07:09", "level":"WARNING", "message":"Error fetching member 0: APIError: Invalid value: The provided parameter value is not valid (https://api.worldbank.org/v2/en/topic/0/indicator?per_page=1000&source=2&page=1&format=json)", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/internal/dags/wbapi_dag/extract/wbapi_extract_obj.py:181"}
+{"time":"2025-09-13T02:07:09", "level":"WARNING", "message":"Error fetching member 0: APIError: Invalid value: The provided parameter value is not valid (https://api.worldbank.org/v2/en/topic/0/indicator?per_page=1000&source=2&page=1&format=json)", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/internal/dags/wbapi_dag/extract/wbapi_extract_obj.py:181"}
+{"time":"2025-09-13T02:07:09", "level":"WARNING", "message":"Error fetching member 0: APIError: Invalid value: The provided parameter value is not valid (https://api.worldbank.org/v2/en/topic/0/indicator?per_page=1000&source=2&page=1&format=json)", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/internal/dags/wbapi_dag/extract/wbapi_extract_obj.py:181"}
+{"time":"2025-09-13T02:07:16", "level":"INFO", "message":"Extracted 0 records for topic", "caller":"/tmp/ipykernel_64004/262474008.py:35"}
+{"time":"2025-09-13T02:07:16", "level":"INFO", "message":"Extracted 0 records for topic", "caller":"/tmp/ipykernel_64004/262474008.py:35"}
+{"time":"2025-09-13T02:07:16", "level":"INFO", "message":"Extracted 0 records for topic", "caller":"/tmp/ipykernel_64004/262474008.py:35"}
+{"time":"2025-09-13T02:07:18", "level":"INFO", "message":"Extracted Year            65
+Year_Time_ID    65
+dtype: int64 records for time", "caller":"/tmp/ipykernel_64004/262474008.py:35"}
+{"time":"2025-09-13T02:07:18", "level":"INFO", "message":"Extracted Year            65
+Year_Time_ID    65
+dtype: int64 records for time", "caller":"/tmp/ipykernel_64004/262474008.py:35"}
+{"time":"2025-09-13T02:07:18", "level":"INFO", "message":"Extracted Year            65
+Year_Time_ID    65
+dtype: int64 records for time", "caller":"/tmp/ipykernel_64004/262474008.py:35"}
+{"time":"2025-09-13T02:07:18", "level":"INFO", "message":"Extracted 0 records for source", "caller":"/tmp/ipykernel_64004/262474008.py:35"}
+{"time":"2025-09-13T02:07:18", "level":"INFO", "message":"Extracted 0 records for source", "caller":"/tmp/ipykernel_64004/262474008.py:35"}
+{"time":"2025-09-13T02:07:18", "level":"INFO", "message":"Extracted 0 records for source", "caller":"/tmp/ipykernel_64004/262474008.py:35"}
+{"time":"2025-09-13T02:07:19", "level":"INFO", "message":"Extracted Series_Region_Name    44
+Region_Code           44
+dtype: int64 records for region", "caller":"/tmp/ipykernel_64004/262474008.py:35"}
+{"time":"2025-09-13T02:07:19", "level":"INFO", "message":"Extracted Series_Region_Name    44
+Region_Code           44
+dtype: int64 records for region", "caller":"/tmp/ipykernel_64004/262474008.py:35"}
+{"time":"2025-09-13T02:07:19", "level":"INFO", "message":"Extracted Series_Region_Name    44
+Region_Code           44
+dtype: int64 records for region", "caller":"/tmp/ipykernel_64004/262474008.py:35"}
+{"time":"2025-09-13T02:07:19", "level":"INFO", "message":"Extracted Income_Group_Name    7
+Income_Group_ID      7
+dtype: int64 records for income", "caller":"/tmp/ipykernel_64004/262474008.py:35"}
+{"time":"2025-09-13T02:07:19", "level":"INFO", "message":"Extracted Income_Group_Name    7
+Income_Group_ID      7
+dtype: int64 records for income", "caller":"/tmp/ipykernel_64004/262474008.py:35"}
+{"time":"2025-09-13T02:07:19", "level":"INFO", "message":"Extracted Income_Group_Name    7
+Income_Group_ID      7
+dtype: int64 records for income", "caller":"/tmp/ipykernel_64004/262474008.py:35"}
+{"time":"2025-09-13T02:07:20", "level":"INFO", "message":"Extracted Lending_Type_Name    4
+Lending_Type_ID      4
+dtype: int64 records for lending", "caller":"/tmp/ipykernel_64004/262474008.py:35"}
+{"time":"2025-09-13T02:07:20", "level":"INFO", "message":"Extracted Lending_Type_Name    4
+Lending_Type_ID      4
+dtype: int64 records for lending", "caller":"/tmp/ipykernel_64004/262474008.py:35"}
+{"time":"2025-09-13T02:07:20", "level":"INFO", "message":"Extracted Lending_Type_Name    4
+Lending_Type_ID      4
+dtype: int64 records for lending", "caller":"/tmp/ipykernel_64004/262474008.py:35"}
+{"time":"2025-09-13T02:10:43", "level":"INFO", "message":"Extracted 0 records for economy", "caller":"/tmp/ipykernel_65662/3823641055.py:35"}
+{"time":"2025-09-13T02:10:44", "level":"INFO", "message":"Extracted 0 records for series", "caller":"/tmp/ipykernel_65662/3823641055.py:35"}
+{"time":"2025-09-13T02:10:46", "level":"WARNING", "message":"Error fetching member 0: APIError: Invalid value: The provided parameter value is not valid (https://api.worldbank.org/v2/en/topic/0/indicator?per_page=1000&source=2&page=1&format=json)", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/internal/dags/wbapi_dag/extract/wbapi_extract_obj.py:181"}
+{"time":"2025-09-13T02:10:52", "level":"INFO", "message":"Extracted 0 records for topic", "caller":"/tmp/ipykernel_65662/3823641055.py:35"}
+{"time":"2025-09-13T02:10:52", "level":"INFO", "message":"Extracted Year            65
+Year_Time_ID    65
+dtype: int64 records for time", "caller":"/tmp/ipykernel_65662/3823641055.py:35"}
+{"time":"2025-09-13T02:10:53", "level":"INFO", "message":"Extracted 0 records for source", "caller":"/tmp/ipykernel_65662/3823641055.py:35"}
+{"time":"2025-09-13T02:10:54", "level":"INFO", "message":"Extracted Series_Region_Name    44
+Region_Code           44
+dtype: int64 records for region", "caller":"/tmp/ipykernel_65662/3823641055.py:35"}
+{"time":"2025-09-13T02:10:55", "level":"INFO", "message":"Extracted Income_Group_Name    7
+Income_Group_ID      7
+dtype: int64 records for income", "caller":"/tmp/ipykernel_65662/3823641055.py:35"}
+{"time":"2025-09-13T02:10:56", "level":"INFO", "message":"Extracted Lending_Type_Name    4
+Lending_Type_ID      4
+dtype: int64 records for lending", "caller":"/tmp/ipykernel_65662/3823641055.py:35"}
+{"time":"2025-09-13T02:32:51", "level":"INFO", "message":"Extracted 0 records for economy", "caller":"/tmp/ipykernel_69007/1354770922.py:35"}
+{"time":"2025-09-13T02:32:52", "level":"INFO", "message":"Extracted 0 records for series", "caller":"/tmp/ipykernel_69007/1354770922.py:35"}
+{"time":"2025-09-13T02:32:54", "level":"WARNING", "message":"Error fetching member 0: APIError: Invalid value: The provided parameter value is not valid (https://api.worldbank.org/v2/en/topic/0/indicator?per_page=1000&source=2&page=1&format=json)", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/internal/dags/wbapi_dag/extract/wbapi_extract_obj.py:181"}
+{"time":"2025-09-13T02:33:01", "level":"INFO", "message":"Extracted 0 records for topic", "caller":"/tmp/ipykernel_69007/1354770922.py:35"}
+{"time":"2025-09-13T02:33:02", "level":"INFO", "message":"Extracted Year            65
+Year_Time_ID    65
+dtype: int64 records for time", "caller":"/tmp/ipykernel_69007/1354770922.py:35"}
+{"time":"2025-09-13T02:33:03", "level":"INFO", "message":"Extracted 0 records for source", "caller":"/tmp/ipykernel_69007/1354770922.py:35"}
+{"time":"2025-09-13T02:33:03", "level":"INFO", "message":"Extracted Series_Region_Name    44
+Region_Code           44
+dtype: int64 records for region", "caller":"/tmp/ipykernel_69007/1354770922.py:35"}
+{"time":"2025-09-13T02:33:04", "level":"INFO", "message":"Extracted Income_Group_Name    7
+Income_Group_ID      7
+dtype: int64 records for income", "caller":"/tmp/ipykernel_69007/1354770922.py:35"}
+{"time":"2025-09-13T02:33:04", "level":"INFO", "message":"Extracted Lending_Type_Name    4
+Lending_Type_ID      4
+dtype: int64 records for lending", "caller":"/tmp/ipykernel_69007/1354770922.py:35"}
+{"time":"2025-09-13T02:36:03", "level":"INFO", "message":"Extracted 0 records for economy", "caller":"/tmp/ipykernel_70195/3823641055.py:35"}
+{"time":"2025-09-13T02:36:05", "level":"INFO", "message":"Extracted 0 records for series", "caller":"/tmp/ipykernel_70195/3823641055.py:35"}
+{"time":"2025-09-13T02:36:06", "level":"WARNING", "message":"Error fetching member 0: APIError: Invalid value: The provided parameter value is not valid (https://api.worldbank.org/v2/en/topic/0/indicator?per_page=1000&source=2&page=1&format=json)", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/internal/dags/wbapi_dag/extract/wbapi_extract_obj.py:181"}
+{"time":"2025-09-13T02:36:13", "level":"INFO", "message":"Extracted 0 records for topic", "caller":"/tmp/ipykernel_70195/3823641055.py:35"}
+{"time":"2025-09-13T02:36:14", "level":"INFO", "message":"Extracted Year            65
+Year_Time_ID    65
+dtype: int64 records for time", "caller":"/tmp/ipykernel_70195/3823641055.py:35"}
+{"time":"2025-09-13T02:36:14", "level":"INFO", "message":"Extracted 0 records for source", "caller":"/tmp/ipykernel_70195/3823641055.py:35"}
+{"time":"2025-09-13T02:36:15", "level":"INFO", "message":"Extracted Series_Region_Name    44
+Region_Code           44
+dtype: int64 records for region", "caller":"/tmp/ipykernel_70195/3823641055.py:35"}
+{"time":"2025-09-13T02:36:15", "level":"INFO", "message":"Extracted Income_Group_Name    7
+Income_Group_ID      7
+dtype: int64 records for income", "caller":"/tmp/ipykernel_70195/3823641055.py:35"}
+{"time":"2025-09-13T02:36:16", "level":"INFO", "message":"Extracted Lending_Type_Name    4
+Lending_Type_ID      4
+dtype: int64 records for lending", "caller":"/tmp/ipykernel_70195/3823641055.py:35"}

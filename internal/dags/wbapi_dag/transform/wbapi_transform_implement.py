@@ -6,7 +6,7 @@ Maintains compatibility with existing transform objects while adding Airflow/Spa
 import wbgapi as wb
 from cmd_.load_config import load_config
 from src.logger import FastLogger
-from internal.dags.wbapi_dag.transform.wbapi_transform_obj import (
+from internal.dags.wbapi_dag.transform.wbapi_transform_obj import (base_transform_logger_obj,
     TransformEconomy, TransformTopic, TransformSeries, TransformTime, 
     TransformSource, TransformRegion, TransformIncome, TransformLending
 )
@@ -23,14 +23,15 @@ class wbapi_transform:
     
     def __init__(self, pipeline_config=None, pipeline_logger = None):
         # Keep existing structure
-        self.economy = TransformEconomy()
-        self.topic = TransformTopic()
-        self.series = TransformSeries()
-        self.time = TransformTime()
-        self.source = TransformSource()
-        self.region = TransformRegion() 
-        self.income = TransformIncome()
-        self.lending = TransformLending()
+        self.base_transform_logger_obj = base_transform_logger_obj(pipeline_config, pipeline_logger)
+        self.economy = TransformEconomy(self.base_transform_logger_obj)
+        self.topic = TransformTopic(self.base_transform_logger_obj)
+        self.series = TransformSeries(self.base_transform_logger_obj)
+        self.time = TransformTime(self.base_transform_logger_obj)
+        self.source = TransformSource(self.base_transform_logger_obj)
+        self.region = TransformRegion(self.base_transform_logger_obj) 
+        self.income = TransformIncome(self.base_transform_logger_obj)
+        self.lending = TransformLending(self.base_transform_logger_obj)
         
         # Add pipeline config support
         self.pipeline_config = pipeline_config
@@ -313,7 +314,7 @@ class SparkTransformOperator(SparkSubmitOperator):
         """Build Spark configuration with overrides"""
         base_config = self.pipeline_config.get_spark_config() if self.pipeline_config else {}
         
-        default_spark_config = self.pipeline_config.get('default_spark_config', {})
+        default_spark_config = self.pipeline_config.config["spark"]["default"]
         spark_config = {**default_spark_config, **base_config}
         if config_override:
             spark_config.update(config_override)
@@ -374,7 +375,7 @@ class SparkTransformOperator(SparkSubmitOperator):
         return args
 
     def execute(self, context):
-        """Execute Spark transformation with enhanced logging"""
+        """Execute Spark transformation with enhanced logger"""
         if hasattr(self.pipeline_config, 'logger'):
             self.pipeline_config.loggerself.logger.info(
                 f"Starting Spark transformation for {self.transform_type}"

@@ -6,9 +6,14 @@ from internal.models.wbgapi_model import *
 
 
 
+class base_extract_logger_obj:
+    def __init__(self, pipeline_logger):
+        self.logger = pipeline_logger
 
-class wbapi_series(base_obj):
-    def __init__(self):
+
+class wbapi_series(base_extract_logger_obj):
+    def __init__(self, pipeline_logger):
+        super().__init__(pipeline_logger)
         self.series = wb.series
 
     def get_series_metadata(self, input: SeriesMetadataInput):
@@ -54,8 +59,9 @@ class wbapi_series(base_obj):
             return None
 
 
-class wbapi_economy(base_obj):
-    def __init__(self):
+class wbapi_economy(base_extract_logger_obj):
+    def __init__(self, pipeline_logger):
+        super().__init__(pipeline_logger)
         self.economy = wb.economy
     
     def dataframe_display(self, input:EconomyDataFrameInput):
@@ -97,8 +103,9 @@ class wbapi_economy(base_obj):
             return None
 
     
-class wbapi_topic(base_obj):
-    def __init__(self):
+class wbapi_topic(base_extract_logger_obj):
+    def __init__(self, pipeline_logger):
+        super().__init__(pipeline_logger)
         self.topic = wb.topic
 
     def get_info(self, input: TopicInfoInput):
@@ -181,8 +188,9 @@ class wbapi_topic(base_obj):
             self.logger.error(f"Error fetching topic members for {input.id}: {e}")
             return None
 
-class wbapi_time(base_obj):
-    def __init__(self):
+class wbapi_time(base_extract_logger_obj):
+    def __init__(self, pipeline_logger):
+        super().__init__(pipeline_logger)
         self.time = wb.time
 
     def get_time_periods_series(self, input: TimeSeriesInput):
@@ -207,8 +215,9 @@ class wbapi_time(base_obj):
             return None
 
 
-class wbapi_source(base_obj):
-    def __init__(self):
+class wbapi_source(base_extract_logger_obj):
+    def __init__(self, pipeline_logger):
+        super().__init__(pipeline_logger)
         self.source = wb.source
 
     def get_info(self, input: SourceInfoInput):
@@ -253,8 +262,9 @@ class wbapi_source(base_obj):
             return None
 
 
-class wbapi_region(base_obj):
-    def __init__(self):
+class wbapi_region(base_extract_logger_obj):
+    def __init__(self, pipeline_logger):
+        super().__init__(pipeline_logger)
         self.region = wb.region
 
     def get_series(self, input: RegionSeriesInput):
@@ -279,8 +289,9 @@ class wbapi_region(base_obj):
             return None
 
 
-class wbapi_income(base_obj):
-    def __init__(self):
+class wbapi_income(base_extract_logger_obj):
+    def __init__(self, pipeline_logger):
+        super().__init__(pipeline_logger)
         self.income = wb.income
 
     def get_series(self, input: IncomeSeriesInput):
@@ -303,8 +314,9 @@ class wbapi_income(base_obj):
             self.logger.error(f"Error fetching income series for {input.id}: {e}")
             return None
 
-class wbapi_lending(base_obj):
-    def __init__(self):
+class wbapi_lending(base_extract_logger_obj):
+    def __init__(self, pipeline_logger):
+        super().__init__(pipeline_logger)
         self.lending = wb.lending
 
     def get_series(self, input: LendingSeriesInput):
