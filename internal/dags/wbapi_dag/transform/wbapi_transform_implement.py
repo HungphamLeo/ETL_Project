@@ -269,6 +269,7 @@ class SparkTransformOperator(SparkSubmitOperator):
     def __init__(
         self,
         pipeline_config,
+        pipeline_logger,
         transform_type: str,
         transform_script: Optional[str] = None,
         input_data_path: Optional[str] = None,
@@ -281,6 +282,7 @@ class SparkTransformOperator(SparkSubmitOperator):
                            f"Supported types: {self.SUPPORTED_TRANSFORMS}")
         
         self.pipeline_config = pipeline_config
+        self.logger = pipeline_logger
         self.transform_type = transform_type
         
         # Get Spark configuration
@@ -312,34 +314,40 @@ class SparkTransformOperator(SparkSubmitOperator):
 
     def _build_spark_config(self, config_override: Optional[Dict] = None) -> Dict[str, Any]:
         """Build Spark configuration with overrides"""
-        base_config = self.pipeline_config.get_spark_config() if self.pipeline_config else {}
-        
-        default_spark_config = self.pipeline_config.config["spark"]["default"]
-        spark_config = {**default_spark_config, **base_config}
-        if config_override:
-            spark_config.update(config_override)
-            if 'conf' in config_override:
-                spark_config['conf'].update(config_override['conf'])
-        
-        return spark_config
+        try:
+            base_config = self.pipeline_config.get_spark_config() if self.pipeline_config else {}
+            
+            default_spark_config = self.pipeline_config.config["spark"]["default"]
+            spark_config = {**default_spark_config, **base_config}
+            if config_override:
+                spark_config.update(config_override)
+                if 'conf' in config_override:
+                    spark_config['conf'].update(config_override['conf'])
+            
+            return spark_config
+        except Exception as e:
+            self.logger.error(f"Failed to build Spark config: {e}")
 
     def _get_default_transform_script(self) -> str:
         """Get default Spark transformation script path"""
-        script_name = f"spark_transform_{self.transform_type}.py"
-        script_path = os.path.join(
-            os.path.dirname(__file__), 
-            'spark_scripts', 
-            script_name
-        )
-        
-        if not os.path.exists(script_path):
+        try:
+            script_name = f"spark_transform_{self.transform_type}.py"
             script_path = os.path.join(
                 os.path.dirname(__file__), 
                 'spark_scripts', 
-                'generic_worldbank_transform.py'
+                script_name
             )
-        
-        return script_path
+            
+            if not os.path.exists(script_path):
+                script_path = os.path.join(
+                    os.path.dirname(__file__), 
+                    'spark_scripts', 
+                    'generic_worldbank_transform.py'
+                )
+            
+            return script_path
+        except Exception as e:
+            self.logger.error(f"Failed to get transform script: {e}")
 
     def _build_application_args(
         self, 
@@ -347,37 +355,41 @@ class SparkTransformOperator(SparkSubmitOperator):
         output_data_path: Optional[str] = None
     ) -> List[str]:
         """Build Spark application arguments"""
-        args = [
-            '--transform-type', self.transform_type,
-            '--config-path', './internal/config/data_craw_web_config/world_bank_config.yaml'
-        ]
-        
-        if input_data_path:
-            args.extend(['--input-path', input_data_path])
-        else:
-            hdfs_config = getattr(self.pipeline_config, 'config', {}).get('hdfs', {})
-            default_input = f"{hdfs_config.get('data_dir', '/data/worldbank')}/raw/{self.transform_type}"
-            args.extend(['--input-path', default_input])
-        
-        if output_data_path:
-            args.extend(['--output-path', output_data_path])
-        else:
-            hdfs_config = getattr(self.pipeline_config, 'config', {}).get('hdfs', {})
-            default_output = f"{hdfs_config.get('data_dir', '/data/worldbank')}/transformed/{self.transform_type}"
-            args.extend(['--output-path', default_output])
-        
-        if self.pipeline_config and hasattr(self.pipeline_config, 'is_production'):
-            if self.pipeline_config.is_production():
-                args.extend(['--environment', 'production'])
+        try:
+            args = [
+                '--transform-type', self.transform_type,
+                '--config-path', './internal/config/data_craw_web_config/world_bank_config.yaml'
+            ]
+            
+            if input_data_path:
+                args.extend(['--input-path', input_data_path])
             else:
-                args.extend(['--environment', 'development'])
-        
-        return args
+                hdfs_config = getattr(self.pipeline_config, 'config', {}).get('hdfs', {})
+                default_input = f"{hdfs_config.get('data_dir', '/data/worldbank')}/raw/{self.transform_type}"
+                args.extend(['--input-path', default_input])
+            
+            if output_data_path:
+                args.extend(['--output-path', output_data_path])
+            else:
+                hdfs_config = getattr(self.pipeline_config, 'config', {}).get('hdfs', {})
+                default_output = f"{hdfs_config.get('data_dir', '/data/worldbank')}/transformed/{self.transform_type}"
+                args.extend(['--output-path', default_output])
+            
+            if self.pipeline_config and hasattr(self.pipeline_config, 'is_production'):
+                if self.pipeline_config.is_production():
+                    args.extend(['--environment', 'production'])
+                else:
+                    args.extend(['--environment', 'development'])
+            
+            return args
+        except Exception as e:
+            self.logger.error(f"Failed to build application args: {e}")
+            
 
     def execute(self, context):
         """Execute Spark transformation with enhanced logger"""
         if hasattr(self.pipeline_config, 'logger'):
-            self.pipeline_config.loggerself.logger.info(
+            self.logger.info(
                 f"Starting Spark transformation for {self.transform_type}"
             )
         
@@ -385,7 +397,7 @@ class SparkTransformOperator(SparkSubmitOperator):
             result = super().execute(context)
             
             if hasattr(self.pipeline_config, 'logger'):
-                self.pipeline_config.loggerself.logger.info(
+                self.logger.info(
                     f"Spark transformation completed successfully for {self.transform_type}"
                 )
             
@@ -393,7 +405,7 @@ class SparkTransformOperator(SparkSubmitOperator):
             
         except Exception as e:
             if hasattr(self.pipeline_config, 'logger'):
-                self.pipeline_config.loggerself.logger.error(
+                self.logger.error(
                     f"Spark transformation failed for {self.transform_type}: {e}"
                 )
             raise
@@ -425,85 +437,94 @@ class SparkTransformFactory:
     """Factory for creating Spark transform operators."""
 
     @staticmethod
-    def create_economy_transform(pipeline_config, **kwargs) -> "SparkTransformOperator":
+    def create_economy_transform(pipeline_config, pipeline_logger,  **kwargs) -> "SparkTransformOperator":
         return SparkTransformOperator(
             pipeline_config=pipeline_config,
+            pipeline_logger= pipeline_logger,
             transform_type="economy",
             task_id="spark_transform_economy",
             **kwargs
         )
 
     @staticmethod
-    def create_series_transform(pipeline_config, **kwargs) -> "SparkTransformOperator":
+    def create_series_transform(pipeline_config,pipeline_logger, **kwargs) -> "SparkTransformOperator":
         return SparkTransformOperator(
             pipeline_config=pipeline_config,
+            pipeline_logger= pipeline_logger,
             transform_type="series",
             task_id="spark_transform_series",
             **kwargs
         )
 
     @staticmethod
-    def create_topic_transform(pipeline_config, **kwargs) -> "SparkTransformOperator":
+    def create_topic_transform(pipeline_config,pipeline_logger, **kwargs) -> "SparkTransformOperator":
         return SparkTransformOperator(
             pipeline_config=pipeline_config,
+            pipeline_logger= pipeline_logger,
             transform_type="topic",
             task_id="spark_transform_topic",
             **kwargs
         )
 
     @staticmethod
-    def create_time_transform(pipeline_config, **kwargs) -> "SparkTransformOperator":
+    def create_time_transform(pipeline_config,pipeline_logger, **kwargs) -> "SparkTransformOperator":
         return SparkTransformOperator(
             pipeline_config=pipeline_config,
+            pipeline_logger= pipeline_logger,
             transform_type="time",
             task_id="spark_transform_time",
             **kwargs
         )
 
     @staticmethod
-    def create_source_transform(pipeline_config, **kwargs) -> "SparkTransformOperator":
+    def create_source_transform(pipeline_config,pipeline_logger, **kwargs) -> "SparkTransformOperator":
         return SparkTransformOperator(
             pipeline_config=pipeline_config,
+            pipeline_logger= pipeline_logger,
             transform_type="source",
             task_id="spark_transform_source",
             **kwargs
         )
 
     @staticmethod
-    def create_region_transform(pipeline_config, **kwargs) -> "SparkTransformOperator":
+    def create_region_transform(pipeline_config,pipeline_logger, **kwargs) -> "SparkTransformOperator":
         return SparkTransformOperator(
             pipeline_config=pipeline_config,
+            pipeline_logger= pipeline_logger,
             transform_type="region",
             task_id="spark_transform_region",
             **kwargs
         )
 
     @staticmethod
-    def create_income_transform(pipeline_config, **kwargs) -> "SparkTransformOperator":
+    def create_income_transform(pipeline_config,pipeline_logger, **kwargs) -> "SparkTransformOperator":
         return SparkTransformOperator(
             pipeline_config=pipeline_config,
+            pipeline_logger= pipeline_logger,
             transform_type="income",
             task_id="spark_transform_income",
             **kwargs
         )
 
     @staticmethod
-    def create_lending_transform(pipeline_config, **kwargs) -> "SparkTransformOperator":
+    def create_lending_transform(pipeline_config, pipeline_logger, **kwargs) -> "SparkTransformOperator":
         return SparkTransformOperator(
             pipeline_config=pipeline_config,
+            pipeline_logger= pipeline_logger,
             transform_type="lending",
             task_id="spark_transform_lending",
             **kwargs
         )
 
     @staticmethod
-    def create_all_transforms(pipeline_config, **kwargs) -> List["SparkTransformOperator"]:
+    def create_all_transforms(pipeline_config, pipeline_logger, **kwargs) -> List["SparkTransformOperator"]:
         """Create operators for all supported transform types."""
         operators = []
         for transform_type in SparkTransformOperator.SUPPORTED_TRANSFORMS:
             operators.append(
                 SparkTransformOperator(
                     pipeline_config=pipeline_config,
+                    pipeline_logger= pipeline_logger,
                     transform_type=transform_type,
                     task_id=f"spark_transform_{transform_type}",
                     **kwargs
