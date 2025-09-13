@@ -104,12 +104,12 @@ class DatabaseLoaderService:
         (LendingTransform, "LENDING", LendingTransform.LENDING_DF_RULES),
     ]
     
-    def __init__(self, pipeline_config):
+    def __init__(self, pipeline_config, pipeline_logger):
         self.config = pipeline_config
         self.conn = None
         self.cursor = None
         self.loader = None
-        self.logger = pipeline_config.logger
+        self.logger = pipeline_logger
 
     def __enter__(self):
         """Context manager entry - establish connection"""
@@ -123,7 +123,7 @@ class DatabaseLoaderService:
     def _connect(self):
         """Establish database connection"""
         try:
-            db_config = self.config.config['database']['primary']
+            db_config = self.config['database']['primary']
             self.conn = pymysql.connect(
                 host=db_config['host'],
                 user=db_config['username'],
@@ -152,7 +152,7 @@ class DatabaseLoaderService:
 
     def create_database(self):
         """Create database if not exists"""
-        db_name = self.config.config['database']['primary']['database']
+        db_name = self.config['database']['primary']['database']
         self.loader.create_database(db_name)
 
     def _get_table_dataframe_mapping(self, transformed_data: Dict) -> Dict[str, Any]:

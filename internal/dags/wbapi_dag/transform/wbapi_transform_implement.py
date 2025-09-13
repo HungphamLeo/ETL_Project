@@ -23,15 +23,14 @@ class wbapi_transform:
     
     def __init__(self, pipeline_config=None, pipeline_logger = None):
         # Keep existing structure
-        self.base_transform_logger_obj = base_transform_logger_obj(pipeline_config, pipeline_logger)
-        self.economy = TransformEconomy(self.base_transform_logger_obj)
-        self.topic = TransformTopic(self.base_transform_logger_obj)
-        self.series = TransformSeries(self.base_transform_logger_obj)
-        self.time = TransformTime(self.base_transform_logger_obj)
-        self.source = TransformSource(self.base_transform_logger_obj)
-        self.region = TransformRegion(self.base_transform_logger_obj) 
-        self.income = TransformIncome(self.base_transform_logger_obj)
-        self.lending = TransformLending(self.base_transform_logger_obj)
+        self.economy = TransformEconomy(pipeline_logger)
+        self.topic = TransformTopic(pipeline_logger)
+        self.series = TransformSeries(pipeline_logger)
+        self.time = TransformTime(pipeline_logger)
+        self.source = TransformSource(pipeline_logger)
+        self.region = TransformRegion(pipeline_logger) 
+        self.income = TransformIncome(pipeline_logger)
+        self.lending = TransformLending(pipeline_logger)
         
         # Add pipeline config support
         self.pipeline_config = pipeline_config
@@ -437,99 +436,187 @@ class SparkTransformFactory:
     """Factory for creating Spark transform operators."""
 
     @staticmethod
-    def create_economy_transform(pipeline_config, pipeline_logger,  **kwargs) -> "SparkTransformOperator":
-        return SparkTransformOperator(
-            pipeline_config=pipeline_config,
-            pipeline_logger= pipeline_logger,
-            transform_type="economy",
-            task_id="spark_transform_economy",
-            **kwargs
-        )
+    def create_economy_transform(pipeline_config, pipeline_logger, **kwargs) -> "SparkTransformOperator":
+        if not pipeline_config or not pipeline_logger:
+            raise ValueError("Pipeline config and logger must not be None")
+
+        try:
+            return SparkTransformOperator(
+                pipeline_config=pipeline_config,
+                pipeline_logger=pipeline_logger,
+                transform_type="economy",
+                task_id="spark_transform_economy",
+                **kwargs
+            )
+        except Exception as e:
+            raise ValueError(f"Failed to create economy transform: {e}") from e
 
     @staticmethod
-    def create_series_transform(pipeline_config,pipeline_logger, **kwargs) -> "SparkTransformOperator":
-        return SparkTransformOperator(
-            pipeline_config=pipeline_config,
-            pipeline_logger= pipeline_logger,
-            transform_type="series",
-            task_id="spark_transform_series",
-            **kwargs
-        )
+    def create_series_transform(pipeline_config, pipeline_logger, **kwargs) -> "SparkTransformOperator":
+        """
+        Create a Spark transform operator for series data.
+        """
+        if not pipeline_config or not pipeline_logger:
+            raise ValueError("Pipeline config and logger must not be None")
+
+        try:
+            return SparkTransformOperator(
+                pipeline_config=pipeline_config,
+                pipeline_logger=pipeline_logger,
+                transform_type="series",
+                task_id="spark_transform_series",
+                **kwargs
+            )
+        except TypeError as e:
+            raise ValueError("Failed to create series transform: null pointer reference") from e
+        except Exception as e:
+            raise ValueError(f"Failed to create series transform: {e}") from e
 
     @staticmethod
-    def create_topic_transform(pipeline_config,pipeline_logger, **kwargs) -> "SparkTransformOperator":
-        return SparkTransformOperator(
-            pipeline_config=pipeline_config,
-            pipeline_logger= pipeline_logger,
-            transform_type="topic",
-            task_id="spark_transform_topic",
-            **kwargs
-        )
+    def create_topic_transform(pipeline_config, pipeline_logger, **kwargs) -> "SparkTransformOperator":
+        """
+        Create a Spark transform operator for topic data.
+        """
+        if not pipeline_config or not pipeline_logger:
+            raise ValueError("Pipeline config and logger must not be None")
+
+        try:
+            return SparkTransformOperator(
+                pipeline_config=pipeline_config,
+                pipeline_logger=pipeline_logger,
+                transform_type="topic",
+                task_id="spark_transform_topic",
+                **kwargs
+            )
+        except TypeError as e:
+            raise ValueError("Failed to create topic transform: null pointer reference") from e
+        except Exception as e:
+            raise ValueError(f"Failed to create topic transform: {e}") from e
 
     @staticmethod
-    def create_time_transform(pipeline_config,pipeline_logger, **kwargs) -> "SparkTransformOperator":
-        return SparkTransformOperator(
-            pipeline_config=pipeline_config,
-            pipeline_logger= pipeline_logger,
-            transform_type="time",
-            task_id="spark_transform_time",
-            **kwargs
-        )
+    def create_time_transform(pipeline_config, pipeline_logger, **kwargs) -> "SparkTransformOperator":
+        """
+        Create a Spark transform operator for time data.
+        """
+        if not pipeline_config or not pipeline_logger:
+            raise ValueError("Pipeline config and logger must not be None")
+
+        try:
+            return SparkTransformOperator(
+                pipeline_config=pipeline_config,
+                pipeline_logger=pipeline_logger,
+                transform_type="time",
+                task_id="spark_transform_time",
+                **kwargs
+            )
+        except TypeError as e:
+            raise ValueError("Failed to create time transform: null pointer reference") from e
+        except Exception as e:
+            raise ValueError(f"Failed to create time transform: {e}") from e
 
     @staticmethod
-    def create_source_transform(pipeline_config,pipeline_logger, **kwargs) -> "SparkTransformOperator":
-        return SparkTransformOperator(
-            pipeline_config=pipeline_config,
-            pipeline_logger= pipeline_logger,
-            transform_type="source",
-            task_id="spark_transform_source",
-            **kwargs
-        )
+    def create_source_transform(pipeline_config, pipeline_logger, **kwargs) -> "SparkTransformOperator":
+        """
+        Create a Spark transform operator for source data.
+        """
+        if not pipeline_config or not pipeline_logger:
+            raise ValueError("Pipeline config and logger must not be None")
+
+        try:
+            return SparkTransformOperator(
+                pipeline_config=pipeline_config,
+                pipeline_logger=pipeline_logger,
+                transform_type="source",
+                task_id="spark_transform_source",
+                **kwargs
+            )
+        except TypeError as e:
+            raise ValueError("Failed to create source transform: null pointer reference") from e
+        except Exception as e:
+            raise ValueError(f"Failed to create source transform: {e}") from e
 
     @staticmethod
-    def create_region_transform(pipeline_config,pipeline_logger, **kwargs) -> "SparkTransformOperator":
-        return SparkTransformOperator(
-            pipeline_config=pipeline_config,
-            pipeline_logger= pipeline_logger,
-            transform_type="region",
-            task_id="spark_transform_region",
-            **kwargs
-        )
+    def create_region_transform(pipeline_config, pipeline_logger, **kwargs) -> "SparkTransformOperator":
+        """
+        Create a Spark transform operator for region data.
+        """
+        if not pipeline_config or not pipeline_logger:
+            raise ValueError("Pipeline config and logger must not be None")
+
+        try:
+            return SparkTransformOperator(
+                pipeline_config=pipeline_config,
+                pipeline_logger=pipeline_logger,
+                transform_type="region",
+                task_id="spark_transform_region",
+                **kwargs
+            )
+        except TypeError as e:
+            raise ValueError("Failed to create region transform: null pointer reference") from e
+        except Exception as e:
+            raise ValueError(f"Failed to create region transform: {e}") from e
 
     @staticmethod
-    def create_income_transform(pipeline_config,pipeline_logger, **kwargs) -> "SparkTransformOperator":
-        return SparkTransformOperator(
-            pipeline_config=pipeline_config,
-            pipeline_logger= pipeline_logger,
-            transform_type="income",
-            task_id="spark_transform_income",
-            **kwargs
-        )
+    def create_income_transform(pipeline_config, pipeline_logger, **kwargs) -> "SparkTransformOperator":
+        """
+        Create a Spark transform operator for income data.
+        """
+        if not pipeline_config or not pipeline_logger:
+            raise ValueError("Pipeline config and logger must not be None")
+
+        try:
+            return SparkTransformOperator(
+                pipeline_config=pipeline_config,
+                pipeline_logger=pipeline_logger,
+                transform_type="income",
+                task_id="spark_transform_income",
+                **kwargs
+            )
+        except TypeError as e:
+            raise ValueError("Failed to create income transform: null pointer reference") from e
+        except Exception as e:
+            raise ValueError(f"Failed to create income transform: {e}") from e
 
     @staticmethod
     def create_lending_transform(pipeline_config, pipeline_logger, **kwargs) -> "SparkTransformOperator":
-        return SparkTransformOperator(
-            pipeline_config=pipeline_config,
-            pipeline_logger= pipeline_logger,
-            transform_type="lending",
-            task_id="spark_transform_lending",
-            **kwargs
-        )
+        """
+        Create a Spark transform operator for lending data.
+        """
+        if not pipeline_config or not pipeline_logger:
+            raise ValueError("Pipeline config and logger must not be None")
+
+        try:
+            return SparkTransformOperator(
+                pipeline_config=pipeline_config,
+                pipeline_logger=pipeline_logger,
+                transform_type="lending",
+                task_id="spark_transform_lending",
+                **kwargs
+            )
+        except TypeError as e:
+            raise ValueError("Failed to create lending transform: null pointer reference") from e
+        except Exception as e:
+            raise ValueError(f"Failed to create lending transform: {e}") from e
 
     @staticmethod
     def create_all_transforms(pipeline_config, pipeline_logger, **kwargs) -> List["SparkTransformOperator"]:
         """Create operators for all supported transform types."""
         operators = []
         for transform_type in SparkTransformOperator.SUPPORTED_TRANSFORMS:
-            operators.append(
-                SparkTransformOperator(
-                    pipeline_config=pipeline_config,
-                    pipeline_logger= pipeline_logger,
-                    transform_type=transform_type,
-                    task_id=f"spark_transform_{transform_type}",
-                    **kwargs
+            try:
+                operators.append(
+                    SparkTransformOperator(
+                        pipeline_config=pipeline_config,
+                        pipeline_logger=pipeline_logger,
+                        transform_type=transform_type,
+                        task_id=f"spark_transform_{transform_type}",
+                        **kwargs
+                    )
                 )
-            )
+            except TypeError as e:
+                raise ValueError("Failed to create transform: null pointer reference") from e
+            except Exception as e:
+                raise ValueError(f"Failed to create transform: {e}") from e
         return operators
 
 
@@ -540,7 +627,7 @@ class HybridTransformService:
     
     def __init__(self, pipeline_config, pipeline_logger):
         self.pipeline_config = pipeline_config
-        self.local_transformer = wbapi_transform(pipeline_config)
+        self.local_transformer = wbapi_transform(pipeline_config, pipeline_logger)
         self.logger = pipeline_logger
     
     def should_use_spark(self, data_size: int, data_type: str) -> bool:
