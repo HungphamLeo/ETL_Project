@@ -5,6 +5,21 @@ import pandas as pd
 # ============================================================
 # 📌 DATA MODELS
 # ============================================================
+@dataclass
+class PriceInfo:
+    """Thông tin giá cổ phiếu"""
+    current_price: str = ""
+    price_change: str = "#stockname_price_change"
+    percent_change: str = "#stockname_percent_change"
+    reference_price: str = ""
+    open_price: str = ""
+    high_price: str = "#stockname_price_highest"
+    low_price: str = "#stockname_price_lowest"
+    close_price: str = "#stockname_close"
+    volume: str = "#stockname_volume"
+    timestamp: str = ""
+
+
 
 @dataclass
 class StockBasicInfo:

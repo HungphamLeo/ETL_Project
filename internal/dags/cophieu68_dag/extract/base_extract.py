@@ -3,27 +3,26 @@ import time
 import re
 from typing import Optional, List, Union
 from bs4 import BeautifulSoup
-from internal.models.cophieu68_model.extract_models import StockBasicInfo
+from internal.models.cophieu68_model.extract_models import StockBasicInfo, PriceInfo
 from src.logger import FastLogger
 from cmd_.load_config import load_config
 
 
 class Cophieu68BeautifulSoupCrawler:
-    def __init__(self):
-        config = load_config()
-        crawler_cfg = config["crawler"]
-        self.urls = crawler_cfg["sources_crawl"]["name"]["urls"] if crawler_cfg["sources_crawl"]["name"] == "cophieu68" else crawler_cfg["sources_crawl"]["urls"]
-        self.delay = crawler_cfg.get("delay", 1.0)
-        self.timeout = crawler_cfg.get("timeout", 30)
+    def __init__(self, pipeline_config, pipeline_logger):
+        config = pipeline_config
+        self.crawler_cfg = config["sources"]["cophieu68"]
+        self.urls = self.crawler_cfg["base_url"]
+        self.delay = config["http"].get("delay_seconds", 1.0)
+        self.timeout =  config["http"].get("timeout_seconds", 30)
         self.session = requests.Session()
-        self.session.headers.update(crawler_cfg.get("headers", {}))
-         = FastLogger(config).get_logger()
-        .info("Cophieu68 BeautifulSoup Crawler initialized")
+        self.session.headers.update(config["http"].get("headers", {}))
+        self.logger = pipeline_logger
+
 
     def get_soup(self, url: str, retries: int = 3) -> Optional[BeautifulSoup]:
         for attempt in range(retries):
             try:
-                .info(f"Fetching: {url} (attempt {attempt + 1})")
                 response = self.session.get(url, timeout=self.timeout)
                 response.raise_for_status()
                 response.encoding = "utf-8"
@@ -31,14 +30,24 @@ class Cophieu68BeautifulSoupCrawler:
                 time.sleep(self.delay)
                 return soup
             except Exception as e:
-                .warning(f"Error fetching {url} (attempt {attempt + 1}): {e}")
+                self.logger.warning(f"Error fetching {url} (attempt {attempt + 1}): {e}")
                 if attempt < retries - 1:
                     time.sleep(2 ** attempt)
                 continue
-        .error(f"Failed to fetch {url} after {retries} attempts")
+        self.logger.error(f"Failed to fetch {url} after {retries} attempts")
         return None
 
-    def safe_extract_text(self, soup: BeautifulSoup, selector: str, multiple: bool = False) -> Union[str, List[str]]:
+    def safe_extract_text(self, soup: BeautifulSoup, 
+                                selector: str, 
+                                multiple: bool = False) -> Union[str, List[str]]:
+        """
+        An toàn trích xuất text từ selector
+
+        :param soup: Điểm khởi đầu để tìm kiếm
+        :param selector: Chọn lọc để tìm kiếm
+        :param multiple: Nếu True, trả về List[str], ngược lại trả về str
+        :return: Text được trích xuất nếu thành công, ngược lại trả về rỗng
+        """
         try:
             if multiple:
                 return [el.get_text(strip=True) for el in soup.select(selector)]
@@ -52,7 +61,7 @@ class Cophieu68BeautifulSoupCrawler:
             return ""
         return re.sub(r"[^\d.,\-]", "", text)
 
-    def crawl_basic_info(self, symbol: str) -> Optional[StockBasicInfo]:
+    def crawl_basic_info(self, symbol: str, price_info:PriceInfo) -> Optional[StockBasicInfo]:
         url = f"{self.urls['summary']}{symbol.upper()}"
         soup = self.get_soup(url)
         if not soup:
@@ -66,12 +75,12 @@ class Cophieu68BeautifulSoupCrawler:
                 if "(" in company_name:
                     company_name = company_name.split("(")[0].strip()
 
-            current_price = self.safe_extract_text(soup, "#stockname_close")
-            price_change = self.safe_extract_text(soup, "#stockname_price_change")
-            percent_change = self.safe_extract_text(soup, "#stockname_percent_change")
-            volume = self.safe_extract_text(soup, "#stockname_volume")
-            highest = self.safe_extract_text(soup, "#stockname_price_highest")
-            lowest = self.safe_extract_text(soup, "#stockname_price_lowest")
+            current_price = self.safe_extract_text(soup, price_info.current_price)
+            price_change = self.safe_extract_text(soup, price_info.price_change) 
+            percent_change = self.safe_extract_text(soup, price_info.percent_change)
+            volume = self.safe_extract_text(soup, price_info.volume) 
+            highest = self.safe_extract_text(soup, price_info.high_price)
+            lowest = self.safe_extract_text(soup, price_info.low_price)
 
             reference_price = ""
             open_price = ""
@@ -97,5 +106,5 @@ class Cophieu68BeautifulSoupCrawler:
                 timestamp=str(int(time.time()))
             )
         except Exception as e:
-            .error(f"Error extracting basic info for {symbol}: {e}")
+            self.logger.error(f"Error extracting basic info for {symbol}: {e}")
             return None
