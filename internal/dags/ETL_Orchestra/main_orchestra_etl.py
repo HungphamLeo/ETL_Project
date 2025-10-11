@@ -1,9 +1,6 @@
 import logging
 from typing import Dict, Any, Optional
-
-import pandas as pd
 from datetime import timedelta
-
 from airflow.models import Variable
 from cmd_.load_config import load_config
 from src.logger import FastLogger
@@ -60,6 +57,7 @@ class ETLPipelineConfig:
 
     def _setup_logger(self, logger_type) -> logging.Logger:
         """Setup logger instance"""
+        print(self.config)
         return FastLogger(self.config,logger_type).get_logger()
 
     # ========== Accessor Methods ==========

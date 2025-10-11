@@ -64,10 +64,10 @@ project_params:
   database:
     primary:
       type: "mysql"
-      host: "master-db-host"
+      host: "10.255.255.254"
       port: 3306
-      username: "etl_user"
-      password: "etl_password"
+      username: "root"
+      password: "12345678aA@#"
       database: "worldbank_etl"
       charset: "utf8mb4"
     read_replica:
