@@ -10,8 +10,11 @@ from internal.models.cophieu68_model.extract_models import *
 from internal.dags.cophieu68_dag.extract.base_extract import Cophieu68BeautifulSoupCrawler
 
 class extract_cophieu68(Cophieu68BeautifulSoupCrawler):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, pipeline_config=None, pipeline_logger=None):
+        if pipeline_config is not None or pipeline_logger is not None:
+            super().__init__(pipeline_config, pipeline_logger)
+        else:
+            super().__init__()
         self.endpoint = self.crawler_cfg["endpoints"]
         
     def crawl_financial_report(self, symbol: str, report_type: str) -> Optional[List[StockFinancialReport]]:
@@ -120,18 +123,19 @@ class extract_cophieu68(Cophieu68BeautifulSoupCrawler):
     def crawl_power_ratings(self, symbol: str, soup: BeautifulSoup = None) -> Optional[StockPowerRatings]:
         """Crawl sức mạnh các chỉ số"""
         if not soup:
-            url = f"{self.urls['summary']}{symbol.upper()}"
+
+            url = f"{self.urls['summary_financial']}{symbol.upper()}"
+            self.logger.info(f" Crawling power ratings for {symbol} from {url}")
             soup = self.get_soup(url)
-        
-        if not soup:
-            return None
         
         try:            
             power_ratings = StockPowerRatings(symbol=symbol.upper())
-            
+        
             # Tìm section có icon bolt (fa-bolt)
             flex_rows = soup.select(".flex_row")
-            
+            self.logger.info(f" Found {len(flex_rows)} flex_row elements")
+            self.logger.info(f" Searching for power ratings section... {flex_rows}")
+            self.logger.info(f" Flex rows content: {[str(row) for row in flex_rows]}")  # Debug content
             for row in flex_rows:
                 if "fa-bolt" in str(row) or "fa-solid fa-bolt" in str(row):
                     try:
@@ -147,6 +151,7 @@ class extract_cophieu68(Cophieu68BeautifulSoupCrawler):
                         
                         # Đặc biệt cho đầu tư hiệu quả (rating sao)
                         star_elements = row.select(".fa-star")
+                        self.logger.info(f" Found {star_elements} star elements for investment efficiency")
                         if star_elements:
                             # Đếm số sao có màu xanh
                             filled_stars = len([star for star in star_elements 
@@ -380,27 +385,30 @@ class extract_cophieu68(Cophieu68BeautifulSoupCrawler):
         return results
 
         
-    def crawl_market_list(self, market_type: str = "all") -> List[str]:
-        """Crawl danh sách mã cổ phiếu từ thị trường"""
-       
-
-        url = f"{self.urls['market_data']}?market={market_type}"
+    def crawl_market_list(self, market_type: str) -> List[str]:
+        """
+        Crawl danh sách mã cổ phiếu từ thị trường
+        
+        :param market_type: Loại thị trường (VN_INDEX, HOSE, HNX, UPCOM)
+        :return: Danh sách mã cổ phiếu
+        """
+        if market_type not in CRAWL_MARKET_LIST_CONFIG:
+            self.logger.error(f"Invalid market type: {market_type}")
+            return []
+        url = f"{self.urls}{self.endpoint['market_list']}?id=^{market_type}"
+        print(f"URL: {url}")
         soup = self.get_soup(url)
         if not soup:
             return []
 
         try:
             symbols = []
-
-            # Lấy link theo pattern từ config
-            links = soup.find_all('a', href=re.compile(CRAWL_MARKET_LIST_CONFIG["link_pattern"]))
-            for link in links:
-                href = link.get('href', '')
-                match = re.search(CRAWL_MARKET_LIST_CONFIG["symbol_regex"], href)
-                if match:
-                    symbol = match.group(1).upper()
-                    if symbol not in symbols:
-                        symbols.append(symbol)
+            # Find all table rows with class "stock_online"
+            for tr in soup.find_all("tr", class_="stock_online"):
+                # Get the stock code from the "data-id" attribute
+                code = tr.get("data-id")
+                if code:
+                    symbols.append(code.upper())
             return symbols
 
         except Exception as e:

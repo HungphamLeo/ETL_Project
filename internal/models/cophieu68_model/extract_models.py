@@ -186,13 +186,49 @@ class CashflowStatementReport:
 # ============================================================
 
 CRAWL_MARKET_LIST_CONFIG = {
-    "link_pattern": r'/quote/summary\.php\?id=',
-    "symbol_regex": r'id=([A-Z0-9]+)',
+    "VNINDEX" : "vnindex",
+    "HNX": "hastc",
+    "UPCOM": "upcom",
+    "VN30": "vn30"
+
+
 }
 
 CRAWL_INDUSTRY_LIST_CONFIG = {
-    "link_pattern": r'category',
-    "limit": 20,   # số ngành tối đa crawl
+    "Bán buôn": "^bb",
+    "Bất động sản": "^bds",
+    "Bảo hiểm": "^bh",
+    "Bán lẻ": "^bl",
+    "Chế biến Thủy sản": "^cbts",
+    "Chứng khoán": "^ck",
+    "Công nghệ và Thông tin": "^cntt",
+    "Chăm sóc sức khỏe": "^cssk",
+    "Dịch vụ lưu trú, ăn uống, giải trí": "^dvltaugt",
+    "Dịch vụ tư vấn, hỗ trợ": "^dvtvht",
+    "Khai khoáng": "^kk",
+    "Ngân hàng": "^nh",
+    "Nông - Lâm - Ngư nghiệp": "^nln",
+    "Sản phẩm cao su": "^spcs",
+    "Sản xuất Hàng gia dụng": "^sxhgd",
+    "Sản xuất Nhựa - Hóa chất": "^sxnhc",
+    "Sản xuất Phụ trợ": "^sxpt",
+    "Sản xuất Thiết bị, máy móc": "^sxtbmm",
+    "Thiết bị điện": "^tbd",
+    "Tài chính khác": "^tck",
+    "Tiện ích": "^ti",
+    "Thực phẩm - Đồ uống": "^tpdu",
+    "Vật liệu xây dựng": "^vlxd",
+    "Vận tải - kho bãi": "^vtkb",
+    "Xây dựng": "^xd",
+    "Cao su": "^caosu",
+    "Nhóm Dầu khí": "^daukhi",
+    "Dược phẩm / Y tế / Hóa chất": "^duocpham",
+    "Giáo dục": "^giaoduc",
+    "Hàng không": "^hk",
+    "Năng lượng (Điện/Khí/...)": "^nangluong",
+    "Nhựa - Bao bì": "^nhua",
+    "Phân bón": "^phanbon",
+    "Ngành Thép": "^thep",
 }
 
 FINANCIAL_MAPPING = {

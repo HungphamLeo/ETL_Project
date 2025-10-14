@@ -20,7 +20,6 @@ class ETLPipelineConfig:
     """
 
     def __init__(self, config_path: Optional[str] = None):
-        print("Initializing ETLPipelineConfig...", config_path)
         self.config_path = config_path
         self.config = self._load_config()
         self.database_logger = self._setup_logger("logger.database_logger")
@@ -57,7 +56,6 @@ class ETLPipelineConfig:
 
     def _setup_logger(self, logger_type) -> logging.Logger:
         """Setup logger instance"""
-        print(self.config)
         return FastLogger(self.config,logger_type).get_logger()
 
     # ========== Accessor Methods ==========

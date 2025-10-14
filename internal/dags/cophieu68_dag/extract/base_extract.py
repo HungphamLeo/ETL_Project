@@ -33,9 +33,10 @@ class Cophieu68BeautifulSoupCrawler:
                 self.logger.warning(f"Error fetching {url} (attempt {attempt + 1}): {e}")
                 if attempt < retries - 1:
                     time.sleep(2 ** attempt)
-                continue
-        self.logger.error(f"Failed to fetch {url} after {retries} attempts")
-        return None
+                    continue
+                else:
+                    self.logger.error(f"Failed to fetch {url} after {retries} attempts")
+                    return None
 
     def safe_extract_text(self, soup: BeautifulSoup, 
                                 selector: str, 
