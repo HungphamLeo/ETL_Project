@@ -1,0 +1,136 @@
+# world_bank ELT configuration
+# Designed by assistant to support: extract -> landing (HDFS or MongoDB) -> transform (Spark) -> load (MySQL)
+# Suitable for a Data Engineer with ~5 years experience. Replace secrets via vault/ENV variables in production.
+
+environment:
+  staging: false
+  production: false
+  local: true
+
+project_params:
+  name: cophieu68
+  url: "https://cophieu68.vn"
+  version: 1.0
+  service_name: data-api-go
+  description: "ELT pipeline config: ingest raw HTML/JSON, persist to HDFS/MongoDB, transform with Spark, load to MySQL DW"
+
+  logger:
+    level: INFO
+    loki_enabled: false
+    loki_url: "http://loki.monitoring.svc.cluster.local:3100/loki/api/v1/push"
+    database_logger:
+      storage_path: ./logger_storage/cophieu68_elt_logger/database_logger
+      files:
+        debug: database_debug.log
+        info: database_info.log
+        warning: database_warning.log
+        error: database_error.log
+      max_size_mb: 100
+      backup_count: 5
+    etl_logger:
+      extract_log:
+        storage_path: ./logger_storage/cophieu68_elt_logger/etl_logger/extract
+        files:
+          debug: extract_debug.log
+          info: extract_info.log
+          warning: extract_warning.log
+          error: extract_error.log
+        max_size_mb: 100
+        backup_count: 5
+      transform_log:
+        storage_path: ./logger_storage/cophieu68_elt_logger/etl_logger/transform
+        files:
+          debug: transform_debug.log
+          info: transform_info.log
+          warning: transform_warning.log
+          error: transform_error.log
+        max_size_mb: 100
+        backup_count: 5
+      load_log:
+        storage_path: ./logger_storage/cophieu68_elt_logger/etl_logger/load
+        files:
+          debug: load_debug.log
+          info: load_info.log
+          warning: load_warning.log
+          error: load_error.log
+        max_size_mb: 100
+        backup_count: 5
+
+  security:
+    encryption_key_path: internal/config/encryption.key
+    secrets_backend: env # or "vault"
+    rotate_secrets_days: 30
+    ssh_tunnel: false
+
+  http:
+    delay_seconds: 1.0
+    timeout_seconds: 30
+    headers:
+      User-Agent: "Mozilla/5.0 ..."
+      Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8"
+      Accept-Language: "en-US,en;q=0.5"
+      Accept-Encoding: "gzip, deflate"
+      Connection: "keep-alive"
+      Upgrade-Insecure-Requests: "1"
+
+  sources:
+    cophieu68:
+      base_url: "https://cophieu68.vn"
+      endpoints:
+        company_profile: "/quote/profile.php?id={symbol}"
+        summary_financial: "/quote/financial.php?id={symbol}"
+        financial_ratios: "/quote/summary.php?id={symbol}"
+        power_rating: "/quote/summary.php?id={symbol}"
+        financial_details_quarter: "/quote/financial_detail.php?id={symbol}&type=quarter"
+        financial_details_year: "/quote/financial_detail.php?id={symbol}&type=year"
+        market_list: "/market/markets.php"
+        trading_data: "/quote/history.php?cP={page}&id={symbol}"
+        stock_category:
+          - "/category/category_index.php"
+          - "/category/category_financial.php"
+      rate_limit_per_minute: 60
+      retry:
+        max_attempts: 3
+        backoff_seconds: 5
+      parser: html
+      auth: {}
+  storage:
+  # --------------------------
+  # Hadoop HDFS configuration
+  # --------------------------
+    hdfs:
+      enabled: true
+      namenode_uri: "hdfs://localhost:9000"    # nếu chạy Docker Hadoop → hdfs://namenode:9000
+      base_path: "/user/hadoop/data_lake"      # thư mục gốc cho data lake
+      user: "hadoop"
+      format_default: "parquet"
+      replication: 3
+      block_size_mb: 128
+      connection_timeout: 30
+      permissions:
+        read: ["etl", "analytics"]
+        write: ["etl"]
+      security:
+        kerberos: false
+        keytab: ""
+        principal: ""
+    mongodb:
+      enabled: true
+      uri: "mongodb://localhost:27017"
+      database: "cophieu68_datalake"
+      username: "de_training"             # để trống nếu không bật auth
+      password: "1928374655"
+      authSource: "admin"
+      connectTimeoutMS: 5000
+      maxPoolSize: 50
+      retryWrites: true
+      writeConcern: "majority"
+      collections:
+        - name: "list_stock_vnindex"
+          description: "Danh sách cổ phiếu theo sàn VNINDEX"
+          indexes:
+            - keys: { symbol: 1 }
+              unique: true
+
+
+
