@@ -1,6 +1,8 @@
 from dataclasses import dataclass, field
 from typing import List, Dict, Optional
+from dataclasses import asdict
 import pandas as pd
+import json
 
 # ============================================================
 # 📌 DATA MODELS
@@ -180,7 +182,63 @@ class CashflowStatementReport:
     table_index: int
     data: pd.DataFrame
 
+@dataclass
+class IndustrySummaryInfo:
+    industry_code: str
+    industry_name: str
+    industry_url: str
+    index: Optional[str] = None
+    change: Optional[str] = None
+    liquidity: Optional[str] = None
+    capital: Optional[str] = None
 
+@dataclass
+class IndustryFinancialInfo:
+    industry_code: str
+    industry_name: str
+    industry_url: str
+    avg_price: Optional[str] = None
+    book_value: Optional[str] = None
+    eps: Optional[str] = None
+    pe: Optional[str] = None
+    roa: Optional[str] = None
+    roe: Optional[str] = None
+
+@dataclass
+class IndustryCapitalInfo:
+    industry_code: str
+    industry_name: str
+    industry_url: str
+    total_asset: Optional[str] = None
+    total_equity: Optional[str] = None
+    total_liabilities: Optional[str] = None
+    percentage_debt_on_equity: Optional[str] = None
+    percentage_equity_on_assets: Optional[str] = None
+    revenue: Optional[str] = None
+    profit_before_tax: Optional[str] = None
+
+@dataclass
+class TradingRecord:
+    date: str
+    close_price: float
+    volume: int
+    open_price: float
+    high_price: float
+    low_price: float
+    foreign_buy: int
+    foreign_sell: int
+    foreign_value: float
+
+@dataclass
+class TradingData:
+    symbol: str
+    records: List[TradingRecord] = field(default_factory=list)
+
+    def to_json(self) -> str:
+        return json.dumps({
+            "symbol": self.symbol,
+            "records": [asdict(r) for r in self.records]
+        }, ensure_ascii=False, indent=2)
 # ============================================================
 # 📌 PARSING CONFIGS
 # ============================================================
@@ -298,3 +356,6 @@ CRAWL_COMPLETE_STOCK_CONFIG = {
 CRAWL_MULTIPLE_STOCKS_CONFIG = {
     "max_workers_default": 5
 }
+
+
+INDUSTRIAL_INFO_TYPE = {"summary_info": 0, "financial_info": 1, "fund_info": 2}
