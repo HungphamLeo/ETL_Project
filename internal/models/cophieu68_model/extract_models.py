@@ -1,6 +1,8 @@
 from dataclasses import dataclass, field
 from typing import List, Dict, Optional
+from dataclasses import asdict
 import pandas as pd
+import json
 
 # ============================================================
 # 📌 DATA MODELS
@@ -39,30 +41,38 @@ class StockBasicInfo:
 
 @dataclass
 class StockFinancialRatios:
-    """Các chỉ số tài chính"""
+    """Chỉ tiêu tóm tắt đầu trang của cổ phiếu (summary.php?id=xxx)."""
     symbol: str
-    book_value: str = ""       # Giá sổ sách
-    eps: str = ""
-    pe_ratio: str = ""
-    pb_ratio: str = ""
-    roa: str = ""
-    roe: str = ""
-    beta: str = ""
-    market_cap: str = ""       # Vốn thị trường
-    listed_volume: str = ""    # KL niêm yết
-    avg_volume_52w: str = ""   # KLGD 52w
-    high_low_52w: str = ""     # Cao-thấp 52w
+    reference_price: Optional[float] = None
+    open_price: Optional[float] = None
+    high_price: Optional[float] = None
+    low_price: Optional[float] = None
+    volume: Optional[int] = None
+    book_value: Optional[str] = None
+    eps: Optional[str] = None
+    pe: Optional[str] = None
+    pb: Optional[str] = None
+    roa_roe: Optional[str] = None
+    beta: Optional[float] = None
+    market_cap: Optional[str] = None
+    listed_volume: Optional[str] = None
+    avg_volume_52w: Optional[int] = None
+    high_low_52w: Optional[str] = None
+    debt: Optional[str] = None
+    equity: Optional[str] = None
+    debt_to_equity: Optional[str] = None
+    equity_to_assets: Optional[str] = None
+    cash: Optional[str] = None
+    eps_power: Optional[str] = None
+    roe_power: Optional[str] = None
+    invest_efficiency: Optional[str] = None
+    pb_power: Optional[str] = None
+    price_growth_power: Optional[str] = None
 
+    def to_df(self) -> pd.DataFrame:
+        """Convert toàn bộ dataclass thành 1 DataFrame hàng duy nhất"""
+        return pd.DataFrame([self.__dict__])
 
-@dataclass
-class StockPowerRatings:
-    """Sức mạnh các chỉ số"""
-    symbol: str
-    eps_power: str = ""
-    roe_power: str = ""
-    investment_efficiency: str = ""
-    pb_power: str = ""
-    price_growth_power: str = ""
 
 
 @dataclass
@@ -88,16 +98,35 @@ class FinancialStatement:
     total_debt: str = ""
     owner_equity: str = ""
 
+@dataclass
+class DetailsMatchRow:
+    Time_match: str
+    Price_match: float
+    Increase_decrease: str
+    Volume: int
+    Accum_volume: int
+
 
 @dataclass
-class BusinessPlan:
-    """Kế hoạch kinh doanh"""
+class DetailsMatchReport:
     symbol: str
-    year: str = ""
-    revenue_plan: str = ""
-    revenue_achievement: str = ""
-    profit_plan: str = ""
-    profit_achievement: str = ""
+    data: pd.DataFrame
+
+
+@dataclass
+class BusinessPlanRow:
+    Year: str
+    Plan_revenue: float
+    Pass_revenue: float
+    Plan_profit: float
+    Pass_profit: float
+
+
+@dataclass
+class BusinessPlanReport:
+    symbol: str
+    data: pd.DataFrame
+
 
 
 @dataclass
@@ -128,17 +157,6 @@ class CompanyProfile:
     tax_code: str = ""
 
 
-@dataclass
-class CompleteStockData:
-    """Dữ liệu tổng hợp của một cổ phiếu"""
-    basic_info: Optional[StockBasicInfo] = None
-    financial_ratios: Optional[StockFinancialRatios] = None
-    power_ratings: Optional[StockPowerRatings] = None
-    trading_data: Optional[TradingData] = None
-    financial_statements: List[FinancialStatement] = field(default_factory=list)
-    business_plans: List[BusinessPlan] = field(default_factory=list)
-    industry_info: Optional[IndustryInfo] = None
-    company_profile: Optional[CompanyProfile] = None
 
 
 # ============================================================
@@ -147,40 +165,94 @@ class CompleteStockData:
 
 @dataclass
 class StockFinancialReport:
-    """Báo cáo tài chính (raw DataFrame, generic)"""
+    """Generic report wrapper"""
     symbol: str
-    report_type: str       # "income" | "balance" | "cashflow"
-    table_index: int       # bảng số mấy trong page
-    data: pd.DataFrame     # dữ liệu báo cáo
-
+    report_type: str       # "income" | "balance" | "cashflow" | "business_plan" | "details_match"
+    table_index: int
+    data: pd.DataFrame
 
 @dataclass
 class IncomeStatementReport:
-    """Báo cáo KQKD"""
     symbol: str
-    period: Optional[str]
-    table_index: int
     data: pd.DataFrame
-
 
 @dataclass
 class BalanceSheetReport:
-    """Báo cáo Bảng cân đối kế toán"""
     symbol: str
-    period: Optional[str]
-    table_index: int
     data: pd.DataFrame
-
 
 @dataclass
 class CashflowStatementReport:
-    """Báo cáo Lưu chuyển tiền tệ"""
     symbol: str
-    period: Optional[str]
-    table_index: int
     data: pd.DataFrame
 
+@dataclass
+class BusinessPlanReport:
+    symbol: str
+    data: pd.DataFrame
 
+@dataclass
+class DetailsMatchReport:
+    symbol: str
+    data: pd.DataFrame
+
+@dataclass
+class IndustrySummaryInfo:
+    industry_code: str
+    industry_name: str
+    industry_url: str
+    index: Optional[str] = None
+    change: Optional[str] = None
+    liquidity: Optional[str] = None
+    capital: Optional[str] = None
+
+@dataclass
+class IndustryFinancialInfo:
+    industry_code: str
+    industry_name: str
+    industry_url: str
+    avg_price: Optional[str] = None
+    book_value: Optional[str] = None
+    eps: Optional[str] = None
+    pe: Optional[str] = None
+    roa: Optional[str] = None
+    roe: Optional[str] = None
+
+@dataclass
+class IndustryCapitalInfo:
+    industry_code: str
+    industry_name: str
+    industry_url: str
+    total_asset: Optional[str] = None
+    total_equity: Optional[str] = None
+    total_liabilities: Optional[str] = None
+    percentage_debt_on_equity: Optional[str] = None
+    percentage_equity_on_assets: Optional[str] = None
+    revenue: Optional[str] = None
+    profit_before_tax: Optional[str] = None
+
+@dataclass
+class TradingRecord:
+    date: str
+    close_price: float
+    volume: int
+    open_price: float
+    high_price: float
+    low_price: float
+    foreign_buy: int
+    foreign_sell: int
+    foreign_value: float
+
+@dataclass
+class TradingData:
+    symbol: str
+    records: List[TradingRecord] = field(default_factory=list)
+
+    def to_json(self) -> str:
+        return json.dumps({
+            "symbol": self.symbol,
+            "records": [asdict(r) for r in self.records]
+        }, ensure_ascii=False, indent=2)
 # ============================================================
 # 📌 PARSING CONFIGS
 # ============================================================
@@ -298,3 +370,6 @@ CRAWL_COMPLETE_STOCK_CONFIG = {
 CRAWL_MULTIPLE_STOCKS_CONFIG = {
     "max_workers_default": 5
 }
+
+
+INDUSTRIAL_INFO_TYPE = {"summary_info": 0, "financial_info": 2, "fund_info": 3}

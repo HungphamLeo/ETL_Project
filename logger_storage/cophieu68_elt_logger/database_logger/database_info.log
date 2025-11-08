@@ -1,0 +1,1 @@
+{"time":"2025-11-08T11:26:23", "level":"INFO", "message":"New encryption key generated at config/encryption.key", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/internal/dags/wbapi_dag/load/wbapi_load_implement.py:48"}
