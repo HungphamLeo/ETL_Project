@@ -78,8 +78,8 @@ project_params:
       base_url: "https://cophieu68.vn"
       endpoints:
         company_profile: "/quote/profile.php?id={symbol}"
-        summary_financial: "/quote/financial.php?id={symbol}"
-        financial_ratios: "/quote/summary.php?id={symbol}"
+        summary_financial: "/quote/summary.php?id={symbol}"
+        financial_ratios: "/quote/financial.php?id={symbol}"
         power_rating: "/quote/summary.php?id={symbol}"
         financial_details_quarter: "/quote/financial_detail.php?id={symbol}&type=quarter"
         financial_details_year: "/quote/financial_detail.php?id={symbol}&type=year"
@@ -118,8 +118,8 @@ project_params:
       enabled: true
       uri: "mongodb://localhost:27017"
       database: "cophieu68_datalake"
-      username: "de_training"             # để trống nếu không bật auth
-      password: "1928374655"
+      username: "root"             # để trống nếu không bật auth
+      password: "root123"
       authSource: "admin"
       connectTimeoutMS: 5000
       maxPoolSize: 50
