@@ -422,8 +422,6 @@ class extract_cophieu68(Cophieu68BeautifulSoupCrawler):
                     break
 
                 all_rows.extend(rows)
-                self.logger.info(f"Đã crawl {len(rows)} dòng dữ liệu từ trang {page_num}")
-
                 if page is not None:
                     break
 
