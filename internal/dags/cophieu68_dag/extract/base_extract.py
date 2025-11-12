@@ -12,7 +12,7 @@ class Cophieu68BeautifulSoupCrawler:
         config = pipeline_config
         self.crawler_cfg = config["sources"]["cophieu68"]
         self.urls = self.crawler_cfg["base_url"]
-        self.delay = config["http"].get("delay_seconds", 1.0)
+        self.delay = config["http"].get("delay_seconds", 0.2)
         self.timeout =  config["http"].get("timeout_seconds", 30)
         self.session = requests.Session()
         self.session.headers.update(config["http"].get("headers", {}))

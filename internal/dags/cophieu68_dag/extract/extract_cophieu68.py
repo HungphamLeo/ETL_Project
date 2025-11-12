@@ -452,10 +452,10 @@ class ExtractCophieu68(Cophieu68BeautifulSoupCrawler):
             except Exception as e:
                 self.logger.warning(f"Lỗi parse dòng dữ liệu {r}: {e}")
 
-        return json.dumps({
-            "symbol": symbol.upper(),
-            "records": [asdict(r) for r in records]
-        }, ensure_ascii=False, indent=2)
+        return {
+                    "symbol": symbol.upper(),
+                    "records": [asdict(r) for r in records]
+                }
 
     
     def crawl_company_profile(self, symbol: str) -> Optional[CompanyProfile]:

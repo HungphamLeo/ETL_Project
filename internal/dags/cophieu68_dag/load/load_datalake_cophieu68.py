@@ -1,4 +1,5 @@
 from pymongo import MongoClient
+import datetime
 from internal.dags.cophieu68_dag.load.base_loading import *
 
 
@@ -20,9 +21,10 @@ class MongoLoader(MongoWriter):
         self.uri = f"mongodb://{username}:{password}@{host}:{port}/?authSource={authSource}"
         self.logger = logger or logging.getLogger(__name__)
         self.client_kwargs = client_kwargs
+        
     
 
-    def load_market_list(self, collection: str, market_type: str, market_data: List[Dict[str, Any]]) -> None:
+    def load_company_info(self, collection_name: str, company_profiles: Dict) -> None:
         """
         Load list of symbols into MongoDB.
         Performs upsert to avoid duplicate entries.
@@ -30,10 +32,10 @@ class MongoLoader(MongoWriter):
         client = MongoClient(self.uri, **self.client_kwargs)
         try:
             db = client[self.database]
-            collection = db[collection]
-            for symbol in market_data:
-                filter_query = {"market_type": market_type, "symbol": symbol["symbol"]}
-                update_query = {"$set": {"market_type": market_type, "symbol": symbol["symbol"]}}
+            collection = db[collection_name]
+            for symbol, profile in company_profiles.items():
+                filter_query = {"symbol": symbol, "profile": profile}
+                update_query = {"$set": {"symbol": symbol, "profile": profile}}
                 collection.update_one(filter_query, update_query, upsert=True)
         except Exception as e:
             raise Exception(f"Error loading market list into MongoDB: {e}") from e
@@ -49,14 +51,16 @@ class MongoLoader(MongoWriter):
         try:
             database = client[self.database]
             collection = database[collection_name]
+            time_update = datetime.now().isoformat()
             for metric, data in industry_data.items():
+                data["update_time"] = time_update
                 filter_query = {"industry_metric": metric, "data": data}
                 update_query = {"$set": data}
                 collection.update_one(filter_query, update_query, upsert=True)
         finally:
             client.close()
     
-    def load_crawl_stock_info(self, collection_name: str, stock_info: Dict[str, List[str]]) -> None:
+    def load_market_list(self, collection_name: str, stock_info: List) -> None:
         """
         Load stock information into MongoDB.
         Performs upsert to avoid duplicate entries.
@@ -65,9 +69,10 @@ class MongoLoader(MongoWriter):
         try:
             db = client[self.database]
             collection = db[collection_name]
-            for market_type, symbol_list in stock_info.items():
-                filter_query = {"symbol_list": symbol_list}
-                update_query = {"$set": {"market_type": market_type, "symbol_list": symbol_list}}
+            for data in stock_info:
+                filter_query = {"market_type": data["market_type"],"symbol_list": data["symbols"]}
+                data["update_time"] = datetime.now().isoformat()
+                update_query = {"$set": data}
                 collection.update_one(filter_query, update_query, upsert=True)
         except Exception as e:
             raise Exception(f"Error loading stock info into MongoDB: {e}") from e
@@ -92,7 +97,7 @@ class MongoLoader(MongoWriter):
         finally:
             client.close()
     
-    def load_trading_data(self, collection: str, trading_data: List[Dict[str, Any]]) -> None:
+    def load_trading_data(self, collection: str, trading_data: Dict) -> None:
         """
         Load trading data into MongoDB.
         Performs upsert to avoid duplicate entries.
@@ -101,10 +106,9 @@ class MongoLoader(MongoWriter):
         try:
             db = client[self.database]
             collection = db[collection]
-            for trading in trading_data:
-                filter_query = {"symbol": trading["symbol"], "date": trading["date"]}
-                update_query = {"$set": trading}
-                collection.update_one(filter_query, update_query, upsert=True)
+            filter_query = {"symbol": trading_data["symbol"], "data": trading_data["records"]}
+            update_query = {"$set": trading_data}
+            collection.update_one(filter_query, update_query, upsert=True)
         except Exception as e:
             raise Exception(f"Error loading trading data into MongoDB: {e}") from e
         finally:

@@ -496,6 +496,19 @@ class MongoStorageBackend(StorageBackend):
                 client.close()
         except Exception as e:
             return {"ok": False, "error": str(e)}
+    def find_table(self, name: str) -> Dict[str, Any]:
+        try:
+            client = self._client()
+            try:
+                db = client[self.mongo.database]
+                coll = db[name]
+                res = coll.find({})
+                list_res = list(res)
+                return {"ok": True, "data": list_res, "collection": name}
+            finally:
+                client.close()
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
 
     def delete_table(self, name: str) -> Dict[str, Any]:
         try:
