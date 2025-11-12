@@ -216,10 +216,18 @@ class MongoWriter:
     Lightweight Mongo writer. Uses a short-lived client per call to ensure resource cleanup.
     """
 
-    def __init__(self, uri: str, database: str, collection: str, logger: Optional[logging.Logger] = None, **client_kwargs):
-        self.uri = uri
+    def __init__(self, username: str, 
+                        password: str, 
+                        authSource: str, 
+                        database: str, 
+                        collection: str, logger: Optional[logging.Logger] = None, **client_kwargs):
+        
+        self.username = username        # để trống nếu không bật auth
+        self.password= password
+        self.authSource= authSource
         self.database = database
         self.collection = collection
+        self.uri = f"mongodb://{username}:{password}@localhost:27017/?authSource={authSource}"
         self.logger = logger or logging.getLogger(__name__)
         self.client_kwargs = client_kwargs
 

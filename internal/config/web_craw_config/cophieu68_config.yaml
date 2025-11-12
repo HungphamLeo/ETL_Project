@@ -55,7 +55,7 @@ project_params:
           error: load_error.log
         max_size_mb: 100
         backup_count: 5
-
+  
   security:
     encryption_key_path: internal/config/encryption.key
     secrets_backend: env # or "vault"
@@ -116,21 +116,28 @@ project_params:
         principal: ""
     mongodb:
       enabled: true
-      uri: "mongodb://localhost:27017"
+      url: "mongodb://root:root123@localhost:27017/?authSource=admin"
       database: "cophieu68_datalake"
       username: "root"             # để trống nếu không bật auth
       password: "root123"
       authSource: "admin"
+      host: "localhost"
+      port: 27017
       connectTimeoutMS: 5000
       maxPoolSize: 50
       retryWrites: true
       writeConcern: "majority"
       collections:
-        - name: "list_stock_vnindex"
-          description: "Danh sách cổ phiếu theo sàn VNINDEX"
-          indexes:
-            - keys: { symbol: 1 }
-              unique: true
-
-
-
+      collections:
+        list_stock: "list_stock"
+        industry_info: "industry_info"
+        stock_info: "stock_info"
+        financial_info: "financial_info"
+        trading_data: "trading_data"
+        income_statement_yearly: "income_statement_yearly"
+        income_statement_quarterly: "income_statement_quarterly"
+        balance_sheet_yearly: "balance_sheet_yearly"
+        balance_sheet_quarterly: "balance_sheet_quarterly"
+        match_details: "match_details"
+        business_plan: "business_plan"
+        financial_report_summary: "financial_report_summary"
