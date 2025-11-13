@@ -124,7 +124,7 @@ class DetailsMatchRow:
 class DetailsMatchReport:
     """Chi tiết khớp lệnh"""
     symbol: str
-    data: pd.DataFrame
+    data: list
 
 
 @dataclass

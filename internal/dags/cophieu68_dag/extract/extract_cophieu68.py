@@ -157,7 +157,7 @@ class ExtractCophieu68(Cophieu68BeautifulSoupCrawler):
             return None
 
 
-        return DetailsMatchReport(symbol=symbol.upper(), data=rows)
+        return DetailsMatchReport(symbol=symbol.upper(), data=rows).__dict__
         
 
     def crawl_detailed_financial_report(self, symbol: str, report_type: str = "quarter") -> Optional[Dict]:

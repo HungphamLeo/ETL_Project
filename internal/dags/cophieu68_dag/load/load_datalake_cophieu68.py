@@ -195,7 +195,7 @@ class MongoLoader(MongoWriter):
         finally:
             client.close()
 
-    def load_details_match(self,collection: str, match_data: List[Dict[str, Any]]) -> None:
+    def load_details_match(self,collection_name: str, match_data: Dict[str, Any]) -> None:
         """
         Load match details into MongoDB.
         Performs upsert to avoid duplicate entries.
@@ -203,12 +203,12 @@ class MongoLoader(MongoWriter):
         client = MongoClient(self.uri, **self.client_kwargs)
         try:
             db = client[self.database]
-            collection = db[collection]
+            collection = db[collection_name]
             time_update = datetime.now().isoformat()
-            for match in match_data:
-                filter_query = {"symbol": match["symbol"], "time": match["Time_match"], "price": match["Price_match"]}
-                update_query = {"$set": match}
-                collection.update_one(filter_query, update_query, upsert=True)
+            match_data["update_time"] = time_update
+            filter_query = {"symbol": match_data["symbol"], "data": match_data["data"]}
+            update_query = {"$set": match_data}
+            collection.update_one(filter_query, update_query, upsert=True)
         except Exception as e:
             raise Exception(f"Error loading match details into MongoDB: {e}") from e
         finally:
