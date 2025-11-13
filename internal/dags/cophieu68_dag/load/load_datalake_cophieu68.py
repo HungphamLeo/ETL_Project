@@ -1,5 +1,5 @@
 from pymongo import MongoClient
-import datetime
+from datetime import datetime
 from internal.dags.cophieu68_dag.load.base_loading import *
 
 
@@ -33,6 +33,7 @@ class MongoLoader(MongoWriter):
         try:
             db = client[self.database]
             collection = db[collection_name]
+            time_update = datetime.now().isoformat()
             for symbol, profile in company_profiles.items():
                 filter_query = {"symbol": symbol, "profile": profile}
                 update_query = {"$set": {"symbol": symbol, "profile": profile}}
@@ -69,9 +70,10 @@ class MongoLoader(MongoWriter):
         try:
             db = client[self.database]
             collection = db[collection_name]
+            time_update = datetime.now().isoformat()
             for data in stock_info:
                 filter_query = {"market_type": data["market_type"],"symbol_list": data["symbols"]}
-                data["update_time"] = datetime.now().isoformat()
+                data["update_time"] = time_update
                 update_query = {"$set": data}
                 collection.update_one(filter_query, update_query, upsert=True)
         except Exception as e:
@@ -79,7 +81,7 @@ class MongoLoader(MongoWriter):
         finally:
             client.close()
     
-    def load_crawl_financial_info(self, collection: str,financial_data: List[Dict[str, Any]]) -> None:
+    def load_crawl_financial_info(self, collection_name: str,financial_data: List[Dict[str, Any]]) -> None:
         """
         Load financial information into MongoDB.
         Performs upsert to avoid duplicate entries.
@@ -87,11 +89,12 @@ class MongoLoader(MongoWriter):
         client = MongoClient(self.uri, **self.client_kwargs)
         try:
             db = client[self.database]
-            collection = db[collection]
-            for financial in financial_data:
-                filter_query = {"symbol": financial["symbol"]}
-                update_query = {"$set": financial}
-                collection.update_one(filter_query, update_query, upsert=True)
+            collection = db[collection_name]
+            time_update = datetime.now().isoformat()
+            financial_data["update_time"] = time_update
+            filter_query = {"symbol": financial_data["symbol"]}
+            update_query = {"$set": financial_data}
+            collection.update_one(filter_query, update_query, upsert=True)
         except Exception as e:
             raise Exception(f"Error loading financial info into MongoDB: {e}") from e
         finally:
@@ -106,6 +109,8 @@ class MongoLoader(MongoWriter):
         try:
             db = client[self.database]
             collection = db[collection]
+            time_update = datetime.now().isoformat()
+            trading_data["update_time"] = time_update
             filter_query = {"symbol": trading_data["symbol"], "data": trading_data["records"]}
             update_query = {"$set": trading_data}
             collection.update_one(filter_query, update_query, upsert=True)
@@ -114,7 +119,7 @@ class MongoLoader(MongoWriter):
         finally:
             client.close()
     
-    def load_detail_income_statement_yearly(self, collection: str,income_data: List[Dict[str, Any]]) -> None:
+    def load_detail_income_statement_yearly(self, collection_name: str,income_data: Dict[str, Any]) -> None:
         """
         Load detailed income statement data into MongoDB.
         Performs upsert to avoid duplicate entries.
@@ -122,17 +127,18 @@ class MongoLoader(MongoWriter):
         client = MongoClient(self.uri, **self.client_kwargs)
         try:
             db = client[self.database]
-            collection = db[collection]
-            for income in income_data:
-                filter_query = {"symbol": income["symbol"], "report_date": income["report_date"]}
-                update_query = {"$set": income}
-                collection.update_one(filter_query, update_query, upsert=True)
+            collection = db[collection_name]
+            time_update = datetime.now().isoformat()
+            income_data["update_time"] = time_update
+            filter_query = {"symbol": income_data["symbol"], "report_type": income_data["report_type"], "data": income_data["data"]}
+            update_query = {"$set": income_data}
+            collection.update_one(filter_query, update_query, upsert=True)
         except Exception as e:
             raise Exception(f"Error loading income statement data into MongoDB: {e}") from e
         finally:
             client.close()
     
-    def load_detail_income_statement_quarterly(self, collection: str, income_data: List[Dict[str, Any]]) -> None:
+    def load_detail_income_statement_quarterly(self, collection_name: str, income_data: List[Dict[str, Any]]) -> None:
         """
         Load detailed quarterly income statement data into MongoDB.
         Performs upsert to avoid duplicate entries.
@@ -140,17 +146,18 @@ class MongoLoader(MongoWriter):
         client = MongoClient(self.uri, **self.client_kwargs)
         try:
             db = client[self.database]
-            collection = db[collection]
-            for income in income_data:
-                filter_query = {"symbol": income["symbol"], "report_date": income["report_date"]}
-                update_query = {"$set": income}
-                collection.update_one(filter_query, update_query, upsert=True)
+            collection = db[collection_name]
+            time_update = datetime.now().isoformat()
+            income_data["update_time"] = time_update
+            filter_query = {"symbol": income_data["symbol"], "report_type": income_data["report_type"], "data": income_data["data"]}
+            update_query = {"$set": income_data}
+            collection.update_one(filter_query, update_query, upsert=True)
         except Exception as e:
             raise Exception(f"Error loading quarterly income statement data into MongoDB: {e}") from e
         finally:
             client.close()
     
-    def load_detail_balance_sheet_quarterly(self, collection: str, balance_data: List[Dict[str, Any]]) -> None:
+    def load_detail_balance_sheet_quarterly(self, collection_name: str, balance_data: Dict[str, Any]) -> None:
         """
         Load detailed balance sheet data into MongoDB.
         Performs upsert to avoid duplicate entries.
@@ -158,17 +165,18 @@ class MongoLoader(MongoWriter):
         client = MongoClient(self.uri, **self.client_kwargs)
         try:
             db = client[self.database]
-            collection = db[collection]
-            for balance in balance_data:
-                filter_query = {"symbol": balance["symbol"], "report_date": balance["report_date"]}
-                update_query = {"$set": balance}
-                collection.update_one(filter_query, update_query, upsert=True)
+            collection = db[collection_name]
+            time_update = datetime.now().isoformat()
+            balance_data["update_time"] = time_update
+            filter_query = {"symbol": balance_data["symbol"], "report_type": balance_data["report_type"], "data": balance_data["data"]}
+            update_query = {"$set": balance_data}
+            collection.update_one(filter_query, update_query, upsert=True)
         except Exception as e:
             raise Exception(f"Error loading balance sheet data into MongoDB: {e}") from e
         finally:
             client.close()
     
-    def load_detail_balance_sheet_yearly(self, collection: str, balance_data: List[Dict[str, Any]]) -> None:
+    def load_detail_balance_sheet_yearly(self, collection_name: str, balance_data: Dict[str, Any]) -> None:
         """
         Load detailed balance sheet data into MongoDB.
         Performs upsert to avoid duplicate entries.
@@ -176,11 +184,12 @@ class MongoLoader(MongoWriter):
         client = MongoClient(self.uri, **self.client_kwargs)
         try:
             db = client[self.database]
-            collection = db[collection]
-            for balance in balance_data:
-                filter_query = {"symbol": balance["symbol"], "report_date": balance["report_date"]}
-                update_query = {"$set": balance}
-                collection.update_one(filter_query, update_query, upsert=True)
+            collection = db[collection_name]
+            time_update = datetime.now().isoformat()
+            balance_data["update_time"] = time_update
+            filter_query = {"symbol": balance_data["symbol"], "report_type": balance_data["report_type"], "data": balance_data["data"]}
+            update_query = {"$set": balance_data}
+            collection.update_one(filter_query, update_query, upsert=True)
         except Exception as e:
             raise Exception(f"Error loading balance sheet data into MongoDB: {e}") from e
         finally:
@@ -195,6 +204,7 @@ class MongoLoader(MongoWriter):
         try:
             db = client[self.database]
             collection = db[collection]
+            time_update = datetime.now().isoformat()
             for match in match_data:
                 filter_query = {"symbol": match["symbol"], "time": match["Time_match"], "price": match["Price_match"]}
                 update_query = {"$set": match}
@@ -204,7 +214,7 @@ class MongoLoader(MongoWriter):
         finally:
             client.close()
     
-    def load_business_plan(self, collection: str, business_data: List[Dict[str, Any]]) -> None:
+    def load_business_plan(self, collection_name: str, business_plan_data: Dict[str, Any]) -> None:
         """
         Load business plan data into MongoDB.
         Performs upsert to avoid duplicate entries.
@@ -212,11 +222,12 @@ class MongoLoader(MongoWriter):
         client = MongoClient(self.uri, **self.client_kwargs)
         try:
             db = client[self.database]
-            collection = db[collection]
-            for plan in business_data:
-                filter_query = {"symbol": plan["symbol"]}
-                update_query = {"$set": plan}
-                collection.update_one(filter_query, update_query, upsert=True)
+            collection = db[collection_name]
+            time_update = datetime.now().isoformat()
+            business_plan_data["update_time"] = time_update
+            filter_query = {"symbol": business_plan_data["symbol"], "data": business_plan_data["data"]}
+            update_query = {"$set": business_plan_data}
+            collection.update_one(filter_query, update_query, upsert=True)
         except Exception as e:
             raise Exception(f"Error loading business plan data into MongoDB: {e}") from e
         finally:
@@ -231,6 +242,7 @@ class MongoLoader(MongoWriter):
         try:
             db = client[self.database]
             collection = db[collection]
+            time_update = datetime.now().isoformat()
             for report in report_data:
                 filter_query = {"symbol": report["symbol"], "report_date": report["report_date"]}
                 update_query = {"$set": report}
