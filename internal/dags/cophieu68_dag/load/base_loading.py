@@ -216,10 +216,18 @@ class MongoWriter:
     Lightweight Mongo writer. Uses a short-lived client per call to ensure resource cleanup.
     """
 
-    def __init__(self, uri: str, database: str, collection: str, logger: Optional[logging.Logger] = None, **client_kwargs):
-        self.uri = uri
+    def __init__(self, username: str, 
+                        password: str, 
+                        authSource: str, 
+                        database: str, 
+                        collection: str, logger: Optional[logging.Logger] = None, **client_kwargs):
+        
+        self.username = username        # để trống nếu không bật auth
+        self.password= password
+        self.authSource= authSource
         self.database = database
         self.collection = collection
+        self.uri = f"mongodb://{username}:{password}@localhost:27017/?authSource={authSource}"
         self.logger = logger or logging.getLogger(__name__)
         self.client_kwargs = client_kwargs
 
@@ -484,6 +492,19 @@ class MongoStorageBackend(StorageBackend):
                 coll = db[name]
                 res = coll.delete_many({})
                 return {"ok": True, "deleted_count": res.deleted_count, "collection": name}
+            finally:
+                client.close()
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+    def find_table(self, name: str) -> Dict[str, Any]:
+        try:
+            client = self._client()
+            try:
+                db = client[self.mongo.database]
+                coll = db[name]
+                res = coll.find({})
+                list_res = list(res)
+                return {"ok": True, "data": list_res, "collection": name}
             finally:
                 client.close()
         except Exception as e:
