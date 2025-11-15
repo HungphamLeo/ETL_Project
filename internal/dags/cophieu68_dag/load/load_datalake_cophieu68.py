@@ -61,7 +61,7 @@ class MongoLoader(MongoWriter):
         finally:
             client.close()
     
-    def load_market_list(self, collection_name: str, stock_info: List) -> None:
+    def load_market_list(self, collection_name: str, stock_list: List) -> None:
         """
         Load stock information into MongoDB.
         Performs upsert to avoid duplicate entries.
@@ -71,8 +71,8 @@ class MongoLoader(MongoWriter):
             db = client[self.database]
             collection = db[collection_name]
             time_update = datetime.now().isoformat()
-            for data in stock_info:
-                filter_query = {"market_type": data["market_type"],"symbol_list": data["symbols"]}
+            for data in stock_list:
+                filter_query = {"market_type": data["market_type"],"symbols": data["symbols"]}
                 data["update_time"] = time_update
                 update_query = {"$set": data}
                 collection.update_one(filter_query, update_query, upsert=True)
@@ -233,7 +233,7 @@ class MongoLoader(MongoWriter):
         finally:
             client.close()
 
-    def load_financial_report_summary(self, collection: str, report_data: List[Dict[str, Any]]) -> None:
+    def load_financial_report_summary(self, collection_name: str, report_data: List[Dict[str, Any]]) -> None:
         """
         Load financial report summary data into MongoDB.
         Performs upsert to avoid duplicate entries.
@@ -243,10 +243,13 @@ class MongoLoader(MongoWriter):
             db = client[self.database]
             collection = db[collection]
             time_update = datetime.now().isoformat()
-            for report in report_data:
-                filter_query = {"symbol": report["symbol"], "report_date": report["report_date"]}
-                update_query = {"$set": report}
-                collection.update_one(filter_query, update_query, upsert=True)
+            report_data["update_time"] = time_update
+            filter_query = {"symbol": report_data["symbol"], 
+                            "table_index": report_data["table_index"], 
+                            "report_type": report_data["report_type"], 
+                            "data": report_data["data"]}
+            update_query = {"$set": report_data}
+            collection.update_one(filter_query, update_query, upsert=True)
         except Exception as e:
             raise Exception(f"Error loading financial report summary into MongoDB: {e}") from e
         finally:

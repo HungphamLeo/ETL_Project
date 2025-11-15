@@ -449,32 +449,56 @@ class MongoStorageBackend(StorageBackend):
             return {"ok": False, "error": str(e)}
 
     def create_schema(self, name: str, schema: Optional[Dict] = None) -> Dict[str, Any]:
-        # In Mongo, schema maps to collection-level JSON Schema validator
+        """
+        Create or update a MongoDB collection schema using JSON Schema validation.
+        Works for both new and existing collections.
+        """
         try:
             client = self._client()
+            db = client[self.mongo.database]
+
+            # If schema is provided, wrap it under $jsonSchema
+            validator = {"$jsonSchema": schema} if schema else {}
+
+            # --- CASE 1: Collection already exists → use collMod ---
+            if name in db.list_collection_names():
+                if schema:
+                    try:
+                        db.command({
+                            "collMod": name,
+                            "validator": validator,
+                            "validationLevel": "strict"
+                        })
+                    except Exception as e:
+                        return {
+                            "ok": False,
+                            "collection": name,
+                            "error": f"collMod failed: {str(e)}"
+                        }
+                return {"ok": True, "collection": name, "action": "updated"}
+
+            # --- CASE 2: Collection does NOT exist → create with validator ---
+            create_cmd = {"validator": validator, "validationLevel": "strict"} if schema else {}
+
             try:
-                db = client[self.mongo.database]
-                if name in db.list_collection_names():
-                    if schema:
-                        db.command({
-                            "collMod": name,
-                            "validator": {"$jsonSchema": schema},
-                            "validationLevel": "moderate"
-                        })
-                    return {"ok": True, "collection": name}
-                else:
-                    db.create_collection(name)
-                    if schema:
-                        db.command({
-                            "collMod": name,
-                            "validator": {"$jsonSchema": schema},
-                            "validationLevel": "moderate"
-                        })
-                    return {"ok": True, "collection": name}
-            finally:
-                client.close()
+                db.create_collection(name, **create_cmd)
+            except Exception as e:
+                return {
+                    "ok": False,
+                    "collection": name,
+                    "error": f"create_collection failed: {str(e)}"
+                }
+
+            return {"ok": True, "collection": name, "action": "created"}
+
         except Exception as e:
             return {"ok": False, "error": str(e)}
+
+        finally:
+            try:
+                client.close()
+            except:
+                pass
 
     def rename_schema(self, old_name: str, new_name: str) -> Dict[str, Any]:
         # Renaming DB is not supported directly in Mongo; return explanatory error

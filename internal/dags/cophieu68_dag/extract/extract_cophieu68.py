@@ -3,7 +3,6 @@ import re
 import time
 from typing import Optional, List
 import pandas as pd
-import json
 from dataclasses import asdict
 from internal.models.cophieu68_model.extract_models import *
 from internal.dags.cophieu68_dag.extract.base_extract import Cophieu68BeautifulSoupCrawler
