@@ -305,8 +305,8 @@ def task_schedule_details_trading_data(mongo_config,
         time.sleep(delay_call)
 
 @task
-def get_symbol_list(config):
-    mongo_config, _, backend_mongo = build_backend(config)
+def get_symbol_list(config , logger):
+    mongo_config, _, backend_mongo = build_backend(config, logger)
     list_stock_collection = mongo_config.get("collections", {}).get("list_stock", "list_stock")
     symbol_data = backend_mongo.find_table(name = list_stock_collection)
     symbol_list = [item["symbol_list"] for item in symbol_data["data"] if item["market_type"] == "VNINDEX"]
@@ -343,7 +343,7 @@ def cophieu68_etl_flow(config_path="internal/etl/config.yaml"):
 
 
 
-    symbol_list = get_symbol_list(pipeline_config)
+    symbol_list = get_symbol_list(pipeline_config, loading_pipeline_logger)
     time.sleep(mongo_config.get("delay_call", 0.25))
     
     task_schedule_company_profile(

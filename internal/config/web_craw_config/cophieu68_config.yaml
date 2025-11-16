@@ -63,7 +63,7 @@ project_params:
     ssh_tunnel: false
 
   http:
-    delay_seconds: 1.0
+    delay_seconds: 0.3
     timeout_seconds: 30
     headers:
       User-Agent: "Mozilla/5.0 ..."
@@ -127,7 +127,14 @@ project_params:
       maxPoolSize: 50
       retryWrites: true
       writeConcern: "majority"
-      collections:
+      delay_call: 0.2
+      reties_etl_flows:
+        etl_name: "cophieu68_etl_flow"
+        max_attempts: 3
+        backoff_seconds: 5
+      retries_loading:
+        max_attempts: 3
+        backoff_seconds: 5
       collections:
         list_stock: "list_stock"
         industry_info: "industry_info"
@@ -141,3 +148,75 @@ project_params:
         match_details: "match_details"
         business_plan: "business_plan"
         financial_report_summary: "financial_report_summary"
+      documentation:
+        company_info:
+          bsonType: object
+          required: ["symbol", "profile", "update_time"]
+          properties:
+            symbol: { bsonType: string }
+            profile: { bsonType: object }
+            update_time: { bsonType: string }
+        industry_info:
+          bsonType: object
+          required: ["industry_metric", "data", "update_time"]
+          properties:
+            industry_metric: { bsonType: string }
+            data: { bsonType: object }
+            update_time: { bsonType: string }
+        market_list:
+          bsonType: object
+          required: ["market_type", "symbols", "update_time"]
+          properties:
+            market_type: { bsonType: string }
+            symbols: { bsonType: array }
+            update_time: { bsonType: string }
+        financial_info:
+          bsonType: object
+          required: ["symbol", "data", "update_time"]
+          properties:
+            symbol: { bsonType: string }
+            data: { bsonType: object }
+            update_time: { bsonType: string }
+        trading_data:
+          bsonType: object
+          required: ["symbol", "records", "update_time"]
+          properties:
+            symbol: { bsonType: string }
+            records: { bsonType: array }
+            update_time: { bsonType: string }
+        income_statement:
+          bsonType: object
+          required: ["symbol", "report_type", "data", "update_time"]
+          properties:
+            symbol: { bsonType: string }
+            report_type: { bsonType: string }
+            data: { bsonType: array }
+            update_time: { bsonType: string }
+        balance_sheet:
+          bsonType: object
+          required: ["symbol", "report_type", "data", "update_time"]
+          properties:
+            symbol: { bsonType: string }
+            report_type: { bsonType: string }
+            data: { bsonType: array }
+            update_time: { bsonType: string }
+        match_details:
+          bsonType: object
+          required: ["symbol", "data", "update_time"]
+          properties:
+            symbol: { bsonType: string }
+            data: { bsonType: array }
+            update_time: { bsonType: string }
+        business_plan:
+          bsonType: object
+          required: ["symbol", "data", "update_time"]
+          properties:
+            symbol: { bsonType: string }
+            data: { bsonType: object }
+            update_time: { bsonType: string }
+        financial_summary:
+          bsonType: object
+          required: ["symbol", "table_index", "report_type", "data", "update_time"]
+          properties:
+            symbol: { bsonType: string }
+            report_date: { bsonType: string }
