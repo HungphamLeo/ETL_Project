@@ -26,6 +26,7 @@ class ETLPipelineConfig:
         self.etl_extract_logger = self._setup_logger("logger.etl_logger.extract_log")
         self.etl_transform_logger = self._setup_logger("logger.etl_logger.transform_log")
         self.etl_load_logger = self._setup_logger("logger.etl_logger.load_log")
+        self.datawarehouse_postgres_logger = self._setup_logger("logger.datawarehouse_postgres_logger")
         # Khởi tạo các config thành phần
         self.database_config = DatabaseConfig(pipeline_config=self.config.get('database', {}),
                                               pipeline_logger = self.database_logger)

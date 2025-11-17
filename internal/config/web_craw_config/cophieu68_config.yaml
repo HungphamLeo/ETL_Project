@@ -18,6 +18,15 @@ project_params:
     level: INFO
     loki_enabled: false
     loki_url: "http://loki.monitoring.svc.cluster.local:3100/loki/api/v1/push"
+    datawarehouse_postgres_logger:
+      storage_path: ./logger_storage/cophieu68_elt_logger/datawarehouse_postgres
+      files:
+        debug: datawarehouse_postgres_debug.log
+        info: datawarehouse_postgres_info.log
+        warning: datawarehouse_postgres_warning.log
+        error: datawarehouse_postgres_error.log
+      max_size_mb: 100
+      backup_count: 5
     database_logger:
       storage_path: ./logger_storage/cophieu68_elt_logger/database_logger
       files:
