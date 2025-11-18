@@ -202,43 +202,6 @@ class TradingData:
 
 INDUSTRIAL_INFO_TYPE = {"summary_info": 0, "financial_info": 2, "fund_info": 3}
 
-CRAWL_INDUSTRY_LIST_CONFIG = {
-    "Bán buôn": "^bb",
-    "Bất động sản": "^bds",
-    "Bảo hiểm": "^bh",
-    "Bán lẻ": "^bl",
-    "Chế biến Thủy sản": "^cbts",
-    "Chứng khoán": "^ck",
-    "Công nghệ và Thông tin": "^cntt",
-    "Chăm sóc sức khỏe": "^cssk",
-    "Dịch vụ lưu trú, ăn uống, giải trí": "^dvltaugt",
-    "Dịch vụ tư vấn, hỗ trợ": "^dvtvht",
-    "Khai khoáng": "^kk",
-    "Ngân hàng": "^nh",
-    "Nông - Lâm - Ngư nghiệp": "^nln",
-    "Sản phẩm cao su": "^spcs",
-    "Sản xuất Hàng gia dụng": "^sxhgd",
-    "Sản xuất Nhựa - Hóa chất": "^sxnhc",
-    "Sản xuất Phụ trợ": "^sxpt",
-    "Sản xuất Thiết bị, máy móc": "^sxtbmm",
-    "Thiết bị điện": "^tbd",
-    "Tài chính khác": "^tck",
-    "Tiện ích": "^ti",
-    "Thực phẩm - Đồ uống": "^tpdu",
-    "Vật liệu xây dựng": "^vlxd",
-    "Vận tải - kho bãi": "^vtkb",
-    "Xây dựng": "^xd",
-    "Cao su": "^caosu",
-    "Nhóm Dầu khí": "^daukhi",
-    "Dược phẩm / Y tế / Hóa chất": "^duocpham",
-    "Giáo dục": "^giaoduc",
-    "Hàng không": "^hk",
-    "Năng lượng (Điện/Khí/...)": "^nangluong",
-    "Nhựa - Bao bì": "^nhua",
-    "Phân bón": "^phanbon",
-    "Ngành Thép": "^thep",
-}
-
 CRAWL_COMPANY_PROFILE_CONFIG = {
     "field_map": {
         "tên đầy đủ": "full_name",

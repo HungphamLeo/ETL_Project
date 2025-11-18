@@ -31,10 +31,6 @@ def dataframe_rename_by_dataclass(df: pd.DataFrame, output_cls: Type) -> pd.Data
     df.columns = field_names
     return df
 
-
-
-
-
 # ==============================
 # Snowflake ID Generator
 # ==============================
@@ -80,26 +76,29 @@ class TableCreator(SnowflakeGenerator):
     """
 
     def generate_create_table_sql(self, table_name: str, rules_dict: Dict[str, Any],
-                                  extra_types: Optional[Dict[str, str]] = None) -> str:
+                              extra_types: Optional[Dict[str, str]] = None) -> str:
         """
-        Sinh câu lệnh CREATE TABLE từ dict rule, có thêm cột id làm PRIMARY KEY.
+        Generate a CREATE TABLE SQL statement from a rules dictionary, with support for constraints.
         """
         extra_types = extra_types or {}
-        columns = ["`id` VARCHAR(32) PRIMARY KEY"]
+        columns = ["`id` VARCHAR(32) PRIMARY KEY"]  # Default ID column as PRIMARY KEY
 
-        for col, _ in rules_dict.items():
+        for col, col_rules in rules_dict.items():
             if col == "drop_columns":
                 continue
+
+            # Extract column type and constraints
             col_type = extra_types.get(col, "VARCHAR(255)")
-            columns.append(f"`{col}` {col_type}")
+            constraints = col_rules.get("constraints", "")  # Example: "UNIQUE", "NOT NULL"
+            columns.append(f"`{col}` {col_type} {constraints}".strip())
 
         columns_sql = ",\n  ".join(columns)
         return f"CREATE TABLE IF NOT EXISTS `{table_name}` (\n  {columns_sql}\n);"
 
-    def add_id_column(self, df: pd.DataFrame) -> pd.DataFrame:
+    def add_id_column(self, df: pd.DataFrame, id_name:str) -> pd.DataFrame:
         """
         Thêm cột id vào DataFrame với giá trị sinh từ get_id().
         """
         df = df.copy()
-        df.insert(0, "id", [self.get_id() for _ in range(len(df))])
+        df.insert(0, id_name, [self.get_id() for _ in range(len(df))])
         return df

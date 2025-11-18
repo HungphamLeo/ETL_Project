@@ -1,14 +1,43 @@
-# Dockerfile
-FROM golang:1.21-alpine AS builder
-WORKDIR /app
-COPY go.mod go.sum ./
-RUN go mod download
-COPY . .
-RUN CGO_ENABLED=0 GOOS=linux go build -o data-ingestion cmd/main.go
+version: "3.9"
 
-FROM alpine:latest
-RUN apk --no-cache add ca-certificates
-WORKDIR /root/
-COPY --from=builder /app/data-ingestion .
-EXPOSE 8080
-CMD ["./data-ingestion"]
+services:
+  airflow-webserver:
+    build:
+      context: .
+      dockerfile: docker/airflow/Dockerfile
+    container_name: airflow-webserver
+    environment:
+      - AIRFLOW__CORE__LOAD_EXAMPLES=False
+    volumes:
+      - ./airflow_dags:/opt/airflow/dags
+      - ./common:/opt/airflow/common
+    ports:
+      - "8080:8080"
+    command: webserver
+
+  airflow-scheduler:
+    build:
+      context: .
+      dockerfile: docker/airflow/Dockerfile
+    container_name: airflow-scheduler
+    volumes:
+      - ./airflow_dags:/opt/airflow/dags
+      - ./common:/opt/airflow/common
+    command: scheduler
+
+  prefect-worker:
+    build:
+      context: .
+      dockerfile: docker/prefect/Dockerfile
+    container_name: prefect-worker
+    volumes:
+      - ./prefect_flows:/app/prefect_flows
+      - ./common:/app/common
+    environment:
+      - PREFECT_API_URL=http://localhost:4200/api
+
+  prefect-server:
+    image: prefecthq/prefect:2-latest
+    ports:
+      - "4200:4200"
+    command: prefect server start --host 0.0.0.0
