@@ -4,7 +4,7 @@ from internal.dags.cophieu68_dag.extract.extract_cophieu68 import ExtractCophieu
 from internal.dags.ETL_Orchestra.main_orchestra_etl import ETLPipelineConfig
 from internal.dags.cophieu68_dag.load.base_loading import *
 from internal.models.cophieu68_model.extract_models import *
-from internal.dags.cophieu68_dag.load.load_datalake_cophieu68 import *
+from internal.dags.cophieu68_dag.load.mongodb.load_datalake_cophieu68 import *
 
 config_path = "/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/internal/config/web_craw_config/cophieu68_config.yaml"
 config = ETLPipelineConfig(config_path=config_path)
