@@ -72,33 +72,24 @@ class SnowflakeGenerator:
 
 class TableCreator(SnowflakeGenerator):
     """
-    Tạo bảng SQL từ dict rule và sinh thêm cột id.
+    Convert DW schema → CREATE TABLE SQL (type + constraints)
+    Sinh surrogate key dạng Snowflake.
     """
 
-    def generate_create_table_sql(self, table_name: str, rules_dict: Dict[str, Any],
-                              extra_types: Optional[Dict[str, str]] = None) -> str:
-        """
-        Generate a CREATE TABLE SQL statement from a rules dictionary, with support for constraints.
-        """
-        extra_types = extra_types or {}
-        columns = ["`id` VARCHAR(32) PRIMARY KEY"]  # Default ID column as PRIMARY KEY
+    def generate_create_table_sql(self, table_name: str, rules_dict: Dict[str, Any]) -> str:
+        columns = []
 
-        for col, col_rules in rules_dict.items():
-            if col == "drop_columns":
-                continue
+        for col, meta in rules_dict.items():
+            col_type = meta.get("type")
+            constraints = meta.get("constraints", "")
+            columns.append(f'"{col}" {col_type} {constraints}'.strip())
 
-            # Extract column type and constraints
-            col_type = extra_types.get(col, "VARCHAR(255)")
-            constraints = col_rules.get("constraints", "")  # Example: "UNIQUE", "NOT NULL"
-            columns.append(f"`{col}` {col_type} {constraints}".strip())
+        return (
+            f'CREATE TABLE IF NOT EXISTS "{table_name}" (\n  ' +
+            ",\n  ".join(columns) +
+            "\n);"
+        )
 
-        columns_sql = ",\n  ".join(columns)
-        return f"CREATE TABLE IF NOT EXISTS `{table_name}` (\n  {columns_sql}\n);"
-
-    def add_id_column(self, df: pd.DataFrame, id_name:str) -> pd.DataFrame:
-        """
-        Thêm cột id vào DataFrame với giá trị sinh từ get_id().
-        """
-        df = df.copy()
-        df.insert(0, id_name, [self.get_id() for _ in range(len(df))])
+    def add_surrogate_key(self, df: pd.DataFrame, key_name: str) -> pd.DataFrame:
+        df[key_name] = [self.get_id() for _ in range(len(df))]
         return df

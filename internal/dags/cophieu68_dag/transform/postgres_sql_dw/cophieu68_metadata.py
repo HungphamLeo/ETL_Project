@@ -1,4 +1,30 @@
 
+from utils import TableCreator
+class MetaSurrogateRepository:
+    """Lưu surrogate key đã generate vào meta_surrogate_map"""
+
+    def __init__(self, postgres_client):
+        self.pg = postgres_client
+
+    def get_or_create(self, natural_key: str, type_name: str, generator: TableCreator):
+        sql_get = """
+            SELECT surrogate_key FROM meta_surrogate_map
+            WHERE natural_key=%s AND type=%s AND valid_to IS NULL;
+        """
+        res = self.pg.fetch_one(sql_get, (natural_key, type_name))
+
+        if res:
+            return res[0]
+
+        # generate mới
+        surrogate_key = generator.get_id()
+        sql_ins = """
+            INSERT INTO meta_surrogate_map(natural_key, surrogate_key, type, valid_from)
+            VALUES(%s,%s,%s, NOW())
+        """
+        self.pg.execute(sql_ins, (natural_key, surrogate_key, type_name))
+        return surrogate_key
+
 
 dim_market_type_info = {
     "table_name": "dim_market_type",
@@ -10,11 +36,7 @@ dim_market_type_info = {
                     "VN30": "Rổ chứng khoán gồm 30 cổ phiếu lớn nhất và có tính thanh khoản cao nhất toàn sàn"},
     
 }
-# dim_date_info = {
-#     "table_name": "dim_date",
-#     "primary_key": "date_key",
-#     "market_key_char": "CP68DATEKEY"
-# }
+
 
 
 dim_industry_info = {
