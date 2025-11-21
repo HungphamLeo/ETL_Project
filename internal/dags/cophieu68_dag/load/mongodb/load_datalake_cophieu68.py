@@ -35,7 +35,7 @@ class MongoLoader(MongoWriter):
             collection = db[collection_name]
             time_update = datetime.now().isoformat()
             for symbol, profile in company_profiles.items():
-                filter_query = {"symbol": symbol, "profile": profile}
+                filter_query = {"symbol": symbol, "profile": profile, "update_time": time_update}
                 update_query = {"$set": {"symbol": symbol, "profile": profile}}
                 collection.update_one(filter_query, update_query, upsert=True)
         except Exception as e:

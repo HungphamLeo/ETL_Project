@@ -123,6 +123,16 @@ project_params:
         kerberos: false
         keytab: ""
         principal: ""
+    postgresSQL:
+    host: "localhost"  # PostgreSQL server hostname
+    port: 5432         # Default PostgreSQL port
+    database: "etl_project"  # Name of the database
+    user: "postgres"   # Username for authentication
+    password: "password"  # Password for authentication
+    schema: "public"   # Default schema to use
+    connection_pool:
+      min_size: 1      # Minimum number of connections in the pool
+      max_size: 10   
     mongodb:
       enabled: true
       url: "mongodb://root:root123@localhost:27017/?authSource=admin"

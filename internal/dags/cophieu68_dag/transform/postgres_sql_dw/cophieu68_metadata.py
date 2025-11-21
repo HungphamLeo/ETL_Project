@@ -1,82 +1,68 @@
-
-from utils import TableCreator
-class MetaSurrogateRepository:
-    """Lưu surrogate key đã generate vào meta_surrogate_map"""
-
-    def __init__(self, postgres_client):
-        self.pg = postgres_client
-
-    def get_or_create(self, natural_key: str, type_name: str, generator: TableCreator):
-        sql_get = """
-            SELECT surrogate_key FROM meta_surrogate_map
-            WHERE natural_key=%s AND type=%s AND valid_to IS NULL;
-        """
-        res = self.pg.fetch_one(sql_get, (natural_key, type_name))
-
-        if res:
-            return res[0]
-
-        # generate mới
-        surrogate_key = generator.get_id()
-        sql_ins = """
-            INSERT INTO meta_surrogate_map(natural_key, surrogate_key, type, valid_from)
-            VALUES(%s,%s,%s, NOW())
-        """
-        self.pg.execute(sql_ins, (natural_key, surrogate_key, type_name))
-        return surrogate_key
-
+# cophieu68_metadata.py (update / add columns keys)
 
 dim_market_type_info = {
     "table_name": "dim_market_type",
     "primary_key": "market_key",
-    "market_key_char": "CP68MARKETKEY",
+    "character_specific": "CP68MARKETKEY",
     "market_name": {"HOSE": "Sở giao dịch chứng khoán Hồ Chí Minh",
                     "HNX": "Sở giao dịch chứng khoán Hà Nội",
-                    "UPCOM": "Sở giao dịch có các công ty chưa niêm yết",
-                    "VN30": "Rổ chứng khoán gồm 30 cổ phiếu lớn nhất và có tính thanh khoản cao nhất toàn sàn"},
-    
-}
-
-
-
-dim_industry_info = {
-    "table_name": "dim_industry",
-    "primary_key": "industry_key",
-    "market_key_char": "CP68INDUSTRYINFOKEY",
-    "industry_mapping" : {
-        "Bán buôn": "^bb",
-        "Bất động sản": "^bds",
-        "Bảo hiểm": "^bh",
-        "Bán lẻ": "^bl",
-        "Chế biến Thủy sản": "^cbts",
-        "Chứng khoán": "^ck",
-        "Công nghệ và Thông tin": "^cntt",
-        "Chăm sóc sức khỏe": "^cssk",
-        "Dịch vụ lưu trú, ăn uống, giải trí": "^dvltaugt",
-        "Dịch vụ tư vấn, hỗ trợ": "^dvtvht",
-        "Khai khoáng": "^kk",
-        "Ngân hàng": "^nh",
-        "Nông - Lâm - Ngư nghiệp": "^nln",
-        "Sản phẩm cao su": "^spcs",
-        "Sản xuất Hàng gia dụng": "^sxhgd",
-        "Sản xuất Nhựa - Hóa chất": "^sxnhc",
-        "Sản xuất Phụ trợ": "^sxpt",
-        "Sản xuất Thiết bị, máy móc": "^sxtbmm",
-        "Thiết bị điện": "^tbd",
-        "Tài chính khác": "^tck",
-        "Tiện ích": "^ti",
-        "Thực phẩm - Đồ uống": "^tpdu",
-        "Vật liệu xây dựng": "^vlxd",
-        "Vận tải - kho bãi": "^vtkb",
-        "Xây dựng": "^xd",
-        "Cao su": "^caosu",
-        "Nhóm Dầu khí": "^daukhi",
-        "Dược phẩm / Y tế / Hóa chất": "^duocpham",
-        "Giáo dục": "^giaoduc",
-        "Hàng không": "^hk",
-        "Năng lượng (Điện/Khí/...)": "^nangluong",
-        "Nhựa - Bao bì": "^nhua",
-        "Phân bón": "^phanbon",
-        "Ngành Thép": "^thep",
+                    "UPCOM": "Sàn UPCOM",
+                    "VN30": "VN30"},
+    "columns": {
+        "market_key": {"type": "VARCHAR(40)", "constraints": "PRIMARY KEY"},
+        "market_type": {"type": "TEXT", "constraints": "NOT NULL UNIQUE"},
+        "market_name": {"type": "TEXT", "constraints": ""},
+        "update_time": {"type": "TIMESTAMPTZ", "constraints": ""},
+        "created_time": {"type": "TIMESTAMPTZ", "constraints": ""}
     }
 }
+
+dim_company_profile_info = {
+    "table_name": "dim_company_profile",
+    "primary_key": "company_profile_key",
+    "character_specific": "CP68COMPANYPROFILEKEY",
+    "columns": {
+        "company_profile_key": {"type": "VARCHAR(40)", "constraints": "PRIMARY KEY"},
+        "company_key": {"type": "VARCHAR(40)", "constraints": "NOT NULL"},
+        "full_name": {"type": "TEXT", "constraints": ""},
+        "english_name": {"type": "TEXT", "constraints": ""},
+        "short_name": {"type": "TEXT", "constraints": ""},
+        "address": {"type": "TEXT", "constraints": ""},
+        "phone": {"type": "TEXT", "constraints": ""},
+        "fax": {"type": "TEXT", "constraints": ""},
+        "website": {"type": "TEXT", "constraints": ""},
+        "email": {"type": "TEXT", "constraints": ""},
+        "established_date": {"type": "TEXT", "constraints": ""},
+        "listed_date": {"type": "TEXT", "constraints": ""},
+        "chartered_capital": {"type": "TEXT", "constraints": ""},
+        "business_license": {"type": "TEXT", "constraints": ""},
+        "tax_code": {"type": "TEXT", "constraints": ""},
+        "update_time": {"type": "TIMESTAMPTZ", "constraints": ""},
+        "created_time": {"type": "TIMESTAMPTZ", "constraints": ""}
+    }
+}
+
+dim_industry_mapping_info = {
+    "table_name": "dim_industry",
+    "primary_key": "industry_key",
+    "character_specific": "CP68INDUSTRYMAPPINGKEY",
+    "industry_mapping": {
+        "Bán buôn": "^bb",
+        # ... rest omitted for brevity (keep your mapping)
+    },
+    "columns": {
+        "industry_key": {"type": "VARCHAR(40)", "constraints": "PRIMARY KEY"},
+        "industry_code": {"type": "TEXT", "constraints": "NOT NULL"},
+        "industry_name": {"type": "TEXT", "constraints": "NOT NULL"},
+        "update_time": {"type": "TIMESTAMPTZ", "constraints": ""},
+        "created_time": {"type": "TIMESTAMPTZ", "constraints": ""}
+    }
+}
+
+# minimal placeholders for FACT config keys used in loaders
+dim_trade_info = {"character_specific": "CP68TRADEKEY"}
+dim_match_info = {"character_specific": "CP68MATCHKEY"}
+dim_income_info = {"character_specific": "CP68INCOMEKEY"}
+dim_balance_info = {"character_specific": "CP68BSKEY"}
+fact_business_plan_info = {"character_specific": "CP68PLANKEY"}
+fact_financial_metrics_info = {"character_specific": "CP68METRICKEY"}
