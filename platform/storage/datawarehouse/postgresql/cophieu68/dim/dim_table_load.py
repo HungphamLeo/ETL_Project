@@ -9,9 +9,6 @@ from internal.dags.cophieu68_dag.transform.postgres_sql_dw.cophieu68_metadata im
 # mongo_config =config.config.get("storage", {}).get("mongodb", {})
 
 
-
-
-
 class DimMarketTypeLoader(TransformDatawarehouse):
 
     def __init__(self, datalake_config, logger, postgres_client):
