@@ -4,10 +4,10 @@ from prefect import task, flow
 from datetime import datetime
 import logging
 import traceback
-from internal.dags.cophieu68_dag.transform.postgres_sql_dw.dim_table_load import (
+from platforms.storage.datawarehouse.postgresql.cophieu68.dim.dim_table_load import (
     DimMarketTypeLoader, DimIndustryLoader, DimCompanyLoader
 )
-from internal.dags.cophieu68_dag.transform.postgres_sql_dw.fact_table_load import (
+from platforms.storage.datawarehouse.postgresql.cophieu68.fact.fact_table_load import (
     FactTradeLoader, FactMatchDetailLoader,
     FactIncomeStatementLoader, FactBalanceSheetLoader,
     FactBusinessPlanLoader, FactFinancialMetricsLoader
@@ -15,7 +15,6 @@ from internal.dags.cophieu68_dag.transform.postgres_sql_dw.fact_table_load impor
 
 from internal.storage.postgres_client import PostgresClient
 
-LOGGER = logging.getLogger("DW_LOAD")
 
 
 @task

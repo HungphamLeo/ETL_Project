@@ -1,9 +1,10 @@
 
 from datetime import datetime
-from internal.dags.cophieu68_dag.load.mongodb.load_datalake_cophieu68 import *
-from internal.dags.cophieu68_dag.transform.base_transform import TransformDatawarehouse
-from utils import TableCreator
-from internal.dags.cophieu68_dag.transform.postgres_sql_dw.cophieu68_metadata import *
+import pandas as pd
+from platforms.storage.datalake.mongodb.load_datalake_cophieu68 import *
+from platforms.storage.datawarehouse.base_transform import TransformDatawarehouse
+from shared.utils.util_cophieu68 import TableCreator
+from platforms.storage.datawarehouse.postgresql.cophieu68.metadata.cophieu68_metadata import *
 # config_path = "/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/internal/config/web_craw_config/cophieu68_config.yaml"
 # config = ETLPipelineConfig(config_path=config_path)
 # mongo_config =config.config.get("storage", {}).get("mongodb", {})

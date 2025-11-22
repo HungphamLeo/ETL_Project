@@ -1,13 +1,14 @@
 import time
 from prefect import flow, task
-from internal.dags.cophieu68_dag.extract.extract_cophieu68 import ExtractCophieu68
-from internal.dags.ETL_Orchestra.main_orchestra_etl import ETLPipelineConfig
-from internal.dags.cophieu68_dag.load.base_loading import *
-from internal.models.cophieu68_model.extract_models import *
-from internal.dags.cophieu68_dag.load.mongodb.load_datalake_cophieu68 import *
+from platforms.ingestion.cophieu68.extract.extract_cophieu68 import ExtractCophieu68
+from platforms.processing.prefect.flows.prefect_orchestra_etl import PrefectETLPipelineConfig
+from platforms.storage.datalake.mongodb.load_datalake_cophieu68 import MongoLoader
+
+
+
 
 config_path = "/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/internal/config/web_craw_config/cophieu68_config.yaml"
-config = ETLPipelineConfig(config_path=config_path)
+config = PrefectETLPipelineConfig(config_path=config_path)
 mongo_config_etl_arg =config.config.get("storage", {}).get("mongodb", {}).get("reties_etl_flows", {})
 
 def build_crawler(config, logger=None):

@@ -1,6 +1,7 @@
-from utils import TableCreator
-from internal.dags.cophieu68_dag.load.mongodb.load_datalake_cophieu68 import *
-from internal.models.cophieu68_model.transform_models import DATA_WAREHOUSE_SCHEMA as schema_dw
+from shared.utils.util_cophieu68 import TableCreator
+from platforms.storage.datalake.mongodb.load_datalake_cophieu68 import *
+from shared.common_models.cophieu68_model.transform_models import DATA_WAREHOUSE_SCHEMA as schema_dw
+from platforms.storage.datalake.mongodb.load_datalake_cophieu68 import MongoLoader, MongoStorageBackend
 class TransformDatawarehouse:
     """
     Base class – all shared components (Mongo, surrogate repo, table creator).

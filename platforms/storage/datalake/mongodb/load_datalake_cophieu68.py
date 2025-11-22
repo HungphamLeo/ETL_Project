@@ -1,6 +1,8 @@
 from pymongo import MongoClient
 from datetime import datetime
-from internal.dags.cophieu68_dag.load.base_loading import *
+from typing import List, Dict, Any, Optional
+import logging
+from storage.datalake.base_load_datalake import MongoWriter
 
 
 class MongoLoader(MongoWriter):

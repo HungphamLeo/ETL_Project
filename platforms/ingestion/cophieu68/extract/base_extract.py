@@ -3,7 +3,7 @@ import time
 import re
 from typing import Optional, List, Union
 from bs4 import BeautifulSoup
-from internal.models.cophieu68_model.extract_models import StockBasicInfo
+from shared.common_models.cophieu68_model.extract_models import StockBasicInfo
 
 
 
