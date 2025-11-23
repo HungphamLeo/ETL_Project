@@ -1,7 +1,7 @@
 from typing import Any, Dict, Optional, Sequence
 import logging
 from pymongo import MongoClient, errors as pymongo_errors
-from storage.base_storage import StorageBackend, _to_primitive
+from storage.base_storage import StorageBackend, to_primitive
 
 class MongoWriter:
     """
@@ -71,7 +71,7 @@ class MongoStorageBackend(StorageBackend):
     def save(self, dataset_name: str, data: Any, fmt: str = "json") -> Dict[str, Any]:
         # map dataset_name -> collection by default
         try:
-            docs = _to_primitive(data)
+            docs = to_primitive(data)
             docs_to_insert = docs if isinstance(docs, list) else [docs]
             client = self._client()
             try:
@@ -243,7 +243,7 @@ class MongoStorageBackend(StorageBackend):
             try:
                 db = client[self.mongo.database]
                 coll = db[target] if target else db[self.mongo.collection]
-                docs = _to_primitive(data)
+                docs = to_primitive(data)
                 docs_to_insert = docs if isinstance(docs, list) else [docs]
                 res = coll.insert_many(docs_to_insert)
                 return {"ok": True, "inserted_count": len(res.inserted_ids), "collection": coll.name}

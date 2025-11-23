@@ -193,3 +193,4 @@ DATA_WAREHOUSE_SCHEMA = {
         }
     }
 }
+

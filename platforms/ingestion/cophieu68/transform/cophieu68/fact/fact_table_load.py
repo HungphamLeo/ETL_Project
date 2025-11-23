@@ -1,47 +1,72 @@
-# fact_table_load.py (refactored)
+# ...existing code...
 import pandas as pd
 from datetime import datetime
-from utils import TableCreator
-from internal.dags.cophieu68_dag.transform.base_transform import TransformDatawarehouse
-from internal.dags.cophieu68_dag.transform.postgres_sql_dw.cophieu68_metadata import *
+from shared.utils.util_cophieu68 import TableCreator
+from shared.common_models.cophieu68_model import transform_models
+from shared.common_models.cophieu68_model.load_models import (
+    TradingDataDoc,
+    MatchDetailsDoc,
+    IncomeStatementDoc,
+    BalanceSheetDoc,
+    BusinessPlanDoc
+)
+from platforms.storage.datalake.mongodb.data_lake_storage import MongoStorageBackend  # assume exists
 import logging
-
-logger = logging.getLogger(__name__)
-
-# -------------------------
-# Base FactLoader
-# -------------------------
-class FactLoader(TransformDatawarehouse):
-    """
-    Base class for FACT loaders.
-    NOTE: TransformDatawarehouse.__init__ expects (datalake_config, datawarehouse_logger, postgres_client)
-    """
-
-    def __init__(self, datalake_config, datawarehouse_logger, postgres_client, dim_repo, table_creator: TableCreator):
-        # call base to initialize self.mongo, self.repo (meta repo) etc.
-        super().__init__(datalake_config, datawarehouse_logger, postgres_client)
-        self.dim_repo = dim_repo
+class FactLoader:
+    def __init__(
+        self,
+        datalake_config: dict,
+        datawarehouse_logger,
+        postgres_client,
+        dim_repo,
+        table_creator: TableCreator,
+        mongo_reader: MongoStorageBackend,
+    ):
+        self.datalake_config = datalake_config or {}
+        self.schema_dw = transform_models.DATA_WAREHOUSE_SCHEMA
         self.table_creator = table_creator
+        self.mongo = mongo_reader
+        self.dim_repo = dim_repo
         self.datawarehouse_logger = datawarehouse_logger
+        self.postgres_client = postgres_client
+
+        # map of collection names from YAML (keys like 'trading_data', 'match_details', ...)
+        self.collection_map = (
+            self.datalake_config.get("storage", {})
+            .get("mongodb", {})
+            .get("collections", {})
+            or {}
+        )
+
+    def _get_collection(self, key: str) -> str:
+        # return mapped collection name or fallback to key itself
+        return self.collection_map.get(key, key)
+
+    def _get_fact_name(self, hint: str, fallback: str) -> str:
+        # if explicit hint exists in schema, return it; else try to find by substring; fallback otherwise
+        facts = self.schema_dw.get("facts", {}) or {}
+        if hint in facts:
+            return hint
+        # find key that contains hint fragment (e.g., 'match' -> 'fact_match_detail')
+        hint_fragment = hint.replace("fact_", "").replace("fact", "")
+        found = next((k for k in facts.keys() if hint_fragment and hint_fragment in k), None)
+        if found:
+            return found
+        return fallback
 
     def create_fact_table_sql(self, fact_name: str) -> str:
         table_info = self.schema_dw["facts"][fact_name]["columns"]
-        # table_info values may already be dict-like or strings; normalize if needed
         norm = {}
         for col, meta in table_info.items():
             if isinstance(meta, dict) and "type" in meta:
                 norm[col] = meta
             else:
-                # meta is a string like "NUMERIC" or "NUMERIC NOT NULL"
-                t = str(meta)
-                # split first token as type and remainder as constraints
-                parts = t.split(None, 1)
+                parts = str(meta).split(None, 1)
                 typ = parts[0]
                 cons = parts[1] if len(parts) > 1 else ""
                 norm[col] = {"type": typ, "constraints": cons}
         return self.table_creator.generate_create_table_sql(fact_name, norm)
 
-    # Mapping DIM surrogate key (must pass generator)
     def get_company_key(self, symbol: str) -> str:
         return self.dim_repo.get_or_create(symbol, "dim_company", self.table_creator)
 
@@ -49,268 +74,194 @@ class FactLoader(TransformDatawarehouse):
         return self.dim_repo.get_or_create(report_type, "dim_report_type", self.table_creator)
 
     def get_date_key(self, date_str: str) -> str:
-        """Convert date 'YYYY-MM-DD' → surrogate key (stores natural key in meta table)"""
         return self.dim_repo.get_or_create(date_str, "dim_date", self.table_creator)
 
 
-# -------------------------
-# FactTradeLoader
-# -------------------------
+# FactTradeLoader using TradingDataDoc
 class FactTradeLoader(FactLoader):
-
-    def __init__(self, datalake_config, datawarehouse_logger, postgres_client, dim_repo):
-        # create a table_creator with proper character_specific for trade
-        table_creator = TableCreator(machine_id=1, character_specific=dim_trade_info.get("character_specific"))
-        super().__init__(datalake_config, datawarehouse_logger, postgres_client, dim_repo, table_creator)
+    def __init__(self, datalake_config, datawarehouse_logger, postgres_client, dim_repo, mongo_reader):
+        table_creator = TableCreator(machine_id=1, character_specific=None)
+        super().__init__(datalake_config, datawarehouse_logger, postgres_client, dim_repo, table_creator, mongo_reader)
+        self.collection_name = self._get_collection("trading_data")
+        self.fact_name = self._get_fact_name("fact_trade", "fact_trade")
 
     def load(self):
-        raw = list(self.mongo.find_table("trading_data") or [])
+        raw_docs = list(self.mongo.find_table(self.collection_name) or [])
         rows = []
-        for doc in raw:
-            symbol = doc.get("symbol")
-            if not symbol:
+        for doc in raw_docs:
+            tdoc = TradingDataDoc.from_extract(doc)
+            if not tdoc.symbol:
                 self.datawarehouse_logger.warning("trading_data doc without symbol: %s", doc)
                 continue
-            company_key = self.get_company_key(symbol)
-            records = doc.get("records", [])
-            for r in records:
-                trade_date_key = self.get_date_key(r.get("date"))
+            company_key = self.get_company_key(tdoc.symbol)
+            for r in tdoc.to_fact_rows():
+                trade_dt = r.get("trade_datetime")
+                trade_date_key = self.get_date_key(trade_dt) if trade_dt else self.get_date_key("latest")
                 rows.append({
                     "trade_key": self.table_creator.get_id(),
-                    "trade_datetime": r.get("date"),
+                    "trade_datetime": trade_dt,
                     "trade_date_key": trade_date_key,
                     "company_key": company_key,
-                    "price": r.get("close_price"),
+                    "price": r.get("price"),
                     "volume": r.get("volume"),
-                    "value": (r.get("close_price") or 0) * (r.get("volume") or 0),
-                    "side": r.get("side", "NA"),
-                    "source_json": r
+                    "value": r.get("value"),
+                    "side": r.get("side") or "NA",
+                    "source_json": r.get("source_json")
                 })
-
         df = pd.DataFrame(rows)
-        sql = self.create_fact_table_sql("fact_trade")
+        sql = self.create_fact_table_sql(self.fact_name)
         return df, sql
 
 
-# -------------------------
 # FactMatchDetailLoader
-# -------------------------
 class FactMatchDetailLoader(FactLoader):
-
-    def __init__(self, datalake_config, datawarehouse_logger, postgres_client, dim_repo):
-        table_creator = TableCreator(machine_id=1, character_specific=dim_match_info.get("character_specific"))
-        super().__init__(datalake_config, datawarehouse_logger, postgres_client, dim_repo, table_creator)
+    def __init__(self, datalake_config, datawarehouse_logger, postgres_client, dim_repo, mongo_reader):
+        table_creator = TableCreator(machine_id=1, character_specific=None)
+        super().__init__(datalake_config, datawarehouse_logger, postgres_client, dim_repo, table_creator, mongo_reader)
+        self.collection_name = self._get_collection("match_details")
+        self.fact_name = self._get_fact_name("fact_match_detail", "fact_match_detail")
 
     def load(self):
-        raw = list(self.mongo.find_table("match_details") or [])
+        raw = list(self.mongo.find_table(self.collection_name) or [])
         rows = []
         for doc in raw:
-            symbol = doc.get("symbol")
-            if not symbol:
+            mdoc = MatchDetailsDoc.from_extract(doc)
+            if not mdoc.symbol:
                 self.datawarehouse_logger.warning("match_details doc without symbol: %s", doc)
                 continue
-            company_key = self.get_company_key(symbol)
-            for r in doc.get("data", []):
+            company_key = self.get_company_key(mdoc.symbol)
+            for r in mdoc.to_fact_rows():
                 rows.append({
                     "match_key": self.table_creator.get_id(),
                     "company_key": company_key,
-                    "match_datetime": r.get("Time_match"),
-                    "price": r.get("Price_match"),
-                    "volume": r.get("Volume"),
-                    "broker": r.get("Broker"),
-                    "source_json": r
+                    "match_datetime": r.get("match_datetime"),
+                    "price": r.get("price"),
+                    "volume": r.get("volume"),
+                    "broker": r.get("broker"),
+                    "source_json": r.get("source_json")
                 })
         df = pd.DataFrame(rows)
-        sql = self.create_fact_table_sql("fact_match_detail")
+        sql = self.create_fact_table_sql(self.fact_name)
         return df, sql
 
 
-# -------------------------
-# FactIncomeStatementLoader
-# -------------------------
+# FactIncomeStatementLoader (IncomeStatementDoc)
 class FactIncomeStatementLoader(FactLoader):
-
-    def __init__(self, datalake_config, datawarehouse_logger, postgres_client, dim_repo):
-        table_creator = TableCreator(machine_id=1, character_specific=dim_income_info.get("character_specific"))
-        super().__init__(datalake_config, datawarehouse_logger, postgres_client, dim_repo, table_creator)
+    def __init__(self, datalake_config, datawarehouse_logger, postgres_client, dim_repo, mongo_reader):
+        table_creator = TableCreator(machine_id=1, character_specific=None)
+        super().__init__(datalake_config, datawarehouse_logger, postgres_client, dim_repo, table_creator, mongo_reader)
+        # can map both yearly/quarterly collections
+        self.collection_names = [
+            self._get_collection("income_statement_yearly"),
+            self._get_collection("income_statement_quarterly"),
+        ]
+        self.fact_name = self._get_fact_name("fact_income_statement", "fact_income_statement")
 
     def load(self):
         raw = []
-        raw.extend(list(self.mongo.find_table("income_statement_yearly") or []))
-        raw.extend(list(self.mongo.find_table("income_statement_quarterly") or []))
+        for c in self.collection_names:
+            raw.extend(list(self.mongo.find_table(c) or []))
         rows = []
         for doc in raw:
-            symbol = doc.get("symbol")
-            if not symbol:
+            idoc = IncomeStatementDoc.from_extract(doc)
+            if not idoc.symbol:
                 self.datawarehouse_logger.warning("income_statement doc without symbol: %s", doc)
                 continue
-            company_key = self.get_company_key(symbol)
-            report_type_key = self.get_report_type_key(doc.get("report_type"))
-            for r in doc.get("data", []):
-                period_date_key = self.get_date_key(r.get("period"))
+            company_key = self.get_company_key(idoc.symbol)
+            report_type_key = self.get_report_type_key(idoc.report_type or doc.get("report_type"))
+            for r in idoc.to_fact_rows():
+                period_key = self.get_date_key(r.get("period"))
                 rows.append({
                     "income_key": self.table_creator.get_id(),
                     "company_key": company_key,
                     "report_type_key": report_type_key,
-                    "period_date_key": period_date_key,
+                    "period_date_key": period_key,
                     "revenue": r.get("revenue"),
                     "operating_profit": r.get("operating_profit"),
                     "net_income": r.get("net_income"),
                     "eps": r.get("eps"),
-                    "source_json": r
+                    "source_json": r.get("source_json")
                 })
         df = pd.DataFrame(rows)
-        sql = self.create_fact_table_sql("fact_income_statement")
+        sql = self.create_fact_table_sql(self.fact_name)
         return df, sql
 
 
-# -------------------------
-# FactBalanceSheetLoader
-# -------------------------
+# FactBalanceSheetLoader (BalanceSheetDoc)
 class FactBalanceSheetLoader(FactLoader):
-
-    def __init__(self, datalake_config, datawarehouse_logger, postgres_client, dim_repo):
-        table_creator = TableCreator(machine_id=1, character_specific=dim_balance_info.get("character_specific"))
-        super().__init__(datalake_config, datawarehouse_logger, postgres_client, dim_repo, table_creator)
+    def __init__(self, datalake_config, datawarehouse_logger, postgres_client, dim_repo, mongo_reader):
+        table_creator = TableCreator(machine_id=1, character_specific=None)
+        super().__init__(datalake_config, datawarehouse_logger, postgres_client, dim_repo, table_creator, mongo_reader)
+        self.collection_names = [
+            self._get_collection("balance_sheet_yearly"),
+            self._get_collection("balance_sheet_quarterly"),
+        ]
+        self.fact_name = self._get_fact_name("fact_balance_sheet", "fact_balance_sheet")
 
     def load(self):
         raw = []
-        raw.extend(list(self.mongo.find_table("balance_sheet_yearly") or []))
-        raw.extend(list(self.mongo.find_table("balance_sheet_quarterly") or []))
+        for c in self.collection_names:
+            raw.extend(list(self.mongo.find_table(c) or []))
         rows = []
         for doc in raw:
-            symbol = doc.get("symbol")
-            if not symbol:
+            bdoc = BalanceSheetDoc.from_extract(doc)
+            if not bdoc.symbol:
                 self.datawarehouse_logger.warning("balance_sheet doc without symbol: %s", doc)
                 continue
-            company_key = self.get_company_key(symbol)
-            report_type_key = self.get_report_type_key(doc.get("report_type"))
-            for r in doc.get("data", []):
-                period_date_key = self.get_date_key(r.get("period"))
+            company_key = self.get_company_key(bdoc.symbol)
+            report_type_key = self.get_report_type_key(bdoc.report_type or doc.get("report_type"))
+            for r in bdoc.to_fact_rows():
+                period_key = self.get_date_key(r.get("period"))
                 rows.append({
                     "bs_key": self.table_creator.get_id(),
                     "company_key": company_key,
                     "report_type_key": report_type_key,
-                    "period_date_key": period_date_key,
+                    "period_date_key": period_key,
                     "total_assets": r.get("total_assets"),
                     "total_liabilities": r.get("total_liabilities"),
                     "shareholder_equity": r.get("shareholder_equity"),
                     "cash": r.get("cash"),
                     "inventory": r.get("inventory"),
-                    "source_json": r
+                    "source_json": r.get("source_json")
                 })
         df = pd.DataFrame(rows)
-        sql = self.create_fact_table_sql("fact_balance_sheet")
+        sql = self.create_fact_table_sql(self.fact_name)
         return df, sql
 
 
-# -------------------------
 # FactBusinessPlanLoader
-# -------------------------
 class FactBusinessPlanLoader(FactLoader):
-    COLLECTION = "business_plan"
-    FACT_NAME = "fact_business_plan"
-
-    def __init__(self, datalake_config, datawarehouse_logger, postgres_client, dim_repo):
-        table_creator = TableCreator(machine_id=1, character_specific=fact_business_plan_info.get("character_specific"))
-        super().__init__(datalake_config, datawarehouse_logger, postgres_client, dim_repo, table_creator)
+    def __init__(self, datalake_config, datawarehouse_logger, postgres_client, dim_repo, mongo_reader):
+        table_creator = TableCreator(machine_id=1, character_specific=None)
+        super().__init__(datalake_config, datawarehouse_logger, postgres_client, dim_repo, table_creator, mongo_reader)
+        self.collection_name = self._get_collection("business_plan")
+        self.fact_name = self._get_fact_name("fact_business_plan", "fact_business_plan")
 
     def load(self):
-        try:
-            raw_docs = list(self.mongo.find_table(self.COLLECTION) or [])
-        except Exception as e:
-            self.datawarehouse_logger.exception("Failed to read business_plan from mongo: %s", e)
-            raw_docs = []
-
+        raw = list(self.mongo.find_table(self.collection_name) or [])
         rows = []
-        for doc in raw_docs:
-            symbol = doc.get("symbol")
-            if not symbol:
-                self.datawarehouse_logger.warning("skip business_plan doc without symbol: %s", doc)
+        for doc in raw:
+            pdoc = BusinessPlanDoc.from_extract(doc)
+            if not pdoc.symbol:
+                self.datawarehouse_logger.warning("business_plan doc without symbol: %s", doc)
                 continue
-
-            company_key = self.get_company_key(symbol)
-            data_list = doc.get("data") or []
-            if isinstance(data_list, dict):
-                data_list = [data_list]
-
-            for r in data_list:
-                year_raw = r.get("Year") or r.get("year") or r.get("period")
+            company_key = self.get_company_key(pdoc.symbol)
+            for r in pdoc.to_fact_rows():
+                year = r.get("year")
                 try:
-                    year_int = int(str(year_raw)[:4])
-                    period_date = datetime(year_int, 12, 31).date()
-                    period_date_key = self.dim_repo.get_or_create(period_date.isoformat(), "dim_date", self.table_creator)
+                    period_key = self.get_date_key(str(year))
                 except Exception:
-                    period_date_key = self.dim_repo.get_or_create(str(year_raw), "dim_date", self.table_creator)
-
+                    period_key = self.get_date_key("latest")
                 rows.append({
                     "plan_key": self.table_creator.get_id(),
                     "company_key": company_key,
-                    "year_key": period_date_key,
-                    "target_revenue": r.get("Plan_revenue") or r.get("target_revenue"),
-                    "target_profit": r.get("Plan_profit") or r.get("target_profit"),
-                    "capex_plan": r.get("Capex") or r.get("capex_plan") or None,
-                    "source_json": r
+                    "year_key": period_key,
+                    "target_revenue": r.get("target_revenue"),
+                    "target_profit": r.get("target_profit"),
+                    "capex_plan": r.get("capex_plan"),
+                    "source_json": r.get("source_json")
                 })
-
         df = pd.DataFrame(rows)
-        sql = self.create_fact_table_sql(self.FACT_NAME)
+        sql = self.create_fact_table_sql(self.fact_name)
         return df, sql
-
-
-# -------------------------
-# FactFinancialMetricsLoader
-# -------------------------
-class FactFinancialMetricsLoader(FactLoader):
-    COLLECTION = "financial_info"
-    FACT_NAME = "fact_financial_metrics"
-
-    def __init__(self, datalake_config, datawarehouse_logger, postgres_client, dim_repo):
-        table_creator = TableCreator(machine_id=1, character_specific=fact_financial_metrics_info.get("character_specific"))
-        super().__init__(datalake_config, datawarehouse_logger, postgres_client, dim_repo, table_creator)
-
-    def load(self):
-        try:
-            raw_docs = list(self.mongo.find_table(self.COLLECTION) or [])
-        except Exception as e:
-            self.datawarehouse_logger.exception("Failed to read financial_info from mongo: %s", e)
-            raw_docs = []
-
-        rows = []
-        for doc in raw_docs:
-            symbol = doc.get("symbol")
-            if not symbol:
-                self.datawarehouse_logger.warning("skip financial_info doc without symbol: %s", doc)
-                continue
-
-            company_key = self.get_company_key(symbol)
-            data_list = doc.get("data") or doc.get("metrics") or []
-            if isinstance(data_list, dict):
-                data_list = [data_list]
-
-            for r in data_list:
-                period_raw = r.get("period") or r.get("report_date") or r.get("date")
-                if period_raw:
-                    period_dt = pd.to_datetime(period_raw, errors="coerce")
-                    if pd.isna(period_dt):
-                        period_key = self.dim_repo.get_or_create(str(period_raw), "dim_date", self.table_creator)
-                    else:
-                        period_key = self.dim_repo.get_or_create(period_dt.date().isoformat(), "dim_date", self.table_creator)
-                else:
-                    period_key = self.dim_repo.get_or_create("latest", "dim_date", self.table_creator)
-
-                rows.append({
-                    "metric_key": self.table_creator.get_id(),
-                    "company_key": company_key,
-                    "period_date_key": period_key,
-                    "pe": r.get("pe"),
-                    "roe": r.get("roe"),
-                    "roa": r.get("roa"),
-                    "debt_equity": r.get("debt_equity") or r.get("debtToEquity") or r.get("debt_to_equity"),
-                    "market_cap": r.get("market_cap") or r.get("marketCap"),
-                    "source_json": r
-                })
-
-        df = pd.DataFrame(rows)
-        sql = self.create_fact_table_sql(self.FACT_NAME)
-        return df, sql
+# ...existing code...

@@ -1,160 +1,145 @@
-
+# ...existing code...
 from datetime import datetime
 import pandas as pd
-from platforms.storage.datalake.mongodb.load_datalake_cophieu68 import *
-from platforms.storage.datawarehouse.base_transform import TransformDatawarehouse
+from typing import Dict, Any, Optional
+
 from shared.utils.util_cophieu68 import TableCreator
-from platforms.storage.datawarehouse.postgresql.cophieu68.metadata.cophieu68_metadata import *
-# config_path = "/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/internal/config/web_craw_config/cophieu68_config.yaml"
-# config = ETLPipelineConfig(config_path=config_path)
-# mongo_config =config.config.get("storage", {}).get("mongodb", {})
+from platforms.storage.datalake.mongodb.data_lake_storage import MongoStorageBackend
+from shared.common_models.cophieu68_model.load_models import BaseDoc
+from shared.common_models.cophieu68_model import transform_models
 
 
-class DimMarketTypeLoader(TransformDatawarehouse):
+class DimLoader:
+    def __init__(self, datalake_config: Dict[str, Any], table_creator: TableCreator, mongo_reader: MongoStorageBackend):
+        self.datalake_config = datalake_config or {}
+        self.table_creator = table_creator
+        self.mongo = mongo_reader
+        self.schema_dw = transform_models.DATA_WAREHOUSE_SCHEMA or {}
 
-    def __init__(self, datalake_config, logger, postgres_client):
-        super().__init__(datalake_config, logger, postgres_client)
-        self.schema = self.schema_dw["dimensions"]["dim_market_type"]
-        self.table_creator = TableCreator(machine_id=1, character_specific = dim_market_type_info["character_specific"]) 
-
-    def load(self):
-        raw_docs = self.mongo.find_table("market_list")
-        market_types = [doc["market_type"].upper() for doc in raw_docs]
-        rows = []
-         
-        for m in sorted(set(market_types)):
-            surrogate_key = self.repo.get_or_create(m, "dim_market_type", self.table_creator)
-
-            rows.append({
-                "market_key": surrogate_key,
-                "market_type": m,
-                "market_name": dim_market_type_info["market_name"].get(m, ""),
-                "update_time": datetime.utcnow(),
-                "created_time": datetime.utcnow()
-            })
-
-        df = pd.DataFrame(rows)
-        sql = self.table_creator.generate_create_table_sql(
-            "dim_market_type", 
-            self.schema["rules"]
+        # map of collection names from YAML (storage.mongodb.collections.*)
+        self.collection_map = (
+            self.datalake_config.get("storage", {})
+            .get("mongodb", {})
+            .get("collections", {})
+            or {}
         )
 
+    def _get_collection(self, key: str) -> str:
+        return self.collection_map.get(key, key)
+
+    def _create_table_sql(self, dim_name: str) -> str:
+        dims = self.schema_dw.get("dimensions", {})
+        cols = dims.get(dim_name, {}).get("columns", {})
+        norm = {}
+        for col, meta in cols.items():
+            if isinstance(meta, dict) and "type" in meta:
+                norm[col] = meta
+            else:
+                parts = str(meta).split(None, 1)
+                typ = parts[0]
+                cons = parts[1] if len(parts) > 1 else ""
+                norm[col] = {"type": typ, "constraints": cons}
+        return self.table_creator.generate_create_table_sql(dim_name, norm)
+
+
+# dim_market_type
+class DimMarketTypeLoader(DimLoader):
+    def __init__(self, datalake_config, table_creator, mongo_reader):
+        super().__init__(datalake_config, table_creator, mongo_reader)
+        # YAML key is 'list_stock' per config
+        self.collection_name = self._get_collection("list_stock")
+        self.dim_name = "dim_market_type"
+
+    def load(self):
+        raw = list(self.mongo.find_table(self.collection_name) or [])
+        rows = []
+        for doc in raw:
+            b = BaseDoc.from_extract(doc)
+            market_type = (doc.get("market_type") or b.symbol) if isinstance(doc, dict) else b.symbol
+            rows.append({
+                "market_key": market_type.lower() if market_type else None,
+                "market_type": market_type,
+                "market_name": doc.get("market_name") if isinstance(doc, dict) else None,
+                "update_time": doc.get("update_time") or datetime.utcnow().isoformat(),
+                "created_time": None
+            })
+        df = pd.DataFrame(rows)
+        sql = self._create_table_sql(self.dim_name)
         return df, sql
 
 
-class DimIndustryLoader(TransformDatawarehouse):
-
-    def __init__(self, datalake_config, logger, postgres_client):
-        super().__init__(datalake_config, logger, postgres_client)
-        self.schema = self.schema_dw["dimensions"]["dim_industry"]
-        self.table_creator = TableCreator(machine_id=1, character_specific = dim_industry_mapping_info["character_specific"]) 
+# dim_industry
+class DimIndustryLoader(DimLoader):
+    def __init__(self, datalake_config, table_creator, mongo_reader):
+        super().__init__(datalake_config, table_creator, mongo_reader)
+        self.collection_name = self._get_collection("industry_info")
+        self.dim_name = "dim_industry"
 
     def load(self):
+        raw = list(self.mongo.find_table(self.collection_name) or [])
         rows = []
-        
-        for name, code in dim_industry_mapping_info["industry_mapping"].items():
-            surrogate_key = self.repo.get_or_create(code, "dim_industry", self.table_creator)
-
+        for doc in raw:
+            b = BaseDoc.from_extract(doc)
+            key = b.symbol or (doc.get("industry_metric") if isinstance(doc, dict) else None)
             rows.append({
-                "industry_key": surrogate_key,
-                "industry_code": code,
-                "industry_name": name,
-                "update_time": datetime.utcnow(),
-                "created_time": datetime.utcnow()
+                "industry_key": key,
+                "industry_code": key,
+                "industry_name": doc.get("industry_name") if isinstance(doc, dict) else None,
+                "update_time": doc.get("update_time") or datetime.utcnow().isoformat(),
+                "created_time": None
             })
-
         df = pd.DataFrame(rows)
-        sql = self.table_creator.generate_create_table_sql(
-            "dim_industry",
-            self.schema["rules"]
-        )
+        sql = self._create_table_sql(self.dim_name)
         return df, sql
 
 
-class DimCompanyLoader(TransformDatawarehouse):
+# dim_company (SCD2 simplified snapshot)
+class DimCompanyLoader(DimLoader):
+    def __init__(self, datalake_config, table_creator, mongo_reader):
+        super().__init__(datalake_config, table_creator, mongo_reader)
+        # YAML key for company profiles: use 'stock_info' from config
+        self.collection_name = self._get_collection("stock_info")
+        self.dim_name = "dim_company"
 
-    def __init__(self, datalake_config, logger, postgres_client):
-        super().__init__(datalake_config, logger, postgres_client)
-
-        self.schema_company = self.schema_dw["dimensions"]["dim_company"]
-        self.schema_profile = self.schema_dw["dimensions"]["dim_company_profile"]
-
-        # Company dùng character_specific riêng
-        self.table_creator_company = TableCreator(
-            machine_id=1,
-            character_specific=dim_company_profile_info["character_specific"]
-        )
-
-
-    # -------------------------
-    # LOAD FUNCTION
-    # -------------------------
     def load(self):
-        raw_docs = self.mongo.find_table("list_stock")
-
-        rows_company = []
-        rows_profile = []
-
-        for doc in raw_docs:
-            symbol = doc["symbol"]
-            profile_raw = doc.get("profile", {})
-            update_time = doc.get("update_time", datetime.utcnow())
-
-            # 1) Generate surrogate key for COMPANY
-            company_key = self.repo.get_or_create(symbol, "dim_company_profile", self.table_creator_company)
-
-            # 2) Record into DIM_COMPANY (SCD2)
-            rows_company.append({
-                "company_key": company_key,
+        raw = list(self.mongo.find_table(self.collection_name) or [])
+        rows = []
+        for doc in raw:
+            b = BaseDoc.from_extract(doc)
+            profile = (doc.get("profile_json") if isinstance(doc, dict) else None) or {}
+            # some payloads store profile under 'profile' or raw data under 'data'
+            if not profile and isinstance(doc, dict):
+                profile = doc.get("profile") or doc.get("raw") or doc.get("data") or {}
+            symbol = b.symbol or profile.get("symbol") or profile.get("code")
+            rows.append({
+                "company_key": symbol,
                 "symbol": symbol,
-                "company_name": profile_raw.get("full_name", ""),
-                "market_key": self.repo.get_or_create(doc["market_type"], "dim_market_type", self.table_creator_company),
-                "industry_key": self.repo.get_or_create(doc.get("industry", ""), "dim_industry", self.table_creator_company),
-                "profile_json": profile_raw,
-                "effective_from": datetime.utcnow(),
+                "company_name": profile.get("full_name") or profile.get("company_name") or None,
+                "market_key": profile.get("market_type") or None,
+                "industry_key": profile.get("industry_code") or None,
+                "profile_json": profile,
+                "effective_from": None,
                 "effective_to": None,
-                "is_current": True
+                "is_current": True,
+                "created_time": None
             })
-
-            # 3) DIM_COMPANY_PROFILE (SCD1)
-            rows_profile.append({
-                "profile_key": self.table_creator_company.get_id(),
-                "company_key": company_key,
-                "full_name": profile_raw.get("full_name", ""),
-                "english_name": profile_raw.get("english_name", ""),
-                "short_name": profile_raw.get("short_name", ""),
-                "address": profile_raw.get("address", ""),
-                "phone": profile_raw.get("phone", ""),
-                "fax": profile_raw.get("fax", ""),
-                "website": profile_raw.get("website", ""),
-                "email": profile_raw.get("email", ""),
-                "established_date": profile_raw.get("established_date", ""),
-                "listed_date": profile_raw.get("listed_date", ""),
-                "chartered_capital": profile_raw.get("chartered_capital", ""),
-                "business_license": profile_raw.get("business_license", ""),
-                "tax_code": profile_raw.get("tax_code", ""),
-                "update_time": update_time,
-                "created_time": datetime.utcnow()
-            })
-
-        df_company = pd.DataFrame(rows_company)
-        df_profile = pd.DataFrame(rows_profile)
-
-        sql_company = self.table_creator_company.generate_create_table_sql(
-            "dim_company",
-            self.schema_company["columns"]
-        )
-
-        sql_profile = self.table_creator_company.get_id(
-            "dim_company_profile",
-            self.schema_profile["columns"]
-        )
-
-        return {
-            "dim_company": (df_company, sql_company),
-            "dim_company_profile": (df_profile, sql_profile)
-        }
+        df = pd.DataFrame(rows)
+        sql = self._create_table_sql(self.dim_name)
+        return df, sql
 
 
+# dim_report_type
+class DimReportTypeLoader(DimLoader):
+    def __init__(self, datalake_config, table_creator, mongo_reader):
+        super().__init__(datalake_config, table_creator, mongo_reader)
+        # report types are static; no collection required
+        self.dim_name = "dim_report_type"
 
-
+    def load(self):
+        mapping = [
+            {"report_type_key": "Y", "report_type_code": "Y", "description": "Yearly"},
+            {"report_type_key": "Q", "report_type_code": "Q", "description": "Quarterly"},
+        ]
+        df = pd.DataFrame(mapping)
+        sql = self._create_table_sql(self.dim_name)
+        return df, sql

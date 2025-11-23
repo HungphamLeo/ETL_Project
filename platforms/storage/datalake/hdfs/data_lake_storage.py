@@ -7,7 +7,7 @@ import logging
 from pathlib import Path
 from typing import Any, Dict, Optional, List
 import pandas as pd
-from storage.base_storage import StorageBackend, _to_primitive,_parse_namenode_uri
+from storage.base_storage import StorageBackend, to_primitive,_parse_namenode_uri
 
 try:
     from pyarrow import fs as pa_fs
@@ -40,7 +40,7 @@ class HDFSWriter:
 
     def write_json(self, obj: Any, relative_path: str) -> str:
         """Write JSON-serializable object to HDFS. Returns full HDFS path."""
-        payload = json.dumps(_to_primitive(obj), ensure_ascii=False, indent=2).encode("utf-8")
+        payload = json.dumps(to_primitive(obj), ensure_ascii=False, indent=2).encode("utf-8")
         hdfs_path = self._full_path(relative_path)
         # try pyarrow
         if _HAS_PYARROW:
@@ -125,7 +125,7 @@ class HDFSStorageBackend(StorageBackend):
     def save(self, dataset_name: str, data: Any, fmt: str = "json") -> Dict[str, Any]:
         try:
             ts = int(pd.Timestamp.now().timestamp())
-            prim = _to_primitive(data)
+            prim = to_primitive(data)
             if fmt == "parquet":
                 df = pd.DataFrame(prim) if isinstance(prim, list) else pd.DataFrame([prim])
                 rel = f"{dataset_name}/{ts}.parquet"
@@ -219,7 +219,7 @@ class HDFSStorageBackend(StorageBackend):
     def insert(self, target: str, data: Any) -> Dict[str, Any]:
         # Write data under target path; target considered as directory/filename prefix
         try:
-            prim = _to_primitive(data)
+            prim = to_primitive(data)
             if isinstance(prim, (list, dict, pd.DataFrame)):
                 # prefer parquet if DataFrame-like
                 if isinstance(prim, pd.DataFrame) or (isinstance(prim, list) and all(isinstance(x, dict) for x in prim)):
