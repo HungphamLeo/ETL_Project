@@ -2,7 +2,7 @@ from pymongo import MongoClient
 from datetime import datetime
 from typing import List, Dict, Any, Optional
 import logging
-from storage.datalake.base_load_datalake import MongoWriter
+from platforms.storage.datalake.mongodb.data_lake_storage import MongoWriter
 
 
 class MongoLoader(MongoWriter):

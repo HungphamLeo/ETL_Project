@@ -15,4 +15,3 @@ RUN pip install --constraint \
 RUN pip install --constraint \
     "https://raw.githubusercontent.com/apache/airflow/constraints-2.9.1/constraints-3.10.txt" \
     -r /app/requirements_airflow.txt
-

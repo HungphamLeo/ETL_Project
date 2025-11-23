@@ -1,1 +1,7 @@
-manage_database
+.git
+__pycache__
+*.pyc
+docs
+tests
+scripts
+logger_storage
