@@ -1,0 +1,44 @@
+version: "3.9"
+
+services:
+
+  airflow-webserver:
+    build:
+      context: ..
+      dockerfile: infra/docker/airflow/Dockerfile
+    container_name: airflow-webserver
+    environment:
+      - AIRFLOW__CORE__LOAD_EXAMPLES=False
+    volumes:
+      - ../platforms/processing/airflow/dags:/opt/airflow/dags
+      - ../shared:/opt/airflow/shared
+    ports:
+      - "8080:8080"
+    command: webserver
+
+  airflow-scheduler:
+    build:
+      context: ..
+      dockerfile: infra/docker/airflow/Dockerfile
+    container_name: airflow-scheduler
+    volumes:
+      - ../platforms/processing/airflow/dags:/opt/airflow/dags
+      - ../shared:/opt/airflow/shared
+    command: scheduler
+
+  prefect-worker:
+    build:
+      context: ..
+      dockerfile: infra/docker/prefect/Dockerfile
+    container_name: prefect-worker
+    volumes:
+      - ../platforms/processing/prefect/flows:/app/flows
+      - ../shared:/app/shared
+    environment:
+      - PREFECT_API_URL=http://localhost:4200/api
+
+  prefect-server:
+    image: prefecthq/prefect:2-latest
+    ports:
+      - "4200:4200"
+    command: prefect server start --host 0.0.0.0
