@@ -1,0 +1,10 @@
+airflow_env/
+perfect_env/
+ds_env/
+*.venv/
+env/
+.yaml
+.json
+.sh
+.env
+.log
