@@ -1,34 +1,279 @@
-# ETL_Project
+ETL_Project là hệ thống Data Platform hiện đại, được thiết kế theo kiến trúc:
 
-## Mục tiêu dự án
+Microservices Architecture
 
-Dự án **ETL_Project** nhằm xây dựng một quy trình ETL (Extract, Transform, Load) giúp tự động hóa việc thu thập, xử lý và lưu trữ dữ liệu từ nhiều nguồn khác nhau vào hệ thống lưu trữ tập trung. Mục tiêu là đảm bảo dữ liệu sạch, có cấu trúc, sẵn sàng phục vụ cho các mục đích phân tích, báo cáo hoặc machine learning.
+Domain-Driven Design (DDD)
 
-## Kiến trúc tổng quan
+Clean Architecture
 
-- **Extract (Trích xuất):** Thu thập dữ liệu từ các nguồn như file CSV, API, database, v.v.
-- **Transform (Biến đổi):** Làm sạch dữ liệu, xử lý missing values, chuyển đổi kiểu dữ liệu, chuẩn hóa dữ liệu, tích hợp nhiều nguồn thành một dataset thống nhất.
-- **Load (Tải lên):** Lưu trữ dữ liệu đã xử lý vào cơ sở dữ liệu trung tâm (ví dụ: PostgreSQL, MySQL, Data Warehouse, v.v.) hoặc các định dạng file chuẩn (Parquet, CSV...).
+Data Pipeline Architecture (Ingestion → Lake → DWH → Marts)
 
-Luồng chính của dự án:
-1. Nhận diện nguồn dữ liệu đầu vào.
-2. Tự động hóa việc kết nối và trích xuất dữ liệu.
-3. Thực hiện các bước tiền xử lý và biến đổi dữ liệu phù hợp mục tiêu sử dụng.
-4. Lưu trữ dữ liệu đã xử lý vào hệ thống đích.
+Lakehouse (DeltaLake)
 
-## Công nghệ sử dụng
+Event-driven (Kafka / HDFS publisher)
 
-- **Ngôn ngữ lập trình:** (Python là lựa chọn phổ biến cho ETL, nếu khác sẽ bổ sung sau)
-- **Thư viện ETL:** pandas, sqlalchemy, requests, pyodbc, v.v.
-- **Hệ quản trị cơ sở dữ liệu:** PostgreSQL/MySQL/SQLite (tùy theo config)
-- **Quản lý workflow:** Có thể tích hợp Airflow, Luigi hoặc các scheduler (nếu cần mở rộng)
-- **Cấu trúc thư mục:** Tách biệt từng module Extract, Transform, Load để dễ mở rộng, bảo trì.
+ML/Trading Engine
 
-## Kết quả đầu ra
+Blockchain Indexing & Smart Contract Integration
 
-- Dữ liệu đã chuẩn hóa, lưu trữ tập trung, sẵn sàng cho truy vấn, phân tích và xây dựng báo cáo.
-- Hệ thống ETL có thể mở rộng để tích hợp thêm nguồn hoặc xử lý mới trong tương lai.
+Dự án phục vụ cho:
 
----
+Xây dựng hệ thống ETL/ELT thu thập dữ liệu tài chính, kinh tế vĩ mô, blockchain
 
-*Vui lòng cập nhật thêm chi tiết về công nghệ cụ thể nếu repo có thay đổi hoặc bổ sung tính năng mới.*
+Xây dựng Data Lake + Data Warehouse
+
+Tích hợp với Airflow/Prefect để orchestration
+
+Xây dựng Kafka streaming pipeline
+
+Phát triển ML Trading Engine
+
+Tích hợp blockchain (Smart Contract + Chaincode + Oracle + Indexer)
+
+🔥 1. Mục tiêu chính
+
+Thu thập và xử lý dữ liệu việt nam stock market (Cophieu68, DNSE, SSI...)
+
+Thu thập dữ liệu World Bank, FED macroeconomic
+
+Xây dựng Data Lake → Data Warehouse → Data Mart
+
+Build real-time streaming ingestion bằng Kafka
+
+Build Prefect/Airflow orchestration pipelines
+
+Build ML Trading System
+
+Kết nối dữ liệu on-chain / off-chain blockchain
+
+Tạo kiến trúc có khả năng:
+
+Scale lớn
+
+Tái sử dụng
+
+High availability
+
+Clean code theo SOLID + các Design Patterns
+
+🧱 2. Kiến trúc hệ thống (High-level)
+                +-----------------------------+
+                |         Data Sources        |
+                | API / Web / Blockchain     |
+                +-------------+---------------+
+                              |
+                              v
+    +----------------- Platforms: Ingestion -------------------+
+    |  Extractors / Parsers / Config / Source-specific modules |
+    +-----------------+------------------+---------------------+
+                          | Kafka / HDFS / Direct Load
+                          v
++--------------- Platforms: Storage (Data Lake / DWH) ----------+
+|  Datalake → Bronze/Silver       Data Warehouse → Fact/Dim     |
+|  MongoDB / HDFS / DeltaLake     Postgres + Kimball Model      |
++------------+--------------------------+------------------------+
+             |                          |
+             |                          v
+             |               +--------------------------+
+             |               | Platforms: Processing    |
+             |               | Airflow / Prefect / Spark|
+             |               +------------+-------------+
+             |                            |
+             |                            v
+             |              +-----------------------------+
+             |              | Services: Analytics / ML    |
+             |              | Trading Models / Forecasting|
+             |              +-----------------------------+
+             |
+             v
++---------------------+
+| Streaming Platform  |
+| Kafka Producers/Consumers |
++---------------------+
+
+        +----------------------------------------------+
+        | Blockchain Integration (Smart Contract,      |
+        | Chaincode, Oracle, Indexer)                  |
+        +----------------------------------------------+
+
+📁 3. Cấu trúc thư mục dự án
+
+Dự án tuân theo kiến trúc Microservices + DDD:
+
+ETL_Project/
+│
+├── infra/                      # DevOps: Docker, K8s, Terraform
+├── platforms/                  # Data Platform (technical subsystems)
+│   ├── ingestion/              # Extract từ nhiều nguồn (Cophieu68, FED…)
+│   ├── processing/             # Airflow, Prefect, Spark, DBT
+│   ├── streaming/              # Kafka producers/consumers
+│   ├── storage/                # Data Lake, Data Warehouse, DeltaLake
+│   ├── quality/                # Data Quality, Rules
+│   └── blockchain/             # Chaincode, Smart Contract, Oracle Indexing
+│
+├── services/                   # Domain Microservices (DDD)
+│   ├── marketdata/             # VN Stock, Crypto
+│   ├── macrodata/              # World Bank, FED
+│   ├── analytics/              # ML, Trading Engine
+│   ├── reporting/              # BI Marts, Dashboards
+│   └── user/
+│
+├── shared/                     # Reusable utilities/libraries
+├── scripts/                    # CLI scripts, notebooks
+└── tests/                      # Unit / Integration / E2E tests
+
+
+📌 Kiến trúc này bảo đảm:
+
+Separation of concerns
+
+Mỗi module deploy độc lập (microservice)
+
+Dễ mở rộng / scale / bảo trì
+
+Support Data Lake, DWH, Streaming, ML, Blockchain
+
+⚙️ 4. Công nghệ sử dụng (Tech Stack)
+Data Engineering
+
+Python 3.11+
+
+Airflow / Prefect
+
+Apache Spark
+
+DBT (Data Build Tool)
+
+Apache Kafka
+
+HDFS / MinIO
+
+Storage
+
+MongoDB (Landing/Datalake)
+
+PostgreSQL (Data Warehouse)
+
+DeltaLake / Parquet
+
+ML / Quant
+
+PyTorch
+
+Scikit-learn
+
+XGBoost / CatBoost
+
+Backtesting engine
+
+Blockchain
+
+Solidity Smart Contracts
+
+Go chaincode
+
+Oracle + Indexer architecture
+
+DevOps
+
+Docker / Docker Compose
+
+Kubernetes (K8s)
+
+Terraform
+
+Helm
+
+🔗 5. Pipelines chính
+Pipeline 1 – Stock Market (Cophieu68)
+
+Crawl web → Extract OHLCV → Save to MongoDB Data Lake
+
+Transform → Save to PostgreSQL DWH (Fact/Dim)
+
+Publish Kafka events → Realtime streaming
+
+Feed ML prediction pipeline
+
+Pipeline 2 – FED Macroeconomic Data
+
+Fetch API theo schedule
+
+Load vào DWH dạng kim tự tháp (dim_macro, fact_macro)
+
+Pipeline 3 – Blockchain
+
+Index smart contract events
+
+Store normalized data vào Lakehouse
+
+Oracle push dữ liệu off-chain lên smart contract
+
+Pipeline 4 – ML Trading
+
+Feature store
+
+Train model
+
+Predict signals
+
+Backtest + Deploy
+
+🧪 6. Testing Strategy
+tests/
+├── unit/              # Test từng module
+├── integration/       # Test pipeline giữa các hệ thống
+└── e2e/               # Test toàn bộ ETL từ raw đến DWH
+
+🏗️ 7. Cách chạy dự án
+👉 1. Clone project
+git clone https://github.com/username/ETL_Project.git
+cd ETL_Project
+
+👉 2. Tạo môi trường
+pip install -r requirements_common.txt
+
+👉 3. Chạy Docker Stack (Airflow, Kafka, MongoDB, Postgres…)
+docker compose -f infra/docker-compose.yml up -d
+
+👉 4. Chạy pipeline Airflow
+
+Mở UI:
+
+http://localhost:8080
+
+👉 5. Chạy Prefect
+prefect server start
+
+📊 8. Data Warehouse (Kimball Model)
+
+dim_company, dim_calendar, dim_exchange
+
+fact_stock_price
+
+fact_macro_indicator
+
+🔐 9. Security
+
+Data encryption key nằm trong shared/security/
+
+WAF + API rate limit cho ingestion
+
+JWT cho services layer
+
+📌 10. Roadmap
+
+ Thêm ingestion cho SSI, VNDirect API
+
+ Thêm DeltaLake compaction jobs
+
+ Tích hợp Snowflake/BigQuery option
+
+ Xây dựng Superset/Power BI auto refresh
+
+ On-chain → Off-chain reconciliation engine
+
+🧑‍💻 Tác giả
+
+Hùng – Data Engineer & Analytics
+Fintech | Blockchain | Machine Learning
