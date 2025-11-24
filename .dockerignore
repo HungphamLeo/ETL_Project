@@ -1,7 +1,9 @@
 .git
+.gitignore
 __pycache__
 *.pyc
-docs
 tests
-scripts
+docs
+tmp
 logger_storage
+scripts
