@@ -37,24 +37,24 @@ class PrefectETLPipelineConfig:
         return self._loggers[key]
 
     @property
-    def database_logger(self) -> logging.Logger:
-        return self._get_logger("logger.database_logger")
+    def cophieu68_extract_logger(self) -> logging.Logger:
+        return self._get_logger("logger.ingestion_log.cophieu68.extract")
 
     @property
-    def etl_extract_logger(self) -> logging.Logger:
-        return self._get_logger("logger.etl_logger.extract_log")
+    def cophieu68_load_logger(self) -> logging.Logger:
+        return self._get_logger("logger.ingestion_log.cophieu68.load")
 
     @property
-    def etl_transform_logger(self) -> logging.Logger:
-        return self._get_logger("logger.etl_logger.transform_log")
+    def cophieu68_transform_logger(self) -> logging.Logger:
+        return self._get_logger("logger.ingestion_log.cophieu68.transform")
 
     @property
-    def etl_load_logger(self) -> logging.Logger:
-        return self._get_logger("logger.etl_logger.load_log")
+    def storage_mongodb(self) -> logging.Logger:
+        return self._get_logger("logger.storage_log.mongodb")
 
     @property
-    def datawarehouse_postgres_logger(self) -> logging.Logger:
-        return self._get_logger("logger.datawarehouse_postgres_logger")
+    def storage_postgresql(self) -> logging.Logger:
+        return self._get_logger("logger.storage_log.postgresql")
 
     # ========== Accessors & convenience ==========
 
@@ -97,9 +97,9 @@ class PrefectETLPipelineConfig:
         return self.config.get("storage", {}).get("mongodb", {})
 
     def get_postgres_config(self) -> Dict[str, Any]:
-        return self.config.get("storage", {}).get("postgres", {})
+        return self.config.get("storage", {}).get("postgreSQL", {})
 
-    def get_collection(self, logical_name: str, default: Optional[str] = None) -> Optional[str]:
+    def get_mongodb_collection(self, logical_name: str, default: Optional[str] = None) -> Optional[str]:
         cols = self.get_mongo_config().get("collections", {})
         if isinstance(cols, dict):
             v = cols.get(logical_name)
@@ -112,3 +112,7 @@ class PrefectETLPipelineConfig:
                 if item.get("id") == logical_name or item.get("name") == logical_name:
                     return item.get("name")
         return default or logical_name
+
+    def get_postgresql_schema_dw(self):
+        pg_config = self.get_postgres_config()
+        return pg_config.get("dimensions", "public")
