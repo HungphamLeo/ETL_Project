@@ -1,18 +1,23 @@
 import time
+from typing import List
 from prefect import flow, task
 from platforms.ingestion.cophieu68.extract.extract_cophieu68 import ExtractCophieu68
 from platforms.processing.prefect.flows.prefect_orchestra_etl import PrefectETLPipelineConfig
 from platforms.ingestion.cophieu68.load.load_datalake_cophieu68 import MongoLoader
 from platforms.storage.datalake.mongodb.data_lake_storage import MongoStorageBackend
+from shared.common_models.cophieu68_model.extract_models import (
+    CRAWL_MARKET_LIST_CONFIG,
+    INDUSTRIAL_INFO_TYPE
+)
 
 
 
-config_path = "/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/internal/config/web_craw_config/cophieu68_config.yaml"
+config_path = "/shared/config/web_craw_config/cophieu68_config.yaml"
 config = PrefectETLPipelineConfig(config_path=config_path)
 mongo_config_etl_arg =config.config.get("storage", {}).get("mongodb", {}).get("reties_etl_flows", {})
 
 def build_crawler(config, logger=None):
-    crawler = ExtractCophieu68(config, logger)
+    crawler = ExtractCophieu68(pipeline_config=config, pipeline_logger=logger)
     try:
         crawler.endpoint = crawler.crawler_cfg.get("endpoints", {})
     except:
@@ -40,6 +45,7 @@ def build_backend(config, logger):
     """
     try:
         mongo_config =config.get("storage", {}).get("mongodb", {})
+        mongo_storage_logger = config.get("logger", {}).get("storage_log", {}).get("mongodb", {})
         loading_datalake = MongoLoader(
             username = mongo_config.get("username", ""),
             password = mongo_config.get("password", ""),
@@ -47,8 +53,9 @@ def build_backend(config, logger):
             authSource = mongo_config.get("authSource", "admin"),
             port = mongo_config.get("port", 27017),
             database = mongo_config.get("database", "ETL_Project"),
+            logger = config.get("logger", {}).get("ingestion_log", {}).get("cophieu68", {}).get("load", {})
         )
-        backend_mongo =MongoStorageBackend(loading_datalake)
+        backend_mongo =MongoStorageBackend(mongo_writter = loading_datalake, pipeline_logger=mongo_storage_logger)
 
         return mongo_config,loading_datalake, backend_mongo
     except Exception as e:
@@ -316,11 +323,11 @@ def get_symbol_list(config , logger):
 
 @flow(name=mongo_config_etl_arg.get("etl_name", "cophieu68_etl_flow"))
 def cophieu68_etl_flow(config_path="internal/etl/config.yaml"):
-    config_path = "/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/internal/config/web_craw_config/cophieu68_config.yaml"
-    config = ETLPipelineConfig(config_path=config_path)
+    config_path = "/shared/config/web_craw_config/cophieu68_config.yaml"
+    config = PrefectETLPipelineConfig(config_path=config_path)
     pipeline_config = config.config
-    extract_pipeline_logger = config.etl_extract_logger
-    loading_pipeline_logger = config.etl_load_logger
+    extract_pipeline_logger = config.cophieu68_extract_logger
+    loading_pipeline_logger = config.cophieu68_load_logger
     mongo_config, loading_datalake, backend_mongo = build_backend(pipeline_config, loading_pipeline_logger)
     crawler=build_crawler(pipeline_config, extract_pipeline_logger)
     task_schedule_market_list(  
