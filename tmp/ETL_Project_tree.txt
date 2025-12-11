@@ -1,0 +1,130 @@
+├── .gitattributes
+├── .gitignore
+├── README.md
+├── __pycache__
+│   └── utils.cpython-312.pyc
+├── docs
+├── infra
+│   ├── docker
+│   │   ├── ingestion
+│   │   └── processing
+│   │       ├── airflow
+│   │       │   └── Dockerfile
+│   │       ├── dbt
+│   │       └── prefect
+│   │           ├── Dockerfile
+│   │           └── entrypoint.sh
+│   ├── docker_compose
+│   │   └── cohphieu68.yml
+│   ├── k8s
+│   └── terraform
+├── launch.json
+├── logger_storage
+│   ├── ingestion
+│   │   └── cophieu68
+│   └── storage
+│       ├── mongodb
+│       └── postgresql
+├── platforms
+│   ├── api_gateway
+│   ├── blockchain
+│   │   ├── chaincode
+│   │   ├── contracts
+│   │   ├── indexer
+│   │   └── oracle
+│   ├── ingestion
+│   │   ├── cophieu68
+│   │   │   ├── dto
+│   │   │   │   ├── __pycache__
+│   │   │   │   │   └── extract_models.cpython-311.pyc
+│   │   │   │   ├── extract_models.py
+│   │   │   │   ├── load_models.py
+│   │   │   │   └── transform_models.py
+│   │   │   ├── extract
+│   │   │   │   ├── __pycache__
+│   │   │   │   │   ├── base_extract.cpython-311.pyc
+│   │   │   │   │   ├── extract_cophieu68.cpython-311.pyc
+│   │   │   │   │   └── extract_cophieu68.cpython-312.pyc
+│   │   │   │   └── extract_cophieu68.py
+│   │   │   ├── load
+│   │   │   │   └── load_datalake_cophieu68.py
+│   │   │   └── transform
+│   │   │       ├── dim_table_load.py
+│   │   │       └── fact_table_load.py
+│   │   ├── crypto
+│   │   │   ├── binance
+│   │   │   └── okx
+│   │   └── fed_macroeconomic
+│   ├── ml_trading
+│   ├── processing
+│   │   ├── airflow
+│   │   │   ├── config
+│   │   │   └── dags
+│   │   │       └── airflow_orchestra_etl.py
+│   │   ├── base_processing.py
+│   │   ├── dbt
+│   │   │   ├── config
+│   │   │   └── models
+│   │   ├── prefect
+│   │   │   ├── config
+│   │   │   │   └── cophieu68_config.yaml
+│   │   │   └── flows
+│   │   │       └── prefect_orchestra_etl.py
+│   │   ├── spark
+│   │   └── transformer
+│   ├── storage
+│   │   ├── base_storage.py
+│   │   ├── cache
+│   │   ├── datalake
+│   │   │   ├── hdfs
+│   │   │   │   └── data_lake_storage.py
+│   │   │   └── mongodb
+│   │   │       └── data_lake_storage.py
+│   │   ├── datawarehouse
+│   │   │   └── postgresql
+│   │   │       └── datawarehouse_storage.py
+│   │   └── deltalake
+│   └── streaming
+│       ├── consumers
+│       ├── producers
+│       │   ├── hdfs_publish_base.py
+│       │   └── kafka_publish_base.py
+│       └── schemas
+├── requirements_airflow.txt
+├── requirements_common.txt
+├── requirements_prefect.txt
+├── scripts
+│   ├── bash.sh
+│   ├── cli
+│   │   ├── load_config.py
+│   │   └── run.py
+│   ├── cophieu68_elt_mongodb.py
+│   ├── cophieu68_etl_postgresql.py
+│   └── run_cophieu68.ipynb
+├── services
+│   ├── analytics
+│   ├── macrodata
+│   ├── marketdata
+│   │   ├── crypto
+│   │   └── vietnamstock
+│   │       └── cophieu68.py
+│   ├── reporting
+│   └── user
+├── shared
+│   ├── common_models
+│   ├── config
+│   ├── events
+│   ├── logger
+│   │   └── main_logger.py
+│   ├── securities
+│   └── utils
+│       ├── files
+│       │   └── util_cophieu68.py
+│       └── networks
+├── tests
+│   ├── e2e
+│   ├── intergration
+│   └── unit
+└── tmp
+    └── ETL_Project_tree.txt
+
