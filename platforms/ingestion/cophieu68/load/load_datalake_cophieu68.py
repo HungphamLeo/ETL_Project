@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import List, Dict, Any, Optional, Iterable
 import logging
 from platforms.storage.datalake.mongodb.data_lake_storage import MongoWriter
-from shared.common_models.cophieu68_model.load_models import (
+from platforms.ingestion.cophieu68.dto.load_models import (
     BaseDoc,
     TradingDataDoc,
     FinancialInfoDoc,
@@ -11,7 +11,7 @@ from shared.common_models.cophieu68_model.load_models import (
     BalanceSheetDoc,
     MatchDetailsDoc,
     BusinessPlanDoc,
-    doc_from_extract,
+    doc_from_extract
 )
 
 

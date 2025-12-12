@@ -15,7 +15,7 @@
 │   │           ├── Dockerfile
 │   │           └── entrypoint.sh
 │   ├── docker_compose
-│   │   └── cohphieu68.yml
+│   │   └── cophieu68.yml
 │   ├── k8s
 │   └── terraform
 ├── launch.json
@@ -115,7 +115,7 @@
 │   ├── config
 │   ├── events
 │   ├── logger
-│   │   └── main_logger.py
+│   │   └── python_main_logger.py
 │   ├── securities
 │   └── utils
 │       ├── files

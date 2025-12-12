@@ -3,10 +3,10 @@ from datetime import datetime
 import pandas as pd
 from typing import Dict, Any, Optional
 
-from shared.utils.util_cophieu68 import TableCreator
+from shared.utils.files.util_cophieu68 import TableCreator
 from platforms.storage.datalake.mongodb.data_lake_storage import MongoStorageBackend
-from shared.common_models.cophieu68_model.load_models import BaseDoc
-from shared.common_models.cophieu68_model import transform_models
+from platforms.ingestion.cophieu68.dto.load_models import BaseDoc
+from platforms.ingestion.cophieu68.dto import transform_models
 
 
 class DimLoader:

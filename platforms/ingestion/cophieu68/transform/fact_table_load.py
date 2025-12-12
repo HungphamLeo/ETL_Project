@@ -1,9 +1,9 @@
 # ...existing code...
 import pandas as pd
 from datetime import datetime
-from shared.utils.util_cophieu68 import TableCreator
-from shared.common_models.cophieu68_model import transform_models
-from shared.common_models.cophieu68_model.load_models import (
+from shared.utils.files.util_cophieu68 import TableCreator
+from platforms.ingestion.cophieu68.dto import transform_models
+from platforms.ingestion.cophieu68.dto.load_models import (
     TradingDataDoc,
     MatchDetailsDoc,
     IncomeStatementDoc,
