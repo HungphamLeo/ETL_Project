@@ -1,7 +1,7 @@
 from typing import Any, Dict, Optional, Sequence
 import logging
 from pymongo import MongoClient, errors as pymongo_errors
-from storage.base_storage import StorageBackend, to_primitive
+from platforms.storage.base_storage import StorageBackend, to_primitive
 
 class MongoWriter:
     """

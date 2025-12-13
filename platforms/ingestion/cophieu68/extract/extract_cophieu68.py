@@ -2,10 +2,10 @@ from bs4 import BeautifulSoup
 import requests
 import re
 import time
-from typing import Optional, List, Union
+from typing import Optional, List, Union, Dict
 import pandas as pd
 from dataclasses import asdict
-from shared.common_models.cophieu68_model.extract_models import *
+from  platforms.ingestion.cophieu68.dto.extract_models import *
 
 
 class Cophieu68BeautifulSoupCrawler:

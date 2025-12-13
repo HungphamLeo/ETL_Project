@@ -16,6 +16,7 @@ class FastLogger:
         logger_config = config
         for key in logger_type.split("."):
             logger_config = logger_config.get(key, {})
+        print(logger_config)
         if not logger_config:
             raise ValueError(f"Logger type '{logger_type}' không tồn tại trong config")
 
@@ -62,4 +63,5 @@ class FastLogger:
         self.logger.addHandler(console_handler)
 
     def get_logger(self):
+        print(self.logger)
         return self.logger

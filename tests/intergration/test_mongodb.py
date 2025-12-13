@@ -1,6 +1,8 @@
 import time
 from typing import List
-from prefect import flow, task
+import sys
+
+# from prefect import flow, task
 from platforms.ingestion.cophieu68.extract.extract_cophieu68 import ExtractCophieu68
 from platforms.processing.prefect.flows.prefect_orchestra_etl import PrefectETLPipelineConfig
 from platforms.ingestion.cophieu68.load.load_datalake_cophieu68 import MongoLoader
@@ -62,7 +64,7 @@ def build_backend(config, logger):
         logger.error(f"Error building backend: {e}")
         raise
 
-@task(retries=mongo_config_etl_arg.get("retries", 3), retry_delay_seconds=mongo_config_etl_arg.get("backoff_seconds", 5))
+# @task(retries=mongo_config_etl_arg.get("retries", 3), retry_delay_seconds=mongo_config_etl_arg.get("backoff_seconds", 5))
 def task_schedule_market_list(mongo_config, 
                               crawler: ExtractCophieu68, 
                               backend_mongo: MongoStorageBackend, 
@@ -102,7 +104,7 @@ def task_schedule_market_list(mongo_config,
     except Exception as e:
         loading_pipeline_logger.error(f"Error in task_schedule_market_list: {e}")
 
-@task(retries=mongo_config_etl_arg.get("retries", 3), retry_delay_seconds=mongo_config_etl_arg.get("backoff_seconds", 5))
+# @task(retries=mongo_config_etl_arg.get("retries", 3), retry_delay_seconds=mongo_config_etl_arg.get("backoff_seconds", 5))
 def task_schedule_industry_info(    mongo_config, 
                                     crawler: ExtractCophieu68, 
                                     backend_mongo: MongoStorageBackend, 
@@ -142,7 +144,7 @@ def task_schedule_industry_info(    mongo_config,
     except Exception as e:
         loading_pipeline_logger.error(f"Error in task_schedule_industry_info: {e}")
 
-@task(retries=mongo_config_etl_arg.get("retries", 3), retry_delay_seconds=mongo_config_etl_arg.get("backoff_seconds", 5))
+# @task(retries=mongo_config_etl_arg.get("retries", 3), retry_delay_seconds=mongo_config_etl_arg.get("backoff_seconds", 5))
 def task_schedule_company_profile(  mongo_config, 
                                     crawler: ExtractCophieu68, 
                                     backend_mongo: MongoStorageBackend, 
@@ -165,7 +167,7 @@ def task_schedule_company_profile(  mongo_config,
     except Exception as e:
         loading_pipeline_logger.error(f"Error in task_schedule_company_profile: {e}")
 
-@task(retries=mongo_config_etl_arg.get("retries", 3), retry_delay_seconds=mongo_config_etl_arg.get("backoff_seconds", 5))
+# @task(retries=mongo_config_etl_arg.get("retries", 3), retry_delay_seconds=mongo_config_etl_arg.get("backoff_seconds", 5))
 def task_schedule_financial_summary(mongo_config, 
                                     crawler: ExtractCophieu68, 
                                     backend_mongo: MongoStorageBackend, 
@@ -182,7 +184,7 @@ def task_schedule_financial_summary(mongo_config,
         time.sleep(mongo_config.get("delay_call", 0.25))
 
 
-@task(retries=mongo_config_etl_arg.get("retries", 3), retry_delay_seconds=mongo_config_etl_arg.get("backoff_seconds", 5))
+# @task(retries=mongo_config_etl_arg.get("retries", 3), retry_delay_seconds=mongo_config_etl_arg.get("backoff_seconds", 5))
 def task_schedule_business_plan(mongo_config, 
                                     crawler: ExtractCophieu68, 
                                     backend_mongo: MongoStorageBackend, 
@@ -201,7 +203,7 @@ def task_schedule_business_plan(mongo_config,
                 loading_pipeline_logger.error(f"Error loading business plan for symbol {symbol}: {e}")
         time.sleep(mongo_config.get("delay_call", 0.25)) 
 
-@task(retries=mongo_config_etl_arg.get("retries", 3), retry_delay_seconds=mongo_config_etl_arg.get("backoff_seconds", 5))
+# @task(retries=mongo_config_etl_arg.get("retries", 3), retry_delay_seconds=mongo_config_etl_arg.get("backoff_seconds", 5))
 def task_schedule_details_financial_statement_quarterly(mongo_config, 
                                     crawler: ExtractCophieu68, 
                                     backend_mongo: MongoStorageBackend, 
@@ -229,7 +231,7 @@ def task_schedule_details_financial_statement_quarterly(mongo_config,
 
         time.sleep(mongo_config.get("delay_call", 0.25)) 
 
-@task(retries=mongo_config_etl_arg.get("retries", 3), retry_delay_seconds=mongo_config_etl_arg.get("backoff_seconds", 5))
+# @task(retries=mongo_config_etl_arg.get("retries", 3), retry_delay_seconds=mongo_config_etl_arg.get("backoff_seconds", 5))
 def task_schedule_details_financial_statement_yearly(mongo_config, 
                                     crawler: ExtractCophieu68, 
                                     backend_mongo: MongoStorageBackend, 
@@ -257,7 +259,7 @@ def task_schedule_details_financial_statement_yearly(mongo_config,
             loading_pipeline_logger.error(f"Error loading balance sheet yearly for symbol {symbol}: {e}")
         time.sleep(mongo_config.get("delay_call", 0.25)) 
 
-@task(retries=mongo_config_etl_arg.get("retries", 3), retry_delay_seconds=mongo_config_etl_arg.get("backoff_seconds", 5))
+# @task(retries=mongo_config_etl_arg.get("retries", 3), retry_delay_seconds=mongo_config_etl_arg.get("backoff_seconds", 5))
 def task_schedule_details_financial_ratios(mongo_config, 
                                             crawler: ExtractCophieu68, 
                                             backend_mongo: MongoStorageBackend, 
@@ -278,7 +280,7 @@ def task_schedule_details_financial_ratios(mongo_config,
             loading_pipeline_logger.error(f"Error loading financial ratios for symbol {symbol}: {e}")
         time.sleep(mongo_config.get("delay_call", 0.25))  
 
-@task(retries=mongo_config_etl_arg.get("retries", 3), retry_delay_seconds=mongo_config_etl_arg.get("backoff_seconds", 5))
+# @task(retries=mongo_config_etl_arg.get("retries", 3), retry_delay_seconds=mongo_config_etl_arg.get("backoff_seconds", 5))
 def task_schedule_details_trading_data(mongo_config, 
                                         crawler: ExtractCophieu68, 
                                         backend_mongo: MongoStorageBackend, 
@@ -312,7 +314,7 @@ def task_schedule_details_trading_data(mongo_config,
             loading_pipeline_logger.error(f"Failed to load trading data for symbol {symbol}, index {index} Error: {e}")
         time.sleep(delay_call)
 
-@task
+# @task(retries=mongo_config_etl_arg.get("retries", 3), retry_delay_seconds=mongo_config_etl_arg.get("backoff_seconds", 5))
 def get_symbol_list(config , logger):
     mongo_config, _, backend_mongo = build_backend(config, logger)
     list_stock_collection = mongo_config.get("collections", {}).get("list_stock", "list_stock")
@@ -321,13 +323,11 @@ def get_symbol_list(config , logger):
     return symbol_list[0]
 
 
-@flow(name=mongo_config_etl_arg.get("etl_name", "cophieu68_etl_flow"))
-def cophieu68_etl_flow(config_path="internal/etl/config.yaml"):
-    config_path = "/shared/config/web_craw_config/cophieu68_config.yaml"
-    config = PrefectETLPipelineConfig(config_path=config_path)
-    pipeline_config = config.config
-    extract_pipeline_logger = config.cophieu68_extract_logger
-    loading_pipeline_logger = config.cophieu68_load_logger
+# @flow(name=mongo_config_etl_arg.get("etl_name", "cophieu68_etl_flow"))
+def cophieu68_etl_flow(config_path="platforms/processing/prefect/config/cophieu68_config.yaml"):
+    pipeline_config = PrefectETLPipelineConfig(config_path=config_path)
+    extract_pipeline_logger = pipeline_config.cophieu68_extract_logger
+    loading_pipeline_logger = pipeline_config.cophieu68_load_logger
     mongo_config, loading_datalake, backend_mongo = build_backend(pipeline_config, loading_pipeline_logger)
     crawler=build_crawler(pipeline_config, extract_pipeline_logger)
     task_schedule_market_list(  
