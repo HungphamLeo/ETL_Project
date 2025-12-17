@@ -9,9 +9,8 @@ from shared.logger.python_main_logger import FastLogger
 class ConfigLoader(Protocol):
     def load(self, path: Optional[str]) -> Dict[str, Any]:
         cfg = load_config(path)
-        return cfg if isinstance(cfg, dict) else {}
-
-
+        print("Loaded config:", cfg)
+        return cfg 
 
 
 class FileConfigLoader:

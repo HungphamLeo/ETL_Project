@@ -395,4 +395,4 @@ def cophieu68_etl_flow(config_path="platforms/processing/prefect/config/cophieu6
 
 
 if __name__ == "__main__":
-    cophieu68_etl_flow()
+    cophieu68_etl_flow(config_path = config_path)

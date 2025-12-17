@@ -27,6 +27,7 @@ class PrefectETLPipelineConfig:
 
     def _load_config(self) -> None:
         try:
+            print("Loading config from:", self._config_path)
             cfg = self._loader.load(self._config_path) or {}
             self._config = cfg
             
