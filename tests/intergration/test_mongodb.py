@@ -11,6 +11,8 @@ from platforms.ingestion.cophieu68.dto.extract_models import (
     CRAWL_MARKET_LIST_CONFIG,
     INDUSTRIAL_INFO_TYPE
 )
+from shared.logger.python_main_logger import FastLogger
+from platforms.processing.base_processing import FileConfigLoader, DefaultLoggerFactory
 
 
 
@@ -324,8 +326,8 @@ def get_symbol_list(config , logger):
 
 
 # @flow(name=mongo_config_etl_arg.get("etl_name", "cophieu68_etl_flow"))
-def cophieu68_etl_flow(config_path="platforms/processing/prefect/config/cophieu68_config.yaml"):
-    pipeline_config = PrefectETLPipelineConfig(config_path=config_path)
+def cophieu68_etl_flow(config_path):
+    pipeline_config = PrefectETLPipelineConfig(config_path=config_path, config_loader=FileConfigLoader(), logger_factory=DefaultLoggerFactory())
     extract_pipeline_logger = pipeline_config.cophieu68_extract_logger
     loading_pipeline_logger = pipeline_config.cophieu68_load_logger
     mongo_config, loading_datalake, backend_mongo = build_backend(pipeline_config, loading_pipeline_logger)

@@ -2,14 +2,13 @@ import logging
 from typing import Dict, Any, Optional, Protocol
 from datetime import timedelta
 
-from scripts.cli import load_config
+from scripts.cli.load_config import func_load_config
 from shared.logger.python_main_logger import FastLogger
 
 
 class ConfigLoader(Protocol):
     def load(self, path: Optional[str]) -> Dict[str, Any]:
-        cfg = load_config(path)
-        print("Loaded config:", cfg)
+        cfg = func_load_config(path)
         return cfg 
 
 
@@ -19,7 +18,7 @@ class FileConfigLoader:
         if not path:
             return {}
         try:
-            cfg = load_config(path)
+            cfg = func_load_config(path)
             return cfg if isinstance(cfg, dict) else {}
         except Exception:
             return {}
