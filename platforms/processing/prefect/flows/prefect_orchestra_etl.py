@@ -43,23 +43,23 @@ class PrefectETLPipelineConfig:
 
     @property
     def cophieu68_extract_logger(self) -> logging.Logger:
-        return self._get_logger("logger.ingestion_log.cophieu68.extract")
+        return self._get_logger("project_params.logger.ingestion_log.cophieu68.extract")
 
     @property
     def cophieu68_load_logger(self) -> logging.Logger:
-        return self._get_logger("logger.ingestion_log.cophieu68.load")
+        return self._get_logger("project_params.logger.ingestion_log.cophieu68.load")
 
     @property
     def cophieu68_transform_logger(self) -> logging.Logger:
-        return self._get_logger("logger.ingestion_log.cophieu68.transform")
+        return self._get_logger("project_params.logger.ingestion_log.cophieu68.transform")
 
     @property
     def storage_mongodb(self) -> logging.Logger:
-        return self._get_logger("logger.storage_log.mongodb")
+        return self._get_logger("project_params.logger.storage_log.mongodb")
 
     @property
     def storage_postgresql(self) -> logging.Logger:
-        return self._get_logger("logger.storage_log.postgresql")
+        return self._get_logger("project_params.logger.storage_log.postgresql")
 
     # ========== Accessors & convenience ==========
 

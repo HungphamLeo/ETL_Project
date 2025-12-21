@@ -62,8 +62,8 @@ class MongoWriter:
 class MongoStorageBackend(StorageBackend):
     """Adapter to expose MongoWriter as StorageBackend and provide DB/collection operations."""
 
-    def __init__(self, mongo_writer: MongoWriter, client_kwargs: Optional[Dict] = None, pipeline_logger: Optional[logging.Logger] = None):
-        self.mongo = mongo_writer
+    def __init__(self, mongo_writter: MongoWriter, pipeline_logger: Optional[logging.Logger] = None, client_kwargs: Optional[Dict] = None):
+        self.mongo = mongo_writter
         self.client_kwargs = client_kwargs or {}
         self.logger = pipeline_logger or logging.getLogger(__name__)
 

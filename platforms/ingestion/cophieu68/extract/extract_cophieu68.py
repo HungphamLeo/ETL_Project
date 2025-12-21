@@ -11,12 +11,12 @@ from  platforms.ingestion.cophieu68.dto.extract_models import *
 class Cophieu68BeautifulSoupCrawler:
     def __init__(self, pipeline_config, pipeline_logger):
         config = pipeline_config
-        self.crawler_cfg = config["sources"]["cophieu68"]
+        self.crawler_cfg = config["project_params"]["sources"]["cophieu68"]
         self.urls = self.crawler_cfg["base_url"]
-        self.delay = config["http"].get("delay_seconds", 0.2)
-        self.timeout =  config["http"].get("timeout_seconds", 30)
+        self.delay = config["project_params"]["http"].get("delay_seconds", 0.2)
+        self.timeout =  config["project_params"]["http"].get("timeout_seconds", 30)
         self.session = requests.Session()
-        self.session.headers.update(config["http"].get("headers", {}))
+        self.session.headers.update(config["project_params"]["http"].get("headers", {}))
         self.logger = pipeline_logger
 
 

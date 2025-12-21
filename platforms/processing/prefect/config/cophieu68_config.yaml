@@ -16,11 +16,11 @@ project_params:
     ingestion_log:
       cophieu68:
         level: INFO
-        storage_path: /logger_storage/ingestion/cophieu68
-        max_size_mb: 50
-        backup_count: 7
         extract:
           level: INFO
+          storage_path: logger_storage/ingestion/cophieu68
+          max_size_mb: 50
+          backup_count: 7
           files:
             debug: extract_debug.log
             info: extract_info.log
@@ -28,6 +28,9 @@ project_params:
             error: extract_error.log
         load:
           level: INFO
+          storage_path: logger_storage/ingestion/cophieu68
+          max_size_mb: 50
+          backup_count: 7
           files:
             debug: load_debug.log
             info: load_info.log
@@ -35,6 +38,9 @@ project_params:
             error: load_error.log
         transform:
           level: INFO
+          storage_path: logger_storage/ingestion/cophieu68
+          max_size_mb: 50
+          backup_count: 7
           files:
             debug: transform_debug.log
             info: transform_info.log
@@ -44,7 +50,7 @@ project_params:
     storage_log:
       mongodb:
         level: INFO
-        storage_path: /logger_storage/storage/mongodb
+        storage_path: logger_storage/storage/mongodb
         max_size_mb: 50
         backup_count: 7
         files:
@@ -54,7 +60,7 @@ project_params:
           error: mongodb_error.log
       postgresql:
         level: INFO
-        storage_path: /logger_storage/storage/postgresql
+        storage_path: logger_storage/storage/postgresql
         max_size_mb: 50
         backup_count: 7
         files:

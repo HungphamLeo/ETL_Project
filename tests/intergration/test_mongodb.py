@@ -29,7 +29,7 @@ def build_crawler(config, logger=None):
     return crawler
 
 
-def build_backend(config, logger):
+def build_backend(config:PrefectETLPipelineConfig, logger):
     """
     Builds a backend for ETL pipeline based on given configuration.
 
@@ -48,8 +48,8 @@ def build_backend(config, logger):
         Object for storing data in MongoDB.
     """
     try:
-        mongo_config =config.get("storage", {}).get("mongodb", {})
-        mongo_storage_logger = config.get("logger", {}).get("storage_log", {}).get("mongodb", {})
+        mongo_config = config.get_mongo_config()
+        mongo_storage_logger = logger
         loading_datalake = MongoLoader(
             username = mongo_config.get("username", ""),
             password = mongo_config.get("password", ""),
@@ -57,7 +57,7 @@ def build_backend(config, logger):
             authSource = mongo_config.get("authSource", "admin"),
             port = mongo_config.get("port", 27017),
             database = mongo_config.get("database", "ETL_Project"),
-            logger = config.get("logger", {}).get("ingestion_log", {}).get("cophieu68", {}).get("load", {})
+            logger = mongo_storage_logger
         )
         backend_mongo =MongoStorageBackend(mongo_writter = loading_datalake, pipeline_logger=mongo_storage_logger)
 
@@ -331,7 +331,8 @@ def cophieu68_etl_flow(config_path):
     extract_pipeline_logger = pipeline_config.cophieu68_extract_logger
     loading_pipeline_logger = pipeline_config.cophieu68_load_logger
     mongo_config, loading_datalake, backend_mongo = build_backend(pipeline_config, loading_pipeline_logger)
-    crawler=build_crawler(pipeline_config, extract_pipeline_logger)
+    config_info= pipeline_config._config
+    crawler=build_crawler(config_info, extract_pipeline_logger)
     task_schedule_market_list(  
                                 mongo_config = mongo_config,
                                 crawler=crawler,
