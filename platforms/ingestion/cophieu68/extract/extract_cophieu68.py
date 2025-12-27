@@ -4,6 +4,7 @@ import re
 import time
 from typing import Optional, List, Union, Dict
 import pandas as pd
+from io import StringIO
 from dataclasses import asdict
 from  platforms.ingestion.cophieu68.dto.extract_models import *
 
@@ -11,12 +12,12 @@ from  platforms.ingestion.cophieu68.dto.extract_models import *
 class Cophieu68BeautifulSoupCrawler:
     def __init__(self, pipeline_config, pipeline_logger):
         config = pipeline_config
-        self.crawler_cfg = config["project_params"]["sources"]["cophieu68"]
+        self.crawler_cfg = config["sources"]["cophieu68"]
         self.urls = self.crawler_cfg["base_url"]
-        self.delay = config["project_params"]["http"].get("delay_seconds", 0.2)
-        self.timeout =  config["project_params"]["http"].get("timeout_seconds", 30)
+        self.delay = config["http"].get("delay_seconds", 0.2)
+        self.timeout =  config["http"].get("timeout_seconds", 30)
         self.session = requests.Session()
-        self.session.headers.update(config["project_params"]["http"].get("headers", {}))
+        self.session.headers.update(config["http"].get("headers", {}))
         self.logger = pipeline_logger
 
 
@@ -87,7 +88,7 @@ class ExtractCophieu68(Cophieu68BeautifulSoupCrawler):
             brief_table = soup.select_one("#financial_brief")
             if brief_table:
                 try:
-                    brief_df = pd.read_html(str(brief_table), flavor="lxml")[0]
+                    brief_df = pd.read_html(StringIO(str(brief_table)), flavor="lxml")[0]
                     results["financial_brief"] = StockFinancialReport(
                         symbol=symbol.upper(), 
                         report_type="brief",
@@ -102,7 +103,7 @@ class ExtractCophieu68(Cophieu68BeautifulSoupCrawler):
             indexes_table = soup.select_one("#financial_indexes")
             if indexes_table:
                 try:
-                    indexes_df = pd.read_html(str(indexes_table), flavor="lxml")[0]
+                    indexes_df = pd.read_html(StringIO(str(indexes_table)), flavor="lxml")[0]
                     results["financial_indexes"] = StockFinancialReport(
                         symbol=symbol.upper(),
                         report_type="indexes", 
@@ -241,7 +242,7 @@ class ExtractCophieu68(Cophieu68BeautifulSoupCrawler):
             
             for idx, table in enumerate(tables):
                 try:
-                    df = pd.read_html(str(table), flavor="lxml")[0]
+                    df = pd.read_html(StringIO(str(table)), flavor="lxml")[0]
                     results[f"table_{idx}"] = df
                 except Exception as e:
                     continue

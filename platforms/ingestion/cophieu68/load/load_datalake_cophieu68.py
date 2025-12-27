@@ -3,6 +3,7 @@ from datetime import datetime
 from typing import List, Dict, Any, Optional, Iterable
 import logging
 from platforms.storage.datalake.mongodb.data_lake_storage import MongoWriter
+from platforms.storage.base_storage import to_primitive
 from platforms.ingestion.cophieu68.dto.load_models import (
     BaseDoc,
     TradingDataDoc,
@@ -226,6 +227,8 @@ class MongoLoader(MongoWriter):
             db = client[self.database]
             coll = db[collection_name]
             now = self._now_iso()
+            if income_data and "data" in income_data:
+                income_data["data"] = to_primitive(income_data["data"])
             doc = IncomeStatementDoc.from_extract(income_data).to_mongo_dict()
             doc["update_time"] = now
             self._upsert(coll, doc, key_fields=["symbol", "report_type"])
@@ -242,6 +245,8 @@ class MongoLoader(MongoWriter):
             db = client[self.database]
             coll = db[collection_name]
             now = self._now_iso()
+            if balance_data and "data" in balance_data:
+                balance_data["data"] = to_primitive(balance_data["data"])
             doc = BalanceSheetDoc.from_extract(balance_data).to_mongo_dict()
             doc["update_time"] = now
             self._upsert(coll, doc, key_fields=["symbol", "report_type"])

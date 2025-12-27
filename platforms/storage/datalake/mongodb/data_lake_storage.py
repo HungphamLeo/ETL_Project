@@ -160,7 +160,7 @@ class MongoStorageBackend(StorageBackend):
             return {"ok": True, "collection": name, "action": "created"}
 
         except Exception as e:
-            self.logger.exception("Create schema failed", e)
+            self.logger.exception("Create schema failed: %s", e)
             return {"ok": False, "error": str(e)}
 
         finally:
