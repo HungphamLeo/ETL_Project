@@ -1,7 +1,7 @@
-# from scripts.run_wbapi_etl import run_pipeline
+from scripts.cophieu68_etl_mongodb_v1 import run_etl_cophieu69_mongodb_v1
 
 
-# if __name__ == "__main__":
-#     run_pipeline()
-#     print("Pipeline execution completed successfully.")
+if __name__ == "__main__":
+    run_etl_cophieu69_mongodb_v1()
+    print("Pipeline execution completed successfully.")
     
