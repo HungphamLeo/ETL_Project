@@ -134,7 +134,7 @@ project_params:
       maxPoolSize: 50
       retryWrites: true
       writeConcern: "majority"
-      delay_call: 1
+      delay_call: 0.3
   # Add under top-level key `data_warehouse_schema:` (merge into existing config)
   data_warehouse_schema:
     dimensions:
