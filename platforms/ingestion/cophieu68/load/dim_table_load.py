@@ -47,7 +47,7 @@ class DimMarketTypeLoader(DimLoader):
     def __init__(self, datalake_config, table_creator, mongo_reader):
         super().__init__(datalake_config, table_creator, mongo_reader)
         # YAML key is 'list_stock' per config
-        self.collection_name = self._get_collection("list_stock")
+    self.collection_name = self._get_collection("list_stock")
         self.dim_name = "dim_market_type"
 
     def load(self):

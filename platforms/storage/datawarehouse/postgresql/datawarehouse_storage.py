@@ -10,11 +10,11 @@ class PostgreSQLWriter:
     Lightweight PostgreSQL writer. Uses psycopg2 for database interactions.
     """
 
-    def __init__(self, host: str, port: int, database: str, user: str, password: str, logger: Optional[logging.Logger] = None):
+    def __init__(self, host: str, port: int, database: str, username: str, password: str, logger: Optional[logging.Logger] = None):
         self.host = host
         self.port = port
         self.database = database
-        self.user = user
+        self.user = username
         self.password = password
         self.logger = logger or logging.getLogger(__name__)
 
@@ -53,8 +53,8 @@ class PostgreSQLWriter:
 class PostgreSQLStorageBackend(StorageBackend):
     """Adapter to expose PostgreSQLWriter as StorageBackend."""
 
-    def __init__(self, pipeline_logger, pg_writer: PostgreSQLWriter):
-        self.pg = pg_writer
+    def __init__(self, pipeline_logger, postgres_writter: PostgreSQLWriter):
+        self.pg = postgres_writter
         self.logger = pipeline_logger or logging.getLogger(__name__)
 
     def save(self, dataset_name: str, data: Any, fmt: Optional[str] = None) -> Dict[str, Any]:

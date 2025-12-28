@@ -104,7 +104,7 @@ project_params:
       rate_limit_per_minute: 60
       retry:
         max_attempts: 3
-        backoff_seconds: 5
+        backoff_seconds: 30
       parser: html
       auth: {}
 
@@ -120,7 +120,10 @@ project_params:
       connection_pool:
         min_size: 1
         max_size: 10
-
+      delay_call: 0.3
+      reties_etl_flows:
+        max_attempts: 3
+        backoff_seconds: 60
     mongodb:
       enabled: true
       url: "mongodb://root:root123@localhost:27017/?authSource=admin"
@@ -135,6 +138,9 @@ project_params:
       retryWrites: true
       writeConcern: "majority"
       delay_call: 0.3
+      reties_etl_flows:
+        max_attempts: 3
+        backoff_seconds: 60
   # Add under top-level key `data_warehouse_schema:` (merge into existing config)
   data_warehouse_schema:
     dimensions:
