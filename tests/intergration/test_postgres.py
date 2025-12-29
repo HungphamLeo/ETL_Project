@@ -23,11 +23,6 @@ config_path = "./platforms/processing/prefect/config/cophieu68_config.yaml"
 config = PrefectETLPipelineConfig(config_path=config_path)
 postgresql_config_etl_arg = config.config.get("storage", {}).get("postgreSQL", {}).get("reties_etl_flows", {})
 
-LOGGER = FastLogger(__name__)
-
-config_path = "./platforms/processing/prefect/config/cophieu68_config.yaml"
-config = PrefectETLPipelineConfig(config_path=config_path)
-postgresql_config_etl_arg = config.config.get("storage", {}).get("postgreSQL", {}).get("reties_etl_flows", {})
 
 
 def build_backend_mongo(config:PrefectETLPipelineConfig, logger):
@@ -108,6 +103,8 @@ def build_backend_postgre(config:PrefectETLPipelineConfig, logger):
 def load_dim_market_type(datalake_config, table_creator, mongo_reader, logger, pg_client):
     loader = DimMarketTypeLoader(datalake_config, table_creator, mongo_reader, logger, pg_client)
     df, sql = loader.load()
+    print(df)
+    print(sql)
     pg_client.execute(sql)
     pg_client.bulk_insert(df, loader.dim_name)
     logger.info(f"[{loader.dim_name}] Loaded {len(df)} rows")
@@ -218,17 +215,17 @@ def dw_full_load():
 
     table_creator = TableCreator(machine_id=1, character_specific=None)
 
-    load_dim_market_type(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=loading_datawarehouse)
-    load_dim_industry(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=loading_datawarehouse)
-    load_dim_company(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=loading_datawarehouse)
-    load_dim_report_type(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=loading_datawarehouse)
+    load_dim_market_type(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
+    load_dim_industry(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
+    load_dim_company(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
+    load_dim_report_type(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
     
 
-    load_fact_trade(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=loading_datawarehouse)
-    load_fact_match(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=loading_datawarehouse)
-    load_fact_income(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=loading_datawarehouse)
-    load_fact_balance(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=loading_datawarehouse)
-    load_fact_business_plan(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=loading_datawarehouse)
+    load_fact_trade(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
+    load_fact_match(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
+    load_fact_income(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
+    load_fact_balance(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
+    load_fact_business_plan(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
     # load_fact_financial_metrics(mongo_config, table_creator, mongo_reader, LOGGER, loading_datawarehouse)  # if exists
 
 

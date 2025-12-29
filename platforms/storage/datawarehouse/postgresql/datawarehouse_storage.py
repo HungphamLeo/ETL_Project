@@ -158,10 +158,10 @@ class PostgreSQLStorageBackend(StorageBackend):
             self.logger.error("Rename table failed: %s", e)
             return {"ok": False, "error": str(e)}
 
-    def insert_data(self, table_name: str, data: Any) -> Dict[str, Any]:
+    def insert(self, target: str, data: Any) -> Dict[str, Any]:
         """Insert data into a PostgreSQL table."""
         try:
-            result = self.pg.insert(table_name, data)
+            result = self.pg.insert(target, data)
             return {"ok": True, **result}
         except Exception as e:
             self.logger.error("Insert failed: %s", e)
@@ -179,4 +179,16 @@ class PostgreSQLStorageBackend(StorageBackend):
                     conn.commit()
                     return {"ok": True, "updated_count": cur.rowcount}
         except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    def execute(self, sql: str, params: Optional[tuple] = None) -> Dict[str, Any]:
+        """Execute a raw SQL query."""
+        try:
+            with self.pg._get_connection() as conn:
+                with conn.cursor() as cur:
+                    cur.execute(sql, params)
+                    conn.commit()
+                    return {"ok": True}
+        except Exception as e:
+            self.logger.error("Execute failed: %s", e)
             return {"ok": False, "error": str(e)}

@@ -167,7 +167,12 @@ _DOC_TYPE_MAP = {
     "default": BaseDoc
 }
 
-
+index_information = {
+    "VNINDEX": "VNINDEX là chỉ số phản ánh biến động giá của toàn bộ cổ phiếu niêm yết trên Sở Giao dịch Chứng khoán TP. Hồ Chí Minh (HOSE), ngoại trừ các cổ phiếu thuộc diện bị hạn chế giao dịch.",
+    "HNX":"HNX Index là chỉ số phản ánh biến động giá của toàn bộ cổ phiếu niêm yết trên Sở Giao dịch Chứng khoán Hà Nội (HNX), ngoại trừ các cổ phiếu thuộc diện bị hạn chế giao dịch.",
+    "UPCOM":"UPCOM Index là chỉ số phản ánh biến động giá của các cổ phiếu đăng ký giao dịch trên thị trường UPCOM do Sở Giao dịch Chứng khoán Hà Nội quản lý.Bao gồm nhiều doanh nghiệp nhà nước cổ phần hóa, doanh nghiệp quy mô nhỏ hoặc đang trong giai đoạn chuyển tiếp",
+    "VN30":"VN30 Index là chỉ số phản ánh biến động giá của 30 cổ phiếu có giá trị vốn hóa lớn nhất và thanh khoản cao nhất trên Sở Giao dịch Chứng khoán TP. Hồ Chí Minh (HOSE)."
+}
 def doc_from_extract(kind: str, payload: Any) -> BaseDoc:
     cls = _DOC_TYPE_MAP.get(kind, BaseDoc)
     return cls.from_extract(payload)

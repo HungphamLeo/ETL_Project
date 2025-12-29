@@ -133,17 +133,18 @@ class DimMarketTypeLoader(DimLoader):
         self.dim_name = "dim_market_type"
 
     def load(self):
-        raw = list(self.mongo.find_table(self.collection_name) or [])
+        raw = self.mongo.find_table(self.collection_name)
         rows = []
-        for doc in raw:
-            b = BaseDoc.from_extract(doc)
-            market_type = doc.get("market_type") if isinstance(doc, dict) else b.symbol
+        from platforms.ingestion.cophieu68.dto.load_models import index_information
+        for document in raw["data"]:
+            b = BaseDoc.from_extract(document)
+            market_type = document.get("market_type") if isinstance(document, dict) else b.symbol
             rows.append({
                 "market_key": market_type.lower() if market_type else None,
                 "market_type": market_type,
-                "market_name": doc.get("market_name") if isinstance(doc, dict) else None,
-                "update_time": doc.get("update_time") or datetime.utcnow().isoformat(),
-                "created_time": None
+                "market_name": index_information.get(market_type),
+                "update_time": document.get("update_time") or datetime.utcnow().isoformat(),
+                "created_time": datetime.utcnow().isoformat()
             })
         df = pd.DataFrame(rows)
         sql = self._create_table_sql(self.dim_name)

@@ -1,0 +1,3 @@
+{"time":"2025-12-29T18:51:33", "level":"ERROR", "message":"Error building backend: Can't instantiate abstract class PostgreSQLStorageBackend with abstract method insert", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/tests/intergration/test_postgres.py:99"}
+{"time":"2025-12-30T00:10:11", "level":"ERROR", "message":"Execute failed: could not translate host name "postgres-local" to address: Temporary failure in name resolution
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:193"}
