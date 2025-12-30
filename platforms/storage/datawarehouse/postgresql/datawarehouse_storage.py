@@ -192,3 +192,7 @@ class PostgreSQLStorageBackend(StorageBackend):
         except Exception as e:
             self.logger.error("Execute failed: %s", e)
             return {"ok": False, "error": str(e)}
+    
+    def bulk_insert(self, table: str, data: List[Dict[str, Any]]) -> Dict[str, Any]:
+        """Bulk insert data into a PostgreSQL table."""
+        return self.insert(table, data)
