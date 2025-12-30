@@ -155,13 +155,13 @@ class DimMarketTypeLoader(DimLoader):
 class DimIndustryLoader(DimLoader):
     def __init__(self, datalake_config, table_creator, mongo_reader, datawarehouse_logger=None, postgresql_client=None):
         super().__init__(datalake_config, table_creator, mongo_reader, datawarehouse_logger, postgresql_client)
-        self.collection_name = self._get_collection("industry_info")
+        self.collection_name = self._get_collection("industry_list")
         self.dim_name = "dim_industry"
 
     def load(self):
-        raw = list(self.mongo.find_table(self.collection_name) or [])
+        raw = self.mongo.find_table(self.collection_name)
         rows = []
-        for doc in raw:
+        for doc in raw["data"]:
             b = BaseDoc.from_extract(doc)
             key = b.symbol or (doc.get("industry_metric") if isinstance(doc, dict) else None)
             rows.append({

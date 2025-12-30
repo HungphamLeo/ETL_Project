@@ -88,7 +88,7 @@ class MongoLoader(MongoWriter):
             db = client[self.database]
             coll = db[collection_name]
             now = self._now_iso()
-            for metric, payload in (industry_data or {}).items():
+            for metric, payload in industry_data.items():
                 doc = BaseDoc.from_extract({"symbol": metric, "data": payload}).to_mongo_dict()
                 doc["industry_metric"] = metric
                 doc["update_time"] = now
