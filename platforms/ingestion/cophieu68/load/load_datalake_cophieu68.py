@@ -1,4 +1,5 @@
 from pymongo import MongoClient
+import time
 from datetime import datetime
 from typing import List, Dict, Any, Optional, Iterable
 import logging
@@ -89,9 +90,11 @@ class MongoLoader(MongoWriter):
             coll = db[collection_name]
             now = self._now_iso()
             for metric, payload in industry_data.items():
-                doc = BaseDoc.from_extract({"symbol": metric, "data": payload}).to_mongo_dict()
+                doc = BaseDoc.from_extract({"industry_metric": metric, "data": payload}).to_mongo_dict()
                 doc["industry_metric"] = metric
                 doc["update_time"] = now
+                print(doc)
+                time.sleep(10)
                 self._upsert(coll, doc, key_fields=["industry_metric"])
         finally:
             client.close()

@@ -111,12 +111,12 @@ project_params:
   storage:
 
     postgreSQL:
-      host: "postgres-local"
+      host: "localhost"
       port: 5432
       database: "etl_project"
-      user: "postgres"
-      password: "password"
-      schema: "public"
+      user: "hungpham"
+      password: "hungpham@123"
+      schema: "private"
       connection_pool:
         min_size: 1
         max_size: 10

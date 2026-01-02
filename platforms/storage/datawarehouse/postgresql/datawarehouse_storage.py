@@ -17,6 +17,8 @@ class PostgreSQLWriter:
         self.user = username
         self.password = password
         self.logger = logger or logging.getLogger(__name__)
+        
+
 
     def _get_connection(self):
         
@@ -56,6 +58,7 @@ class PostgreSQLStorageBackend(StorageBackend):
     def __init__(self, pipeline_logger, postgres_writter: PostgreSQLWriter):
         self.pg = postgres_writter
         self.logger = pipeline_logger or logging.getLogger(__name__)
+        print(self.pg.user)
 
     def save(self, dataset_name: str, data: Any, fmt: Optional[str] = None) -> Dict[str, Any]:
         """Save data to a PostgreSQL table."""
@@ -193,6 +196,9 @@ class PostgreSQLStorageBackend(StorageBackend):
             self.logger.error("Execute failed: %s", e)
             return {"ok": False, "error": str(e)}
     
-    def bulk_insert(self, table: str, data: List[Dict[str, Any]]) -> Dict[str, Any]:
+    def bulk_insert(self, table: str, data) -> Dict[str, Any]:
         """Bulk insert data into a PostgreSQL table."""
-        return self.insert(table, data)
+        import pandas as pd
+        if isinstance(data, pd.DataFrame):
+            data = data.to_dict('records')
+        return self.insert(table.upper(), data)

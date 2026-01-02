@@ -1,5 +1,5 @@
 DATA_WAREHOUSE_SCHEMA = {
-
+    "schema_name": "dw",
     "dimensions": {
 
         "dim_market_type": {
@@ -16,12 +16,16 @@ DATA_WAREHOUSE_SCHEMA = {
         "dim_industry": {
             "grain": "1 record per industry",
             "columns": {
-                "industry_key":    {"type": "VARCHAR(32)", "constraints": "PRIMARY KEY"},
-                "industry_code":   {"type": "TEXT",        "constraints": "UNIQUE NOT NULL"},
-                "industry_name":   {"type": "TEXT",        "constraints": ""},
-                "update_time":     {"type": "TIMESTAMPTZ", "constraints": ""},
-                "created_time":    {"type": "TIMESTAMPTZ", "constraints": "DEFAULT NOW()"}
-            }
+                "industry_metric": {"type": "VARCHAR(32)", "constraints": "NOT NULL"},
+                "industry_code": {"type": "TEXT", "constraints": "NOT NULL"},
+                "industry_code_replace": {"type": "TEXT"},
+                "industry_craw_url": {"type": "TEXT"},
+                "update_time": {"type": "TIMESTAMPTZ"},
+                "created_time": {"type": "TIMESTAMPTZ", "constraints": "DEFAULT NOW()"}
+            },
+            "constraints": [
+                "PRIMARY KEY (industry_metric, industry_code)"
+            ]
         },
 
         "dim_company": {

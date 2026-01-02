@@ -30,7 +30,7 @@ class BaseLoader:
         self.postgresql_client = postgresql_client
         self.schema_dw = transform_models.DATA_WAREHOUSE_SCHEMA or {}
         self.datawarehouse_logger = datawarehouse_logger
-
+        self.schema_name = self.schema_dw.get("schema_name", "public")
         # map of collection names from YAML (storage.mongodb.collections.*)
         self.collection_map = (
             self.datalake_config.get("storage", {})
@@ -58,7 +58,9 @@ class BaseLoader:
                 typ = parts[0]
                 cons = parts[1] if len(parts) > 1 else ""
                 norm[col] = {"type": typ, "constraints": cons}
-        return self.table_creator.generate_create_table_sql(name, norm)
+        schema_name = self.schema_dw.get("schema_name", "public")
+        return self.table_creator.generate_create_table_sql(name, norm, schema_name)
+
 
 
 class DimLoader(BaseLoader):
@@ -160,18 +162,22 @@ class DimIndustryLoader(DimLoader):
 
     def load(self):
         raw = self.mongo.find_table(self.collection_name)
-        rows = []
-        for doc in raw["data"]:
-            b = BaseDoc.from_extract(doc)
-            key = b.symbol or (doc.get("industry_metric") if isinstance(doc, dict) else None)
-            rows.append({
-                "industry_key": key,
-                "industry_code": key,
-                "industry_name": doc.get("industry_name") if isinstance(doc, dict) else None,
-                "update_time": doc.get("update_time") or datetime.utcnow().isoformat(),
-                "created_time": None
-            })
-        df = pd.DataFrame(rows)
+        data = raw.get("data")
+        for documentation in data:
+           industry_metric = documentation.get("industry_metric")
+           row = []
+
+           for info in documentation.get("data"):
+                for infor_keys in list(info.keys()):
+                    row.append({
+                        "industry_metric": industry_metric,
+                        "industry_code": str(infor_keys).split("_")[1],
+                        "industry_code_replace": str(infor_keys).split("_")[2],
+                        "industry_craw_url": str(infor_keys).split("_")[3],
+                        "update_time": info.get("update_time") or datetime.utcnow().isoformat(),
+                        "created_time": info.get("update_time") or datetime.utcnow().isoformat(),
+                    })
+        df = pd.DataFrame(row)
         sql = self._create_table_sql(self.dim_name)
         return df, sql
 

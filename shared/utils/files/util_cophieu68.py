@@ -76,7 +76,7 @@ class TableCreator(SnowflakeGenerator):
     Sinh surrogate key dạng Snowflake.
     """
 
-    def generate_create_table_sql(self, table_name: str, rules_dict: Dict[str, Any]) -> str:
+    def generate_create_table_sql(self, table_name: str, rules_dict: Dict[str, Any], schema_name: str = "public") -> str:
         columns = []
 
         for col, meta in rules_dict.items():
@@ -84,11 +84,13 @@ class TableCreator(SnowflakeGenerator):
             constraints = meta.get("constraints", "")
             columns.append(f'"{col}" {col_type} {constraints}'.strip())
 
-        return (
-            f'CREATE TABLE IF NOT EXISTS "{table_name}" (\n  ' +
-            ",\n  ".join(columns) +
-            "\n);"
-        )
+        schema_sql = f'CREATE SCHEMA IF NOT EXISTS {schema_name};'
+        table_sql = (
+                f'CREATE TABLE IF NOT EXISTS {schema_name}.{table_name.upper()} (\n  ' +
+                ",\n  ".join(columns) +
+                "\n);"
+            )
+        return f"{schema_sql}\n{table_sql}"
 
     def add_surrogate_key(self, df: pd.DataFrame, key_name: str) -> pd.DataFrame:
         df[key_name] = [self.get_id() for _ in range(len(df))]

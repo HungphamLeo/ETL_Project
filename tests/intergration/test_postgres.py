@@ -106,7 +106,7 @@ def build_backend_postgre(config:PrefectETLPipelineConfig, logger):
 #     print(df)
 #     print(sql)
 #     pg_client.execute(sql)
-#     pg_client.bulk_insert(df, loader.dim_name)
+#     pg_client.bulk_insert(loader.dim_name, df)
 #     logger.info(f"[{loader.dim_name}] Loaded {len(df)} rows")
 #     return True
 
@@ -115,8 +115,11 @@ def build_backend_postgre(config:PrefectETLPipelineConfig, logger):
 def load_dim_industry(datalake_config, table_creator, mongo_reader, logger, pg_client):
     loader = DimIndustryLoader(datalake_config, table_creator, mongo_reader, logger, pg_client)
     df, sql = loader.load()
+    print(df.head())
+    import time
+    time.sleep(5)
     pg_client.execute(sql)
-    pg_client.bulk_insert(df, loader.dim_name)
+    pg_client.bulk_insert(f"{loader.schema_name}.{loader.dim_name.upper()}", df)
     logger.info(f"[{loader.dim_name}] Loaded {len(df)} rows")
     return True
 
@@ -126,70 +129,70 @@ def load_dim_company(datalake_config, table_creator, mongo_reader, logger, pg_cl
     loader = DimCompanyLoader(datalake_config, table_creator, mongo_reader, logger, pg_client)
     df, sql = loader.load()
     pg_client.execute(sql)
-    pg_client.bulk_insert(df, loader.dim_name)
+    pg_client.bulk_insert(f"{loader.schema_name}.{loader.dim_name.upper()}", df)
     logger.info(f"[{loader.dim_name}] Loaded {len(df)} rows")
     return True
 
 # @task
-def load_dim_report_type(datalake_config, table_creator, mongo_reader, logger, pg_client):
-    loader = DimReportTypeLoader(datalake_config, table_creator, mongo_reader, logger, pg_client)
-    df, sql = loader.load()
-    pg_client.execute(sql)
-    pg_client.bulk_insert(df, loader.dim_name)
-    logger.info(f"[{loader.dim_name}] Loaded {len(df)} rows")
-    return True
+# def load_dim_report_type(datalake_config, table_creator, mongo_reader, logger, pg_client):
+#     loader = DimReportTypeLoader(datalake_config, table_creator, mongo_reader, logger, pg_client)
+#     df, sql = loader.load()
+#     pg_client.execute(sql)
+#     pg_client.bulk_insert(df, loader.dim_name)
+#     logger.info(f"[{loader.dim_name}] Loaded {len(df)} rows")
+#     return True
 
 # =========================
 # FACT LOADING
 # =========================
 # @task
-def load_fact_trade(datalake_config, table_creator, mongo_reader, logger, pg_client, dim_repo):
-    loader = FactTradeLoader(datalake_config, table_creator, mongo_reader, dim_repo, logger, pg_client)
-    df, sql = loader.load()
-    pg_client.execute(sql)
-    pg_client.bulk_insert(df, loader.fact_name)
-    logger.info(f"[{loader.fact_name}] Loaded {len(df)} rows")
-    return True
+# def load_fact_trade(datalake_config, table_creator, mongo_reader, logger, pg_client, dim_repo):
+#     loader = FactTradeLoader(datalake_config, table_creator, mongo_reader, dim_repo, logger, pg_client)
+#     df, sql = loader.load()
+#     pg_client.execute(sql)
+#     pg_client.bulk_insert(df, loader.fact_name)
+#     logger.info(f"[{loader.fact_name}] Loaded {len(df)} rows")
+#     return True
 
 
 # @task
-def load_fact_match(datalake_config, table_creator, mongo_reader, logger, pg_client, dim_repo):
-    loader = FactMatchDetailLoader(datalake_config, table_creator, mongo_reader, dim_repo, logger, pg_client)
-    df, sql = loader.load()
-    pg_client.execute(sql)
-    pg_client.bulk_insert(df, loader.fact_name)
-    logger.info(f"[{loader.fact_name}] Loaded {len(df)} rows")
-    return True
+# def load_fact_match(datalake_config, table_creator, mongo_reader, logger, pg_client, dim_repo):
+#     loader = FactMatchDetailLoader(datalake_config, table_creator, mongo_reader, dim_repo, logger, pg_client)
+#     df, sql = loader.load()
+#     pg_client.execute(sql)
+#     pg_client.bulk_insert(df, loader.fact_name)
+#     logger.info(f"[{loader.fact_name}] Loaded {len(df)} rows")
+#     return True
 
 
 # @task
-def load_fact_income(datalake_config, table_creator, mongo_reader, logger, pg_client, dim_repo):
-    loader = FactIncomeStatementLoader(datalake_config, table_creator, mongo_reader, dim_repo, logger, pg_client)
-    df, sql = loader.load()
-    pg_client.execute(sql)
-    pg_client.bulk_insert(df, loader.fact_name)
-    logger.info(f"[{loader.fact_name}] Loaded {len(df)} rows")
-    return True
+# def load_fact_income(datalake_config, table_creator, mongo_reader, logger, pg_client, dim_repo):
+#     loader = FactIncomeStatementLoader(datalake_config, table_creator, mongo_reader, dim_repo, logger, pg_client)
+#     df, sql = loader.load()
+#     pg_client.execute(sql)
+#     pg_client.bulk_insert(df, loader.fact_name)
+#     logger.info(f"[{loader.fact_name}] Loaded {len(df)} rows")
+#     return True
 
 
 # @task
-def load_fact_balance(datalake_config, table_creator, mongo_reader, logger, pg_client, dim_repo):
-    loader = FactBalanceSheetLoader(datalake_config, table_creator, mongo_reader, dim_repo, logger, pg_client)
-    df, sql = loader.load()
-    pg_client.execute(sql)
-    pg_client.bulk_insert(df, loader.fact_name)
-    logger.info(f"[{loader.fact_name}] Loaded {len(df)} rows")
-    return True
+# def load_fact_balance(datalake_config, table_creator, mongo_reader, logger, pg_client, dim_repo):
+#     loader = FactBalanceSheetLoader(datalake_config, table_creator, mongo_reader, dim_repo, logger, pg_client)
+#     df, sql = loader.load()
+#     pg_client.execute(sql)
+#     pg_client.bulk_insert(df, loader.fact_name)
+#     logger.info(f"[{loader.fact_name}] Loaded {len(df)} rows")
+#     return True
 
 
 # @task
-def load_fact_business_plan(datalake_config, table_creator, mongo_reader, logger, pg_client, dim_repo):
-    loader = FactBusinessPlanLoader(datalake_config, table_creator, mongo_reader, dim_repo, logger, pg_client)
-    df, sql = loader.load()
-    pg_client.execute(sql)
-    pg_client.bulk_insert(df, loader.fact_name)
-    logger.info(f"[{loader.fact_name}] Loaded {len(df)} rows")
-    return True
+# def load_fact_business_plan(datalake_config, table_creator, mongo_reader, logger, pg_client, dim_repo):
+#     loader = FactBusinessPlanLoader(datalake_config, table_creator, mongo_reader, dim_repo, logger, pg_client)
+#     df, sql = loader.load()
+#     pg_client.execute(sql)
+#     pg_client.bulk_insert(df, loader.fact_name)
+#     logger.info(f"[{loader.fact_name}] Loaded {len(df)} rows")
+#     return True
 
 
 # @task
@@ -217,15 +220,15 @@ def dw_full_load():
 
     # load_dim_market_type(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
     load_dim_industry(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
-    load_dim_company(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
-    load_dim_report_type(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
+    # load_dim_company(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
+    # load_dim_report_type(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
     
 
-    load_fact_trade(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
-    load_fact_match(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
-    load_fact_income(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
-    load_fact_balance(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
-    load_fact_business_plan(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
+    # load_fact_trade(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
+    # load_fact_match(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
+    # load_fact_income(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
+    # load_fact_balance(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
+    # load_fact_business_plan(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
     # load_fact_financial_metrics(mongo_config, table_creator, mongo_reader, LOGGER, loading_datawarehouse)  # if exists
 
 

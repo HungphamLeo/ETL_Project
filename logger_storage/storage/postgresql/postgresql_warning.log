@@ -19,3 +19,176 @@
 {"time":"2025-12-31T00:13:15", "level":"ERROR", "message":"Execute failed: could not translate host name "postgres-local" to address: Temporary failure in name resolution
 ", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:193"}
 {"time":"2025-12-31T00:13:15", "level":"ERROR", "message":"Insert failed: 'str' object has no attribute 'keys'", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:167"}
+{"time":"2025-12-31T21:47:27", "level":"ERROR", "message":"Execute failed: could not translate host name "postgres-local" to address: Temporary failure in name resolution
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:193"}
+{"time":"2025-12-31T21:47:27", "level":"ERROR", "message":"Insert failed: 'str' object has no attribute 'keys'", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:167"}
+{"time":"2025-12-31T21:47:37", "level":"ERROR", "message":"Execute failed: could not translate host name "postgres-local" to address: Temporary failure in name resolution
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:193"}
+{"time":"2025-12-31T21:47:37", "level":"ERROR", "message":"Insert failed: 'str' object has no attribute 'keys'", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:167"}
+{"time":"2025-12-31T21:47:47", "level":"ERROR", "message":"Execute failed: could not translate host name "postgres-local" to address: Temporary failure in name resolution
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:193"}
+{"time":"2025-12-31T21:47:47", "level":"ERROR", "message":"Insert failed: 'str' object has no attribute 'keys'", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:167"}
+{"time":"2026-01-01T14:07:23", "level":"ERROR", "message":"Execute failed: could not translate host name "postgres-local" to address: Temporary failure in name resolution
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:193"}
+{"time":"2026-01-01T14:07:23", "level":"ERROR", "message":"Insert failed: 'str' object has no attribute 'keys'", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:167"}
+{"time":"2026-01-01T14:40:51", "level":"ERROR", "message":"Execute failed: could not translate host name "postgres-local" to address: Temporary failure in name resolution
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:193"}
+{"time":"2026-01-01T14:40:51", "level":"ERROR", "message":"Insert failed: 'str' object has no attribute 'keys'", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:167"}
+{"time":"2026-01-01T14:45:47", "level":"ERROR", "message":"Execute failed: connection to server at "localhost" (127.0.0.1), port 5432 failed: FATAL:  password authentication failed for user "hungpham"
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:193"}
+{"time":"2026-01-01T14:45:47", "level":"ERROR", "message":"Insert failed: 'str' object has no attribute 'keys'", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:167"}
+{"time":"2026-01-01T14:48:33", "level":"ERROR", "message":"Execute failed: could not translate host name "postgres-local" to address: Temporary failure in name resolution
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:193"}
+{"time":"2026-01-01T14:48:33", "level":"ERROR", "message":"Insert failed: 'str' object has no attribute 'keys'", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:167"}
+{"time":"2026-01-01T14:59:12", "level":"ERROR", "message":"Execute failed: could not translate host name "postgres-local" to address: Temporary failure in name resolution
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:193"}
+{"time":"2026-01-01T14:59:13", "level":"ERROR", "message":"Insert failed: 'str' object has no attribute 'keys'", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:167"}
+{"time":"2026-01-01T15:04:05", "level":"ERROR", "message":"Execute failed: could not translate host name "postgres-local" to address: Temporary failure in name resolution
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:193"}
+{"time":"2026-01-01T15:09:30", "level":"ERROR", "message":"Execute failed: connection to server at "127.0.0.1", port 5432 failed: FATAL:  password authentication failed for user "hungpham"
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:193"}
+{"time":"2026-01-01T15:09:30", "level":"ERROR", "message":"Insert failed: connection to server at "127.0.0.1", port 5432 failed: FATAL:  password authentication failed for user "hungpham"
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:49"}
+{"time":"2026-01-01T22:00:45", "level":"ERROR", "message":"Execute failed: could not translate host name "postgres-local" to address: Temporary failure in name resolution
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:193"}
+{"time":"2026-01-01T22:00:55", "level":"ERROR", "message":"Insert failed: could not translate host name "postgres-local" to address: Temporary failure in name resolution
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:49"}
+{"time":"2026-01-01T22:48:51", "level":"ERROR", "message":"Execute failed: connection to server at "localhost" (127.0.0.1), port 5432 failed: FATAL:  password authentication failed for user "hungpham"
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:193"}
+{"time":"2026-01-01T22:48:51", "level":"ERROR", "message":"Insert failed: connection to server at "localhost" (127.0.0.1), port 5432 failed: FATAL:  password authentication failed for user "hungpham"
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:49"}
+{"time":"2026-01-01T22:49:47", "level":"ERROR", "message":"Execute failed: could not translate host name "postgres-local" to address: Temporary failure in name resolution
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:193"}
+{"time":"2026-01-01T22:49:57", "level":"ERROR", "message":"Insert failed: could not translate host name "postgres-local" to address: Temporary failure in name resolution
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:49"}
+{"time":"2026-01-01T22:50:13", "level":"ERROR", "message":"Execute failed: connection to server at "localhost" (127.0.0.1), port 5432 failed: FATAL:  password authentication failed for user "hungpham"
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:193"}
+{"time":"2026-01-01T22:50:13", "level":"ERROR", "message":"Insert failed: connection to server at "localhost" (127.0.0.1), port 5432 failed: FATAL:  password authentication failed for user "hungpham"
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:49"}
+{"time":"2026-01-01T22:50:49", "level":"ERROR", "message":"Execute failed: connection to server at "localhost" (127.0.0.1), port 5432 failed: FATAL:  password authentication failed for user "hungpham"
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:193"}
+{"time":"2026-01-01T22:50:49", "level":"ERROR", "message":"Insert failed: connection to server at "localhost" (127.0.0.1), port 5432 failed: FATAL:  password authentication failed for user "hungpham"
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:49"}
+{"time":"2026-01-01T22:55:06", "level":"ERROR", "message":"Execute failed: could not translate host name "postgres-local" to address: Temporary failure in name resolution
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:193"}
+{"time":"2026-01-01T22:55:17", "level":"ERROR", "message":"Insert failed: could not translate host name "postgres-local" to address: Temporary failure in name resolution
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:49"}
+{"time":"2026-01-01T22:55:29", "level":"ERROR", "message":"Execute failed: connection to server at "localhost" (127.0.0.1), port 5432 failed: FATAL:  password authentication failed for user "hungpham"
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:193"}
+{"time":"2026-01-01T22:55:29", "level":"ERROR", "message":"Insert failed: connection to server at "localhost" (127.0.0.1), port 5432 failed: FATAL:  password authentication failed for user "hungpham"
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:49"}
+{"time":"2026-01-01T22:55:53", "level":"ERROR", "message":"Execute failed: connection to server at "localhost" (127.0.0.1), port 5432 failed: FATAL:  password authentication failed for user "hungpham"
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:193"}
+{"time":"2026-01-01T22:55:53", "level":"ERROR", "message":"Insert failed: connection to server at "localhost" (127.0.0.1), port 5432 failed: FATAL:  password authentication failed for user "hungpham"
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:49"}
+{"time":"2026-01-01T22:58:12", "level":"ERROR", "message":"Execute failed: permission denied for schema public
+LINE 1: CREATE TABLE IF NOT EXISTS "dim_industry" (
+                                   ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:193"}
+{"time":"2026-01-01T22:58:12", "level":"ERROR", "message":"Insert failed: relation "dim_industry" does not exist
+LINE 1: INSERT INTO dim_industry (industry_metric, industry_code, in...
+                    ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:49"}
+{"time":"2026-01-01T23:06:49", "level":"ERROR", "message":"Execute failed: permission denied for schema public
+LINE 1: CREATE TABLE IF NOT EXISTS "dim_industry" (
+                                   ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:193"}
+{"time":"2026-01-01T23:06:49", "level":"ERROR", "message":"Insert failed: relation "dim_industry" does not exist
+LINE 1: INSERT INTO dim_industry (industry_metric, industry_code, in...
+                    ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:49"}
+{"time":"2026-01-01T23:20:23", "level":"ERROR", "message":"Execute failed: permission denied for schema public
+LINE 1: CREATE TABLE IF NOT EXISTS DIM_INDUSTRY (
+                                   ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:193"}
+{"time":"2026-01-01T23:20:23", "level":"ERROR", "message":"Insert failed: relation "dim_industry" does not exist
+LINE 1: INSERT INTO dim_industry (industry_metric, industry_code, in...
+                    ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:49"}
+{"time":"2026-01-01T23:21:57", "level":"ERROR", "message":"Execute failed: permission denied for schema public
+LINE 1: CREATE TABLE IF NOT EXISTS DIM_INDUSTRY (
+                                   ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:193"}
+{"time":"2026-01-01T23:21:57", "level":"ERROR", "message":"Insert failed: relation "dim_industry" does not exist
+LINE 1: INSERT INTO DIM_INDUSTRY (industry_metric, industry_code, in...
+                    ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:49"}
+{"time":"2026-01-01T23:26:45", "level":"ERROR", "message":"Execute failed: permission denied for schema public
+LINE 1: CREATE TABLE IF NOT EXISTS DIM_INDUSTRY (
+                                   ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:193"}
+{"time":"2026-01-01T23:26:45", "level":"ERROR", "message":"Insert failed: relation "dim_industry" does not exist
+LINE 1: INSERT INTO DIM_INDUSTRY (industry_metric, industry_code, in...
+                    ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:49"}
+{"time":"2026-01-01T23:32:51", "level":"ERROR", "message":"Execute failed: permission denied for schema public
+LINE 1: CREATE TABLE IF NOT EXISTS DIM_INDUSTRY (
+                                   ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:193"}
+{"time":"2026-01-01T23:32:51", "level":"ERROR", "message":"Insert failed: relation "dim_industry" does not exist
+LINE 1: INSERT INTO DIM_INDUSTRY (industry_metric, industry_code, in...
+                    ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:49"}
+{"time":"2026-01-01T23:44:02", "level":"ERROR", "message":"Execute failed: permission denied for schema public
+LINE 1: CREATE TABLE IF NOT EXISTS DIM_INDUSTRY (
+                                   ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:193"}
+{"time":"2026-01-01T23:44:02", "level":"ERROR", "message":"Insert failed: relation "dim_industry" does not exist
+LINE 1: INSERT INTO DIM_INDUSTRY (industry_metric, industry_code, in...
+                    ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:49"}
+{"time":"2026-01-01T23:44:40", "level":"ERROR", "message":"Execute failed: permission denied for schema public
+LINE 1: CREATE TABLE IF NOT EXISTS DIM_INDUSTRY (
+                                   ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:195"}
+{"time":"2026-01-01T23:44:40", "level":"ERROR", "message":"Insert failed: relation "dim_industry" does not exist
+LINE 1: INSERT INTO DIM_INDUSTRY (industry_metric, industry_code, in...
+                    ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-01T23:45:48", "level":"ERROR", "message":"Execute failed: permission denied for schema public
+LINE 1: CREATE TABLE IF NOT EXISTS DIM_INDUSTRY (
+                                   ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:196"}
+{"time":"2026-01-01T23:45:48", "level":"ERROR", "message":"Insert failed: relation "dim_industry" does not exist
+LINE 1: INSERT INTO DIM_INDUSTRY (industry_metric, industry_code, in...
+                    ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-01T23:47:15", "level":"ERROR", "message":"Execute failed: permission denied for schema public
+LINE 1: CREATE TABLE IF NOT EXISTS DIM_INDUSTRY (
+                                   ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:196"}
+{"time":"2026-01-01T23:47:15", "level":"ERROR", "message":"Insert failed: relation "dim_industry" does not exist
+LINE 1: INSERT INTO DIM_INDUSTRY (industry_metric, industry_code, in...
+                    ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-01T23:47:34", "level":"ERROR", "message":"Execute failed: permission denied for schema public
+LINE 1: CREATE TABLE IF NOT EXISTS DIM_INDUSTRY (
+                                   ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:196"}
+{"time":"2026-01-01T23:47:34", "level":"ERROR", "message":"Insert failed: relation "dim_industry" does not exist
+LINE 1: INSERT INTO DIM_INDUSTRY (industry_metric, industry_code, in...
+                    ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-02T08:24:17", "level":"ERROR", "message":"Execute failed: permission denied for schema public
+LINE 1: CREATE TABLE IF NOT EXISTS DIM_INDUSTRY (
+                                   ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:196"}
+{"time":"2026-01-02T08:24:17", "level":"ERROR", "message":"Insert failed: relation "dim_industry" does not exist
+LINE 1: INSERT INTO DIM_INDUSTRY (industry_metric, industry_code, in...
+                    ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-02T09:22:17", "level":"ERROR", "message":"Insert failed: duplicate key value violates unique constraint "dim_industry_pkey"
+DETAIL:  Key (industry_metric)=(fund_info) already exists.
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-02T09:25:13", "level":"ERROR", "message":"Insert failed: duplicate key value violates unique constraint "dim_industry_pkey"
+DETAIL:  Key (industry_metric)=(fund_info) already exists.
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-02T09:26:03", "level":"ERROR", "message":"Insert failed: duplicate key value violates unique constraint "dim_industry_pkey"
+DETAIL:  Key (industry_metric)=(fund_info) already exists.
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-02T09:50:53", "level":"ERROR", "message":"Insert failed: duplicate key value violates unique constraint "dim_industry_pkey"
+DETAIL:  Key (industry_code)=() already exists.
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-02T09:56:18", "level":"ERROR", "message":"Insert failed: duplicate key value violates unique constraint "dim_industry_pkey"
+DETAIL:  Key (industry_code)=() already exists.
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
