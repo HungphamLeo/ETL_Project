@@ -192,3 +192,7 @@ DETAIL:  Key (industry_code)=() already exists.
 {"time":"2026-01-02T09:56:18", "level":"ERROR", "message":"Insert failed: duplicate key value violates unique constraint "dim_industry_pkey"
 DETAIL:  Key (industry_code)=() already exists.
 ", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-02T10:27:21", "level":"ERROR", "message":"Insert failed: relation "dim_market_type" does not exist
+LINE 1: INSERT INTO DIM_MARKET_TYPE (market_key, market_type, market...
+                    ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}

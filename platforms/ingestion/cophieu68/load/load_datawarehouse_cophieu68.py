@@ -132,7 +132,7 @@ class DimMarketTypeLoader(DimLoader):
         super().__init__(datalake_config, table_creator, mongo_reader, datawarehouse_logger, postgresql_client)
         # YAML key is 'list_stock' per config
         self.collection_name = self._get_collection("list_stock")
-        self.dim_name = "dim_market_type"
+        self.dim_name = "DIM_MARKET_TYPE"
 
     def load(self):
         raw = self.mongo.find_table(self.collection_name)
@@ -158,7 +158,7 @@ class DimIndustryLoader(DimLoader):
     def __init__(self, datalake_config, table_creator, mongo_reader, datawarehouse_logger=None, postgresql_client=None):
         super().__init__(datalake_config, table_creator, mongo_reader, datawarehouse_logger, postgresql_client)
         self.collection_name = self._get_collection("industry_list")
-        self.dim_name = "dim_industry"
+        self.dim_name = "DIM_INDUSTRY"
 
     def load(self):
         raw = self.mongo.find_table(self.collection_name)

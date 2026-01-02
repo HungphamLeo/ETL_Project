@@ -234,3 +234,10 @@ DETAIL:  Key (industry_code)=() already exists.
 {"time":"2026-01-02T09:56:18", "level":"INFO", "message":"[dim_industry] Loaded 48 rows", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/tests/intergration/test_postgres.py:124"}
 {"time":"2026-01-02T10:23:51", "level":"INFO", "message":"Inserted 48 rows into DW.DIM_INDUSTRY", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:48"}
 {"time":"2026-01-02T10:23:51", "level":"INFO", "message":"[dim_industry] Loaded 48 rows", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/tests/intergration/test_postgres.py:123"}
+{"time":"2026-01-02T10:27:21", "level":"ERROR", "message":"Insert failed: relation "dim_market_type" does not exist
+LINE 1: INSERT INTO DIM_MARKET_TYPE (market_key, market_type, market...
+                    ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-02T10:27:21", "level":"INFO", "message":"[dim_market_type] Loaded 4 rows", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/tests/intergration/test_postgres.py:108"}
+{"time":"2026-01-02T10:48:52", "level":"INFO", "message":"Inserted 4 rows into DW.DIM_MARKET_TYPE", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:48"}
+{"time":"2026-01-02T10:48:52", "level":"INFO", "message":"[DIM_MARKET_TYPE] Loaded 4 rows", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/tests/intergration/test_postgres.py:108"}
