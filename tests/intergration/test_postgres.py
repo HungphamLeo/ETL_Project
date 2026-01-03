@@ -216,9 +216,9 @@ def dw_full_load():
 
     table_creator = TableCreator(machine_id=1, character_specific=None)
 
-    load_dim_market_type(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
+    # load_dim_market_type(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
     # load_dim_industry(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
-    # load_dim_company(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
+    load_dim_company(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
     # load_dim_report_type(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
     
 

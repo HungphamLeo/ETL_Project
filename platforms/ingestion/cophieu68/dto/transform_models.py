@@ -32,17 +32,30 @@ DATA_WAREHOUSE_SCHEMA = {
             "grain": "1 record per company (SCD2)",
             "columns": {
                 "company_key":     {"type": "VARCHAR(32)", "constraints": "PRIMARY KEY"},
-                "symbol":          {"type": "TEXT",        "constraints": "UNIQUE NOT NULL"},
-                "company_name":    {"type": "TEXT",        "constraints": ""},
-                "market_key":      {"type": "VARCHAR(32)", "constraints": "REFERENCES dim_market_type(market_key)"},
-                "industry_key":    {"type": "VARCHAR(32)", "constraints": "REFERENCES dim_industry(industry_key)"},
-                "profile_json":    {"type": "JSONB",       "constraints": ""},
-                "effective_from":  {"type": "DATE",        "constraints": ""},
-                "effective_to":    {"type": "DATE",        "constraints": ""},
+                "symbol":          {"type": "TEXT",        "constraints": "NOT NULL"},
+                "company_name":    {"type": "TEXT"},
+                "full_name":       {"type": "TEXT"},
+                "english_name":    {"type": "TEXT"},
+                "short_name":      {"type": "TEXT"},
+                "address":         {"type": "TEXT"},
+                "phone":           {"type": "TEXT"},
+                "fax":             {"type": "TEXT"},
+                "website":         {"type": "TEXT"},
+                "email":           {"type": "TEXT"},
+                "established_date":{"type": "DATE"},
+                "listed_date":     {"type": "DATE"},
+                "chartered_capital":{"type": "TEXT"},
+                "business_license":{"type": "TEXT"},
+                "tax_code":        {"type": "TEXT"},
+                # "market_key":      {"type": "VARCHAR(32)", "constraints": "REFERENCES dim_market_type(market_key)"},
+                # "industry_key":    {"type": "VARCHAR(32)", "constraints": "REFERENCES dim_industry(industry_key)"},
+                
+                "effective_from":  {"type": "DATE",        "constraints": "NOT NULL"},
+                "effective_to":    {"type": "DATE"},
                 "is_current":      {"type": "BOOLEAN",     "constraints": "DEFAULT TRUE"},
                 "created_time":    {"type": "TIMESTAMPTZ", "constraints": "DEFAULT NOW()"}
-            }
-        },
+                }
+            },
 
         "dim_report_type": {
             "grain": "Yearly or Quarterly",

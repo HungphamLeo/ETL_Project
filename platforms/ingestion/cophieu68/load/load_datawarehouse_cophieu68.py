@@ -187,30 +187,43 @@ class DimCompanyLoader(DimLoader):
     def __init__(self, datalake_config, table_creator, mongo_reader, datawarehouse_logger=None, postgresql_client=None):
         super().__init__(datalake_config, table_creator, mongo_reader, datawarehouse_logger, postgresql_client)
         # YAML key for company profiles: use 'stock_info' from config
-        self.collection_name = self._get_collection("stock_info")
+        self.collection_name = self._get_collection("company_profile")
         self.dim_name = "dim_company"
 
     def load(self):
-        raw = list(self.mongo.find_table(self.collection_name) or [])
+        raw = self.mongo.find_table(self.collection_name)
         rows = []
-        for doc in raw:
-            b = BaseDoc.from_extract(doc)
-            profile = (doc.get("profile_json") if isinstance(doc, dict) else None) or {}
+        for doc in raw.get("data"):
+            
+            profile = doc.get("profile_json")
             # some payloads store profile under 'profile' or raw data under 'data'
             if not profile and isinstance(doc, dict):
                 profile = doc.get("profile") or doc.get("raw") or doc.get("data") or {}
-            symbol = b.symbol or profile.get("symbol") or profile.get("code")
+            symbol = profile.get("symbol")
+
             rows.append({
                 "company_key": symbol,
                 "symbol": symbol,
-                "company_name": profile.get("full_name") or profile.get("company_name") or None,
-                "market_key": profile.get("market_type") or None,
-                "industry_key": profile.get("industry_code") or None,
-                "profile_json": profile,
-                "effective_from": None,
+                "company_name": profile.get("company_name") or None,
+                "full_name": profile.get("full_name") or None,
+                "english_name": profile.get("english_name") or None,
+                "short_name": profile.get("short_name") or None,
+                "address": profile.get("address") or None,
+                "phone": profile.get("phone") or None,
+                "fax": profile.get("fax") or None,
+                "website": profile.get("website") or None,
+                "email": profile.get("email") or None,
+                "established_date": profile.get("established_date"),
+                "listed_date": profile.get("listed_date"),
+                "chartered_capital": profile.get("chartered_capital") or None,
+                "business_license": profile.get("business_license") or None,
+                "tax_code": profile.get("tax_code") or None,
+                # "market_key": profile.get("market_type") or None,
+                # "industry_key": profile.get("industry_code") or None,
+                "effective_from": profile.get("listed_date") or None,
                 "effective_to": None,
                 "is_current": True,
-                "created_time": None
+                "created_time": datetime.now()
             })
         df = pd.DataFrame(rows)
         sql = self._create_table_sql(self.dim_name)
