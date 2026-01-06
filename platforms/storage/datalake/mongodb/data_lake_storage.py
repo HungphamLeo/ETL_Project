@@ -1,7 +1,7 @@
 from typing import Any, Dict, Optional, Sequence
 import logging
 from pymongo import MongoClient, errors as pymongo_errors
-from storage.base_storage import StorageBackend, to_primitive
+from platforms.storage.base_storage import StorageBackend, to_primitive
 
 class MongoWriter:
     """
@@ -12,6 +12,8 @@ class MongoWriter:
                         password: str, 
                         authSource: str, 
                         database: str, 
+                        host: str, 
+                        port: int,
                         collection: str, logger: Optional[logging.Logger] = None, **client_kwargs):
         
         self.username = username        # để trống nếu không bật auth
@@ -19,7 +21,7 @@ class MongoWriter:
         self.authSource= authSource
         self.database = database
         self.collection = collection
-        self.uri = f"mongodb://{username}:{password}@localhost:27017/?authSource={authSource}"
+        self.uri = f"mongodb://{username}:{password}@{host}:{port}/?authSource={authSource}"
         self.logger = logger or logging.getLogger(__name__)
         self.client_kwargs = client_kwargs
 
@@ -60,8 +62,8 @@ class MongoWriter:
 class MongoStorageBackend(StorageBackend):
     """Adapter to expose MongoWriter as StorageBackend and provide DB/collection operations."""
 
-    def __init__(self, mongo_writer: MongoWriter, client_kwargs: Optional[Dict] = None, pipeline_logger: Optional[logging.Logger] = None):
-        self.mongo = mongo_writer
+    def __init__(self, mongo_writter: MongoWriter, pipeline_logger: Optional[logging.Logger] = None, client_kwargs: Optional[Dict] = None):
+        self.mongo = mongo_writter
         self.client_kwargs = client_kwargs or {}
         self.logger = pipeline_logger or logging.getLogger(__name__)
 
@@ -158,7 +160,7 @@ class MongoStorageBackend(StorageBackend):
             return {"ok": True, "collection": name, "action": "created"}
 
         except Exception as e:
-            self.logger.exception("Create schema failed", e)
+            self.logger.exception("Create schema failed: %s", e)
             return {"ok": False, "error": str(e)}
 
         finally:

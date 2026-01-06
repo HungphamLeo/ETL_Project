@@ -1,6 +1,6 @@
 import yaml
 
-def load_config(file_path:str):
+def func_load_config(file_path:str):
     """Load configuration from a YAML file.
     Args:
         file_path (str): Path to the YAML configuration file.
@@ -17,3 +17,8 @@ def load_config(file_path:str):
         config = yaml.safe_load(file)
     return config
 
+# if __name__ == "__main__":
+#     # Example usage
+#     config_path = "./platforms/processing/prefect/config/cophieu68_config.yaml"
+#     config = load_config(config_path)
+#     print(config)

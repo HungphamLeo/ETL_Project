@@ -5,14 +5,14 @@ from platforms.ingestion.cophieu68.extract.extract_cophieu68 import ExtractCophi
 from platforms.processing.prefect.flows.prefect_orchestra_etl import PrefectETLPipelineConfig
 from platforms.ingestion.cophieu68.load.load_datalake_cophieu68 import MongoLoader
 from platforms.storage.datalake.mongodb.data_lake_storage import MongoStorageBackend
-from shared.common_models.cophieu68_model.extract_models import (
+from platforms.ingestion.cophieu68.dto.extract_models import (
     CRAWL_MARKET_LIST_CONFIG,
     INDUSTRIAL_INFO_TYPE
 )
 
 
 
-config_path = "/shared/config/web_craw_config/cophieu68_config.yaml"
+config_path = "./platforms/processing/prefect/config/cophieu68_config.yaml"
 config = PrefectETLPipelineConfig(config_path=config_path)
 mongo_config_etl_arg =config.config.get("storage", {}).get("mongodb", {}).get("reties_etl_flows", {})
 

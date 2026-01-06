@@ -17,23 +17,28 @@ class PrefectETLPipelineConfig:
         logger_factory: Optional[LoggerFactory] = None,
     ):
         self._config_path = config_path
+        
         self._loader = config_loader or FileConfigLoader()
         self._logger_factory = logger_factory or DefaultLoggerFactory()
-        self._config: Dict[str, Any] = {}
+        # self._config: Dict[str, Any] = {}
         self._loggers: Dict[str, logging.Logger] = {}
         self._load_config()
+        
 
     def _load_config(self) -> None:
         try:
-            cfg = self._loader.load(self._config_path) or {}
-            self._config = cfg
+            print("Loading config from:", self._config_path)
+            cfg = self._loader.load(self._config_path)
+            self._config = cfg.get('project_params')
+
         except Exception:
             self._config = {}
+            print("self.config is null")
 
     # --- Logger helpers (lazy) ---
     def _get_logger(self, key: str) -> logging.Logger:
         if key not in self._loggers:
-            self._loggers[key] = self._logger_factory.get_logger(self.config, key)
+            self._loggers[key] = self._logger_factory.get_logger(self._config, key)
         return self._loggers[key]
 
     @property
