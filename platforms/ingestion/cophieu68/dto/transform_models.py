@@ -20,6 +20,9 @@ DATA_WAREHOUSE_SCHEMA = {
                 "industry_code": {"type": "TEXT", "constraints": "NOT NULL"},
                 "industry_code_replace": {"type": "TEXT"},
                 "industry_craw_url": {"type": "TEXT"},
+                "effective_date": {"type": "TIMESTAMPTZ", "constraints": "NOT NULL"},
+                "end_date": {"type": "TIMESTAMPTZ"},
+                "is_current": {"type": "BOOLEAN", "constraints": "DEFAULT TRUE"},
                 "update_time": {"type": "TIMESTAMPTZ"},
                 "created_time": {"type": "TIMESTAMPTZ", "constraints": "DEFAULT NOW()"}
             },
@@ -47,15 +50,14 @@ DATA_WAREHOUSE_SCHEMA = {
                 "chartered_capital":{"type": "TEXT"},
                 "business_license":{"type": "TEXT"},
                 "tax_code":        {"type": "TEXT"},
-                # "market_key":      {"type": "VARCHAR(32)", "constraints": "REFERENCES dim_market_type(market_key)"},
-                # "industry_key":    {"type": "VARCHAR(32)", "constraints": "REFERENCES dim_industry(industry_key)"},
-                
-                "effective_from":  {"type": "DATE",        "constraints": "NOT NULL"},
-                "effective_to":    {"type": "DATE"},
-                "is_current":      {"type": "BOOLEAN",     "constraints": "DEFAULT TRUE"},
-                "created_time":    {"type": "TIMESTAMPTZ", "constraints": "DEFAULT NOW()"}
-                }
-            },
+                "market_key":      {"type": "VARCHAR(32)", "constraints": "REFERENCES dim_market_type(market_key)"},
+                "effective_date": {"type": "TIMESTAMPTZ", "constraints": "NOT NULL"},
+                "end_date": {"type": "TIMESTAMPTZ"},
+                "is_current": {"type": "BOOLEAN", "constraints": "DEFAULT TRUE"},
+                "update_time": {"type": "TIMESTAMPTZ"},
+                "created_time": {"type": "TIMESTAMPTZ", "constraints": "DEFAULT NOW()"}
+            }
+        },
 
         "dim_report_type": {
             "grain": "Yearly or Quarterly",
@@ -68,20 +70,53 @@ DATA_WAREHOUSE_SCHEMA = {
     },
 
     "facts": {
+        "fact_industry_summary": {
+            "grain": "1 record per trade tick",
+            "partitions": "RANGE (trade_date_key) monthly",
+            "columns": {
+                "industry_key": {"type": "VARCHAR(32)", "constraints": "PRIMARY KEY"},
+                "industry_metric": {"type": "VARCHAR(32)", "constraints": "NOT NULL"},
+                "industry_code": {"type": "TEXT", "constraints": "NOT NULL"},
+                "industry_index":  {"type": "FLOAT", "constraints": ""},
+                "Percentage_change": {"type": "FLOAT", "constraints": ""},
+                "Liquidity": {"type": "FLOAT", "constraints": ""},
+                "Total_Capital": {"type": "FLOAT", "constraints": ""},
+                "Average_Price": {"type": "FLOAT", "constraints": ""},
+                "Book_Value": {"type": "FLOAT", "constraints": ""},
+                "Earning_Per_Share(EPS)": {"type": "FLOAT", "constraints": ""},
+                "Price on Earning(P/E)": {"type": "FLOAT", "constraints": ""},
+                "Return on Asset(ROA)": {"type": "FLOAT", "constraints": ""},
+                "Return on Equity(ROE)": {"type": "FLOAT", "constraints": ""},
+                "Supply_Volumn": {"type": "FLOAT", "constraints": ""},
+                "Total_Asset": {"type": "FLOAT", "constraints": ""},
+                "Total_Equity": {"type": "FLOAT", "constraints": ""},
+                "Total_Liabilities": {"type": "FLOAT", "constraints": ""},
+                "Percentage_Debt_on_Equity": {"type": "FLOAT", "constraints": ""},
+                "Percentage_Equity_on_Assets": {"type": "FLOAT", "constraints": ""},
+                "Revenue": {"type": "FLOAT", "constraints": ""},
+                "Profit_Before_Tax": {"type": "FLOAT", "constraints": ""},
+                "created_time":  {"type": "TIMESTAMPTZ", "constraints": "NOT NULL"},
+                "updated_time":  {"type": "TIMESTAMPTZ", "constraints": "NOT NULL"}
+                
+            }
+        },
 
-        "fact_trade": {
+        "fact_trade_history": {
             "grain": "1 record per trade tick",
             "partitions": "RANGE (trade_date_key) monthly",
             "columns": {
                 "trade_key":       {"type": "VARCHAR(32)", "constraints": "PRIMARY KEY"},
-                "trade_datetime":  {"type": "TIMESTAMPTZ", "constraints": "NOT NULL"},
-                "trade_date_key":  {"type": "VARCHAR(32)", "constraints": "REFERENCES dim_date(date_key)"},
+                "trade_date":      {"type": "DATE",       "constraints": "NOT NULL"},
                 "company_key":     {"type": "VARCHAR(32)", "constraints": "REFERENCES dim_company(company_key)"},
-                "price":           {"type": "NUMERIC",     "constraints": ""},
+                "close_price":           {"type": "NUMERIC",     "constraints": ""},
+                "open_price":            {"type": "NUMERIC",     "constraints": ""},
+                "high_price":            {"type": "NUMERIC",     "constraints": ""},
+                "low_price":             {"type": "NUMERIC",     "constraints": ""},
                 "volume":          {"type": "BIGINT",      "constraints": ""},
-                "value":           {"type": "NUMERIC",     "constraints": ""},
-                "side":            {"type": "TEXT",        "constraints": ""},
-                "source_json":     {"type": "JSONB",       "constraints": ""}
+                "foreign_buy":           {"type": "NUMERIC",     "constraints": ""},
+                "foreign_sell":          {"type": "NUMERIC",     "constraints": ""},
+                "foreign_net_value":     {"type": "NUMERIC",       "constraints": ""},
+                "update_time":     {"type": "TIMESTAMPTZ", "constraints": ""},
             }
         },
 
@@ -93,12 +128,14 @@ DATA_WAREHOUSE_SCHEMA = {
                 "match_datetime":  {"type": "TIMESTAMPTZ", "constraints": ""},
                 "price":           {"type": "NUMERIC",     "constraints": ""},
                 "volume":          {"type": "BIGINT",      "constraints": ""},
-                "broker":          {"type": "TEXT",        "constraints": ""},
-                "source_json":     {"type": "JSONB",       "constraints": ""}
+                "fluctuation_range":{"type": "NUMERIC",     "constraints": ""},
+                "accum_volume":          {"type": "BIGINT",        "constraints": ""},
+                "update_time":     {"type": "TIMESTAMPTZ", "constraints": ""},
+                
             }
         },
 
-        "fact_income_statement": {
+        "fact_income_statement_yearly": {
             "grain": "company × period (Y or Q)",
             "columns": {
                 "income_key":      {"type": "VARCHAR(32)", "constraints": "PRIMARY KEY"},
@@ -108,12 +145,25 @@ DATA_WAREHOUSE_SCHEMA = {
                 "revenue":         {"type": "NUMERIC",     "constraints": ""},
                 "operating_profit":{"type": "NUMERIC",     "constraints": ""},
                 "net_income":      {"type": "NUMERIC",     "constraints": ""},
-                "eps":             {"type": "NUMERIC",     "constraints": ""},
-                "source_json":     {"type": "JSONB",       "constraints": ""}
+                "eps":             {"type": "NUMERIC",     "constraints": ""}
+                
+            }
+        },
+        "fact_income_statement_quarterly": {
+            "grain": "company × period (Y or Q)",
+            "columns": {
+                "income_key":      {"type": "VARCHAR(32)", "constraints": "PRIMARY KEY"},
+                "company_key":     {"type": "VARCHAR(32)", "constraints": "REFERENCES dim_company(company_key)"},
+                "report_type_key": {"type": "VARCHAR(32)", "constraints": "REFERENCES dim_report_type(report_type_key)"},
+                "period_date_key": {"type": "VARCHAR(32)", "constraints": "REFERENCES dim_date(date_key)"},
+                "revenue":         {"type": "NUMERIC",     "constraints": ""},
+                "operating_profit":{"type": "NUMERIC",     "constraints": ""},
+                "net_income":      {"type": "NUMERIC",     "constraints": ""},
+                "eps":             {"type": "NUMERIC",     "constraints": ""}
             }
         },
 
-        "fact_balance_sheet": {
+        "fact_balance_sheet_yearly": {
             "grain": "company × period (Y or Q)",
             "columns": {
                 "bs_key":          {"type": "VARCHAR(32)", "constraints": "PRIMARY KEY"},
@@ -124,8 +174,21 @@ DATA_WAREHOUSE_SCHEMA = {
                 "total_liabilities":{"type": "NUMERIC",    "constraints": ""},
                 "shareholder_equity":{"type": "NUMERIC",   "constraints": ""},
                 "cash":            {"type": "NUMERIC",     "constraints": ""},
-                "inventory":       {"type": "NUMERIC",     "constraints": ""},
-                "source_json":     {"type": "JSONB",       "constraints": ""}
+                "inventory":       {"type": "NUMERIC",     "constraints": ""}
+            }
+        },
+        "fact_balance_sheet_quarterly": {
+            "grain": "company × period (Y or Q)",
+            "columns": {
+                "bs_key":          {"type": "VARCHAR(32)", "constraints": "PRIMARY KEY"},
+                "company_key":     {"type": "VARCHAR(32)", "constraints": "REFERENCES dim_company(company_key)"},
+                "report_type_key": {"type": "VARCHAR(32)", "constraints": "REFERENCES dim_report_type(report_type_key)"},
+                "period_date_key": {"type": "VARCHAR(32)", "constraints": "REFERENCES dim_date(date_key)"},
+                "total_assets":    {"type": "NUMERIC",     "constraints": ""},
+                "total_liabilities":{"type": "NUMERIC",    "constraints": ""},
+                "shareholder_equity":{"type": "NUMERIC",   "constraints": ""},
+                "cash":            {"type": "NUMERIC",     "constraints": ""},
+                "inventory":       {"type": "NUMERIC",     "constraints": ""}
             }
         },
 
@@ -137,23 +200,44 @@ DATA_WAREHOUSE_SCHEMA = {
                 "year_key":        {"type": "VARCHAR(32)", "constraints": "REFERENCES dim_date(date_key)"},
                 "target_revenue":  {"type": "NUMERIC",     "constraints": ""},
                 "target_profit":   {"type": "NUMERIC",     "constraints": ""},
-                "capex_plan":      {"type": "NUMERIC",     "constraints": ""},
-                "source_json":     {"type": "JSONB",       "constraints": ""}
+                "capex_plan":      {"type": "NUMERIC",     "constraints": ""}
             }
         },
 
         "fact_financial_metrics": {
             "grain": "company × period",
             "columns": {
-                "metric_key":      {"type": "VARCHAR(32)", "constraints": "PRIMARY KEY"},
+                "financial_ratio_key":      {"type": "VARCHAR(32)", "constraints": "PRIMARY KEY"},
                 "company_key":     {"type": "VARCHAR(32)", "constraints": "REFERENCES dim_company(company_key)"},
-                "period_date_key": {"type": "VARCHAR(32)", "constraints": "REFERENCES dim_date(date_key)"},
-                "pe":              {"type": "NUMERIC",     "constraints": ""},
-                "roe":             {"type": "NUMERIC",     "constraints": ""},
-                "roa":             {"type": "NUMERIC",     "constraints": ""},
-                "debt_equity":     {"type": "NUMERIC",     "constraints": ""},
+                "reference_price": {"type": "NUMERIC", "constraints": "NOT NULL "},
+                "company_name":    {"type": "TEXT", "constraints": "NOT NULL "},
+                "open_price":      {"type": "NUMERIC", "constraints": "NOT NULL "},
+                "high_price":      {"type": "NUMERIC", "constraints": "NOT NULL "},
+                "low_price":       {"type": "NUMERIC", "constraints": "NOT NULL "},
+                "volume":          {"type": "BIGINT", "constraints": "NOT NULL "},
+                "book_value":      {"type": "NUMERIC", "constraints": "NOT NULL "},
+                "earning_per_share(EPS)":{"type": "NUMERIC", "constraints": "NOT NULL "},
+                "price_on_earning(P/E)": {"type": "NUMERIC",     "constraints": ""},
+                "price_on_book_value(P/B)": {"type": "NUMERIC",     "constraints": ""},
+                "return_on_equity(ROE)": {"type": "NUMERIC",     "constraints": ""},
+                "return_on_assets(ROA)": {"type": "NUMERIC",     "constraints": ""},
+                "beta":            {"type": "NUMERIC",     "constraints": ""},
                 "market_cap":      {"type": "NUMERIC",     "constraints": ""},
-                "source_json":     {"type": "JSONB",       "constraints": ""}
+                "listed_volume":   {"type": "NUMERIC",     "constraints": ""},
+                "average_volume_52_weeks":  {"type": "NUMERIC",     "constraints": ""},
+                "high_low_52_weeks": {"type": "NUMERIC",     "constraints": ""},
+                "debt":             {"type": "NUMERIC",     "constraints": ""},
+                "equity":           {"type": "NUMERIC",     "constraints": ""},
+                "debt_to_equity":   {"type": "NUMERIC",     "constraints": ""},
+                "equity_to_assets": {"type": "NUMERIC",     "constraints": ""},
+                "cash":             {"type": "NUMERIC",     "constraints": ""},
+                "eps_power":        {"type": "NUMERIC",     "constraints": ""},
+                "roe_power":        {"type": "NUMERIC",     "constraints": ""},
+                "invest_efficiency":{"type": "NUMERIC",     "constraints": ""},
+                "pb_power":         {"type": "NUMERIC",     "constraints": ""},
+                "price_growth_power":{"type": "NUMERIC",     "constraints": ""},
+                "update_time":      {"type": "TIMESTAMP", "constraints": "NOT NULL "},
+               
             }
         }
     },

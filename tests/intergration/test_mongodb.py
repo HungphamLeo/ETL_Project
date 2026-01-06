@@ -96,7 +96,7 @@ def task_schedule_market_list(mongo_config,
         stock_lists.append(stock_list_market_type)
         time.sleep(mongo_config.get("delay_call", 0.25))
     list_stock_collection = mongo_config.get("collections", {}).get("list_stock", "list_stock")
-    mongo_schema = mongo_config.get("documentation", {}).get("market_list", {})
+    mongo_schema = mongo_config.get("documentation", {}).get("market_list", "market_list")
     try:
         backend_mongo.create_table(name=list_stock_collection, schema=mongo_schema)
         loading_datalake.load_market_list(
@@ -131,7 +131,7 @@ def task_schedule_industry_info(    mongo_config,
     None
     """
     industry_list_collection = mongo_config.get("collections", {}).get("industry_list", "industry_list")
-    mongo_schema = mongo_config.get("documentation", {}).get("industry_info", {})
+    mongo_schema = mongo_config.get("documentation", {}).get("industry_info", "industry_info")
     industry_info = {}
     for key in INDUSTRIAL_INFO_TYPE:
         industry_list = crawler.crawl_industry_info(type_info = key)
@@ -160,12 +160,34 @@ def task_schedule_company_profile(  mongo_config,
         company_profile = crawler.crawl_company_profile(symbol)
         symbol_info[symbol] = company_profile.__dict__
         time.sleep(mongo_config.get("delay_call", 0.25))
-    mongo_schema = mongo_config.get("documentation", {}).get("company_info", {})
+    mongo_schema = mongo_config.get("documentation", {}).get("company_info", "company_info")
     try:
         backend_mongo.create_table(name=company_profile_collection, schema=mongo_schema)
         loading_datalake.load_company_info(
             collection_name=company_profile_collection,
             company_profiles=symbol_info
+        )
+    except Exception as e:
+        loading_pipeline_logger.error(f"Error in task_schedule_company_profile: {e}")
+
+def task_schedule_match_details(mongo_config, 
+                                crawler: ExtractCophieu68, 
+                                backend_mongo: MongoStorageBackend, 
+                                loading_datalake: MongoLoader,
+                                symbols_list: List,
+                                loading_pipeline_logger: None):
+    match_details_collection = mongo_config.get("collections", {}).get("match_details", "match_details")
+    symbol_info = {}
+    for symbol in symbols_list:
+        match_details_data = crawler.crawl_details_match(symbol)
+        symbol_info[symbol] = match_details_data.__dict__
+        time.sleep(mongo_config.get("delay_call", 0.25))
+    mongo_schema = mongo_config.get("documentation", {}).get("match_details", "match_details")
+    try:
+        backend_mongo.create_table(name=match_details_collection, schema=mongo_schema)
+        loading_datalake.load_details_match(
+            collection_name=match_details_collection,
+            match_date=symbol_info
         )
     except Exception as e:
         loading_pipeline_logger.error(f"Error in task_schedule_company_profile: {e}")
@@ -178,7 +200,7 @@ def task_schedule_financial_summary(mongo_config,
                                     symbols_list: List,
                                     loading_pipeline_logger):
     mongo_financial_summary = mongo_config.get("collections", {}).get("financial_report_summary", "financial_report_summary")
-    mongo_schema = mongo_config.get("documentation", {}).get("financial_summary", {})
+    mongo_schema = mongo_config.get("documentation", {}).get("financial_summary", "financial_summary")
     try:
         backend_mongo.create_table(name=mongo_financial_summary, schema=mongo_schema)
         for symbol in symbols_list:
@@ -199,7 +221,7 @@ def task_schedule_business_plan(mongo_config,
                                     symbols_list: List,
                                     loading_pipeline_logger: None):
     business_plan_collection = mongo_config.get("collections", {}).get("business_plan", "business_plan")
-    mongo_schema_business_plan = mongo_config.get("documentation", {}).get("business_plan", {})
+    mongo_schema_business_plan = mongo_config.get("documentation", {}).get("business_plan", "business_plan")
     backend_mongo.create_table(name=business_plan_collection, schema=mongo_schema_business_plan)
     for symbol in symbols_list:
         business_plan_data = crawler.crawl_business_plan(symbol = symbol)
@@ -219,8 +241,8 @@ def task_schedule_details_financial_statement_quarterly(mongo_config,
                                     loading_pipeline_logger: None):
     income_statement_quarterly = mongo_config.get("collections", {}).get("income_statement_quarterly", "income_statement_quarterly")
     balance_sheet_quarterly = mongo_config.get("collections", {}).get("balance_sheet_quarterly", "balance_sheet_quarterly")
-    mongo_schema_income_statement = mongo_config.get("documentation", {}).get("income_statement", {})
-    mongo_schema_balance_sheet = mongo_config.get("documentation", {}).get("balance_sheet", {})
+    mongo_schema_income_statement = mongo_config.get("documentation", {}).get("income_statement", "income_statement")
+    mongo_schema_balance_sheet = mongo_config.get("documentation", {}).get("balance_sheet", ("balance_sheet"))
     backend_mongo.create_table(name=income_statement_quarterly, schema=mongo_schema_income_statement)
     backend_mongo.create_table(name=balance_sheet_quarterly, schema=mongo_schema_balance_sheet)
     for symbol in symbols_list:
@@ -247,8 +269,8 @@ def task_schedule_details_financial_statement_yearly(mongo_config,
                                     loading_pipeline_logger: None):
     income_statement_yearly = mongo_config.get("collections", {}).get("income_statement_yearly", "income_statement_yearly")
     balance_sheet_yearly = mongo_config.get("collections", {}).get("balance_sheet_yearly", "balance_sheet_yearly")
-    mongo_schema_income_statement = mongo_config.get("documentation", {}).get("income_statement", {})
-    mongo_schema_balance_sheet = mongo_config.get("documentation", {}).get("balance_sheet", {})
+    mongo_schema_income_statement = mongo_config.get("documentation", {}).get("income_statement", "income_statement")
+    mongo_schema_balance_sheet = mongo_config.get("documentation", {}).get("balance_sheet", "balance_sheet")
     backend_mongo.create_table(name=income_statement_yearly, schema=mongo_schema_income_statement)
     backend_mongo.create_table(name=balance_sheet_yearly, schema=mongo_schema_balance_sheet)
     for symbol in symbols_list:
@@ -274,7 +296,7 @@ def task_schedule_details_financial_ratios(mongo_config,
                                             symbols_list: List,
                                             loading_pipeline_logger: None):
     financial_info_collection = mongo_config.get("collections", {}).get("financial_info", "financial_info")
-    mongo_schema = mongo_config.get("documentation", {}).get("financial_info", {})
+    mongo_schema = mongo_config.get("documentation", {}).get("financial_info", "financial_info")
     backend_mongo.create_table(name=financial_info_collection, schema=mongo_schema)
     for symbol in symbols_list:
         financial_ratios = crawler.crawl_financial_ratios(symbol = symbol)
@@ -295,7 +317,7 @@ def task_schedule_details_trading_data(mongo_config,
                                         symbols_list: List,
                                         loading_pipeline_logger: None):
     trading_data_collection = mongo_config.get("collections", {}).get("trading_data", "trading_data")
-    mongo_schema = mongo_config.get("documentation", {}).get("trading_data", {})
+    mongo_schema = mongo_config.get("documentation", {}).get("trading_data", "trading_data")
     backend_mongo.create_table(name=trading_data_collection, schema=mongo_schema)
 
     max_attempts = mongo_config.get("retries_loading", {}).get("max_attempts", 3)
@@ -330,6 +352,7 @@ def get_symbol_list(config , logger):
     return symbol_list[0]
 
 
+
 # @flow(name=mongo_config_etl_arg.get("etl_name", "cophieu68_etl_flow"))
 def cophieu68_etl_flow(config_path):
     pipeline_config = PrefectETLPipelineConfig(config_path=config_path, config_loader=FileConfigLoader(), logger_factory=DefaultLoggerFactory())
@@ -359,9 +382,18 @@ def cophieu68_etl_flow(config_path):
     print("Industry info done")
     time.sleep(mongo_config.get("delay_call", 0.25))
 
-
-    # symbol_list = get_symbol_list(pipeline_config, loading_pipeline_logger)
+    # task_schedule_details_financial_ratios(
+    #                                     mongo_config = mongo_config,
+    #                                     crawler=crawler,
+    #                                     backend_mongo=backend_mongo,
+    #                                     loading_datalake=loading_datalake,
+    #                                     loading_pipeline_logger = loading_pipeline_logger
+    # )
+    # print("financial ratios done")
     # time.sleep(mongo_config.get("delay_call", 0.25))
+
+    symbol_list = get_symbol_list(pipeline_config, loading_pipeline_logger)
+    time.sleep(mongo_config.get("delay_call", 0.25))
     
     # task_schedule_company_profile(
     #                                 mongo_config = mongo_config,
@@ -373,17 +405,7 @@ def cophieu68_etl_flow(config_path):
     #                             )
     # print("company profile done")
     # time.sleep(mongo_config.get("delay_call", 0.25))
-
-    # task_schedule_financial_summary(  
-    #                                 mongo_config = mongo_config,
-    #                                 crawler=crawler,
-    #                                 backend_mongo=backend_mongo,
-    #                                 loading_datalake=loading_datalake,
-    #                                 symbols_list=symbol_list,
-    #                                 loading_pipeline_logger = loading_pipeline_logger
-    #                                 )
-    # print("financial summary done")
-    # time.sleep(mongo_config.get("delay_call", 0.25))
+    
 
     # task_schedule_details_financial_statement_yearly(
     #                                 mongo_config = mongo_config,
@@ -407,6 +429,39 @@ def cophieu68_etl_flow(config_path):
     # print("financial statement quarterly done")
     # time.sleep(mongo_config.get("delay_call", 0.25))
 
+    task_schedule_match_details(
+                                    mongo_config = mongo_config,
+                                    crawler=crawler,
+                                    backend_mongo=backend_mongo,
+                                    loading_datalake=loading_datalake,
+                                    symbols_list=symbol_list,
+                                    loading_pipeline_logger = loading_pipeline_logger
+                                    )
+    print("match details done")
+    time.sleep(mongo_config.get("delay_call", 0.25))
+
+    task_schedule_details_trading_data(
+                                    mongo_config = mongo_config,
+                                    crawler=crawler,
+                                    backend_mongo=backend_mongo,
+                                    loading_datalake=loading_datalake,
+                                    symbols_list=symbol_list,
+                                    loading_pipeline_logger = loading_pipeline_logger
+                                    )
+    print("trading data done")
+    time.sleep(mongo_config.get("delay_call", 0.25))
+
+
+    task_schedule_business_plan(
+                                    mongo_config = mongo_config,
+                                    crawler=crawler,
+                                    backend_mongo=backend_mongo,
+                                    loading_datalake=loading_datalake,
+                                    symbols_list=symbol_list,
+                                    loading_pipeline_logger = loading_pipeline_logger
+                                    )
+    print("business plan done")
+    time.sleep(mongo_config.get("delay_call", 0.25))
 
     print("ETL data done")
 if __name__ == "__main__":

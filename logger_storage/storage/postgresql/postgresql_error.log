@@ -219,3 +219,11 @@ LINE 1: INSERT INTO DW.DIM_COMPANY (company_key, symbol, company_nam...
 LINE 1: ...tcombank.com.vn', 'webmaster@vietcombank.com.vn', '', '2009-...
                                                              ^
 ", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-05T22:11:36", "level":"ERROR", "message":"Execute failed: permission denied for schema public
+LINE 2: CREATE TABLE IF NOT EXISTS public.FACT_TRADE (
+                                   ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:196"}
+{"time":"2026-01-05T22:18:33", "level":"ERROR", "message":"Execute failed: permission denied for schema public
+LINE 2: CREATE TABLE IF NOT EXISTS public.FACT_TRADE (
+                                   ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:196"}

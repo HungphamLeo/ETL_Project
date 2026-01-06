@@ -12,7 +12,8 @@ from platforms.ingestion.cophieu68.dto.load_models import (
     MatchDetailsDoc,
     IncomeStatementDoc,
     BalanceSheetDoc,
-    BusinessPlanDoc
+    BusinessPlanDoc,
+    FinancialInfoDoc
 )
 from platforms.storage.datawarehouse.postgresql.datawarehouse_storage import PostgreSQLWriter
 
@@ -115,6 +116,9 @@ class FactLoader(BaseLoader):
 
     def get_company_key(self, symbol: str) -> str:
         return self.dim_repo.get_or_create(symbol, "dim_company", self.table_creator)
+    
+    def get_industry_key(self, industry: str) -> str:
+        return self.dim_repo.get_or_create(industry, "dim_industry", self.table_creator)
 
     def get_report_type_key(self, report_type: str) -> str:
         return self.dim_repo.get_or_create(report_type, "dim_report_type", self.table_creator)
@@ -162,22 +166,38 @@ class DimIndustryLoader(DimLoader):
 
     def load(self):
         raw = self.mongo.find_table(self.collection_name)
-        data = raw.get("data")
-        for documentation in data:
-           industry_metric = documentation.get("industry_metric")
-           row = []
+        rows = []
+        for doc in raw.get("data"):
+            industry_metric = doc.get("industry_metric")
+            existing_record = self.postgresql_client.query(
+                f"SELECT * FROM {self.schema_name}.{self.dim_name} WHERE industry_metric = %s AND is_current = TRUE",
+                (industry_metric,)
+            )
 
-           for info in documentation.get("data"):
-                for infor_keys in list(info.keys()):
-                    row.append({
-                        "industry_metric": industry_metric,
-                        "industry_code": str(infor_keys).split("_")[1],
-                        "industry_code_replace": str(infor_keys).split("_")[2],
-                        "industry_craw_url": str(infor_keys).split("_")[3],
-                        "update_time": info.get("update_time") or datetime.utcnow().isoformat(),
-                        "created_time": info.get("update_time") or datetime.utcnow().isoformat(),
-                    })
-        df = pd.DataFrame(row)
+            if existing_record:
+                # Check if there are changes
+                if existing_record["industry_code"] != doc.get("industry_code") or \
+                   existing_record["industry_craw_url"] != doc.get("industry_craw_url"):
+                    # Update the existing record's end_date and is_current
+                    self.postgresql_client.execute(
+                        f"UPDATE {self.schema_name}.{self.dim_name} SET end_date = %s, is_current = FALSE WHERE industry_metric = %s AND is_current = TRUE",
+                        (datetime.utcnow().isoformat(), industry_metric)
+                    )
+
+            # Insert the new record
+            rows.append({
+                "industry_metric": industry_metric,
+                "industry_code": doc.get("industry_code"),
+                "industry_code_replace": doc.get("industry_code_replace"),
+                "industry_craw_url": doc.get("industry_craw_url"),
+                "effective_date": datetime.utcnow().isoformat(),
+                "end_date": None,
+                "is_current": True,
+                "update_time": datetime.utcnow().isoformat(),
+                "created_time": datetime.utcnow().isoformat(),
+            })
+
+        df = pd.DataFrame(rows)
         sql = self._create_table_sql(self.dim_name)
         return df, sql
 
@@ -194,37 +214,35 @@ class DimCompanyLoader(DimLoader):
         raw = self.mongo.find_table(self.collection_name)
         rows = []
         for doc in raw.get("data"):
-            
-            profile = doc.get("profile_json")
-            # some payloads store profile under 'profile' or raw data under 'data'
-            if not profile and isinstance(doc, dict):
-                profile = doc.get("profile") or doc.get("raw") or doc.get("data") or {}
-            symbol = profile.get("symbol")
+            company_key = doc.get("symbol")
+            existing_record = self.postgresql_client.query(
+                f"SELECT * FROM {self.schema_name}.{self.dim_name} WHERE company_key = %s AND is_current = TRUE",
+                (company_key,)
+            )
 
+            if existing_record:
+                # Check if there are changes
+                if existing_record["company_name"] != doc.get("company_name") or \
+                   existing_record["full_name"] != doc.get("full_name"):
+                    # Update the existing record's end_date and is_current
+                    self.postgresql_client.execute(
+                        f"UPDATE {self.schema_name}.{self.dim_name} SET end_date = %s, is_current = FALSE WHERE company_key = %s AND is_current = TRUE",
+                        (datetime.utcnow().isoformat(), company_key)
+                    )
+
+            # Insert the new record
             rows.append({
-                "company_key": symbol,
-                "symbol": symbol,
-                "company_name": profile.get("company_name") or None,
-                "full_name": profile.get("full_name") or None,
-                "english_name": profile.get("english_name") or None,
-                "short_name": profile.get("short_name") or None,
-                "address": profile.get("address") or None,
-                "phone": profile.get("phone") or None,
-                "fax": profile.get("fax") or None,
-                "website": profile.get("website") or None,
-                "email": profile.get("email") or None,
-                "established_date": profile.get("established_date"),
-                "listed_date": profile.get("listed_date"),
-                "chartered_capital": profile.get("chartered_capital") or None,
-                "business_license": profile.get("business_license") or None,
-                "tax_code": profile.get("tax_code") or None,
-                # "market_key": profile.get("market_type") or None,
-                # "industry_key": profile.get("industry_code") or None,
-                "effective_from": profile.get("listed_date") or None,
-                "effective_to": None,
+                "company_key": company_key,
+                "symbol": doc.get("symbol"),
+                "company_name": doc.get("company_name"),
+                "full_name": doc.get("full_name"),
+                "effective_date": datetime.utcnow().isoformat(),
+                "end_date": None,
                 "is_current": True,
-                "created_time": datetime.now()
+                "update_time": datetime.utcnow().isoformat(),
+                "created_time": datetime.utcnow().isoformat(),
             })
+
         df = pd.DataFrame(rows)
         sql = self._create_table_sql(self.dim_name)
         return df, sql
@@ -258,7 +276,7 @@ class FactTradeLoader(FactLoader):
         self.fact_name = self._get_fact_name("fact_trade", "fact_trade")
 
     def load(self):
-        raw_docs = list(self.mongo.find_table(self.collection_name) or [])
+        raw_docs = self.mongo.find_table(self.collection_name)
         rows = []
         for doc in raw_docs:
             tdoc = TradingDataDoc.from_extract(doc)
@@ -268,17 +286,20 @@ class FactTradeLoader(FactLoader):
             company_key = self.get_company_key(tdoc.symbol)
             for r in tdoc.to_fact_rows():
                 trade_dt = r.get("trade_datetime")
-                trade_date_key = self.get_date_key(trade_dt) if trade_dt else self.get_date_key("latest")
                 rows.append({
                     "trade_key": self.table_creator.get_id(),
-                    "trade_datetime": trade_dt,
-                    "trade_date_key": trade_date_key,
+                    "trade_date": trade_dt,
                     "company_key": company_key,
-                    "price": r.get("price"),
+                    "close_price": r.get("price"),
+                    "open_price": r.get("open_price"),
+                    "high_price": r.get("high_price"),
+                    "low_price": r.get("low_price"),
                     "volume": r.get("volume"),
-                    "value": r.get("value"),
-                    "side": r.get("side") or "NA",
-                    "source_json": r.get("source_json")
+                    "foreign_buy": r.get("foreign_buy"),
+                    "foreign_sell": r.get("foreign_sell"),
+                    "foreign_net_value": r.get("foreign_net_value"),
+                    "update_time": r.get("update_time") or datetime.utcnow().isoformat(),
+                    
                 })
         df = pd.DataFrame(rows)
         sql = self.create_fact_table_sql(self.fact_name)
@@ -309,8 +330,10 @@ class FactMatchDetailLoader(FactLoader):
                     "match_datetime": r.get("match_datetime"),
                     "price": r.get("price"),
                     "volume": r.get("volume"),
-                    "broker": r.get("broker"),
-                    "source_json": r.get("source_json")
+                    "fluctuation_range": r.get("fluctuation_range"),
+                    "accum_volume": r.get("accum_volume"),
+                    "update_time": r.get("update_time")
+                   
                 })
         df = pd.DataFrame(rows)
         sql = self.create_fact_table_sql(self.fact_name)
@@ -323,16 +346,13 @@ class FactIncomeStatementLoader(FactLoader):
         table_creator = TableCreator(machine_id=1, character_specific=None)
         super().__init__(datalake_config, table_creator, mongo_reader, dim_repo, datawarehouse_logger, postgres_client)
         # can map both yearly/quarterly collections
-        self.collection_names = [
-            self._get_collection("income_statement_yearly"),
-            self._get_collection("income_statement_quarterly"),
-        ]
-        self.fact_name = self._get_fact_name("fact_income_statement", "fact_income_statement")
+        self.collection_income_statement_yearly = self._get_collection("income_statement_yearly")
+        self.collection_income_statement_quarterly = self._get_collection("income_statement_quarterly")
+        self.fact_income_statement_quarterly = self._get_fact_name("fact_income_statement_quarterly", "fact_income_statement_quarterly")
+        self.fact_income_statement_yearly = self._get_fact_name("fact_income_statement_yearly", "fact_income_statement_yearly")
 
-    def load(self):
-        raw = []
-        for c in self.collection_names:
-            raw.extend(list(self.mongo.find_table(c) or []))
+    def load_fact_income_statement_quarterly(self):
+        raw = self.mongo.find_table(self.collection_income_statement_quarterly)
         rows = []
         for doc in raw:
             idoc = IncomeStatementDoc.from_extract(doc)
@@ -340,40 +360,62 @@ class FactIncomeStatementLoader(FactLoader):
                 self.datawarehouse_logger.warning("income_statement doc without symbol: %s", doc)
                 continue
             company_key = self.get_company_key(idoc.symbol)
-            report_type_key = self.get_report_type_key(idoc.report_type or doc.get("report_type"))
-            for r in idoc.to_fact_rows():
-                period_key = self.get_date_key(r.get("period"))
-                rows.append({
-                    "income_key": self.table_creator.get_id(),
-                    "company_key": company_key,
-                    "report_type_key": report_type_key,
-                    "period_date_key": period_key,
-                    "revenue": r.get("revenue"),
-                    "operating_profit": r.get("operating_profit"),
-                    "net_income": r.get("net_income"),
-                    "eps": r.get("eps"),
-                    "source_json": r.get("source_json")
-                })
+            report_type_key = self.get_report_type_key(report_type = "quarterly")
+            period_key = self.get_date_key(r.get("period"))
+            rows.append({
+                "income_key": self.table_creator.get_id(),
+                "company_key": company_key,
+                "report_type_key": report_type_key,
+                "period_date_key": period_key,
+                "revenue": r.get("revenue"),
+                "operating_profit": r.get("operating_profit"),
+                "net_income": r.get("net_income"),
+                "eps": r.get("eps")
+                
+            })
         df = pd.DataFrame(rows)
-        sql = self.create_fact_table_sql(self.fact_name)
+        sql = self.create_fact_table_sql(self.fact_income_statement_quarterly)
         return df, sql
 
+    def load_fact_income_statement_yearly(self):
+        raw = self.mongo.find_table(self.collection_income_statement_yearly)
+        rows = []
+        for doc in raw:
+            idoc = IncomeStatementDoc.from_extract(doc)
+            if not idoc.symbol:
+                self.datawarehouse_logger.warning("income_statement doc without symbol: %s", doc)
+                continue
+            company_key = self.get_company_key(idoc.symbol)
+            report_type_key = self.get_report_type_key(report_type = "yearly")
+            period_key = self.get_date_key(r.get("period"))
+            rows.append({
+                "income_key": self.table_creator.get_id(),
+                "company_key": company_key,
+                "report_type_key": report_type_key,
+                "period_date_key": period_key,
+                "revenue": r.get("revenue"),
+                "operating_profit": r.get("operating_profit"),
+                "net_income": r.get("net_income"),
+                "eps": r.get("eps")
+                
+            })
+        df = pd.DataFrame(rows)
+        sql = self.create_fact_table_sql(self.fact_income_statement_yearly)
+        return df, sql
 
 # FactBalanceSheetLoader (BalanceSheetDoc)
 class FactBalanceSheetLoader(FactLoader):
     def __init__(self, datalake_config, datawarehouse_logger, postgres_client, dim_repo, mongo_reader):
         table_creator = TableCreator(machine_id=1, character_specific=None)
         super().__init__(datalake_config, table_creator, mongo_reader, dim_repo, datawarehouse_logger, postgres_client)
-        self.collection_names = [
-            self._get_collection("balance_sheet_yearly"),
-            self._get_collection("balance_sheet_quarterly"),
-        ]
-        self.fact_name = self._get_fact_name("fact_balance_sheet", "fact_balance_sheet")
+        # can map both yearly/quarterly collections
+        self.collection_balance_sheet_yearly = self._get_collection("balance_sheet_yearly")
+        self.collection_balance_sheet_quarterly = self._get_collection("balance_sheet_quarterly")
+        self.fact_balance_sheet_quarterly = self._get_fact_name("fact_balance_sheet_quarterly", "fact_balance_sheet_quarterly")
+        self.fact_balance_sheet_yearly = self._get_fact_name("fact_balance_sheet_yearly", "fact_balance_sheet_yearly")
 
-    def load(self):
-        raw = []
-        for c in self.collection_names:
-            raw.extend(list(self.mongo.find_table(c) or []))
+    def load_fact_balance_sheet_quarterly(self):
+        raw = self.mongo.find_table(self.collection_balance_sheet_quarterly)
         rows = []
         for doc in raw:
             bdoc = BalanceSheetDoc.from_extract(doc)
@@ -381,7 +423,7 @@ class FactBalanceSheetLoader(FactLoader):
                 self.datawarehouse_logger.warning("balance_sheet doc without symbol: %s", doc)
                 continue
             company_key = self.get_company_key(bdoc.symbol)
-            report_type_key = self.get_report_type_key(bdoc.report_type or doc.get("report_type"))
+            report_type_key = self.get_report_type_key(report_type = "quarterly")
             for r in bdoc.to_fact_rows():
                 period_key = self.get_date_key(r.get("period"))
                 rows.append({
@@ -393,11 +435,37 @@ class FactBalanceSheetLoader(FactLoader):
                     "total_liabilities": r.get("total_liabilities"),
                     "shareholder_equity": r.get("shareholder_equity"),
                     "cash": r.get("cash"),
-                    "inventory": r.get("inventory"),
-                    "source_json": r.get("source_json")
+                    "inventory": r.get("inventory")
                 })
         df = pd.DataFrame(rows)
-        sql = self.create_fact_table_sql(self.fact_name)
+        sql = self.create_fact_table_sql(self.fact_balance_sheet_quarterly)
+        return df, sql
+    
+    def load_fact_balance_sheet_yearly(self):
+        raw = self.mongo.find_table(self.collection_balance_sheet_yearly)
+        rows = []
+        for doc in raw:
+            bdoc = BalanceSheetDoc.from_extract(doc)
+            if not bdoc.symbol:
+                self.datawarehouse_logger.warning("balance_sheet doc without symbol: %s", doc)
+                continue
+            company_key = self.get_company_key(bdoc.symbol)
+            report_type_key = self.get_report_type_key(report_type = "yearly")
+            for r in bdoc.to_fact_rows():
+                period_key = self.get_date_key(r.get("period"))
+                rows.append({
+                    "bs_key": self.table_creator.get_id(),
+                    "company_key": company_key,
+                    "report_type_key": report_type_key,
+                    "period_date_key": period_key,
+                    "total_assets": r.get("total_assets"),
+                    "total_liabilities": r.get("total_liabilities"),
+                    "shareholder_equity": r.get("shareholder_equity"),
+                    "cash": r.get("cash"),
+                    "inventory": r.get("inventory")
+                })
+        df = pd.DataFrame(rows)
+        sql = self.create_fact_table_sql(self.fact_balance_sheet_yearly)
         return df, sql
 
 
@@ -410,7 +478,7 @@ class FactBusinessPlanLoader(FactLoader):
         self.fact_name = self._get_fact_name("fact_business_plan", "fact_business_plan")
 
     def load(self):
-        raw = list(self.mongo.find_table(self.collection_name) or [])
+        raw = self.mongo.find_table(self.collection_name)
         rows = []
         for doc in raw:
             pdoc = BusinessPlanDoc.from_extract(doc)
@@ -436,3 +504,84 @@ class FactBusinessPlanLoader(FactLoader):
         df = pd.DataFrame(rows)
         sql = self.create_fact_table_sql(self.fact_name)
         return df, sql
+
+class FactFinancialMetricsLoader(FactLoader):
+    def __init__(self, datalake_config, datawarehouse_logger, postgres_client, dim_repo, mongo_reader):
+        table_creator = TableCreator(machine_id=1, character_specific=None)
+        super().__init__(datalake_config, table_creator, mongo_reader, dim_repo, datawarehouse_logger, postgres_client)
+        self.collection_name = self._get_collection("financial_info")
+        self.fact_name = self._get_fact_name("fact_financial_metrics", "fact_financial_metrics")
+    
+    def load(self):
+        raw = self.mongo.find_table(self.collection_name)
+        rows = []
+        for doc in raw:
+            fdoc = FinancialInfoDoc.from_extract(doc)
+            if not fdoc.symbol:
+                self.datawarehouse_logger.warning("financial_metrics doc without symbol: %s", doc)
+                continue
+            company_key = self.get_company_key(fdoc.symbol)
+            for r in fdoc.to_fact_rows():
+                # period_key = self.get_date_key(r.get("period"))
+                rows.append({
+                    "financial_ratio_key": self.table_creator.get_id(),
+                    "company_key":company_key,
+                    "reference_price":  r.get("reference_price"),
+                    "company_name": r.get("company_name"),
+                    "open_price": r.get("open_price"),
+                    "high_price": r.get("high_price"),
+                    "low_price": r.get("low_price"),
+                    "volume": r.get("volume"),
+                    "book_value": r.get("book_value"),
+                    "earning_per_share(EPS)": r.get("eps"),
+                    "price_on_earning(P/E)": r.get("pe"),
+                    "price_on_book_value(P/B)": r.get("pb"),
+                    "return_on_equity(ROE)": r.get("roe"),
+                    "return_on_assets(ROA)": r.get("roa"),
+                    "beta": r.get("beta"),
+                    "market_cap": r.get("market_cap"),
+                    "listed_volume": r.get("listed_volume"),
+                    "average_volume_52_weeks": r.get("avg_volume_52w"),
+                    "high_low_52_weeks": r.get("high_low_52w"),
+                    "debt": r.get("debt"),
+                    "equity": r.get("equity"),
+                    "debt_to_equity": r.get("debt_to_equity"),
+                    "equity_to_assets": r.get("equity_to_assets"),
+                    "cash": r.get("cash"),
+                    "eps_power": r.get("eps_power"),
+                    "roe_power": r.get("roe_power"),
+                    "invest_efficiency": r.get("invest_efficiency"),
+                    "pb_power": r.get("pb_power"),
+                    "price_growth_power": r.get("price_growth_power"),
+                    "update_time": r.get("update_time")
+                })
+        df = pd.DataFrame(rows)
+        sql = self.create_fact_table_sql(self.fact_name)
+        return df, sql
+
+class FactIndustryLoader(FactLoader):
+    def __init__(self, datalake_config, datawarehouse_logger, postgres_client, dim_repo, mongo_reader):
+        table_creator = TableCreator(machine_id=1, character_specific=None)
+        super().__init__(datalake_config, table_creator, mongo_reader, dim_repo, datawarehouse_logger, postgres_client)
+        self.collection_name = self._get_collection("industry_list")
+        self.fact_name = self._get_fact_name("fact_industry_summary", "fact_industry_summary")
+    
+    def load(self):
+        raw = self.mongo.find_table(self.collection_name)
+        data = raw.get("data")
+        for documentation in data:
+           industry_metric = documentation.get("industry_metric")
+           industry_key = get_industry_key = self.get_industry_key(industry_metric)
+           row = []
+
+           for info in documentation.get("data"):
+                for infor_keys in list(info.keys()):
+                    row.append({
+                        "industry_metric": industry_metric,
+                        "industry_code": str(infor_keys).split("_")[1],
+                        "industry_code_replace": str(infor_keys).split("_")[2],
+                        "industry_craw_url": str(infor_keys).split("_")[3],
+                        "update_time": info.get("update_time") or datetime.utcnow().isoformat(),
+                        "created_time": info.get("update_time") or datetime.utcnow().isoformat(),
+                    })
+

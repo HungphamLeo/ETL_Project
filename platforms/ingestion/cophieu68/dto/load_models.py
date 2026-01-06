@@ -67,11 +67,14 @@ class TradingDataDoc(BaseDoc):
         for r in self.data:
             rows.append({
                 "trade_datetime": r.get("date") or r.get("datetime") or r.get("trade_datetime"),
-                "price": r.get("close_price") or r.get("close") or r.get("price"),
+                "close_price": r.get("close_price") or r.get("close") or r.get("price"),
                 "volume": r.get("volume"),
-                "value": (r.get("close_price") or r.get("close") or 0) * (r.get("volume") or 0),
-                "side": r.get("side"),
-                "source_json": r
+                "open_price": r.get("open_price"),
+                "high_price": r.get("high_price"),
+                "low_price": r.get("low_price"),
+                "foreign_buy": r.get("foreign_buy"),
+                "foreign_sell": r.get("foreign_sell"),
+                "foreign_net_value": r.get("foreign_value")
             })
         return rows
 
@@ -82,13 +85,33 @@ class FinancialInfoDoc(BaseDoc):
         rows = []
         for r in self.data:
             rows.append({
-                "period": r.get("period") or r.get("report_date") or r.get("date"),
-                "pe": r.get("pe"),
+                "symbol": r.get("symbol"),
+                "reference_price": r.get("reference_price"),
+                "open_price": r.get("open_price"),
+                "high_price": r.get("high_price"),
+                "low_price": r.get("low_price"),
+                "volume": r.get("volume"),
+                "book_value": r.get("book_value"),
+                "pe": r.get("pe") or r.get("pe_ratio"),
+                "pb": r.get("pb"),
                 "roe": r.get("roe"),
                 "roa": r.get("roa"),
-                "debt_equity": r.get("debt_equity") or r.get("debtToEquity"),
-                "market_cap": r.get("market_cap") or r.get("marketCap"),
-                "source_json": r
+                "beta": r.get("beta"),
+                "market_cap": r.get("market_cap") or r.get("market_cap"),
+                "listed_volume": r.get("listed_volume") or r.get("listed_volume"),
+                "avg_volume_52w": r.get("avg_volume_52w"),
+                "high_low_52w": r.get("high_low_52w"),
+                "debt": r.get("debt"),
+                "equity": r.get("equity"),
+                "debt_to_equity": r.get("debt_to_equity"),
+                "equity_to_assets": r.get("equity_to_assets"),
+                "cash": r.get("cash"),
+                "eps_power": r.get("eps_power"),
+                "roe_power": r.get("roe_power"),
+                "invest_efficiency": r.get("invest_efficiency"),
+                "pb_power": r.get("pb_power"),
+                "price_growth_power": r.get("price_growth_power")
+               
             })
         return rows
 
@@ -135,8 +158,9 @@ class MatchDetailsDoc(BaseDoc):
                 "match_datetime": r.get("Time_match") or r.get("time") or r.get("match_datetime"),
                 "price": r.get("Price_match") or r.get("price"),
                 "volume": r.get("Volume") or r.get("volume"),
-                "broker": r.get("Broker") or r.get("broker"),
-                "source_json": r
+                "fluctuation_range": r.get("Increase_decrease") or r.get("fluctuate_range"),
+                "accum_volume": r.get("Accum_volume") or r.get("accum_volume")
+                
             })
         return rows
 
@@ -155,7 +179,20 @@ class BusinessPlanDoc(BaseDoc):
             })
         return rows
 
-
+@dataclass
+class IndustrialDoc(BaseDoc):
+    def to_fact_rows(self) -> List[Dict[str, Any]]:
+        rows = []
+        
+        for r in self.data:
+            rows.append({
+                "year": r.get("Year") or r.get("year") or r.get("period"),
+                "target_revenue": r.get("Plan_revenue") or r.get("target_revenue"),
+                "target_profit": r.get("Plan_profit") or r.get("target_profit"),
+                "capex_plan": r.get("Capex") or r.get("capex_plan"),
+                "source_json": r
+            })
+        return rows
 # helpers for factory selection
 _DOC_TYPE_MAP = {
     "trading": TradingDataDoc,

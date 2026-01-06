@@ -272,3 +272,15 @@ LINE 1: ...tcombank.com.vn', 'webmaster@vietcombank.com.vn', '', '2009-...
                                                              ^
 ", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
 {"time":"2026-01-03T13:20:51", "level":"INFO", "message":"[dim_company] Loaded 374 rows", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/tests/intergration/test_postgres.py:131"}
+{"time":"2026-01-03T13:40:13", "level":"INFO", "message":"Inserted 2 rows into DW.DIM_REPORT_TYPE", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:48"}
+{"time":"2026-01-03T13:40:13", "level":"INFO", "message":"[dim_report_type] Loaded 2 rows", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/tests/intergration/test_postgres.py:140"}
+{"time":"2026-01-05T22:11:36", "level":"ERROR", "message":"Execute failed: permission denied for schema public
+LINE 2: CREATE TABLE IF NOT EXISTS public.FACT_TRADE (
+                                   ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:196"}
+{"time":"2026-01-05T22:11:36", "level":"INFO", "message":"[fact_trade] Loaded 0 rows", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/tests/intergration/test_postgres.py:152"}
+{"time":"2026-01-05T22:18:33", "level":"ERROR", "message":"Execute failed: permission denied for schema public
+LINE 2: CREATE TABLE IF NOT EXISTS public.FACT_TRADE (
+                                   ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:196"}
+{"time":"2026-01-05T22:18:33", "level":"INFO", "message":"[fact_trade] Loaded 0 rows", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/tests/intergration/test_postgres.py:162"}

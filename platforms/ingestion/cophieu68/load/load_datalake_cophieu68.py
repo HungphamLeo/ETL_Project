@@ -239,8 +239,19 @@ class MongoLoader(MongoWriter):
             client.close()
 
     def load_detail_income_statement_quarterly(self, collection_name: str, income_data: Any) -> None:
-        # same normalization as yearly; report_type may be 'quarter'
-        return self.load_detail_income_statement_yearly(collection_name, income_data)
+        client = self._ensure_client()
+        try:
+            db = client[self.database]
+            coll = db[collection_name]
+            now = self._now_iso()
+            if income_data and "data" in income_data:
+                income_data["data"] = to_primitive(income_data["data"])
+            doc = IncomeStatementDoc.from_extract(income_data).to_mongo_dict()
+            doc["update_time"] = now
+            self._upsert(coll, doc, key_fields=["symbol", "report_type"])
+        finally:
+            client.close()
+        
 
     def load_detail_balance_sheet_yearly(self, collection_name: str, balance_data: Any) -> None:
         client = self._ensure_client()
@@ -257,8 +268,19 @@ class MongoLoader(MongoWriter):
             client.close()
 
     def load_detail_balance_sheet_quarterly(self, collection_name: str, balance_data: Any) -> None:
-        # same as yearly handler
-        return self.load_detail_balance_sheet_yearly(collection_name, balance_data)
+        client = self._ensure_client()
+        try:
+            db = client[self.database]
+            coll = db[collection_name]
+            now = self._now_iso()
+            if balance_data and "data" in balance_data:
+                balance_data["data"] = to_primitive(balance_data["data"])
+            doc = BalanceSheetDoc.from_extract(balance_data).to_mongo_dict()
+            doc["update_time"] = now
+            self._upsert(coll, doc, key_fields=["symbol", "report_type"])
+        finally:
+            client.close()
+        
 
     def load_details_match(self, collection_name: str, match_data: Any) -> None:
         client = self._ensure_client()

@@ -132,55 +132,67 @@ def load_dim_company(datalake_config, table_creator, mongo_reader, logger, pg_cl
     return True
 
 # @task
-# def load_dim_report_type(datalake_config, table_creator, mongo_reader, logger, pg_client):
-#     loader = DimReportTypeLoader(datalake_config, table_creator, mongo_reader, logger, pg_client)
-#     df, sql = loader.load()
-#     pg_client.execute(sql)
-#     pg_client.bulk_insert(df, loader.dim_name)
-#     logger.info(f"[{loader.dim_name}] Loaded {len(df)} rows")
-#     return True
+def load_dim_report_type(datalake_config, table_creator, mongo_reader, logger, pg_client):
+    loader = DimReportTypeLoader(datalake_config, table_creator, mongo_reader, logger, pg_client)
+    df, sql = loader.load()
+    pg_client.execute(sql)
+    pg_client.bulk_insert(df, loader.dim_name)
+    logger.info(f"[{loader.dim_name}] Loaded {len(df)} rows")
+    return True
 
 # =========================
 # FACT LOADING
 # =========================
 # @task
-# def load_fact_trade(datalake_config, table_creator, mongo_reader, logger, pg_client, dim_repo):
-#     loader = FactTradeLoader(datalake_config, table_creator, mongo_reader, dim_repo, logger, pg_client)
-#     df, sql = loader.load()
-#     pg_client.execute(sql)
-#     pg_client.bulk_insert(df, loader.fact_name)
-#     logger.info(f"[{loader.fact_name}] Loaded {len(df)} rows")
-#     return True
+def load_fact_trade(datalake_config, table_creator, mongo_reader, logger, pg_client, dim_repo):
+    loader = FactTradeLoader(datalake_config, table_creator, mongo_reader, dim_repo, logger, pg_client)
+    df, sql = loader.load()
+    pg_client.execute(sql)
+    pg_client.bulk_insert(df, loader.fact_name)
+    logger.info(f"[{loader.fact_name}] Loaded {len(df)} rows")
+    return True
 
 
 # @task
-# def load_fact_match(datalake_config, table_creator, mongo_reader, logger, pg_client, dim_repo):
-#     loader = FactMatchDetailLoader(datalake_config, table_creator, mongo_reader, dim_repo, logger, pg_client)
-#     df, sql = loader.load()
-#     pg_client.execute(sql)
-#     pg_client.bulk_insert(df, loader.fact_name)
-#     logger.info(f"[{loader.fact_name}] Loaded {len(df)} rows")
-#     return True
+def load_fact_match(datalake_config, table_creator, mongo_reader, logger, pg_client, dim_repo):
+    loader = FactMatchDetailLoader(datalake_config, table_creator, mongo_reader, dim_repo, logger, pg_client)
+    df, sql = loader.load()
+    pg_client.execute(sql)
+    pg_client.bulk_insert(df, loader.fact_name)
+    logger.info(f"[{loader.fact_name}] Loaded {len(df)} rows")
+    return True
 
 
 # @task
-# def load_fact_income(datalake_config, table_creator, mongo_reader, logger, pg_client, dim_repo):
-#     loader = FactIncomeStatementLoader(datalake_config, table_creator, mongo_reader, dim_repo, logger, pg_client)
-#     df, sql = loader.load()
-#     pg_client.execute(sql)
-#     pg_client.bulk_insert(df, loader.fact_name)
-#     logger.info(f"[{loader.fact_name}] Loaded {len(df)} rows")
-#     return True
+def load_fact_income(datalake_config, table_creator, mongo_reader, logger, pg_client, dim_repo):
+    loader = FactIncomeStatementLoader(datalake_config, table_creator, mongo_reader, dim_repo, logger, pg_client)
+    df_quarterly, sql_quarterly = loader.load_fact_income_statement_quarterly()
+    pg_client.execute(sql_quarterly)
+    pg_client.bulk_insert(f"{loader.schema_name}.{loader.fact_income_statement_quarterly.upper()}", df_quarterly)
+
+    df_annual, sql_annual = loader.load_fact_income_statement_yearly()
+    pg_client.execute(sql_annual)
+    pg_client.bulk_insert(f"{loader.schema_name}.{loader.fact_income_statement_yearly.upper()}", df_annual)
+    
+    logger.info(f"[{loader.fact_income_statement_yearly}] Loaded {len(df_annual)} rows")
+    logger.info(f"[{loader.fact_income_statement_quarterly}] Loaded {len(df_quarterly)} rows")
+    return True
 
 
 # @task
-# def load_fact_balance(datalake_config, table_creator, mongo_reader, logger, pg_client, dim_repo):
-#     loader = FactBalanceSheetLoader(datalake_config, table_creator, mongo_reader, dim_repo, logger, pg_client)
-#     df, sql = loader.load()
-#     pg_client.execute(sql)
-#     pg_client.bulk_insert(df, loader.fact_name)
-#     logger.info(f"[{loader.fact_name}] Loaded {len(df)} rows")
-#     return True
+def load_fact_balance(datalake_config, table_creator, mongo_reader, logger, pg_client, dim_repo):
+    loader = FactBalanceSheetLoader(datalake_config, table_creator, mongo_reader, dim_repo, logger, pg_client)
+    df_quarterly, sql_quarterly = loader.load_fact_balance_sheet_quarterly()
+    pg_client.execute(sql_quarterly)
+    pg_client.bulk_insert(f"{loader.schema_name}.{loader.fact_balance_sheet_quarterly.upper()}", df_quarterly)
+
+    df_annual, sql_annual = loader.load_fact_balance_sheet_yearly()
+    pg_client.execute(sql_annual)
+    pg_client.bulk_insert(f"{loader.schema_name}.{loader.fact_balance_sheet_yearly.upper()}", df_annual)
+
+    logger.info(f"[{loader.fact_balance_sheet_yearly}] Loaded {len(df_annual)} rows")
+    logger.info(f"[{loader.fact_balance_sheet_quarterly}] Loaded {len(df_quarterly)} rows")
+    return True
 
 
 # @task
