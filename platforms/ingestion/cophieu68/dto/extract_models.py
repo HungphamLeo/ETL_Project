@@ -89,7 +89,8 @@ class StockFinancialRatios:
     eps: Optional[str] = None
     pe: Optional[str] = None
     pb: Optional[str] = None
-    roa_roe: Optional[str] = None
+    roe: Optional[str] = None
+    roa: Optional[str] = None
     beta: Optional[float] = None
     market_cap: Optional[str] = None
     listed_volume: Optional[str] = None
