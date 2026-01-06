@@ -1,9 +1,11 @@
 from pymongo import MongoClient
+import time
 from datetime import datetime
 from typing import List, Dict, Any, Optional, Iterable
 import logging
 from platforms.storage.datalake.mongodb.data_lake_storage import MongoWriter
-from shared.common_models.cophieu68_model.load_models import (
+from platforms.storage.base_storage import to_primitive
+from platforms.ingestion.cophieu68.dto.load_models import (
     BaseDoc,
     TradingDataDoc,
     FinancialInfoDoc,
@@ -11,7 +13,7 @@ from shared.common_models.cophieu68_model.load_models import (
     BalanceSheetDoc,
     MatchDetailsDoc,
     BusinessPlanDoc,
-    doc_from_extract,
+    doc_from_extract
 )
 
 
@@ -87,10 +89,12 @@ class MongoLoader(MongoWriter):
             db = client[self.database]
             coll = db[collection_name]
             now = self._now_iso()
-            for metric, payload in (industry_data or {}).items():
-                doc = BaseDoc.from_extract({"symbol": metric, "data": payload}).to_mongo_dict()
+            for metric, payload in industry_data.items():
+                doc = BaseDoc.from_extract({"industry_metric": metric, "data": payload}).to_mongo_dict()
                 doc["industry_metric"] = metric
                 doc["update_time"] = now
+                print(doc)
+                time.sleep(10)
                 self._upsert(coll, doc, key_fields=["industry_metric"])
         finally:
             client.close()
@@ -226,6 +230,8 @@ class MongoLoader(MongoWriter):
             db = client[self.database]
             coll = db[collection_name]
             now = self._now_iso()
+            if income_data and "data" in income_data:
+                income_data["data"] = to_primitive(income_data["data"])
             doc = IncomeStatementDoc.from_extract(income_data).to_mongo_dict()
             doc["update_time"] = now
             self._upsert(coll, doc, key_fields=["symbol", "report_type"])
@@ -233,8 +239,19 @@ class MongoLoader(MongoWriter):
             client.close()
 
     def load_detail_income_statement_quarterly(self, collection_name: str, income_data: Any) -> None:
-        # same normalization as yearly; report_type may be 'quarter'
-        return self.load_detail_income_statement_yearly(collection_name, income_data)
+        client = self._ensure_client()
+        try:
+            db = client[self.database]
+            coll = db[collection_name]
+            now = self._now_iso()
+            if income_data and "data" in income_data:
+                income_data["data"] = to_primitive(income_data["data"])
+            doc = IncomeStatementDoc.from_extract(income_data).to_mongo_dict()
+            doc["update_time"] = now
+            self._upsert(coll, doc, key_fields=["symbol", "report_type"])
+        finally:
+            client.close()
+        
 
     def load_detail_balance_sheet_yearly(self, collection_name: str, balance_data: Any) -> None:
         client = self._ensure_client()
@@ -242,6 +259,8 @@ class MongoLoader(MongoWriter):
             db = client[self.database]
             coll = db[collection_name]
             now = self._now_iso()
+            if balance_data and "data" in balance_data:
+                balance_data["data"] = to_primitive(balance_data["data"])
             doc = BalanceSheetDoc.from_extract(balance_data).to_mongo_dict()
             doc["update_time"] = now
             self._upsert(coll, doc, key_fields=["symbol", "report_type"])
@@ -249,8 +268,19 @@ class MongoLoader(MongoWriter):
             client.close()
 
     def load_detail_balance_sheet_quarterly(self, collection_name: str, balance_data: Any) -> None:
-        # same as yearly handler
-        return self.load_detail_balance_sheet_yearly(collection_name, balance_data)
+        client = self._ensure_client()
+        try:
+            db = client[self.database]
+            coll = db[collection_name]
+            now = self._now_iso()
+            if balance_data and "data" in balance_data:
+                balance_data["data"] = to_primitive(balance_data["data"])
+            doc = BalanceSheetDoc.from_extract(balance_data).to_mongo_dict()
+            doc["update_time"] = now
+            self._upsert(coll, doc, key_fields=["symbol", "report_type"])
+        finally:
+            client.close()
+        
 
     def load_details_match(self, collection_name: str, match_data: Any) -> None:
         client = self._ensure_client()

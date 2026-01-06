@@ -1,0 +1,108 @@
+# version: "3.9"
+
+services:
+
+  # ============================
+  # Prefect Server (UI + API)
+  # ============================
+  prefect-server:
+    image: prefecthq/prefect:2-latest
+    container_name: prefect-server
+    ports:
+      - "4200:4200"
+    command: prefect server start --host 0.0.0.0
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:4200/api/health || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
+    networks:
+      - etl-net
+    restart: always
+
+  # ============================
+  # Prefect Worker
+  # ============================
+
+  prefect-worker:
+    build:
+      context: ../..
+      dockerfile: infra/docker/processing/prefect/Dockerfile
+
+    container_name: prefect-worker
+    depends_on:
+      prefect-server:
+        condition: service_healthy
+    environment:
+      PREFECT_API_URL: http://prefect-server:4200/api
+      PYTHONPATH: /app:/app/shared:/app/platforms:/app/scripts
+    volumes:
+      - ../../scripts:/app/scripts
+      - ../../platforms:/app/platforms
+      - ../../shared:/app/shared
+      - ../../platforms/processing/prefect/flows:/app/flows
+
+    command: ["/entrypoint.sh"]
+    networks:
+      - etl-net
+    restart: always
+
+  # ============================
+  # MongoDB
+  # ============================
+  mongo-local:
+    image: mongo:7.0
+    container_name: mongo-local
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root123
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
+    networks:
+      - etl-net
+
+  # ============================
+  # PostgreSQL
+  # ============================
+  postgres-local:
+    image: postgres:15
+    container_name: postgres-local
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: etl_project
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - etl-net
+
+# ============================
+# VOLUMES & NETWORKS
+# ============================
+
+volumes:
+  mongo_data:
+  pg_data:
+
+networks:
+  etl-net:
+    driver: bridge
