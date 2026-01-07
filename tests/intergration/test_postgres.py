@@ -113,9 +113,6 @@ def load_dim_market_type(datalake_config, table_creator, mongo_reader, logger, p
 def load_dim_industry(datalake_config, table_creator, mongo_reader, logger, pg_client):
     loader = DimIndustryLoader(datalake_config, table_creator, mongo_reader, logger, pg_client)
     df, sql = loader.load()
-    print(df.head())
-    import time
-    time.sleep(5)
     pg_client.execute(sql)
     pg_client.bulk_insert(f"{loader.schema_name}.{loader.dim_name.upper()}", df)
     logger.info(f"[{loader.dim_name}] Loaded {len(df)} rows")
@@ -229,8 +226,8 @@ def dw_full_load():
     table_creator = TableCreator(machine_id=1, character_specific=None)
 
     # load_dim_market_type(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
-    # load_dim_industry(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
-    load_dim_company(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
+    load_dim_industry(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
+    # load_dim_company(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
     # load_dim_report_type(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
     
 

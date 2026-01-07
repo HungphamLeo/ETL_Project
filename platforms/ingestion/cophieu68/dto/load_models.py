@@ -213,3 +213,151 @@ index_information = {
 def doc_from_extract(kind: str, payload: Any) -> BaseDoc:
     cls = _DOC_TYPE_MAP.get(kind, BaseDoc)
     return cls.from_extract(payload)
+
+@dataclass
+class Pattern_IncomeStatementStandardLoadToDW():
+    symbol: str
+    time_report_type:Optional[str] = None
+    financial_report_name: Optional[str] = None
+    year:Optional[str] = None
+    period:Optional[str] = None
+    metric_code:Optional[str] = None
+    metric_name_en:Optional[str] = None
+    metric_group:Optional[str] = None
+    metric_value:Optional[float] = None
+    update_time:Optional[str] = None
+
+    METRIC_MAPPING = {
+
+    # timeline
+    "Quý":{
+        "Q1": "Quarter_1",
+        "Q2": "Quarter_2",
+        "Q3": "Quarter_3",
+        "Q4": "Quarter_4"
+    },
+    # --- Core Income & Expense ---
+    "Thu nhập lãi thuần": {
+        "metric_code": "NET_INTEREST_INCOME",
+        "metric_name_en": "Net Interest Income",
+        "metric_group": "CORE_INCOME_EXPENSE"
+    },
+    "Thu nhập từ lãi và các khoản thu nhập tương tự": {
+        "metric_code": "INTEREST_AND_SIMILAR_INCOME",
+        "metric_name_en": "Interest and Similar Income",
+        "metric_group": "CORE_INCOME_EXPENSE"
+    },
+    "Chi phí lãi và các chi phí tương tự": {
+        "metric_code": "INTEREST_AND_SIMILAR_EXPENSES",
+        "metric_name_en": "Interest and Similar Expenses",
+        "metric_group": "CORE_INCOME_EXPENSE"
+    },
+    "Lãi/Lỗ thuần từ hoạt động dịch vụ": {
+        "metric_code": "NET_FEE_COMMISSION_INCOME",
+        "metric_name_en": "Net Fee and Commission Income",
+        "metric_group": "CORE_INCOME_EXPENSE"
+    },
+    "Thu nhập từ hoạt động dịch vụ": {
+        "metric_code": "FEE_COMMISSION_INCOME",
+        "metric_name_en": "Fee and Commission Income",
+        "metric_group": "CORE_INCOME_EXPENSE"
+    },
+    "Chi phí hoạt động dịch vụ": {
+        "metric_code": "FEE_COMMISSION_EXPENSES",
+        "metric_name_en": "Fee and Commission Expenses",
+        "metric_group": "CORE_INCOME_EXPENSE"
+    },
+
+    # --- Financial Trading ---
+    "Lãi/Lỗ thuần từ hoạt động kinh doanh ngoại hối": {
+        "metric_code": "NET_FX_TRADING_INCOME",
+        "metric_name_en": "Net Foreign Exchange Trading Income",
+        "metric_group": "FINANCIAL_TRADING"
+    },
+    "Lãi/Lỗ thuần từ mua bán chứng khoán kinh doanh": {
+        "metric_code": "NET_TRADING_SECURITIES_INCOME",
+        "metric_name_en": "Net Trading Securities Income",
+        "metric_group": "FINANCIAL_TRADING"
+    },
+    "Lãi/Lỗ thuần từ mua bán chứng khoán đầu tư": {
+        "metric_code": "NET_INVESTMENT_SECURITIES_INCOME",
+        "metric_name_en": "Net Investment Securities Income",
+        "metric_group": "FINANCIAL_TRADING"
+    },
+
+    # --- Other Operating Activities ---
+    "Lãi/Lỗ thuần từ hoạt động khác": {
+        "metric_code": "NET_OTHER_OPERATING_INCOME",
+        "metric_name_en": "Net Other Operating Income",
+        "metric_group": "OTHER_OPERATING"
+    },
+    "Thu nhập từ hoạt động khác": {
+        "metric_code": "OTHER_OPERATING_INCOME",
+        "metric_name_en": "Other Operating Income",
+        "metric_group": "OTHER_OPERATING"
+    },
+    "Chi phí hoạt động khác": {
+        "metric_code": "OTHER_OPERATING_EXPENSES",
+        "metric_name_en": "Other Operating Expenses",
+        "metric_group": "OTHER_OPERATING"
+    },
+    "Thu nhập từ hoạt động góp vốn mua cổ phần": {
+        "metric_code": "INCOME_FROM_EQUITY_INVESTMENTS",
+        "metric_name_en": "Income from Equity Investments",
+        "metric_group": "OTHER_OPERATING"
+    },
+
+    # --- Expenses & Profit ---
+    "Chi phí hoạt động": {
+        "metric_code": "OPERATING_EXPENSES",
+        "metric_name_en": "Operating Expenses",
+        "metric_group": "EXPENSES_PROFIT"
+    },
+    "Lợi nhuận từ HĐKD trước chi phí dự phòng rủi ro tín dụng": {
+        "metric_code": "OPERATING_PROFIT_BEFORE_CREDIT_PROVISION",
+        "metric_name_en": "Operating Profit before Credit Risk Provision",
+        "metric_group": "EXPENSES_PROFIT"
+    },
+    "Chi phí dự phòng rủi ro tín dụng": {
+        "metric_code": "CREDIT_RISK_PROVISION_EXPENSES",
+        "metric_name_en": "Credit Risk Provision Expenses",
+        "metric_group": "EXPENSES_PROFIT"
+    },
+    "Tổng lợi nhuận trước thuế": {
+        "metric_code": "PROFIT_BEFORE_TAX",
+        "metric_name_en": "Profit before Tax",
+        "metric_group": "EXPENSES_PROFIT"
+    },
+    "Chi phí thuế TNDN": {
+        "metric_code": "CORPORATE_INCOME_TAX_EXPENSE",
+        "metric_name_en": "Corporate Income Tax Expense",
+        "metric_group": "EXPENSES_PROFIT"
+    },
+    "Chi phí thuế thu nhập hiện hành": {
+        "metric_code": "CURRENT_INCOME_TAX_EXPENSE",
+        "metric_name_en": "Current Income Tax Expense",
+        "metric_group": "EXPENSES_PROFIT"
+    },
+    "Chi phí thuế TNDN hoãn lại": {
+        "metric_code": "DEFERRED_INCOME_TAX_EXPENSE",
+        "metric_name_en": "Deferred Income Tax Expense",
+        "metric_group": "EXPENSES_PROFIT"
+    },
+    "Lợi nhuận sau thuế thu nhập doanh nghiệp": {
+        "metric_code": "PROFIT_AFTER_TAX",
+        "metric_name_en": "Profit after Tax",
+        "metric_group": "EXPENSES_PROFIT"
+    },
+    "Lợi ích của cổ đông thiểu số và cổ tức ưu đãi": {
+        "metric_code": "MINORITY_INTERESTS_AND_PREFERRED_DIVIDENDS",
+        "metric_name_en": "Minority Interests and Preferred Dividends",
+        "metric_group": "EXPENSES_PROFIT"
+    },
+    "LNST sau khi điều chỉnh lợi ích của CĐTS và cổ tức ưu đãi": {
+        "metric_code": "NET_PROFIT_ATTRIBUTABLE_TO_PARENT",
+        "metric_name_en": "Net Profit Attributable to Parent Shareholders",
+        "metric_group": "EXPENSES_PROFIT"
+    }
+}
+
+

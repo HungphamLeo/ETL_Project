@@ -361,15 +361,15 @@ def cophieu68_etl_flow(config_path):
     mongo_config, loading_datalake, backend_mongo = build_backend(pipeline_config, loading_pipeline_logger)
     config_info= pipeline_config._config
     crawler=build_crawler(config_info, extract_pipeline_logger)
-    # task_schedule_market_list(  
-    #                             mongo_config = mongo_config,
-    #                             crawler=crawler,
-    #                             backend_mongo=backend_mongo,
-    #                             loading_datalake=loading_datalake,
-    #                             loading_pipeline_logger=loading_pipeline_logger
-    #                           )
-    # print("Market List done")
-    # time.sleep(mongo_config.get("delay_call", 0.25))
+    task_schedule_market_list(  
+                                mongo_config = mongo_config,
+                                crawler=crawler,
+                                backend_mongo=backend_mongo,
+                                loading_datalake=loading_datalake,
+                                loading_pipeline_logger=loading_pipeline_logger
+                              )
+    print("Market List done")
+    time.sleep(mongo_config.get("delay_call", 0.25))
     
 
     task_schedule_industry_info(    
@@ -382,54 +382,32 @@ def cophieu68_etl_flow(config_path):
     print("Industry info done")
     time.sleep(mongo_config.get("delay_call", 0.25))
 
-    # task_schedule_details_financial_ratios(
-    #                                     mongo_config = mongo_config,
-    #                                     crawler=crawler,
-    #                                     backend_mongo=backend_mongo,
-    #                                     loading_datalake=loading_datalake,
-    #                                     loading_pipeline_logger = loading_pipeline_logger
-    # )
-    # print("financial ratios done")
-    # time.sleep(mongo_config.get("delay_call", 0.25))
+    task_schedule_details_financial_ratios(
+                                        mongo_config = mongo_config,
+                                        crawler=crawler,
+                                        backend_mongo=backend_mongo,
+                                        loading_datalake=loading_datalake,
+                                        loading_pipeline_logger = loading_pipeline_logger
+    )
+    print("financial ratios done")
+    time.sleep(mongo_config.get("delay_call", 0.25))
 
     symbol_list = get_symbol_list(pipeline_config, loading_pipeline_logger)
     time.sleep(mongo_config.get("delay_call", 0.25))
     
-    # task_schedule_company_profile(
-    #                                 mongo_config = mongo_config,
-    #                                 crawler=crawler,
-    #                                 backend_mongo=backend_mongo,
-    #                                 loading_datalake=loading_datalake,
-    #                                 symbols_list=symbol_list,
-    #                                 loading_pipeline_logger = loading_pipeline_logger
-    #                             )
-    # print("company profile done")
-    # time.sleep(mongo_config.get("delay_call", 0.25))
+    task_schedule_company_profile(
+                                    mongo_config = mongo_config,
+                                    crawler=crawler,
+                                    backend_mongo=backend_mongo,
+                                    loading_datalake=loading_datalake,
+                                    symbols_list=symbol_list,
+                                    loading_pipeline_logger = loading_pipeline_logger
+                                )
+    print("company profile done")
+    time.sleep(mongo_config.get("delay_call", 0.25))
     
 
-    # task_schedule_details_financial_statement_yearly(
-    #                                 mongo_config = mongo_config,
-    #                                 crawler=crawler,
-    #                                 backend_mongo=backend_mongo,
-    #                                 loading_datalake=loading_datalake,
-    #                                 symbols_list=symbol_list,
-    #                                 loading_pipeline_logger = loading_pipeline_logger
-    #                                 )
-    # print("financial statement yearly done")
-    # time.sleep(mongo_config.get("delay_call", 0.25))
-
-    # task_schedule_details_financial_statement_quarterly(
-    #                                 mongo_config = mongo_config,
-    #                                 crawler=crawler,
-    #                                 backend_mongo=backend_mongo,
-    #                                 loading_datalake=loading_datalake,
-    #                                 symbols_list=symbol_list,
-    #                                 loading_pipeline_logger = loading_pipeline_logger
-    #                                 )
-    # print("financial statement quarterly done")
-    # time.sleep(mongo_config.get("delay_call", 0.25))
-
-    task_schedule_match_details(
+    task_schedule_details_financial_statement_yearly(
                                     mongo_config = mongo_config,
                                     crawler=crawler,
                                     backend_mongo=backend_mongo,
@@ -437,10 +415,10 @@ def cophieu68_etl_flow(config_path):
                                     symbols_list=symbol_list,
                                     loading_pipeline_logger = loading_pipeline_logger
                                     )
-    print("match details done")
+    print("financial statement yearly done")
     time.sleep(mongo_config.get("delay_call", 0.25))
 
-    task_schedule_details_trading_data(
+    task_schedule_details_financial_statement_quarterly(
                                     mongo_config = mongo_config,
                                     crawler=crawler,
                                     backend_mongo=backend_mongo,
@@ -448,9 +426,8 @@ def cophieu68_etl_flow(config_path):
                                     symbols_list=symbol_list,
                                     loading_pipeline_logger = loading_pipeline_logger
                                     )
-    print("trading data done")
+    print("financial statement quarterly done")
     time.sleep(mongo_config.get("delay_call", 0.25))
-
 
     task_schedule_business_plan(
                                     mongo_config = mongo_config,
@@ -462,6 +439,29 @@ def cophieu68_etl_flow(config_path):
                                     )
     print("business plan done")
     time.sleep(mongo_config.get("delay_call", 0.25))
+
+    
+    # task_schedule_match_details(
+    #                                 mongo_config = mongo_config,
+    #                                 crawler=crawler,
+    #                                 backend_mongo=backend_mongo,
+    #                                 loading_datalake=loading_datalake,
+    #                                 symbols_list=symbol_list,
+    #                                 loading_pipeline_logger = loading_pipeline_logger
+    #                                 )
+    # print("match details done")
+    # time.sleep(mongo_config.get("delay_call", 0.25))
+
+    # task_schedule_details_trading_data(
+    #                                 mongo_config = mongo_config,
+    #                                 crawler=crawler,
+    #                                 backend_mongo=backend_mongo,
+    #                                 loading_datalake=loading_datalake,
+    #                                 symbols_list=symbol_list,
+    #                                 loading_pipeline_logger = loading_pipeline_logger
+    #                                 )
+    # print("trading data done")
+    # time.sleep(mongo_config.get("delay_call", 0.25))
 
     print("ETL data done")
 if __name__ == "__main__":

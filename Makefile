@@ -28,6 +28,7 @@ help:
 # ----------------------------
 
 build:
+	$(DOCKER_COMPOSE) pull
 	$(DOCKER_COMPOSE) build
 
 up:

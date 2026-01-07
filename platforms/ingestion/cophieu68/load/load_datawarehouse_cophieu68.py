@@ -13,7 +13,8 @@ from platforms.ingestion.cophieu68.dto.load_models import (
     IncomeStatementDoc,
     BalanceSheetDoc,
     BusinessPlanDoc,
-    FinancialInfoDoc
+    FinancialInfoDoc,
+    Pattern_IncomeStatementStandardLoadToDW
 )
 from platforms.storage.datawarehouse.postgresql.datawarehouse_storage import PostgreSQLWriter
 
@@ -162,12 +163,13 @@ class DimIndustryLoader(DimLoader):
     def __init__(self, datalake_config, table_creator, mongo_reader, datawarehouse_logger=None, postgresql_client=None):
         super().__init__(datalake_config, table_creator, mongo_reader, datawarehouse_logger, postgresql_client)
         self.collection_name = self._get_collection("industry_list")
-        self.dim_name = "DIM_INDUSTRY"
+        self.dim_name = "dim_industry"
 
     def load(self):
         raw = self.mongo.find_table(self.collection_name)
         rows = []
         for doc in raw.get("data"):
+            
             industry_metric = doc.get("industry_metric")
             existing_record = self.postgresql_client.query(
                 f"SELECT * FROM {self.schema_name}.{self.dim_name} WHERE industry_metric = %s AND is_current = TRUE",
@@ -183,19 +185,20 @@ class DimIndustryLoader(DimLoader):
                         f"UPDATE {self.schema_name}.{self.dim_name} SET end_date = %s, is_current = FALSE WHERE industry_metric = %s AND is_current = TRUE",
                         (datetime.utcnow().isoformat(), industry_metric)
                     )
-
+            payload = doc.get("data", {})
             # Insert the new record
-            rows.append({
-                "industry_metric": industry_metric,
-                "industry_code": doc.get("industry_code"),
-                "industry_code_replace": doc.get("industry_code_replace"),
-                "industry_craw_url": doc.get("industry_craw_url"),
-                "effective_date": datetime.utcnow().isoformat(),
-                "end_date": None,
-                "is_current": True,
-                "update_time": datetime.utcnow().isoformat(),
-                "created_time": datetime.utcnow().isoformat(),
-            })
+            for key in payload.keys():
+                rows.append({
+                    "industry_metric": industry_metric,
+                    "industry_code": key.split("_")[1],
+                    "industry_code_replace": ,
+                    "industry_craw_url": doc.get("industry_craw_url"),
+                    "effective_date": datetime.utcnow().isoformat(),
+                    "end_date": None,
+                    "is_current": True,
+                    "update_time": datetime.utcnow().isoformat(),
+                    "created_time": datetime.utcnow().isoformat(),
+                })
 
         df = pd.DataFrame(rows)
         sql = self._create_table_sql(self.dim_name)
@@ -350,10 +353,45 @@ class FactIncomeStatementLoader(FactLoader):
         self.collection_income_statement_quarterly = self._get_collection("income_statement_quarterly")
         self.fact_income_statement_quarterly = self._get_fact_name("fact_income_statement_quarterly", "fact_income_statement_quarterly")
         self.fact_income_statement_yearly = self._get_fact_name("fact_income_statement_yearly", "fact_income_statement_yearly")
+    
+    def transform_income_statement_quarterly(self, doc, symbol, report_type, update_time):
+        data = doc.get("data")
+        report_type = doc.get("report_type")
+        symbol = doc.get("symbol")
+        if isinstance(data, pd.DataFrame):
+            df = data.copy()
+            columns_list_value = df.columns.tolist().remove("Chỉ tiêu")
+            rows = []
+            for column in columns_list_value:
+                for index, row in df["Chỉ tiêu"].iterrows():
+                    metric_code = row.map(lambda x: Pattern_IncomeStatementStandardLoadToDW.METRIC_MAPPING[x]["metric_code"])
+                    metric_name_en = row.map(lambda x: Pattern_IncomeStatementStandardLoadToDW.METRIC_MAPPING[x]["metric_name_en"])
+                    metric_group = row.map(lambda x: Pattern_IncomeStatementStandardLoadToDW.METRIC_MAPPING[x]["metric_group"])
+                    quarter_name = column.split("_")[0]
+                    year_name = column.split("_")[1]
+
+                    metric_value = df[column].iloc[index]
+                    rows.append({
+                        "symbol": symbol,
+                        "time_report_type": report_type,
+                        "financial_report_type": "income_statement",
+                        "year": year_name,
+                        "period": quarter_name,
+                        "metric_code": metric_code,
+                        "metric_name_en": metric_name_en,
+                        "metric_group": metric_group,
+                        "metric_value": metric_value,
+                        "update_time": update_time
+
+                       
+                    })
+            return rows
 
     def load_fact_income_statement_quarterly(self):
         raw = self.mongo.find_table(self.collection_income_statement_quarterly)
         rows = []
+        print(raw)
+        time.sleep(10)
         for doc in raw:
             idoc = IncomeStatementDoc.from_extract(doc)
             if not idoc.symbol:
@@ -380,6 +418,8 @@ class FactIncomeStatementLoader(FactLoader):
     def load_fact_income_statement_yearly(self):
         raw = self.mongo.find_table(self.collection_income_statement_yearly)
         rows = []
+        print(raw)
+        time.sleep(10)
         for doc in raw:
             idoc = IncomeStatementDoc.from_extract(doc)
             if not idoc.symbol:
@@ -571,17 +611,16 @@ class FactIndustryLoader(FactLoader):
         data = raw.get("data")
         for documentation in data:
            industry_metric = documentation.get("industry_metric")
-           industry_key = get_industry_key = self.get_industry_key(industry_metric)
+           industry_key = self.get_industry_key(industry_metric)
            row = []
 
-           for info in documentation.get("data"):
-                for infor_keys in list(info.keys()):
-                    row.append({
-                        "industry_metric": industry_metric,
-                        "industry_code": str(infor_keys).split("_")[1],
-                        "industry_code_replace": str(infor_keys).split("_")[2],
-                        "industry_craw_url": str(infor_keys).split("_")[3],
-                        "update_time": info.get("update_time") or datetime.utcnow().isoformat(),
-                        "created_time": info.get("update_time") or datetime.utcnow().isoformat(),
-                    })
+           for info_key, info_value in documentation.get("data").items():
+                row.append({
+                     "industry_summary_key": self.table_creator.get_id(),
+                     "industry_key": industry_key,
+                     "info_key": info_key,
+                     "info_value": info_value,
+                     "update_time": documentation.get("update_time") or datetime.utcnow().isoformat()
+                })
+                   
 

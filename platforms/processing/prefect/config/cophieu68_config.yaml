@@ -120,7 +120,7 @@ project_params:
       connection_pool:
         min_size: 1
         max_size: 10
-      delay_call: 0.3
+      delay_call: 0.2
       reties_etl_flows:
         max_attempts: 3
         backoff_seconds: 60
@@ -137,7 +137,7 @@ project_params:
       maxPoolSize: 50
       retryWrites: true
       writeConcern: "majority"
-      delay_call: 0.3
+      delay_call: 0.2
       reties_etl_flows:
         max_attempts: 3
         backoff_seconds: 60
