@@ -595,7 +595,6 @@ class FactIndustryLoader(FactLoader):
     def load(self):
         raw = self.mongo.find_table(self.collection_name)
         rows = []
-        total_data = raw.get("data")
         for documentation in raw.get("data"):
             
             industry_metric = documentation.get("industry_metric")
