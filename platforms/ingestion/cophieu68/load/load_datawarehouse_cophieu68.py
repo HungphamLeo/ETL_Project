@@ -169,41 +169,27 @@ class DimIndustryLoader(DimLoader):
         raw = self.mongo.find_table(self.collection_name)
         rows = []
         for doc in raw.get("data"):
-            
             industry_metric = doc.get("industry_metric")
-            existing_record = self.postgresql_client.query(
-                f"SELECT * FROM {self.schema_name}.{self.dim_name} WHERE industry_metric = %s AND is_current = TRUE",
-                (industry_metric,)
-            )
-
-            if existing_record:
-                # Check if there are changes
-                if existing_record["industry_code"] != doc.get("industry_code") or \
-                   existing_record["industry_craw_url"] != doc.get("industry_craw_url"):
-                    # Update the existing record's end_date and is_current
-                    self.postgresql_client.execute(
-                        f"UPDATE {self.schema_name}.{self.dim_name} SET end_date = %s, is_current = FALSE WHERE industry_metric = %s AND is_current = TRUE",
-                        (datetime.utcnow().isoformat(), industry_metric)
-                    )
-            payload = doc.get("data", {})
-            # Insert the new record
-            for key in payload.keys():
-                rows.append({
-                    "industry_metric": industry_metric,
-                    "industry_code": key.split("_")[1],
-                    "industry_code_replace": ,
-                    "industry_craw_url": doc.get("industry_craw_url"),
-                    "effective_date": datetime.utcnow().isoformat(),
-                    "end_date": None,
-                    "is_current": True,
-                    "update_time": datetime.utcnow().isoformat(),
-                    "created_time": datetime.utcnow().isoformat(),
-                })
-
+            
+            
+            for info in doc.get("data"):
+                for infor_keys in list(info.keys()):
+                    rows.append({
+                        "industry_metric": industry_metric,
+                        "industry_code": str(infor_keys).split("_")[1],
+                        "industry_code_replace": str(infor_keys).split("_")[2],
+                        "industry_craw_url": str(infor_keys).split("_")[3],
+                        "effective_date": datetime.utcnow().isoformat(),
+                        "end_date": None,
+                        "is_current": True,
+                        "update_time": info.get("update_time") or datetime.utcnow().isoformat(),
+                        "created_time": info.get("update_time") or datetime.utcnow().isoformat()
+                    })
         df = pd.DataFrame(rows)
         sql = self._create_table_sql(self.dim_name)
         return df, sql
 
+    
 
 # dim_company (SCD2 simplified snapshot)
 class DimCompanyLoader(DimLoader):
@@ -608,19 +594,44 @@ class FactIndustryLoader(FactLoader):
     
     def load(self):
         raw = self.mongo.find_table(self.collection_name)
-        data = raw.get("data")
-        for documentation in data:
-           industry_metric = documentation.get("industry_metric")
-           industry_key = self.get_industry_key(industry_metric)
-           row = []
-
-           for info_key, info_value in documentation.get("data").items():
-                row.append({
-                     "industry_summary_key": self.table_creator.get_id(),
-                     "industry_key": industry_key,
-                     "info_key": info_key,
-                     "info_value": info_value,
-                     "update_time": documentation.get("update_time") or datetime.utcnow().isoformat()
-                })
+        rows = []
+        total_data = raw.get("data")
+        for documentation in raw.get("data"):
+            
+            industry_metric = documentation.get("industry_metric")
+            if industry_metric == "summary_info":
+                summary_data = documentation.get("data")
+            elif industry_metric == "financial_info":
+                financial_data = documentation.get("data")
+            elif industry_metric == "fund_info":
+                fund_info_data = documentation.get("data")
+        for info_key, info_value in summary_data.get("data").items():
+            rows.append({
+                "industry_key":self.get_industry_key(info_key.split("_")[1])
+                "industry_code": info_key.split("_")[1],
+                "industry_index": info_value.get("index"),
+                "Percentage_change":info_value.get("change"),
+                "Liquidity": info_value.get("liquidity"),,
+                "Total_Capital": info_value.get("capital"),
+                "Average_Price": financial_data.get("data").get(info_key).get("avg_price"),
+                "Book_Value": financial_data.get("data").get(info_key).get("book_value"),
+                "Earning_Per_Share(EPS)":financial_data.get("data").get(info_key).get("eps"),
+                "Price on Earning(P/E)":financial_data.get("data").get(info_key).get("pe"),
+                "Return on Asset(ROA)":financial_data.get("data").get(info_key).get("roa"),
+                "Return on Equity(ROE)":financial_data.get("data").get(info_key).get("roe"),
+                "Supply_Volumn": fund_info_data.get("data").get(info_key).get("supply_volumn"),
+                "Total_Asset": fund_info_data.get("data").get(info_key).get("total_asset"),
+                "Total_Equity": fund_info_data.get("data").get(info_key).get("total_equity"),
+                "Total_Liabilities": fund_info_data.get("data").get(info_key).get("total_liabilities"),
+                "Percentage_Debt_on_Equity": fund_info_data.get("data").get(info_key).get("percentage_debt_on_equity"),
+                "Percentage_Equity_on_Assets": fund_info_data.get("data").get(info_key).get("percentage_equity_on_assets"),
+                "Revenue": fund_info_data.get("data").get(info_key).get("revenue"),
+                "Profit_Before_Tax": fund_info_data.get("data").get(info_key).get("profit_before_tax"),
+                "created_time":  datetime.utcnow().isoformat(),
+                "update_time": documentation.get("update_time") or datetime.utcnow().isoformat()
+            })
+        df = pd.DataFrame(rows)
+        sql = self.create_fact_table_sql(self.fact_name)
+        return df, sql
                    
 
