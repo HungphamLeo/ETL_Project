@@ -93,9 +93,6 @@ class MongoLoader(MongoWriter):
                 doc = BaseDoc.from_extract({"industry_metric": metric, "data": payload}).to_mongo_dict()
                 doc["industry_metric"] = metric
                 doc["update_time"] = now
-                print(doc)
-                import time
-                time.sleep(5)
                 self._upsert(coll, doc, key_fields=["industry_metric"])
         finally:
             client.close()

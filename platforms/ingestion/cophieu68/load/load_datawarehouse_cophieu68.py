@@ -376,8 +376,6 @@ class FactIncomeStatementLoader(FactLoader):
     def load_fact_income_statement_quarterly(self):
         raw = self.mongo.find_table(self.collection_income_statement_quarterly)
         rows = []
-        print(raw)
-        time.sleep(10)
         for doc in raw:
             idoc = IncomeStatementDoc.from_extract(doc)
             if not idoc.symbol:
@@ -404,8 +402,6 @@ class FactIncomeStatementLoader(FactLoader):
     def load_fact_income_statement_yearly(self):
         raw = self.mongo.find_table(self.collection_income_statement_yearly)
         rows = []
-        print(raw)
-        time.sleep(10)
         for doc in raw:
             idoc = IncomeStatementDoc.from_extract(doc)
             if not idoc.symbol:
@@ -606,11 +602,11 @@ class FactIndustryLoader(FactLoader):
                 fund_info_data = documentation.get("data")
         for info_key, info_value in summary_data.get("data").items():
             rows.append({
-                "industry_key":self.get_industry_key(info_key.split("_")[1])
+                "industry_key":self.get_industry_key(info_key.split("_")[1]),
                 "industry_code": info_key.split("_")[1],
                 "industry_index": info_value.get("index"),
                 "Percentage_change":info_value.get("change"),
-                "Liquidity": info_value.get("liquidity"),,
+                "Liquidity": info_value.get("liquidity"),
                 "Total_Capital": info_value.get("capital"),
                 "Average_Price": financial_data.get("data").get(info_key).get("avg_price"),
                 "Book_Value": financial_data.get("data").get(info_key).get("book_value"),
