@@ -14,7 +14,8 @@ from platforms.ingestion.cophieu68.dto.load_models import (
     BalanceSheetDoc,
     BusinessPlanDoc,
     FinancialInfoDoc,
-    Pattern_IncomeStatementStandardLoadToDW
+    Pattern_IncomeStatementStandardLoadToDW,
+    Pattern_BalanceSheetStandardLoadToDW
 )
 from platforms.storage.datawarehouse.postgresql.datawarehouse_storage import PostgreSQLWriter
 
@@ -246,8 +247,8 @@ class DimReportTypeLoader(DimLoader):
 
     def load(self):
         mapping = [
-            {"report_type_key": "Y", "report_type_code": "Y", "description": "Yearly"},
-            {"report_type_key": "Q", "report_type_code": "Q", "description": "Quarterly"},
+            {"report_type_key": "Y", "report_type_code": "Y", "description": "annually"},
+            {"report_type_key": "Q", "report_type_code": "Q", "description": "quarterly"},
         ]
         df = pd.DataFrame(mapping)
         sql = self._create_table_sql(self.dim_name)
@@ -334,95 +335,122 @@ class FactIncomeStatementLoader(FactLoader):
     def __init__(self, datalake_config, datawarehouse_logger, postgres_client, dim_repo, mongo_reader):
         table_creator = TableCreator(machine_id=1, character_specific=None)
         super().__init__(datalake_config, table_creator, mongo_reader, dim_repo, datawarehouse_logger, postgres_client)
-        # can map both yearly/quarterly collections
-        self.collection_income_statement_yearly = self._get_collection("income_statement_yearly")
+        # can map both annually/quarterly collections
+        self.collection_income_statement_annually = self._get_collection("income_statement_annually")
         self.collection_income_statement_quarterly = self._get_collection("income_statement_quarterly")
         self.fact_income_statement_quarterly = self._get_fact_name("fact_income_statement_quarterly", "fact_income_statement_quarterly")
-        self.fact_income_statement_yearly = self._get_fact_name("fact_income_statement_yearly", "fact_income_statement_yearly")
+        self.fact_income_statement_annually = self._get_fact_name("fact_income_statement_annually", "fact_income_statement_annually")
     
-    def transform_income_statement_quarterly(self, doc, symbol, report_type, update_time):
+    def transform_income_statement_quarterly(self, doc):
         data = doc.get("data")
-        report_type = doc.get("report_type")
         symbol = doc.get("symbol")
-        if isinstance(data, pd.DataFrame):
-            df = data.copy()
-            columns_list_value = df.columns.tolist().remove("Chỉ tiêu")
-            rows = []
-            for column in columns_list_value:
-                for index, row in df["Chỉ tiêu"].iterrows():
-                    metric_code = row.map(lambda x: Pattern_IncomeStatementStandardLoadToDW.METRIC_MAPPING[x]["metric_code"])
-                    metric_name_en = row.map(lambda x: Pattern_IncomeStatementStandardLoadToDW.METRIC_MAPPING[x]["metric_name_en"])
-                    metric_group = row.map(lambda x: Pattern_IncomeStatementStandardLoadToDW.METRIC_MAPPING[x]["metric_group"])
-                    quarter_name = column.split("_")[0]
-                    year_name = column.split("_")[1]
+        report_type = doc.get("report_type")
+        update_time = doc.get("update_time")
+        if not isinstance(data, pd.DataFrame):
+            return []
 
-                    metric_value = df[column].iloc[index]
-                    rows.append({
-                        "symbol": symbol,
-                        "time_report_type": report_type,
-                        "financial_report_type": "income_statement",
-                        "year": year_name,
-                        "period": quarter_name,
-                        "metric_code": metric_code,
-                        "metric_name_en": metric_name_en,
-                        "metric_group": metric_group,
-                        "metric_value": metric_value,
-                        "update_time": update_time
+        df = data.copy()
+        period_columns = [c for c in df.columns if c != "Chỉ tiêu"]
+        company_key = self.get_company_key(doc.symbol)
+        time_report_type_key = self.get_report_type_key(report_type = "quarterly")
 
-                       
-                    })
-            return rows
+        rows = []
+        for _, r in df.iterrows():
+            metric_vi = r["Chỉ tiêu"]
+
+            mapping = Pattern_IncomeStatementStandardLoadToDW.METRIC_MAPPING.get(metric_vi)
+            if not mapping:
+                continue  # hoặc log warning
+
+            for col in period_columns:
+                if pd.isna(r[col]):
+                    continue
+
+                quarter, year = col.split("_")
+
+                rows.append({
+                    "income_key": self.table_creator.get_id(),
+                    "company_key": company_key,
+                    "time_report_type_key": time_report_type_key ,
+                    "symbol": symbol,
+                    "time_report_type": report_type,
+                    "financial_report_type": "income_statement",
+                    "year": year,
+                    "period": Pattern_IncomeStatementStandardLoadToDW.METRIC_MAPPING["Quý"].get(quarter),  # Quarter_1
+                    "metric_code": mapping["metric_code"],
+                    "metric_name_en": mapping["metric_name_en"],
+                    "metric_group": mapping["metric_group"],
+                    "metric_value": float(r[col]),
+                    "update_time": update_time
+                })
+
+        return rows
+    def transform_income_statement_annually(self, doc):
+        data = doc.get("data")
+        symbol = doc.get("symbol")
+        report_type = doc.get("report_type")
+        update_time = doc.get("update_time")
+        if not isinstance(data, pd.DataFrame):
+            return []
+
+        df = data.copy()
+        period_columns = [c for c in df.columns if c != "Chỉ tiêu"]
+        company_key = self.get_company_key(doc.symbol)
+        time_report_type_key = self.get_report_type_key(report_type = "annually")
+
+        rows = []
+        for _, r in df.iterrows():
+            metric_vi = r["Chỉ tiêu"]
+
+            mapping = Pattern_IncomeStatementStandardLoadToDW.METRIC_MAPPING.get(metric_vi)
+            if not mapping:
+                continue  # hoặc log warning
+
+            for col in period_columns:
+                _, year = col.split(" ")
+                if pd.isna(r[col]):
+                    continue
+
+                rows.append({
+                    "income_key": self.table_creator.get_id(),
+                    "company_key": company_key,
+                    "time_report_type_key": time_report_type_key ,
+                    "symbol": symbol,
+                    "time_report_type": report_type,
+                    "financial_report_type": "income_statement",
+                    "year": year,
+                    "metric_code": mapping["metric_code"],
+                    "metric_name_en": mapping["metric_name_en"],
+                    "metric_group": mapping["metric_group"],
+                    "metric_value": float(r[col]),
+                    "update_time": update_time
+                })
+
+        return rows
+
 
     def load_fact_income_statement_quarterly(self):
         raw = self.mongo.find_table(self.collection_income_statement_quarterly)
         rows = []
         for doc in raw:
-            idoc = IncomeStatementDoc.from_extract(doc)
-            if not idoc.symbol:
-                self.datawarehouse_logger.warning("income_statement doc without symbol: %s", doc)
-                continue
-            company_key = self.get_company_key(idoc.symbol)
-            report_type_key = self.get_report_type_key(report_type = "quarterly")
-            period_key = self.get_date_key(r.get("period"))
-            rows.append({
-                "income_key": self.table_creator.get_id(),
-                "company_key": company_key,
-                "report_type_key": report_type_key,
-                "period_date_key": period_key,
-                "revenue": r.get("revenue"),
-                "operating_profit": r.get("operating_profit"),
-                "net_income": r.get("net_income"),
-                "eps": r.get("eps")
-                
-            })
+            record = self.transform_income_statement_quarterly(doc)
+            rows = list(set(rows.extend(record)))
         df = pd.DataFrame(rows)
+        df["currency"] = Pattern_IncomeStatementStandardLoadToDW.currency
+        df["unit"] =Pattern_IncomeStatementStandardLoadToDW.unit
         sql = self.create_fact_table_sql(self.fact_income_statement_quarterly)
         return df, sql
 
-    def load_fact_income_statement_yearly(self):
-        raw = self.mongo.find_table(self.collection_income_statement_yearly)
+    def load_fact_income_statement_annually(self):
+        raw = self.mongo.find_table(self.collection_income_statement_annually)
         rows = []
         for doc in raw:
-            idoc = IncomeStatementDoc.from_extract(doc)
-            if not idoc.symbol:
-                self.datawarehouse_logger.warning("income_statement doc without symbol: %s", doc)
-                continue
-            company_key = self.get_company_key(idoc.symbol)
-            report_type_key = self.get_report_type_key(report_type = "yearly")
-            period_key = self.get_date_key(r.get("period"))
-            rows.append({
-                "income_key": self.table_creator.get_id(),
-                "company_key": company_key,
-                "report_type_key": report_type_key,
-                "period_date_key": period_key,
-                "revenue": r.get("revenue"),
-                "operating_profit": r.get("operating_profit"),
-                "net_income": r.get("net_income"),
-                "eps": r.get("eps")
-                
-            })
+            record = self.transform_income_statement_annually(doc)
+            rows = list(set(rows.extend(record)))
         df = pd.DataFrame(rows)
-        sql = self.create_fact_table_sql(self.fact_income_statement_yearly)
+        df["currency"] = Pattern_IncomeStatementStandardLoadToDW.currency
+        df["unit"] =Pattern_IncomeStatementStandardLoadToDW.unit
+        sql = self.create_fact_table_sql(self.fact_income_statement_annually)
         return df, sql
 
 # FactBalanceSheetLoader (BalanceSheetDoc)
@@ -430,65 +458,121 @@ class FactBalanceSheetLoader(FactLoader):
     def __init__(self, datalake_config, datawarehouse_logger, postgres_client, dim_repo, mongo_reader):
         table_creator = TableCreator(machine_id=1, character_specific=None)
         super().__init__(datalake_config, table_creator, mongo_reader, dim_repo, datawarehouse_logger, postgres_client)
-        # can map both yearly/quarterly collections
-        self.collection_balance_sheet_yearly = self._get_collection("balance_sheet_yearly")
+        # can map both annually/quarterly collections
+        self.collection_balance_sheet_annually = self._get_collection("balance_sheet_annually")
         self.collection_balance_sheet_quarterly = self._get_collection("balance_sheet_quarterly")
         self.fact_balance_sheet_quarterly = self._get_fact_name("fact_balance_sheet_quarterly", "fact_balance_sheet_quarterly")
-        self.fact_balance_sheet_yearly = self._get_fact_name("fact_balance_sheet_yearly", "fact_balance_sheet_yearly")
+        self.fact_balance_sheet_annually = self._get_fact_name("fact_balance_sheet_annually", "fact_balance_sheet_annually")
 
+    def transform_balance_sheet_quarterly(self, doc):
+        data = doc.get("data")
+        symbol = doc.get("symbol")
+        report_type = doc.get("report_type")
+        update_time = doc.get("update_time")
+        if not isinstance(data, pd.DataFrame):
+            return []
+
+        df = data.copy()
+        period_columns = [c for c in df.columns if c != "Chỉ tiêu"]
+        company_key = self.get_company_key(doc.symbol)
+        time_report_type_key = self.get_report_type_key(report_type = "quarterly")
+
+        rows = []
+        for _, r in df.iterrows():
+            metric_vi = r["Chỉ tiêu"]
+            mapping = Pattern_BalanceSheetStandardLoadToDW.METRIC_MAPPING.get(metric_vi)
+            if not mapping:
+                continue  # hoặc log warning
+
+            for col in period_columns:
+                quarter, year = col.split("_")
+                if pd.isna(r[col]):
+                    continue
+
+                rows.append({
+                    "balance_key": self.table_creator.get_id(),
+                    "company_key": company_key,
+                    "time_report_type_key": time_report_type_key ,
+                    "symbol": symbol,
+                    "time_report_type": report_type,
+                    "financial_report_type": "balance_sheet",
+                    "year": year,
+                    "period": quarter,
+                    "metric_code": mapping["metric_code"],
+                    "metric_name_en": mapping["metric_name_en"],
+                    "metric_group": mapping["metric_group"],
+                    "metric_value": float(r[col]),
+                    "update_time": update_time
+                })
+
+        return rows
+    
+    def transform_balance_sheet_annually(self, doc):
+        data = doc.get("data")
+        symbol = doc.get("symbol")
+        report_type = doc.get("report_type")
+        update_time = doc.get("update_time")
+        if not isinstance(data, pd.DataFrame):
+            return []
+
+        df = data.copy()
+        period_columns = [c for c in df.columns if c != "Chỉ tiêu"]
+        company_key = self.get_company_key(doc.symbol)
+        time_report_type_key = self.get_report_type_key(report_type = "annually")
+
+        rows = []
+        for _, r in df.iterrows():
+            metric_vi = r["Chỉ tiêu"]
+
+            mapping = Pattern_BalanceSheetStandardLoadToDW.METRIC_MAPPING.get(metric_vi)
+            if not mapping:
+                continue  # hoặc log warning
+
+            for col in period_columns:
+                _, year = col.split(" ")
+                if pd.isna(r[col]):
+                    continue
+
+                rows.append({
+                    "balance_key": self.table_creator.get_id(),
+                    "company_key": company_key,
+                    "time_report_type_key": time_report_type_key ,
+                    "symbol": symbol,
+                    "time_report_type": report_type,
+                    "financial_report_type": "balance_sheet",
+                    "year": year,
+                    "metric_code": mapping["metric_code"],
+                    "metric_name_en": mapping["metric_name_en"],
+                    "metric_group": mapping["metric_group"],
+                    "metric_value": float(r[col]),
+                    "update_time": update_time
+                })
+
+        return rows
     def load_fact_balance_sheet_quarterly(self):
         raw = self.mongo.find_table(self.collection_balance_sheet_quarterly)
         rows = []
         for doc in raw:
-            bdoc = BalanceSheetDoc.from_extract(doc)
-            if not bdoc.symbol:
-                self.datawarehouse_logger.warning("balance_sheet doc without symbol: %s", doc)
-                continue
-            company_key = self.get_company_key(bdoc.symbol)
-            report_type_key = self.get_report_type_key(report_type = "quarterly")
-            for r in bdoc.to_fact_rows():
-                period_key = self.get_date_key(r.get("period"))
-                rows.append({
-                    "bs_key": self.table_creator.get_id(),
-                    "company_key": company_key,
-                    "report_type_key": report_type_key,
-                    "period_date_key": period_key,
-                    "total_assets": r.get("total_assets"),
-                    "total_liabilities": r.get("total_liabilities"),
-                    "shareholder_equity": r.get("shareholder_equity"),
-                    "cash": r.get("cash"),
-                    "inventory": r.get("inventory")
-                })
+            record = self.transform_balance_sheet_quarterly(doc)
+            rows = list(set(rows.extend(record)))
         df = pd.DataFrame(rows)
+        df["currency"] = Pattern_BalanceSheetStandardLoadToDW.currency
+        df["unit"] = Pattern_BalanceSheetStandardLoadToDW.unit
         sql = self.create_fact_table_sql(self.fact_balance_sheet_quarterly)
         return df, sql
     
-    def load_fact_balance_sheet_yearly(self):
-        raw = self.mongo.find_table(self.collection_balance_sheet_yearly)
+    def load_fact_balance_sheet_annually(self):
+        raw = self.mongo.find_table(self.collection_balance_sheet_annually)
         rows = []
         for doc in raw:
-            bdoc = BalanceSheetDoc.from_extract(doc)
-            if not bdoc.symbol:
-                self.datawarehouse_logger.warning("balance_sheet doc without symbol: %s", doc)
-                continue
-            company_key = self.get_company_key(bdoc.symbol)
-            report_type_key = self.get_report_type_key(report_type = "yearly")
-            for r in bdoc.to_fact_rows():
-                period_key = self.get_date_key(r.get("period"))
-                rows.append({
-                    "bs_key": self.table_creator.get_id(),
-                    "company_key": company_key,
-                    "report_type_key": report_type_key,
-                    "period_date_key": period_key,
-                    "total_assets": r.get("total_assets"),
-                    "total_liabilities": r.get("total_liabilities"),
-                    "shareholder_equity": r.get("shareholder_equity"),
-                    "cash": r.get("cash"),
-                    "inventory": r.get("inventory")
-                })
+            record = self.transform_balance_sheet_annually(doc)
+            rows = list(set(rows.extend(record)))
         df = pd.DataFrame(rows)
-        sql = self.create_fact_table_sql(self.fact_balance_sheet_yearly)
+        df["currency"] = Pattern_BalanceSheetStandardLoadToDW.currency
+        df["unit"] = Pattern_BalanceSheetStandardLoadToDW.unit
+        sql = self.create_fact_table_sql(self.fact_balance_sheet_annually)
         return df, sql
+    
 
 
 # FactBusinessPlanLoader
@@ -510,20 +594,18 @@ class FactBusinessPlanLoader(FactLoader):
             company_key = self.get_company_key(pdoc.symbol)
             for r in pdoc.to_fact_rows():
                 year = r.get("year")
-                try:
-                    period_key = self.get_date_key(str(year))
-                except Exception:
-                    period_key = self.get_date_key("latest")
+                
                 rows.append({
                     "plan_key": self.table_creator.get_id(),
                     "company_key": company_key,
-                    "year_key": period_key,
-                    "target_revenue": r.get("target_revenue"),
-                    "target_profit": r.get("target_profit"),
-                    "capex_plan": r.get("capex_plan"),
-                    "source_json": r.get("source_json")
+                    "year": year,
+                    "Plan_revenue": r.get("Plan_revenue"),
+                    "Revenue_Archive": r.get("Pass_revenue"),
+                    "Plan_profit": r.get("Plan_profit"),
+                    "Revenue_profit": r.get("Pass_profit"),
                 })
         df = pd.DataFrame(rows)
+        
         sql = self.create_fact_table_sql(self.fact_name)
         return df, sql
 

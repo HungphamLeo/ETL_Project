@@ -167,11 +167,11 @@ def load_fact_income(datalake_config, table_creator, mongo_reader, logger, pg_cl
     pg_client.execute(sql_quarterly)
     pg_client.bulk_insert(f"{loader.schema_name}.{loader.fact_income_statement_quarterly.upper()}", df_quarterly)
 
-    df_annual, sql_annual = loader.load_fact_income_statement_yearly()
+    df_annual, sql_annual = loader.load_fact_income_statement_annually()
     pg_client.execute(sql_annual)
-    pg_client.bulk_insert(f"{loader.schema_name}.{loader.fact_income_statement_yearly.upper()}", df_annual)
+    pg_client.bulk_insert(f"{loader.schema_name}.{loader.fact_income_statement_annually.upper()}", df_annual)
     
-    logger.info(f"[{loader.fact_income_statement_yearly}] Loaded {len(df_annual)} rows")
+    logger.info(f"[{loader.fact_income_statement_annually}] Loaded {len(df_annual)} rows")
     logger.info(f"[{loader.fact_income_statement_quarterly}] Loaded {len(df_quarterly)} rows")
     return True
 
@@ -183,11 +183,11 @@ def load_fact_balance(datalake_config, table_creator, mongo_reader, logger, pg_c
     pg_client.execute(sql_quarterly)
     pg_client.bulk_insert(f"{loader.schema_name}.{loader.fact_balance_sheet_quarterly.upper()}", df_quarterly)
 
-    df_annual, sql_annual = loader.load_fact_balance_sheet_yearly()
+    df_annual, sql_annual = loader.load_fact_balance_sheet_annually()
     pg_client.execute(sql_annual)
-    pg_client.bulk_insert(f"{loader.schema_name}.{loader.fact_balance_sheet_yearly.upper()}", df_annual)
+    pg_client.bulk_insert(f"{loader.schema_name}.{loader.fact_balance_sheet_annually.upper()}", df_annual)
 
-    logger.info(f"[{loader.fact_balance_sheet_yearly}] Loaded {len(df_annual)} rows")
+    logger.info(f"[{loader.fact_balance_sheet_annually}] Loaded {len(df_annual)} rows")
     logger.info(f"[{loader.fact_balance_sheet_quarterly}] Loaded {len(df_quarterly)} rows")
     return True
 

@@ -60,7 +60,7 @@ DATA_WAREHOUSE_SCHEMA = {
         },
 
         "dim_report_type": {
-            "grain": "Yearly or Quarterly",
+            "grain": "annually or Quarterly",
             "columns": {
                 "report_type_key": {"type": "VARCHAR(32)", "constraints": "PRIMARY KEY"},
                 "report_type_code":{"type": "TEXT",        "constraints": "NOT NULL"},  # Y, Q
@@ -135,61 +135,96 @@ DATA_WAREHOUSE_SCHEMA = {
             }
         },
 
-        "fact_income_statement_yearly": {
+        "fact_income_statement_annually": {
             "grain": "company × period (Y or Q)",
             "columns": {
-                "income_key":      {"type": "VARCHAR(32)", "constraints": "PRIMARY KEY"},
+                "income_key":      {"type": "VARCHAR(32)", "constraints": "NOT NULL"},
                 "company_key":     {"type": "VARCHAR(32)", "constraints": "REFERENCES dim_company(company_key)"},
-                "report_type_key": {"type": "VARCHAR(32)", "constraints": "REFERENCES dim_report_type(report_type_key)"},
-                "period_date_key": {"type": "VARCHAR(32)", "constraints": "REFERENCES dim_date(date_key)"},
-                "revenue":         {"type": "NUMERIC",     "constraints": ""},
-                "operating_profit":{"type": "NUMERIC",     "constraints": ""},
-                "net_income":      {"type": "NUMERIC",     "constraints": ""},
-                "eps":             {"type": "NUMERIC",     "constraints": ""}
-                
-            }
+                "time_report_type_key": {"type": "VARCHAR(32)", "constraints": "REFERENCES dim_report_type(report_type_key)"},
+                "symbol":          {"type": "VARCHAR(32)", "constraints": ""},
+                "time_report_type":{"type": "VARCHAR(32)", "constraints": ""},
+                "financial_report_type":         {"type": "VARCHAR(32)",     "constraints": ""},
+                "year":         {"type": "VARCHAR(32)",     "constraints": ""},
+                "period":          {"type": "VARCHAR(32)",     "constraints": ""},
+                "metric_code":      {"type": "NUMERIC",     "constraints": ""},
+                "metric_name_en":             {"type": "NUMERIC",     "constraints": ""},
+                "metric_group":          {"type": "VARCHAR(32)",     "constraints": ""},
+                "metric_value":          {"type": "VARCHAR(32)",     "constraints": ""},
+                "currency":          {"type": "VARCHAR(3)",     "constraints": ""},
+                "unit":          {"type": "VARCHAR(32)",     "constraints": ""},
+                "update_time":          {"type": "TIMESTAMPTZ",     "constraints": ""},
+            },
+            "constraints": [
+                "PRIMARY KEY (income_key, company_key)"
+            ]
         },
         "fact_income_statement_quarterly": {
             "grain": "company × period (Y or Q)",
             "columns": {
-                "income_key":      {"type": "VARCHAR(32)", "constraints": "PRIMARY KEY"},
+                "income_key":      {"type": "VARCHAR(32)", "constraints": "NOT NULL"},
                 "company_key":     {"type": "VARCHAR(32)", "constraints": "REFERENCES dim_company(company_key)"},
-                "report_type_key": {"type": "VARCHAR(32)", "constraints": "REFERENCES dim_report_type(report_type_key)"},
-                "period_date_key": {"type": "VARCHAR(32)", "constraints": "REFERENCES dim_date(date_key)"},
-                "revenue":         {"type": "NUMERIC",     "constraints": ""},
-                "operating_profit":{"type": "NUMERIC",     "constraints": ""},
-                "net_income":      {"type": "NUMERIC",     "constraints": ""},
-                "eps":             {"type": "NUMERIC",     "constraints": ""}
-            }
+                "time_report_type_key": {"type": "VARCHAR(32)", "constraints": "REFERENCES dim_report_type(report_type_key)"},
+                "symbol":          {"type": "VARCHAR(32)", "constraints": ""},
+                "time_report_type":{"type": "VARCHAR(32)", "constraints": ""},
+                "financial_report_type":         {"type": "VARCHAR(32)",     "constraints": ""},
+                "year":          {"type": "VARCHAR(32)",     "constraints": ""},
+                "metric_code":      {"type": "NUMERIC",     "constraints": ""},
+                "metric_name_en":             {"type": "NUMERIC",     "constraints": ""},
+                "metric_group":          {"type": "VARCHAR(32)",     "constraints": ""},
+                "metric_value":          {"type": "NUMERIC",     "constraints": ""},
+                "currency":          {"type": "VARCHAR(3)",     "constraints": ""},
+                "unit":          {"type": "VARCHAR(32)",     "constraints": ""},
+                "update_time":          {"type": "TIMESTAMPTZ",     "constraints": ""},
+            },
+            "constraints": [
+                "PRIMARY KEY (income_key, company_key)"
+            ]
         },
 
-        "fact_balance_sheet_yearly": {
+        "fact_balance_sheet_annually": {
             "grain": "company × period (Y or Q)",
             "columns": {
-                "bs_key":          {"type": "VARCHAR(32)", "constraints": "PRIMARY KEY"},
+                "balance_key":      {"type": "VARCHAR(128)", "constraints": "NOT NULL"},
                 "company_key":     {"type": "VARCHAR(32)", "constraints": "REFERENCES dim_company(company_key)"},
-                "report_type_key": {"type": "VARCHAR(32)", "constraints": "REFERENCES dim_report_type(report_type_key)"},
-                "period_date_key": {"type": "VARCHAR(32)", "constraints": "REFERENCES dim_date(date_key)"},
-                "total_assets":    {"type": "NUMERIC",     "constraints": ""},
-                "total_liabilities":{"type": "NUMERIC",    "constraints": ""},
-                "shareholder_equity":{"type": "NUMERIC",   "constraints": ""},
-                "cash":            {"type": "NUMERIC",     "constraints": ""},
-                "inventory":       {"type": "NUMERIC",     "constraints": ""}
-            }
+                "time_report_type_key": {"type": "VARCHAR(32)", "constraints": "REFERENCES dim_report_type(report_type_key)"},
+                "symbol":          {"type": "VARCHAR(32)", "constraints": ""},
+                "time_report_type":{"type": "VARCHAR(32)", "constraints": ""},
+                "financial_report_type":         {"type": "VARCHAR(32)",     "constraints": ""},
+                "year":          {"type": "VARCHAR(32)",     "constraints": ""},
+                "metric_code":      {"type": "VARCHAR(128)",     "constraints": ""},
+                "metric_name_en":             {"type": "VARCHAR(128)",     "constraints": ""},
+                "metric_group":          {"type": "VARCHAR(128)",     "constraints": ""},
+                "metric_value":          {"type": "NUMERIC",     "constraints": ""},
+                "currency":          {"type": "VARCHAR(3)",     "constraints": ""},
+                "unit":          {"type": "VARCHAR(32)",     "constraints": ""},
+                "update_time":          {"type": "TIMESTAMPTZ",     "constraints": ""},
+            },
+             "constraints": [
+                "PRIMARY KEY (balance_key, company_key)"
+            ]
         },
         "fact_balance_sheet_quarterly": {
             "grain": "company × period (Y or Q)",
             "columns": {
-                "bs_key":          {"type": "VARCHAR(32)", "constraints": "PRIMARY KEY"},
+                "balance_key":      {"type": "VARCHAR(128)", "constraints": "NOT NULL"},
                 "company_key":     {"type": "VARCHAR(32)", "constraints": "REFERENCES dim_company(company_key)"},
-                "report_type_key": {"type": "VARCHAR(32)", "constraints": "REFERENCES dim_report_type(report_type_key)"},
-                "period_date_key": {"type": "VARCHAR(32)", "constraints": "REFERENCES dim_date(date_key)"},
-                "total_assets":    {"type": "NUMERIC",     "constraints": ""},
-                "total_liabilities":{"type": "NUMERIC",    "constraints": ""},
-                "shareholder_equity":{"type": "NUMERIC",   "constraints": ""},
-                "cash":            {"type": "NUMERIC",     "constraints": ""},
-                "inventory":       {"type": "NUMERIC",     "constraints": ""}
-            }
+                "time_report_type_key": {"type": "VARCHAR(32)", "constraints": "REFERENCES dim_report_type(report_type_key)"},
+                "symbol":          {"type": "VARCHAR(32)", "constraints": ""},
+                "time_report_type":{"type": "VARCHAR(32)", "constraints": ""},
+                "financial_report_type":         {"type": "VARCHAR(32)",     "constraints": ""},
+                "year":          {"type": "VARCHAR(32)",     "constraints": ""},
+                "period":          {"type": "VARCHAR(32)",     "constraints": ""},
+                "metric_code":      {"type": "VARCHAR(128)",     "constraints": ""},
+                "metric_name_en":             {"type": "VARCHAR(128)",     "constraints": ""},
+                "metric_group":          {"type": "VARCHAR(128)",     "constraints": ""},
+                "metric_value":          {"type": "NUMERIC",     "constraints": ""},
+                "currency":          {"type": "VARCHAR(3)",     "constraints": ""},
+                "unit":          {"type": "VARCHAR(32)",     "constraints": ""},
+                "update_time":          {"type": "TIMESTAMPTZ",     "constraints": ""},
+            },
+             "constraints": [
+                "PRIMARY KEY (balance_key, company_key)"
+            ]
         },
 
         "fact_business_plan": {

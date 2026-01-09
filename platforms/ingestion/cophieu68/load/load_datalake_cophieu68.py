@@ -222,7 +222,7 @@ class MongoLoader(MongoWriter):
         finally:
             client.close()
 
-    def load_detail_income_statement_yearly(self, collection_name: str, income_data: Any) -> None:
+    def load_detail_income_statement_annually(self, collection_name: str, income_data: Any) -> None:
         client = self._ensure_client()
         try:
             db = client[self.database]
@@ -251,7 +251,7 @@ class MongoLoader(MongoWriter):
             client.close()
         
 
-    def load_detail_balance_sheet_yearly(self, collection_name: str, balance_data: Any) -> None:
+    def load_detail_balance_sheet_annually(self, collection_name: str, balance_data: Any) -> None:
         client = self._ensure_client()
         try:
             db = client[self.database]

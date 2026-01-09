@@ -249,7 +249,7 @@ project_params:
             constraints: "DEFAULT NOW()"
 
       dim_report_type:
-        grain: "Yearly or Quarterly"
+        grain: "annually or Quarterly"
         columns:
           report_type_key:
             type: "VARCHAR(32)"
