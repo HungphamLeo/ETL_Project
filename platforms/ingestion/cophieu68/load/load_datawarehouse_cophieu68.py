@@ -177,13 +177,13 @@ class DimIndustryLoader(DimLoader):
             
             
             for info in doc.get("data"):
-                for infor_keys in list(info.keys()):
+                for info_keys in list(info.keys()):
                     rows.append({
-                        "industry_key": f'{industry_metric}_{str(infor_keys).split("_")[1]}',
+                        "industry_key": f'{industry_metric}_{str(info_keys).split("_")[1]}',
                         "industry_metric": industry_metric,
-                        "industry_code": str(infor_keys).split("_")[1],
-                        "industry_code_replace": str(infor_keys).split("_")[2],
-                        "industry_craw_url": str(infor_keys).split("_")[3],
+                        "industry_code": str(info_keys).split("_")[1],
+                        "industry_code_replace": str(info_keys).split("_")[2],
+                        "industry_craw_url": str(info_keys).split("_")[3],
                         "effective_date": datetime.utcnow().isoformat(),
                         "end_date": None,
                         "is_current": True,

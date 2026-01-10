@@ -16,7 +16,7 @@ DATA_WAREHOUSE_SCHEMA = {
         "dim_industry": {
             "grain": "1 record per industry",
             "columns": {
-                "industry_key":     {"type": "VARCHAR(32)", "constraints": "PRIMARY KEY"},
+                "industry_key":     {"type": "VARCHAR(32)", "constraints": "NOT NULL"},
                 "industry_metric": {"type": "VARCHAR(32)", "constraints": "NOT NULL"},
                 "industry_code": {"type": "TEXT", "constraints": "NOT NULL"},
                 "industry_code_replace": {"type": "TEXT"},
@@ -26,7 +26,10 @@ DATA_WAREHOUSE_SCHEMA = {
                 "is_current": {"type": "BOOLEAN", "constraints": "DEFAULT TRUE"},
                 "update_time": {"type": "TIMESTAMPTZ"},
                 "created_time": {"type": "TIMESTAMPTZ", "constraints": "DEFAULT NOW()"}
-            }
+            },
+            "constraints": [
+                "PRIMARY KEY (industry_key, industry_metric, industry_code)"
+            ]
         },
 
         "dim_company": {

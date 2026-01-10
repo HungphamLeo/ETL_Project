@@ -289,3 +289,6 @@ LINE 4:   "market_type" TEXT PRIMARY KEY,
 LINE 1: INSERT INTO DW.DIM_MARKET_TYPE (market_key, market_type, mar...
                     ^
 ", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-10T18:06:03", "level":"ERROR", "message":"Insert failed: duplicate key value violates unique constraint "dim_industry_pkey"
+DETAIL:  Key (industry_key)=(financial_info_) already exists.
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}

@@ -365,3 +365,9 @@ LINE 1: INSERT INTO DW.DIM_MARKET_TYPE (market_key, market_type, mar...
 {"time":"2026-01-10T17:49:43", "level":"INFO", "message":"[dim_market_type] Loaded 4 rows", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/tests/intergration/test_postgres.py:108"}
 {"time":"2026-01-10T17:50:41", "level":"INFO", "message":"Inserted 4 rows into DW.DIM_MARKET_TYPE", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:48"}
 {"time":"2026-01-10T17:50:41", "level":"INFO", "message":"[dim_market_type] Loaded 4 rows", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/tests/intergration/test_postgres.py:108"}
+{"time":"2026-01-10T18:06:03", "level":"ERROR", "message":"Insert failed: duplicate key value violates unique constraint "dim_industry_pkey"
+DETAIL:  Key (industry_key)=(financial_info_) already exists.
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-10T18:06:03", "level":"INFO", "message":"[dim_industry] Loaded 142 rows", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/tests/intergration/test_postgres.py:118"}
+{"time":"2026-01-10T18:15:05", "level":"INFO", "message":"Inserted 142 rows into DW.DIM_INDUSTRY", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:48"}
+{"time":"2026-01-10T18:15:05", "level":"INFO", "message":"[dim_industry] Loaded 142 rows", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/tests/intergration/test_postgres.py:118"}
