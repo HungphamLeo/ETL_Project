@@ -82,10 +82,13 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
       POSTGRES_DB: etl_project
+      HUNGPHAM_USER: hungpham
+      HUNGPHAM_PASSWORD: hungpham@123
     ports:
       - "5432:5432"
     volumes:
       - pg_data:/var/lib/postgresql/data
+      - ./init.sh:/docker-entrypoint-initdb.d/init.sh
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s

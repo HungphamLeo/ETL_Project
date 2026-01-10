@@ -4,9 +4,9 @@ DATA_WAREHOUSE_SCHEMA = {
 
         "dim_market_type": {
             "grain": "1 record per stock exchange",
-            "columns": {
-                "market_key":      {"type": "VARCHAR(32)", "constraints": "PRIMARY KEY"},
-                "market_type":     {"type": "TEXT",        "constraints": "UNIQUE NOT NULL"},
+            "columns": {  
+                "market_key":     {"type": "VARCHAR(32)", "constraints": "PRIMARY KEY"},              
+                "market_type":     {"type": "TEXT",        "constraints": "NOT NULL"},
                 "market_name":     {"type": "TEXT",        "constraints": ""},
                 "update_time":     {"type": "TIMESTAMPTZ", "constraints": ""},
                 "created_time":    {"type": "TIMESTAMPTZ", "constraints": "DEFAULT NOW()"}
@@ -16,6 +16,7 @@ DATA_WAREHOUSE_SCHEMA = {
         "dim_industry": {
             "grain": "1 record per industry",
             "columns": {
+                "industry_key":     {"type": "VARCHAR(32)", "constraints": "PRIMARY KEY"},
                 "industry_metric": {"type": "VARCHAR(32)", "constraints": "NOT NULL"},
                 "industry_code": {"type": "TEXT", "constraints": "NOT NULL"},
                 "industry_code_replace": {"type": "TEXT"},
@@ -25,10 +26,7 @@ DATA_WAREHOUSE_SCHEMA = {
                 "is_current": {"type": "BOOLEAN", "constraints": "DEFAULT TRUE"},
                 "update_time": {"type": "TIMESTAMPTZ"},
                 "created_time": {"type": "TIMESTAMPTZ", "constraints": "DEFAULT NOW()"}
-            },
-            "constraints": [
-                "PRIMARY KEY (industry_metric, industry_code)"
-            ]
+            }
         },
 
         "dim_company": {
@@ -232,10 +230,12 @@ DATA_WAREHOUSE_SCHEMA = {
             "columns": {
                 "plan_key":        {"type": "VARCHAR(32)", "constraints": "PRIMARY KEY"},
                 "company_key":     {"type": "VARCHAR(32)", "constraints": "REFERENCES dim_company(company_key)"},
-                "year_key":        {"type": "VARCHAR(32)", "constraints": "REFERENCES dim_date(date_key)"},
-                "target_revenue":  {"type": "NUMERIC",     "constraints": ""},
-                "target_profit":   {"type": "NUMERIC",     "constraints": ""},
-                "capex_plan":      {"type": "NUMERIC",     "constraints": ""}
+                "year":        {"type": "VARCHAR(12)", "constraints": ""},
+                "Plan_revenue":  {"type": "NUMERIC",     "constraints": ""},
+                "Revenue_Achived":   {"type": "NUMERIC",     "constraints": ""},
+                "Plan_profit":      {"type": "NUMERIC",     "constraints": ""},
+                "Profit_Achived":    {"type": "NUMERIC",     "constraints": ""},
+                "update_time":          {"type": "TIMESTAMPTZ",     "constraints": ""},
             }
         },
 

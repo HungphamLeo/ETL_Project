@@ -227,3 +227,65 @@ LINE 2: CREATE TABLE IF NOT EXISTS public.FACT_TRADE (
 LINE 2: CREATE TABLE IF NOT EXISTS public.FACT_TRADE (
                                    ^
 ", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:196"}
+{"time":"2026-01-10T09:06:53", "level":"ERROR", "message":"Execute failed: connection to server at "localhost" (127.0.0.1), port 5432 failed: FATAL:  password authentication failed for user "hungpham"
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:196"}
+{"time":"2026-01-10T09:06:53", "level":"ERROR", "message":"Insert failed: connection to server at "localhost" (127.0.0.1), port 5432 failed: FATAL:  password authentication failed for user "hungpham"
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-10T09:06:53", "level":"ERROR", "message":"Execute failed: connection to server at "localhost" (127.0.0.1), port 5432 failed: FATAL:  password authentication failed for user "hungpham"
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:196"}
+{"time":"2026-01-10T09:06:53", "level":"ERROR", "message":"Insert failed: connection to server at "localhost" (127.0.0.1), port 5432 failed: FATAL:  password authentication failed for user "hungpham"
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-10T09:14:57", "level":"ERROR", "message":"Execute failed: connection to server at "localhost" (127.0.0.1), port 5432 failed: FATAL:  password authentication failed for user "hungpham"
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:196"}
+{"time":"2026-01-10T09:14:57", "level":"ERROR", "message":"Insert failed: connection to server at "localhost" (127.0.0.1), port 5432 failed: FATAL:  password authentication failed for user "hungpham"
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-10T09:14:57", "level":"ERROR", "message":"Execute failed: connection to server at "localhost" (127.0.0.1), port 5432 failed: FATAL:  password authentication failed for user "hungpham"
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:196"}
+{"time":"2026-01-10T09:14:58", "level":"ERROR", "message":"Insert failed: connection to server at "localhost" (127.0.0.1), port 5432 failed: FATAL:  password authentication failed for user "hungpham"
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-10T09:14:58", "level":"ERROR", "message":"Query failed: connection to server at "localhost" (127.0.0.1), port 5432 failed: FATAL:  password authentication failed for user "hungpham"
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:217"}
+{"time":"2026-01-10T11:16:19", "level":"ERROR", "message":"Insert failed: column "market_key" of relation "dim_market_type" does not exist
+LINE 1: INSERT INTO DW.DIM_MARKET_TYPE (market_key, market_type, mar...
+                                        ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-10T11:16:18", "level":"ERROR", "message":"Query failed: relation "dw.dim_company" does not exist
+LINE 1: SELECT * FROM dw.dim_company WHERE company_key = 'VCB' AND i...
+                      ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:217"}
+{"time":"2026-01-10T11:18:19", "level":"ERROR", "message":"Insert failed: column "market_key" of relation "dim_market_type" does not exist
+LINE 1: INSERT INTO DW.DIM_MARKET_TYPE (market_key, market_type, mar...
+                                        ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-10T11:20:23", "level":"ERROR", "message":"Insert failed: column "market_key" of relation "dim_market_type" does not exist
+LINE 1: INSERT INTO DW.DIM_MARKET_TYPE (market_key, market_type, mar...
+                                        ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-10T11:31:30", "level":"ERROR", "message":"Insert failed: column "market_key" of relation "dim_market_type" does not exist
+LINE 1: INSERT INTO DW.DIM_MARKET_TYPE (market_key, market_type, mar...
+                                        ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-10T12:31:22", "level":"ERROR", "message":"Insert failed: column "market_key" of relation "dim_market_type" does not exist
+LINE 1: INSERT INTO DW.DIM_MARKET_TYPE (market_key, market_type, mar...
+                                        ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-10T12:52:04", "level":"ERROR", "message":"Insert failed: column "market_key" of relation "dim_market_type" does not exist
+LINE 1: INSERT INTO DW.DIM_MARKET_TYPE (market_key, market_type, mar...
+                                        ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-10T17:28:40", "level":"ERROR", "message":"Insert failed: column "market_key" of relation "dim_market_type" does not exist
+LINE 1: INSERT INTO DW.DIM_MARKET_TYPE (market_key, market_type, mar...
+                                        ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-10T17:48:55", "level":"ERROR", "message":"Insert failed: column "market_key" of relation "dim_market_type" does not exist
+LINE 1: INSERT INTO DW.DIM_MARKET_TYPE (market_key, market_type, mar...
+                                        ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-10T17:49:43", "level":"ERROR", "message":"Execute failed: multiple primary keys for table "dim_market_type" are not allowed
+LINE 4:   "market_type" TEXT PRIMARY KEY,
+                             ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:196"}
+{"time":"2026-01-10T17:49:43", "level":"ERROR", "message":"Insert failed: relation "dw.dim_market_type" does not exist
+LINE 1: INSERT INTO DW.DIM_MARKET_TYPE (market_key, market_type, mar...
+                    ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}

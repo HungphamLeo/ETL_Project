@@ -202,3 +202,17 @@ class PostgreSQLStorageBackend(StorageBackend):
         if isinstance(data, pd.DataFrame):
             data = data.to_dict('records')
         return self.insert(table.upper(), data)
+    
+    def query(self, sql: str, params: Optional[tuple] = None) -> Dict[str, Any]:
+        """Execute a query and return results."""
+        try:
+            with self.pg._get_connection() as conn:
+                with conn.cursor() as cur:
+                    cur.execute(sql, params)
+                    rows = cur.fetchall()
+                    columns = [desc[0] for desc in cur.description]
+                    results = [dict(zip(columns, row)) for row in rows]
+                    return {"ok": True, "results": results}
+        except Exception as e:
+            self.logger.error("Query failed: %s", e)
+            return {"ok": False, "error": str(e)}

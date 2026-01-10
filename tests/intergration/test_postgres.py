@@ -236,9 +236,9 @@ def dw_full_load():
     table_creator = TableCreator(machine_id=1, character_specific=None)
 
     load_dim_market_type(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
-    load_dim_industry(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
-    load_dim_company(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
-    load_dim_report_type(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
+    # load_dim_industry(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
+    # load_dim_company(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
+    # load_dim_report_type(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
     
 
     # load_fact_trade(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
@@ -246,8 +246,8 @@ def dw_full_load():
     # load_fact_income(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
     # load_fact_balance(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
     # load_fact_business_plan(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
-    load_fact_financial_metrics(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
-    load_fact_industry(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
+    # load_fact_financial_metrics(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
+    # load_fact_industry(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
 
 
 

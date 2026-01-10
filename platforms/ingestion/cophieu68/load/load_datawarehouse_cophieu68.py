@@ -114,11 +114,14 @@ class FactLoader(BaseLoader):
                 typ = parts[0]
                 cons = parts[1] if len(parts) > 1 else ""
                 norm[col] = {"type": typ, "constraints": cons}
-        return self.table_creator.generate_create_table_sql(fact_name, norm)
+        schema_name = self.schema_dw.get("schema_name", "public")
+        return self.table_creator.generate_create_table_sql(fact_name, norm, schema_name)
 
     def get_company_key(self, symbol: str) -> str:
         return self.dim_repo.get_or_create(symbol, "dim_company", self.table_creator)
     
+    def get_market_key(self, market_type: str) ->str:
+        return self.dim_repo.get_or_create(market_type, "dim_market_type", self.table_creator)
     def get_industry_key(self, industry: str) -> str:
         return self.dim_repo.get_or_create(industry, "dim_industry", self.table_creator)
 
@@ -138,7 +141,7 @@ class DimMarketTypeLoader(DimLoader):
         super().__init__(datalake_config, table_creator, mongo_reader, datawarehouse_logger, postgresql_client)
         # YAML key is 'list_stock' per config
         self.collection_name = self._get_collection("list_stock")
-        self.dim_name = "DIM_MARKET_TYPE"
+        self.dim_name = "dim_market_type"
 
     def load(self):
         raw = self.mongo.find_table(self.collection_name)
@@ -148,7 +151,7 @@ class DimMarketTypeLoader(DimLoader):
             b = BaseDoc.from_extract(document)
             market_type = document.get("market_type") if isinstance(document, dict) else b.symbol
             rows.append({
-                "market_key": market_type.lower() if market_type else None,
+                "market_key": market_type,
                 "market_type": market_type,
                 "market_name": index_information.get(market_type),
                 "update_time": document.get("update_time") or datetime.utcnow().isoformat(),
@@ -176,6 +179,7 @@ class DimIndustryLoader(DimLoader):
             for info in doc.get("data"):
                 for infor_keys in list(info.keys()):
                     rows.append({
+                        "industry_key": f'{industry_metric}_{str(infor_keys).split("_")[1]}',
                         "industry_metric": industry_metric,
                         "industry_code": str(infor_keys).split("_")[1],
                         "industry_code_replace": str(infor_keys).split("_")[2],
@@ -253,7 +257,6 @@ class DimReportTypeLoader(DimLoader):
         df = pd.DataFrame(mapping)
         sql = self._create_table_sql(self.dim_name)
         return df, sql
-
 
 
 
@@ -587,6 +590,7 @@ class FactBusinessPlanLoader(FactLoader):
         raw = self.mongo.find_table(self.collection_name)
         rows = []
         for doc in raw:
+            
             pdoc = BusinessPlanDoc.from_extract(doc)
             if not pdoc.symbol:
                 self.datawarehouse_logger.warning("business_plan doc without symbol: %s", doc)
@@ -600,9 +604,11 @@ class FactBusinessPlanLoader(FactLoader):
                     "company_key": company_key,
                     "year": year,
                     "Plan_revenue": r.get("Plan_revenue"),
-                    "Revenue_Archive": r.get("Pass_revenue"),
+                    "Revenue_Achived": r.get("Pass_revenue"),
                     "Plan_profit": r.get("Plan_profit"),
-                    "Revenue_profit": r.get("Pass_profit"),
+                    "Profit_Achived": r.get("Pass_profit"),
+                    "update_time": doc.get("update_time")
+
                 })
         df = pd.DataFrame(rows)
         

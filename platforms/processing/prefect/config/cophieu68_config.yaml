@@ -175,6 +175,7 @@ project_params:
 
   # Add under top-level key `data_warehouse_schema:` (merge into existing config)
   data_warehouse_schema:
+    schema_name: "private"
     dimensions:
       dim_market_type:
         grain: "1 record per stock exchange"
