@@ -75,7 +75,7 @@ class DimLoader(BaseLoader):
                  postgresql_client: Optional[PostgreSQLWriter] = None):
         super().__init__(datalake_config, table_creator, mongo_reader, datawarehouse_logger, postgresql_client)
         self.dim_postgresql_client = postgresql_client
-
+    
 
 class FactLoader(BaseLoader):
     def __init__(
@@ -90,6 +90,8 @@ class FactLoader(BaseLoader):
         super().__init__(datalake_config, table_creator, mongo_reader, datawarehouse_logger, postgres_client)
         self.fact_postgresql_client = postgres_client
         self.dim_repo = dim_repo
+    
+    
 
     def _get_fact_name(self, hint: str, fallback: str) -> str:
         # if explicit hint exists in schema, return it; else try to find by substring; fallback otherwise
@@ -151,7 +153,7 @@ class DimMarketTypeLoader(DimLoader):
             b = BaseDoc.from_extract(document)
             market_type = document.get("market_type") if isinstance(document, dict) else b.symbol
             rows.append({
-                "market_key": market_type,
+                "market_key": self.table_creator.get_id(),
                 "market_type": market_type,
                 "market_name": index_information.get(market_type),
                 "update_time": document.get("update_time") or datetime.utcnow().isoformat(),
@@ -179,7 +181,7 @@ class DimIndustryLoader(DimLoader):
             for info in doc.get("data"):
                 for info_keys in list(info.keys()):
                     rows.append({
-                        "industry_key": f'{industry_metric}_{str(info_keys).split("_")[1]}',
+                        "industry_sk": self.table_creator.get_id(),
                         "industry_metric": industry_metric,
                         "industry_code": str(info_keys).split("_")[1],
                         "industry_code_replace": str(info_keys).split("_")[2],
@@ -208,38 +210,81 @@ class DimCompanyLoader(DimLoader):
         raw = self.mongo.find_table(self.collection_name)
         rows = []
         for doc in raw.get("data"):
-            company_key = doc.get("symbol")
-            existing_record = self.postgresql_client.query(
-                f"SELECT * FROM {self.schema_name}.{self.dim_name} WHERE company_key = %s AND is_current = TRUE",
-                (company_key,)
-            )
+            profile = doc.get("profile_json")
+            # some payloads store profile under 'profile' or raw data under 'data'
+            if not profile and isinstance(doc, dict):
+                profile = doc.get("profile") or doc.get("raw") or doc.get("data") or {}
+            symbol = profile.get("symbol")
 
-            if existing_record:
-                # Check if there are changes
-                if existing_record["company_name"] != doc.get("company_name") or \
-                   existing_record["full_name"] != doc.get("full_name"):
-                    # Update the existing record's end_date and is_current
-                    self.postgresql_client.execute(
-                        f"UPDATE {self.schema_name}.{self.dim_name} SET end_date = %s, is_current = FALSE WHERE company_key = %s AND is_current = TRUE",
-                        (datetime.utcnow().isoformat(), company_key)
-                    )
-
-            # Insert the new record
             rows.append({
-                "company_key": company_key,
-                "symbol": doc.get("symbol"),
-                "company_name": doc.get("company_name"),
-                "full_name": doc.get("full_name"),
-                "effective_date": datetime.utcnow().isoformat(),
+                "company_key": self.table_creator.get_id(),
+                "symbol": symbol,
+                "company_name": profile.get("full_name") or profile.get("company_name") or None,
+                "market_key": self.get_market_key(profile.get("market_type")),
+                "industry_sk": self.get_industry_sk(profile.get("industry_code")),
+                "full_name": profile.get("full_name") or None,
+                "english_name": profile.get("english_name") or None,
+                "short_name": profile.get("short_name") or None,
+                "address": profile.get("address") or None,
+                "phone": profile.get("phone") or None,
+                "fax": profile.get("fax") or None,
+                "website": profile.get("website") or None,
+                "email": profile.get("email") or None,
+                "listed_date": profile.get("listed_date"),
+                "chartered_capital": profile.get("chartered_capital") or None,
+                "business_license": profile.get("business_license") or None,
+                "tax_code": profile.get("tax_code") or None,
+                "established_date": profile.get("established_date") or None,
                 "end_date": None,
                 "is_current": True,
-                "update_time": datetime.utcnow().isoformat(),
-                "created_time": datetime.utcnow().isoformat(),
+                "update_time": doc.get("update_time") or datetime.utcnow().isoformat(),
+                "created_time": doc.get("update_time") or datetime.utcnow().isoformat(),
+
             })
 
         df = pd.DataFrame(rows)
         sql = self._create_table_sql(self.dim_name)
         return df, sql
+
+    def get_market_key(self, market_type):
+        if not market_type:
+            return None
+        result = self.postgresql_client.query(
+            f"SELECT market_key FROM {self.schema_name}.dim_market_type WHERE market_type = %s",
+            (market_type,)
+        )
+        if result:
+            return result[0]['market_key']
+        else:
+            # If not found, insert new record
+            market_key = self.table_creator.get_id()
+            market_name = ""  # You can add logic to get market_name if available
+            self.postgresql_client.execute(
+                f"INSERT INTO {self.schema_name}.dim_market_type (market_key, market_type, market_name, update_time, created_time) VALUES (%s, %s, %s, %s, %s)",
+                (market_key, market_type, market_name, datetime.utcnow().isoformat(), datetime.utcnow().isoformat())
+            )
+            return market_key
+
+    def get_industry_sk(self, industry_code):
+        if not industry_code:
+            return None
+        # Lookup industry_sk by industry_code, assuming unique for current
+        result = self.postgresql_client.query(
+            f"SELECT industry_sk FROM {self.schema_name}.dim_industry WHERE industry_code = %s AND is_current = TRUE",
+            (industry_code,)
+        )
+        if result:
+            return result[0]['industry_sk']
+        else:
+            # If not found, insert new record
+            industry_sk = self.table_creator.get_id()
+            industry_key = f"default_{industry_code}"  # Adjust
+            industry_metric = "default"
+            self.postgresql_client.execute(
+                f"INSERT INTO {self.schema_name}.dim_industry (industry_sk, industry_metric, industry_code, effective_date, is_current, update_time, created_time) VALUES (%s, %s, %s, %s, %s, %s, %s)",
+                (industry_sk, industry_metric, industry_code, datetime.utcnow().isoformat(), True, datetime.utcnow().isoformat(), datetime.utcnow().isoformat())
+            )
+            return industry_sk
 
 
 # dim_report_type
@@ -690,7 +735,7 @@ class FactIndustryLoader(FactLoader):
                 fund_info_data = documentation.get("data")
         for info_key, info_value in summary_data.get("data").items():
             rows.append({
-                "industry_key":self.get_industry_key(info_key.split("_")[1]),
+                "industry_sk":self.get_industry_key(info_key.split("_")[1]),
                 "industry_code": info_key.split("_")[1],
                 "industry_index": info_value.get("index"),
                 "Percentage_change":info_value.get("change"),

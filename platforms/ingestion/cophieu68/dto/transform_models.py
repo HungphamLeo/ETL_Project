@@ -16,7 +16,7 @@ DATA_WAREHOUSE_SCHEMA = {
         "dim_industry": {
             "grain": "1 record per industry",
             "columns": {
-                "industry_key":     {"type": "VARCHAR(32)", "constraints": "NOT NULL"},
+                "industry_sk":     {"type": "VARCHAR(32)", "constraints": "PRIMARY KEY"},
                 "industry_metric": {"type": "VARCHAR(32)", "constraints": "NOT NULL"},
                 "industry_code": {"type": "TEXT", "constraints": "NOT NULL"},
                 "industry_code_replace": {"type": "TEXT"},
@@ -28,7 +28,7 @@ DATA_WAREHOUSE_SCHEMA = {
                 "created_time": {"type": "TIMESTAMPTZ", "constraints": "DEFAULT NOW()"}
             },
             "constraints": [
-                "PRIMARY KEY (industry_key, industry_metric, industry_code)"
+                "UNIQUE (industry_sk, industry_metric, industry_code, effective_date)"
             ]
         },
 
@@ -38,6 +38,8 @@ DATA_WAREHOUSE_SCHEMA = {
                 "company_key":     {"type": "VARCHAR(32)", "constraints": "PRIMARY KEY"},
                 "symbol":          {"type": "TEXT",        "constraints": "NOT NULL"},
                 "company_name":    {"type": "TEXT"},
+                "market_key":      {"type": "VARCHAR(32)", "constraints": "REFERENCES dw.dim_market_type(market_key)"},
+                "industry_sk":      {"type": "VARCHAR(32)", "constraints": "REFERENCES dw.dim_industry(industry_sk)"},
                 "full_name":       {"type": "TEXT"},
                 "english_name":    {"type": "TEXT"},
                 "short_name":      {"type": "TEXT"},
@@ -46,13 +48,11 @@ DATA_WAREHOUSE_SCHEMA = {
                 "fax":             {"type": "TEXT"},
                 "website":         {"type": "TEXT"},
                 "email":           {"type": "TEXT"},
-                "established_date":{"type": "DATE"},
                 "listed_date":     {"type": "DATE"},
                 "chartered_capital":{"type": "TEXT"},
                 "business_license":{"type": "TEXT"},
                 "tax_code":        {"type": "TEXT"},
-                "market_key":      {"type": "VARCHAR(32)", "constraints": "REFERENCES dim_market_type(market_key)"},
-                "effective_date": {"type": "TIMESTAMPTZ", "constraints": "NOT NULL"},
+                "established_date": {"type": "TIMESTAMPTZ"},
                 "end_date": {"type": "TIMESTAMPTZ"},
                 "is_current": {"type": "BOOLEAN", "constraints": "DEFAULT TRUE"},
                 "update_time": {"type": "TIMESTAMPTZ"},
@@ -75,7 +75,7 @@ DATA_WAREHOUSE_SCHEMA = {
             "grain": "1 record per trade tick",
             "partitions": "RANGE (trade_date_key) monthly",
             "columns": {
-                "industry_key": {"type": "VARCHAR(32)", "constraints": "PRIMARY KEY"},
+                "industry_sk": {"type": "VARCHAR(32)", "constraints": "REFERENCES dw.dim_industry(industry_sk)"},
                 "industry_metric": {"type": "VARCHAR(32)", "constraints": "NOT NULL"},
                 "industry_code": {"type": "TEXT", "constraints": "NOT NULL"},
                 "industry_index":  {"type": "FLOAT", "constraints": ""},
@@ -108,7 +108,7 @@ DATA_WAREHOUSE_SCHEMA = {
             "columns": {
                 "trade_key":       {"type": "VARCHAR(32)", "constraints": "PRIMARY KEY"},
                 "trade_date":      {"type": "DATE",       "constraints": "NOT NULL"},
-                "company_key":     {"type": "VARCHAR(32)", "constraints": "REFERENCES dim_company(company_key)"},
+                "company_key":     {"type": "VARCHAR(32)", "constraints": "REFERENCES dw.dim_company(company_key)"},
                 "close_price":           {"type": "NUMERIC",     "constraints": ""},
                 "open_price":            {"type": "NUMERIC",     "constraints": ""},
                 "high_price":            {"type": "NUMERIC",     "constraints": ""},
@@ -125,7 +125,7 @@ DATA_WAREHOUSE_SCHEMA = {
             "grain": "1 record per match event",
             "columns": {
                 "match_key":       {"type": "VARCHAR(32)", "constraints": "PRIMARY KEY"},
-                "company_key":     {"type": "VARCHAR(32)", "constraints": "REFERENCES dim_company(company_key)"},
+                "company_key":     {"type": "VARCHAR(32)", "constraints": "REFERENCES dw.dim_company(company_key)"},
                 "match_datetime":  {"type": "TIMESTAMPTZ", "constraints": ""},
                 "price":           {"type": "NUMERIC",     "constraints": ""},
                 "volume":          {"type": "BIGINT",      "constraints": ""},
@@ -140,8 +140,8 @@ DATA_WAREHOUSE_SCHEMA = {
             "grain": "company × period (Y or Q)",
             "columns": {
                 "income_key":      {"type": "VARCHAR(32)", "constraints": "NOT NULL"},
-                "company_key":     {"type": "VARCHAR(32)", "constraints": "REFERENCES dim_company(company_key)"},
-                "time_report_type_key": {"type": "VARCHAR(32)", "constraints": "REFERENCES dim_report_type(report_type_key)"},
+                "company_key":     {"type": "VARCHAR(32)", "constraints": "REFERENCES dw.dim_company(company_key)"},
+                "time_report_type_key": {"type": "VARCHAR(32)", "constraints": "REFERENCES dw.dim_report_type(report_type_key)"},
                 "symbol":          {"type": "VARCHAR(32)", "constraints": ""},
                 "time_report_type":{"type": "VARCHAR(32)", "constraints": ""},
                 "financial_report_type":         {"type": "VARCHAR(32)",     "constraints": ""},
@@ -163,8 +163,8 @@ DATA_WAREHOUSE_SCHEMA = {
             "grain": "company × period (Y or Q)",
             "columns": {
                 "income_key":      {"type": "VARCHAR(32)", "constraints": "NOT NULL"},
-                "company_key":     {"type": "VARCHAR(32)", "constraints": "REFERENCES dim_company(company_key)"},
-                "time_report_type_key": {"type": "VARCHAR(32)", "constraints": "REFERENCES dim_report_type(report_type_key)"},
+                "company_key":     {"type": "VARCHAR(32)", "constraints": "REFERENCES dw.dim_company(company_key)"},
+                "time_report_type_key": {"type": "VARCHAR(32)", "constraints": "REFERENCES dw.dim_report_type(report_type_key)"},
                 "symbol":          {"type": "VARCHAR(32)", "constraints": ""},
                 "time_report_type":{"type": "VARCHAR(32)", "constraints": ""},
                 "financial_report_type":         {"type": "VARCHAR(32)",     "constraints": ""},
@@ -186,8 +186,8 @@ DATA_WAREHOUSE_SCHEMA = {
             "grain": "company × period (Y or Q)",
             "columns": {
                 "balance_key":      {"type": "VARCHAR(128)", "constraints": "NOT NULL"},
-                "company_key":     {"type": "VARCHAR(32)", "constraints": "REFERENCES dim_company(company_key)"},
-                "time_report_type_key": {"type": "VARCHAR(32)", "constraints": "REFERENCES dim_report_type(report_type_key)"},
+                "company_key":     {"type": "VARCHAR(32)", "constraints": "REFERENCES dw.dim_company(company_key)"},
+                "time_report_type_key": {"type": "VARCHAR(32)", "constraints": "REFERENCES dw.dim_report_type(report_type_key)"},
                 "symbol":          {"type": "VARCHAR(32)", "constraints": ""},
                 "time_report_type":{"type": "VARCHAR(32)", "constraints": ""},
                 "financial_report_type":         {"type": "VARCHAR(32)",     "constraints": ""},
@@ -208,8 +208,8 @@ DATA_WAREHOUSE_SCHEMA = {
             "grain": "company × period (Y or Q)",
             "columns": {
                 "balance_key":      {"type": "VARCHAR(128)", "constraints": "NOT NULL"},
-                "company_key":     {"type": "VARCHAR(32)", "constraints": "REFERENCES dim_company(company_key)"},
-                "time_report_type_key": {"type": "VARCHAR(32)", "constraints": "REFERENCES dim_report_type(report_type_key)"},
+                "company_key":     {"type": "VARCHAR(32)", "constraints": "REFERENCES dw.dim_company(company_key)"},
+                "time_report_type_key": {"type": "VARCHAR(32)", "constraints": "REFERENCES dw.dim_report_type(report_type_key)"},
                 "symbol":          {"type": "VARCHAR(32)", "constraints": ""},
                 "time_report_type":{"type": "VARCHAR(32)", "constraints": ""},
                 "financial_report_type":         {"type": "VARCHAR(32)",     "constraints": ""},
@@ -232,7 +232,7 @@ DATA_WAREHOUSE_SCHEMA = {
             "grain": "company × year plan",
             "columns": {
                 "plan_key":        {"type": "VARCHAR(32)", "constraints": "PRIMARY KEY"},
-                "company_key":     {"type": "VARCHAR(32)", "constraints": "REFERENCES dim_company(company_key)"},
+                "company_key":     {"type": "VARCHAR(32)", "constraints": "REFERENCES dw.dim_company(company_key)"},
                 "year":        {"type": "VARCHAR(12)", "constraints": ""},
                 "Plan_revenue":  {"type": "NUMERIC",     "constraints": ""},
                 "Revenue_Achived":   {"type": "NUMERIC",     "constraints": ""},
@@ -246,7 +246,7 @@ DATA_WAREHOUSE_SCHEMA = {
             "grain": "company × period",
             "columns": {
                 "financial_ratio_key":      {"type": "VARCHAR(32)", "constraints": "PRIMARY KEY"},
-                "company_key":     {"type": "VARCHAR(32)", "constraints": "REFERENCES dim_company(company_key)"},
+                "company_key":     {"type": "VARCHAR(32)", "constraints": "REFERENCES dw.dim_company(company_key)"},
                 "reference_price": {"type": "NUMERIC", "constraints": "NOT NULL "},
                 "company_name":    {"type": "TEXT", "constraints": "NOT NULL "},
                 "open_price":      {"type": "NUMERIC", "constraints": "NOT NULL "},

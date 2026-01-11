@@ -371,3 +371,100 @@ DETAIL:  Key (industry_key)=(financial_info_) already exists.
 {"time":"2026-01-10T18:06:03", "level":"INFO", "message":"[dim_industry] Loaded 142 rows", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/tests/intergration/test_postgres.py:118"}
 {"time":"2026-01-10T18:15:05", "level":"INFO", "message":"Inserted 142 rows into DW.DIM_INDUSTRY", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:48"}
 {"time":"2026-01-10T18:15:05", "level":"INFO", "message":"[dim_industry] Loaded 142 rows", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/tests/intergration/test_postgres.py:118"}
+{"time":"2026-01-10T18:25:09", "level":"ERROR", "message":"Query failed: relation "dw.dim_company" does not exist
+LINE 1: SELECT * FROM dw.dim_company WHERE company_key = 'VCB' AND i...
+                      ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:217"}
+{"time":"2026-01-10T18:28:20", "level":"ERROR", "message":"Execute failed: relation "dim_market_type" does not exist
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:196"}
+{"time":"2026-01-10T18:28:20", "level":"ERROR", "message":"Insert failed: relation "dw.dim_company" does not exist
+LINE 1: INSERT INTO DW.DIM_COMPANY (company_key, symbol, company_nam...
+                    ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-10T18:28:20", "level":"INFO", "message":"[dim_company] Loaded 374 rows", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/tests/intergration/test_postgres.py:128"}
+{"time":"2026-01-10T18:59:44", "level":"ERROR", "message":"Execute failed: relation "dim_market_type" does not exist
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:196"}
+{"time":"2026-01-10T18:59:44", "level":"ERROR", "message":"Insert failed: can't adapt type 'dict'", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-10T18:59:44", "level":"INFO", "message":"[dim_company] Loaded 374 rows", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/tests/intergration/test_postgres.py:128"}
+{"time":"2026-01-10T19:23:56", "level":"ERROR", "message":"Execute failed: relation "dim_market_type" does not exist
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:196"}
+{"time":"2026-01-10T19:23:56", "level":"ERROR", "message":"Insert failed: relation "private.dim_company" does not exist
+LINE 1: INSERT INTO PRIVATE.DIM_COMPANY (company_key, symbol, compan...
+                    ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-10T19:23:56", "level":"INFO", "message":"[dim_company] Loaded 374 rows", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/tests/intergration/test_postgres.py:128"}
+{"time":"2026-01-10T19:24:38", "level":"ERROR", "message":"Execute failed: relation "dim_market_type" does not exist
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:196"}
+{"time":"2026-01-10T19:24:38", "level":"ERROR", "message":"Insert failed: relation "dw.dim_company" does not exist
+LINE 1: INSERT INTO DW.DIM_COMPANY (company_key, symbol, company_nam...
+                    ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-10T19:24:38", "level":"INFO", "message":"[dim_company] Loaded 374 rows", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/tests/intergration/test_postgres.py:128"}
+{"time":"2026-01-10T19:32:11", "level":"ERROR", "message":"Execute failed: there is no unique constraint matching given keys for referenced table "dim_industry"
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:196"}
+{"time":"2026-01-10T19:32:11", "level":"ERROR", "message":"Insert failed: relation "dw.dim_company" does not exist
+LINE 1: INSERT INTO DW.DIM_COMPANY (company_key, symbol, company_nam...
+                    ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-10T19:32:11", "level":"INFO", "message":"[dim_company] Loaded 374 rows", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/tests/intergration/test_postgres.py:128"}
+{"time":"2026-01-10T19:56:18", "level":"ERROR", "message":"Execute failed: relation "dim_industry" does not exist
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:196"}
+{"time":"2026-01-10T19:56:18", "level":"ERROR", "message":"Insert failed: relation "dw.dim_company" does not exist
+LINE 1: INSERT INTO DW.DIM_COMPANY (company_key, symbol, company_nam...
+                    ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-10T19:56:18", "level":"INFO", "message":"[dim_company] Loaded 374 rows", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/tests/intergration/test_postgres.py:128"}
+{"time":"2026-01-10T19:56:43", "level":"ERROR", "message":"Execute failed: relation "dim_industry" does not exist
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:196"}
+{"time":"2026-01-10T19:56:43", "level":"ERROR", "message":"Insert failed: relation "dw.dim_company" does not exist
+LINE 1: INSERT INTO DW.DIM_COMPANY (company_key, symbol, company_nam...
+                    ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-10T19:56:43", "level":"INFO", "message":"[dim_company] Loaded 374 rows", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/tests/intergration/test_postgres.py:128"}
+{"time":"2026-01-11T09:26:51", "level":"ERROR", "message":"Execute failed: relation "dim_industry" does not exist
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:196"}
+{"time":"2026-01-11T09:26:51", "level":"ERROR", "message":"Insert failed: relation "dw.dim_company" does not exist
+LINE 1: INSERT INTO DW.DIM_COMPANY (company_key, symbol, company_nam...
+                    ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-11T09:26:51", "level":"INFO", "message":"[dim_company] Loaded 374 rows", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/tests/intergration/test_postgres.py:128"}
+{"time":"2026-01-11T09:43:48", "level":"INFO", "message":"Inserted 4 rows into DW.DIM_MARKET_TYPE", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:48"}
+{"time":"2026-01-11T09:43:48", "level":"INFO", "message":"[dim_market_type] Loaded 4 rows", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/tests/intergration/test_postgres.py:108"}
+{"time":"2026-01-11T09:44:34", "level":"ERROR", "message":"Insert failed: column "industry_sk" of relation "dim_industry" does not exist
+LINE 1: INSERT INTO DW.DIM_INDUSTRY (industry_sk, industry_key, indu...
+                                     ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-11T09:44:34", "level":"INFO", "message":"[dim_industry] Loaded 142 rows", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/tests/intergration/test_postgres.py:118"}
+{"time":"2026-01-11T09:45:08", "level":"INFO", "message":"Inserted 142 rows into DW.DIM_INDUSTRY", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:48"}
+{"time":"2026-01-11T09:45:08", "level":"INFO", "message":"[dim_industry] Loaded 142 rows", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/tests/intergration/test_postgres.py:118"}
+{"time":"2026-01-11T09:45:38", "level":"ERROR", "message":"Execute failed: relation "dim_industry" does not exist
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:196"}
+{"time":"2026-01-11T09:45:39", "level":"ERROR", "message":"Insert failed: relation "dw.dim_company" does not exist
+LINE 1: INSERT INTO DW.DIM_COMPANY (company_key, symbol, company_nam...
+                    ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-11T09:45:39", "level":"INFO", "message":"[dim_company] Loaded 374 rows", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/tests/intergration/test_postgres.py:128"}
+{"time":"2026-01-11T09:54:32", "level":"ERROR", "message":"Execute failed: column "industry_sk" referenced in foreign key constraint does not exist
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:196"}
+{"time":"2026-01-11T09:54:32", "level":"ERROR", "message":"Insert failed: relation "dw.dim_company" does not exist
+LINE 1: INSERT INTO DW.DIM_COMPANY (company_key, symbol, company_nam...
+                    ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-11T09:54:32", "level":"INFO", "message":"[dim_company] Loaded 374 rows", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/tests/intergration/test_postgres.py:128"}
+{"time":"2026-01-11T10:06:31", "level":"INFO", "message":"Inserted 4 rows into DW.DIM_MARKET_TYPE", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:48"}
+{"time":"2026-01-11T10:06:31", "level":"INFO", "message":"[dim_market_type] Loaded 4 rows", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/tests/intergration/test_postgres.py:108"}
+{"time":"2026-01-11T10:06:31", "level":"INFO", "message":"Inserted 142 rows into DW.DIM_INDUSTRY", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:48"}
+{"time":"2026-01-11T10:06:31", "level":"INFO", "message":"[dim_industry] Loaded 142 rows", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/tests/intergration/test_postgres.py:118"}
+{"time":"2026-01-11T10:06:32", "level":"ERROR", "message":"Insert failed: invalid input syntax for type timestamp with time zone: ""
+LINE 1: ...tcombank.com.vn', '2009-06-30', NULL, NULL, NULL, '', NULL, ...
+                                                             ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-11T10:06:32", "level":"INFO", "message":"[dim_company] Loaded 374 rows", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/tests/intergration/test_postgres.py:128"}
+{"time":"2026-01-11T10:11:15", "level":"INFO", "message":"Inserted 4 rows into DW.DIM_MARKET_TYPE", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:48"}
+{"time":"2026-01-11T10:11:15", "level":"INFO", "message":"[dim_market_type] Loaded 4 rows", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/tests/intergration/test_postgres.py:108"}
+{"time":"2026-01-11T10:11:16", "level":"INFO", "message":"Inserted 142 rows into DW.DIM_INDUSTRY", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:48"}
+{"time":"2026-01-11T10:11:16", "level":"INFO", "message":"[dim_industry] Loaded 142 rows", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/tests/intergration/test_postgres.py:118"}
+{"time":"2026-01-11T10:11:17", "level":"INFO", "message":"Inserted 374 rows into DW.DIM_COMPANY", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:48"}
+{"time":"2026-01-11T10:11:17", "level":"INFO", "message":"[dim_company] Loaded 374 rows", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/tests/intergration/test_postgres.py:128"}
+{"time":"2026-01-11T10:15:26", "level":"INFO", "message":"Inserted 2 rows into DW.DIM_REPORT_TYPE", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:48"}
+{"time":"2026-01-11T10:15:26", "level":"INFO", "message":"[dim_report_type] Loaded 2 rows", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/tests/intergration/test_postgres.py:137"}
