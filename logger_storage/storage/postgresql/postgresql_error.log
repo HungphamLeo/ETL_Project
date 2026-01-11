@@ -361,3 +361,27 @@ LINE 1: INSERT INTO DW.DIM_COMPANY (company_key, symbol, company_nam...
 LINE 1: ...tcombank.com.vn', '2009-06-30', NULL, NULL, NULL, '', NULL, ...
                                                              ^
 ", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-11T10:41:47", "level":"ERROR", "message":"Insert failed: duplicate key value violates unique constraint "dim_report_type_pkey"
+DETAIL:  Key (report_type_key)=(Y) already exists.
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-11T15:39:02", "level":"ERROR", "message":"Insert failed: 'Earning_Per_Share(EPS'", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-11T16:10:02", "level":"ERROR", "message":"Insert failed: 'Earning_Per_Share(EPS'", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-11T22:16:22", "level":"ERROR", "message":"Insert failed: syntax error at or near "/"
+LINE 1: ...k_Value, Earning_Per_Share_EPS, Price_on_Earning_P/E, Return...
+                                                             ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-11T22:17:25", "level":"ERROR", "message":"Insert failed: column "percentage_change" of relation "fact_industry_summary" does not exist
+LINE 1: ...sk, industry_code, industry_name, industry_index, Percentage...
+                                                             ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-11T22:30:53", "level":"ERROR", "message":"Insert failed: invalid input syntax for type double precision: "0.000.00%"
+LINE 1: ...S ('798026212311044096', '^hastc', 'HNX', '0.00', '0.000.00%...
+                                                             ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-11T22:40:19", "level":"ERROR", "message":"Insert failed: invalid input syntax for type double precision: "13,029,058,299"
+LINE 1: ...8026212311044096', '^hastc', 'HNX', '0.00', NULL, '13,029,05...
+                                                             ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-11T22:52:00", "level":"ERROR", "message":"Insert failed: null value in column "industry_metric" of relation "fact_industry_summary" violates not-null constraint
+DETAIL:  Failing row contains (798026212311044096, null, ^hastc, HNX, 0, null, 13029058299, 327280.1, null, null, null, 14.03, 3.64, 11.18, 13029058299, 641151166, 208714092, 432445633, 207, 33, 362258905, 23326611, 2026-01-11 15:51:56.406591+00, 2026-01-08 13:23:08.380185+00).
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}

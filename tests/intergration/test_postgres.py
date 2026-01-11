@@ -24,6 +24,35 @@ config = PrefectETLPipelineConfig(config_path=config_path)
 postgresql_config_etl_arg = config.config.get("storage", {}).get("postgreSQL", {}).get("reties_etl_flows", {})
 
 
+class DimRepo:
+    def __init__(self, pg_client, schema_name="dw"):
+        self.pg_client = pg_client
+        self.schema_name = schema_name
+
+    def get_or_create(self, value, table_name, table_creator):
+        # Simple implementation: check if exists, if not insert
+        if table_name == "dim_company":
+            result = self.pg_client.query(f"SELECT company_key FROM {self.schema_name}.{table_name} WHERE symbol = %s", (value,))
+            rows = result.get("results", []) if result.get("ok") else []
+            if rows:
+                return rows[0]['company_key']
+            else:
+                key = table_creator.get_id()
+                self.pg_client.execute(f"INSERT INTO {self.schema_name}.{table_name} (company_key, symbol) VALUES (%s, %s)", (key, value))
+                return key
+        elif table_name == "dim_industry":
+            result = self.pg_client.query(f"SELECT industry_sk FROM {self.schema_name}.{table_name} WHERE industry_code = %s AND is_current = TRUE", (value,))
+            rows = result.get("results", []) if result.get("ok") else []
+            if rows:
+                return rows[0]['industry_sk']
+            else:
+                key = table_creator.get_id()
+                self.pg_client.execute(f"INSERT INTO {self.schema_name}.{table_name} (industry_sk, industry_code, effective_date, is_current) VALUES (%s, %s, %s, %s)", (key, value, '2026-01-11', True))
+                return key
+        # Add more as needed
+        return None
+
+
 
 def build_backend_mongo(config:PrefectETLPipelineConfig, logger):
     """
@@ -213,7 +242,12 @@ def load_fact_financial_metrics(datalake_config, table_creator, mongo_reader, lo
 
 
 def load_fact_industry(datalake_config, table_creator, mongo_reader, logger, pg_client, dim_repo):
-    loader = FactIndustryLoader(datalake_config, table_creator, mongo_reader, dim_repo, logger, pg_client)
+    loader = FactIndustryLoader(datalake_config = datalake_config, 
+                                table_creator=table_creator, 
+                                mongo_reader=mongo_reader, 
+                                dim_repo=dim_repo, 
+                                datawarehouse_logger=logger, 
+                                postgres_client=pg_client)
     df, sql = loader.load()
     pg_client.execute(sql)
     pg_client.bulk_insert(f"{loader.schema_name}.{loader.fact_name.upper()}", df)
@@ -234,11 +268,12 @@ def dw_full_load():
     mongo_config, loading_datalake, backend_mongo = build_backend_mongo(pipeline_config, mongodb_logger)
 
     table_creator = TableCreator(machine_id=1, character_specific=None)
+    dim_repo = DimRepo(backend_postgres)
 
     # load_dim_market_type(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
     # load_dim_industry(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
     # load_dim_company(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
-    load_dim_report_type(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
+    # load_dim_report_type(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
     
 
     # load_fact_trade(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
@@ -247,7 +282,7 @@ def dw_full_load():
     # load_fact_balance(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
     # load_fact_business_plan(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
     # load_fact_financial_metrics(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
-    # load_fact_industry(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
+    load_fact_industry(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres, dim_repo=dim_repo)
 
 
 

@@ -253,8 +253,9 @@ class DimCompanyLoader(DimLoader):
             f"SELECT market_key FROM {self.schema_name}.dim_market_type WHERE market_type = %s",
             (market_type,)
         )
-        if result:
-            return result[0]['market_key']
+        rows = result.get("results", []) if result.get("ok") else []
+        if rows:
+            return rows[0]['market_key']
         else:
             # If not found, insert new record
             market_key = self.table_creator.get_id()
@@ -273,8 +274,9 @@ class DimCompanyLoader(DimLoader):
             f"SELECT industry_sk FROM {self.schema_name}.dim_industry WHERE industry_code = %s AND is_current = TRUE",
             (industry_code,)
         )
-        if result:
-            return result[0]['industry_sk']
+        rows = result.get("results", []) if result.get("ok") else []
+        if rows:
+            return rows[0]['industry_sk']
         else:
             # If not found, insert new record
             industry_sk = self.table_creator.get_id()
@@ -715,51 +717,86 @@ class FactFinancialMetricsLoader(FactLoader):
         return df, sql
 
 class FactIndustryLoader(FactLoader):
-    def __init__(self, datalake_config, datawarehouse_logger, postgres_client, dim_repo, mongo_reader):
-        table_creator = TableCreator(machine_id=1, character_specific=None)
+    def __init__(self, datalake_config, table_creator, datawarehouse_logger, postgres_client, dim_repo, mongo_reader):
         super().__init__(datalake_config, table_creator, mongo_reader, dim_repo, datawarehouse_logger, postgres_client)
         self.collection_name = self._get_collection("industry_list")
         self.fact_name = self._get_fact_name("fact_industry_summary", "fact_industry_summary")
     
+    def parse_number(self,val):
+        if val is None:
+            return None
+
+        if isinstance(val, (int, float)):
+            return float(val)
+
+        s = str(val).strip()
+
+        if s in ("", "-", "—", "N/A", "NA"):
+            return None
+
+        s = s.replace(",", "")
+        s = s.replace("%", "")
+
+        try:
+            return float(s)
+        except ValueError:
+            return None
+
+
     def load(self):
         raw = self.mongo.find_table(self.collection_name)
         rows = []
+        data_reconcile = {}
+        exist_keys = set()
         for documentation in raw.get("data"):
-            
-            industry_metric = documentation.get("industry_metric")
-            if industry_metric == "summary_info":
-                summary_data = documentation.get("data")
-            elif industry_metric == "financial_info":
-                financial_data = documentation.get("data")
-            elif industry_metric == "fund_info":
-                fund_info_data = documentation.get("data")
-        for info_key, info_value in summary_data.get("data").items():
+            for keys, values in documentation.get("data")[0].items():
+                parts = str(keys).split("_")
+                industry_code = parts[1]
+                industry_name = parts[2]
+                new_keys = (industry_code, industry_name)
+                values["industry_code"] = industry_code
+                values["industry_name"] = industry_name
+                if new_keys not in exist_keys:
+                    exist_keys.add(new_keys)
+                    data_reconcile[new_keys] = values
+                else:
+                    dict_1 = data_reconcile[new_keys]
+                    dict_2 = values
+                    dict_3 = {**dict_1, **dict_2}
+                    data_reconcile[new_keys] = dict_3
+        for info in data_reconcile:
+            value_dict = data_reconcile[info]
             rows.append({
-                "industry_sk":self.get_industry_key(info_key.split("_")[1]),
-                "industry_code": info_key.split("_")[1],
-                "industry_index": info_value.get("index"),
-                "Percentage_change":info_value.get("change"),
-                "Liquidity": info_value.get("liquidity"),
-                "Total_Capital": info_value.get("capital"),
-                "Average_Price": financial_data.get("data").get(info_key).get("avg_price"),
-                "Book_Value": financial_data.get("data").get(info_key).get("book_value"),
-                "Earning_Per_Share(EPS)":financial_data.get("data").get(info_key).get("eps"),
-                "Price on Earning(P/E)":financial_data.get("data").get(info_key).get("pe"),
-                "Return on Asset(ROA)":financial_data.get("data").get(info_key).get("roa"),
-                "Return on Equity(ROE)":financial_data.get("data").get(info_key).get("roe"),
-                "Supply_Volumn": fund_info_data.get("data").get(info_key).get("supply_volumn"),
-                "Total_Asset": fund_info_data.get("data").get(info_key).get("total_asset"),
-                "Total_Equity": fund_info_data.get("data").get(info_key).get("total_equity"),
-                "Total_Liabilities": fund_info_data.get("data").get(info_key).get("total_liabilities"),
-                "Percentage_Debt_on_Equity": fund_info_data.get("data").get(info_key).get("percentage_debt_on_equity"),
-                "Percentage_Equity_on_Assets": fund_info_data.get("data").get(info_key).get("percentage_equity_on_assets"),
-                "Revenue": fund_info_data.get("data").get(info_key).get("revenue"),
-                "Profit_Before_Tax": fund_info_data.get("data").get(info_key).get("profit_before_tax"),
-                "created_time":  datetime.utcnow().isoformat(),
-                "update_time": documentation.get("update_time") or datetime.utcnow().isoformat()
+                "industry_sk": self.get_industry_key(info[0]),
+                "industry_code": value_dict.get("industry_code"),
+                "industry_name": value_dict.get("industry_name"),
+                "industry_index": self.parse_number(value_dict.get("index")),
+                "percentage_change": self.parse_number(value_dict.get("change")),
+                "liquidity": self.parse_number(value_dict.get("liquidity")),
+                "total_capital": self.parse_number(value_dict.get("capital")),
+                "average_price": self.parse_number(value_dict.get("avg_price")),
+                "book_value": self.parse_number(value_dict.get("book_value")),
+                "earning_per_share_eps": self.parse_number(value_dict.get("eps")),
+                "price_on_earning_pe": self.parse_number(value_dict.get("pe")),
+                "return_on_asset_roa": self.parse_number(value_dict.get("roa")),
+                "return_on_equity_roe": self.parse_number(value_dict.get("roe")),
+                "supply_volumn": self.parse_number(value_dict.get("supply_volumn")),
+                "total_asset": self.parse_number(value_dict.get("total_asset")),
+                "total_equity": self.parse_number(value_dict.get("total_equity")),
+                "total_liabilities": self.parse_number(value_dict.get("total_liabilities")),
+                "percentage_debt_on_equity": self.parse_number(value_dict.get("percentage_debt_on_equity")),
+                "percentage_equity_on_assets": self.parse_number(value_dict.get("percentage_equity_on_assets")),
+                "revenue": self.parse_number(value_dict.get("revenue")),
+                "profit_before_tax": self.parse_number(value_dict.get("profit_before_tax")),
+                "created_time": datetime.utcnow(),
+                "updated_time": documentation.get("update_time") or datetime.utcnow()
             })
+
         df = pd.DataFrame(rows)
+     
+        # pd.set_option("display.max_columns", None)
+        # pd.set_option("display.max_rows", None)
+        # print(df)
         sql = self.create_fact_table_sql(self.fact_name)
         return df, sql
                    
-
