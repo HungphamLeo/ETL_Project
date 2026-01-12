@@ -43,7 +43,7 @@ class BaseLoader:
     def _get_collection(self, key: str) -> str:
         return self.collection_map.get(key, key)
 
-    def _create_table_sql(self, name: str) -> str:
+    def _create_table_sql(self, name: str, table_creator:TableCreator) -> str:
         # determine if dim or fact
         if name.startswith("dim"):
             sections = self.schema_dw.get("dimensions", {})
@@ -60,7 +60,7 @@ class BaseLoader:
                 cons = parts[1] if len(parts) > 1 else ""
                 norm[col] = {"type": typ, "constraints": cons}
         schema_name = self.schema_dw.get("schema_name", "public")
-        return self.table_creator.generate_create_table_sql(name, norm, schema_name)
+        return table_creator.generate_create_table_sql(name, norm, schema_name)
 
 
 
@@ -101,7 +101,7 @@ class FactLoader(BaseLoader):
             return found
         return fallback
 
-    def create_fact_table_sql(self, fact_name: str) -> str:
+    def create_fact_table_sql(self, fact_name: str, table_creator: TableCreator) -> str:
         table_info = self.schema_dw["facts"][fact_name]["columns"]
         norm = {}
         for col, meta in table_info.items():
@@ -113,21 +113,21 @@ class FactLoader(BaseLoader):
                 cons = parts[1] if len(parts) > 1 else ""
                 norm[col] = {"type": typ, "constraints": cons}
         schema_name = self.schema_dw.get("schema_name", "public")
-        return self.table_creator.generate_create_table_sql(fact_name, norm, schema_name)
+        return table_creator.generate_create_table_sql(fact_name, norm, schema_name)
 
-    def get_company_key(self, symbol: str) -> str:
-        return self.dim_repo.get_or_create(symbol, "dim_company", self.table_creator)
+    def get_company_key(self, symbol: str, table_creator: TableCreator) -> str:
+        return self.dim_repo.get_or_create(symbol, "dim_company", table_creator)
     
-    def get_market_key(self, market_type: str) ->str:
-        return self.dim_repo.get_or_create(market_type, "dim_market_type", self.table_creator)
-    def get_industry_key(self, industry: str) -> str:
-        return self.dim_repo.get_or_create(industry, "dim_industry", self.table_creator)
+    def get_market_key(self, market_type: str, table_creator:TableCreator) ->str:
+        return self.dim_repo.get_or_create(market_type, "dim_market_type", table_creator)
+    def get_industry_key(self, industry: str, table_creator:TableCreator) -> str:
+        return self.dim_repo.get_or_create(industry, "dim_industry", table_creator)
 
-    def get_report_type_key(self, report_type: str) -> str:
-        return self.dim_repo.get_or_create(report_type, "dim_report_type", self.table_creator)
+    def get_report_type_key(self, report_type: str, table_creator:TableCreator) -> str:
+        return self.dim_repo.get_or_create(report_type, "dim_report_type", table_creator)
 
-    def get_date_key(self, date_str: str) -> str:
-        return self.dim_repo.get_or_create(date_str, "dim_date", self.table_creator)
+    def get_date_key(self, date_str: str, table_creator:TableCreator) -> str:
+        return self.dim_repo.get_or_create(date_str, "dim_date", table_creator)
 
 # dim_market_type
 class DimMarketTypeLoader(DimLoader):
@@ -159,7 +159,7 @@ class DimMarketTypeLoader(DimLoader):
                 "created_time": datetime.utcnow().isoformat()
             })
         df = pd.DataFrame(rows)
-        sql = self._create_table_sql(self.dim_name)
+        sql = self._create_table_sql(self.dim_name, self.table_creator)
         df.drop_duplicates()
         return df, sql
 
@@ -194,7 +194,7 @@ class DimIndustryLoader(DimLoader):
                         "created_time": info.get("update_time") or datetime.utcnow().isoformat()
                     })
         df = pd.DataFrame(rows)
-        sql = self._create_table_sql(self.dim_name)
+        sql = self._create_table_sql(self.dim_name, self.table_creator)
         df.drop_duplicates()
         return df, sql
 
@@ -246,7 +246,7 @@ class DimCompanyLoader(DimLoader):
             })
 
         df = pd.DataFrame(rows)
-        sql = self._create_table_sql(self.dim_name)
+        sql = self._create_table_sql(self.dim_name, self.table_creator)
         df.drop_duplicates()
         return df, sql
 
@@ -307,7 +307,7 @@ class DimReportTypeLoader(DimLoader):
             {"report_type_key": "Q", "report_type_code": "Q", "description": "quarterly"},
         ]
         df = pd.DataFrame(mapping)
-        sql = self._create_table_sql(self.dim_name)
+        sql = self._create_table_sql(self.dim_name, self.table_creator)
         df.drop_duplicates()
         return df, sql
 
@@ -325,7 +325,7 @@ class FactTradeLoader(FactLoader):
         raw_docs = self.mongo.find_table(self.collection_name)
         rows = []
         for doc in raw_docs.get("data"):
-            company_key = self.get_company_key(doc.get("symbol"))
+            company_key = self.get_company_key(doc.get("symbol"),self.table_creator)
 
             trade_dt = doc.get("trade_datetime")
             rows.append({
@@ -344,7 +344,7 @@ class FactTradeLoader(FactLoader):
                 
             })
         df = pd.DataFrame(rows)
-        sql = self.create_fact_table_sql(self.fact_name)
+        sql = self.create_fact_table_sql(self.fact_name, self.table_creator)
         df.drop_duplicates()
         return df, sql
 
@@ -362,7 +362,7 @@ class FactMatchDetailLoader(FactLoader):
         raw = list(self.mongo.find_table(self.collection_name) or [])
         rows = []
         for doc in raw.get("data"):
-            company_key = self.get_company_key(doc.get("symbol"))
+            company_key = self.get_company_key(doc.get("symbol"),self.table_creator)
             rows.append({
                 "match_key": self.table_creator.get_id(),
                 "company_key": company_key,
@@ -375,7 +375,7 @@ class FactMatchDetailLoader(FactLoader):
                 
             })
         df = pd.DataFrame(rows)
-        sql = self.create_fact_table_sql(self.fact_name)
+        sql = self.create_fact_table_sql(self.fact_name, self.table_creator)
         df.drop_duplicates()
         return df, sql
 
@@ -397,10 +397,7 @@ class FactIncomeStatementLoader(FactLoader):
         symbol = doc.get("symbol")
         report_type = doc.get("report_type")
         update_time = doc.get("update_time")
-        if not isinstance(data, pd.DataFrame):
-            return []
 
-        df = data.copy()
         period_columns = [c for c in df.columns if c != "Chỉ tiêu"]
         company_key = self.get_company_key(doc.symbol)
         time_report_type_key = self.get_report_type_key(report_type = "quarterly")
@@ -489,7 +486,7 @@ class FactIncomeStatementLoader(FactLoader):
         df = pd.DataFrame(rows)
         df["currency"] = Pattern_IncomeStatementStandardLoadToDW.currency
         df["unit"] =Pattern_IncomeStatementStandardLoadToDW.unit
-        sql = self.create_fact_table_sql(self.fact_income_statement_quarterly)
+        sql = self.create_fact_table_sql(self.fact_income_statement_quarterly, self.table_creator_quaterly)
         df.drop_duplicates()
         return df, sql
 
@@ -502,15 +499,14 @@ class FactIncomeStatementLoader(FactLoader):
         df = pd.DataFrame(rows)
         df["currency"] = Pattern_IncomeStatementStandardLoadToDW.currency
         df["unit"] =Pattern_IncomeStatementStandardLoadToDW.unit
-        sql = self.create_fact_table_sql(self.fact_income_statement_annually)
+        sql = self.create_fact_table_sql(self.fact_income_statement_annually, self.table_creator_annually)
         df.drop_duplicates()
         return df, sql
 
 # FactBalanceSheetLoader (BalanceSheetDoc)
 class FactBalanceSheetLoader(FactLoader):
     def __init__(self, datalake_config, datawarehouse_logger, postgres_client, dim_repo, mongo_reader):
-        table_creator = TableCreator(machine_id=1, character_specific=None)
-        super().__init__(datalake_config, table_creator, mongo_reader, dim_repo, datawarehouse_logger, postgres_client)
+        super().__init__(datalake_config, mongo_reader, dim_repo, datawarehouse_logger, postgres_client)
         # can map both annually/quarterly collections
         self.collection_balance_sheet_annually = self._get_collection("balance_sheet_annually")
         self.collection_balance_sheet_quarterly = self._get_collection("balance_sheet_quarterly")
@@ -524,25 +520,18 @@ class FactBalanceSheetLoader(FactLoader):
         symbol = doc.get("symbol")
         report_type = doc.get("report_type")
         update_time = doc.get("update_time")
-        if not isinstance(data, pd.DataFrame):
-            return []
-
-        df = data.copy()
-        period_columns = [c for c in df.columns if c != "Chỉ tiêu"]
-        company_key = self.get_company_key(doc.symbol)
-        time_report_type_key = self.get_report_type_key(report_type = "quarterly")
+        company_key = self.get_company_key(symbol,self.table_creator_quaterly)
+        time_report_type_key = self.get_report_type_key(report_type = report_type, table_creator=self.table_creator_quaterly)
 
         rows = []
-        for _, r in df.iterrows():
-            metric_vi = r["Chỉ tiêu"]
+        for info in data:
+            print(info)
+            period_columns = [c for c in list(info.keys()) if c != "Chỉ tiêu"]
+            metric_vi = info["Chỉ tiêu"]
             mapping = Pattern_BalanceSheetStandardLoadToDW.METRIC_MAPPING.get(metric_vi)
-            if not mapping:
-                continue  # hoặc log warning
-
+           
             for col in period_columns:
-                quarter, year = col.split("_")
-                if pd.isna(r[col]):
-                    continue
+                _, quarter, year = col.split(" ")
 
                 rows.append({
                     "balance_key": self.table_creator_quaterly.get_id(),
@@ -556,10 +545,10 @@ class FactBalanceSheetLoader(FactLoader):
                     "metric_code": mapping["metric_code"],
                     "metric_name_en": mapping["metric_name_en"],
                     "metric_group": mapping["metric_group"],
-                    "metric_value": float(r[col]),
+                    "metric_value": float(col),
                     "update_time": update_time
                 })
-
+                print(len(rows))
         return rows
     
     def transform_balance_sheet_annually(self, doc):
@@ -567,27 +556,20 @@ class FactBalanceSheetLoader(FactLoader):
         symbol = doc.get("symbol")
         report_type = doc.get("report_type")
         update_time = doc.get("update_time")
-        if not isinstance(data, pd.DataFrame):
-            return []
-
-        df = data.copy()
-        period_columns = [c for c in df.columns if c != "Chỉ tiêu"]
-        company_key = self.get_company_key(doc.symbol)
-        time_report_type_key = self.get_report_type_key(report_type = "annually")
+        company_key = self.get_company_key(symbol,self.table_creator_annually)
+        time_report_type_key = self.get_report_type_key(report_type = report_type, table_creator=self.table_creator_annually)
 
         rows = []
-        for _, r in df.iterrows():
-            metric_vi = r["Chỉ tiêu"]
-
+        for info in data:
+            period_columns = [c for c in list(info.keys()) if c != "Chỉ tiêu"]
+            metric_vi = info["Chỉ tiêu"]
             mapping = Pattern_BalanceSheetStandardLoadToDW.METRIC_MAPPING.get(metric_vi)
             if not mapping:
                 continue  # hoặc log warning
+            
 
             for col in period_columns:
                 _, year = col.split(" ")
-                if pd.isna(r[col]):
-                    continue
-
                 rows.append({
                     "balance_key": self.table_creator_annually.get_id(),
                     "company_key": company_key,
@@ -599,7 +581,7 @@ class FactBalanceSheetLoader(FactLoader):
                     "metric_code": mapping["metric_code"],
                     "metric_name_en": mapping["metric_name_en"],
                     "metric_group": mapping["metric_group"],
-                    "metric_value": float(r[col]),
+                    "metric_value": float(info[col]),
                     "update_time": update_time
                 })
 
@@ -607,26 +589,28 @@ class FactBalanceSheetLoader(FactLoader):
     def load_fact_balance_sheet_quarterly(self):
         raw = self.mongo.find_table(self.collection_balance_sheet_quarterly)
         rows = []
-        for doc in raw:
+        print(raw)
+        for doc in raw.get("data"):
             record = self.transform_balance_sheet_quarterly(doc)
-            rows = list(set(rows.extend(record)))
+            rows.extend(record)
+        print(len(rows))
         df = pd.DataFrame(rows)
         df["currency"] = Pattern_BalanceSheetStandardLoadToDW.currency
         df["unit"] = Pattern_BalanceSheetStandardLoadToDW.unit
-        sql = self.create_fact_table_sql(self.fact_balance_sheet_quarterly)
+        sql = self.create_fact_table_sql(self.fact_balance_sheet_quarterly,self.table_creator_quaterly)
         df.drop_duplicates()
         return df, sql
     
     def load_fact_balance_sheet_annually(self):
         raw = self.mongo.find_table(self.collection_balance_sheet_annually)
         rows = []
-        for doc in raw:
+        for doc in raw.get("data"):
             record = self.transform_balance_sheet_annually(doc)
-            rows = list(set(rows.extend(record)))
+            rows.extend(record)
         df = pd.DataFrame(rows)
         df["currency"] = Pattern_BalanceSheetStandardLoadToDW.currency
         df["unit"] = Pattern_BalanceSheetStandardLoadToDW.unit
-        sql = self.create_fact_table_sql(self.fact_balance_sheet_annually)
+        sql = self.create_fact_table_sql(self.fact_balance_sheet_annually,self.table_creator_annually)
         df.drop_duplicates()
         return df, sql
     
@@ -644,7 +628,7 @@ class FactBusinessPlanLoader(FactLoader):
         raw = self.mongo.find_table(self.collection_name)
         rows = []
         for doc in raw.get("data"):
-            company_key = self.get_company_key(doc.get("symbol"))
+            company_key = self.get_company_key(doc.get("symbol"),self.table_creator)
             rows.append({
                 "plan_key": self.table_creator.get_id(),
                 "company_key": company_key,
@@ -659,7 +643,7 @@ class FactBusinessPlanLoader(FactLoader):
             })
         df = pd.DataFrame(rows)
         df.drop_duplicates()
-        sql = self.create_fact_table_sql(self.fact_name)
+        sql = self.create_fact_table_sql(self.fact_name,self.table_creator)
         return df, sql
 
 class FactFinancialMetricsLoader(FactLoader):
@@ -677,7 +661,7 @@ class FactFinancialMetricsLoader(FactLoader):
         for doc in raw.get("data"):
             # fdoc = FinancialInfoDoc.from_extract(doc)
 
-            company_key = self.get_company_key(doc.get("symbol"))
+            company_key = self.get_company_key(doc.get("symbol"),self.table_creator)
                 # period_key = self.get_date_key(r.get("period"))
             rows.append({
                 "financial_ratio_key": self.table_creator.get_id(),
@@ -713,7 +697,7 @@ class FactFinancialMetricsLoader(FactLoader):
             })
         df = pd.DataFrame(rows)
         df.drop_duplicates()
-        sql = self.create_fact_table_sql(self.fact_name)
+        sql = self.create_fact_table_sql(self.fact_name,self.table_creator)
         return df, sql
 
 class FactIndustryLoader(FactLoader):
@@ -768,7 +752,7 @@ class FactIndustryLoader(FactLoader):
         for info in data_reconcile:
             value_dict = data_reconcile[info]
             rows.append({
-                "industry_sk": self.get_industry_key(info[0]),
+                "industry_sk": self.get_industry_key(info[0], self.table_creator),
                 "industry_code": value_dict.get("industry_code"),
                 "industry_name": value_dict.get("industry_name"),
                 "industry_index": self.parse_number(value_dict.get("index")),
@@ -798,6 +782,6 @@ class FactIndustryLoader(FactLoader):
         # pd.set_option("display.max_columns", None)
         # pd.set_option("display.max_rows", None)
         # print(df)
-        sql = self.create_fact_table_sql(self.fact_name)
+        sql = self.create_fact_table_sql(self.fact_name,self.table_creator)
         return df, sql
                    

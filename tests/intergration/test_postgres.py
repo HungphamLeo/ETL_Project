@@ -218,17 +218,21 @@ def load_fact_income(datalake_config, mongo_reader, logger, pg_client, dim_repo)
 
 
 # @task
-def load_fact_balance(datalake_config,  mongo_reader, logger, pg_client, dim_repo):
-    loader = FactBalanceSheetLoader(datalake_config, mongo_reader, dim_repo, logger, pg_client)
+def load_fact_balance(datalake_config, mongo_reader, logger, pg_client, dim_repo):
+    loader = FactBalanceSheetLoader(datalake_config = datalake_config, 
+                                mongo_reader=mongo_reader, 
+                                dim_repo=dim_repo, 
+                                datawarehouse_logger=logger, 
+                                postgres_client=pg_client)
     df_quarterly, sql_quarterly = loader.load_fact_balance_sheet_quarterly()
     pg_client.execute(sql_quarterly)
     pg_client.bulk_insert(f"{loader.schema_name}.{loader.fact_balance_sheet_quarterly.upper()}", df_quarterly)
+    # time.sleep(3)
+    # df_annual, sql_annual = loader.load_fact_balance_sheet_annually()
+    # pg_client.execute(sql_annual)
+    # pg_client.bulk_insert(f"{loader.schema_name}.{loader.fact_balance_sheet_annually.upper()}", df_annual)
 
-    df_annual, sql_annual = loader.load_fact_balance_sheet_annually()
-    pg_client.execute(sql_annual)
-    pg_client.bulk_insert(f"{loader.schema_name}.{loader.fact_balance_sheet_annually.upper()}", df_annual)
-
-    logger.info(f"[{loader.fact_balance_sheet_annually}] Loaded {len(df_annual)} rows")
+    # logger.info(f"[{loader.fact_balance_sheet_annually}] Loaded {len(df_annual)} rows")
     logger.info(f"[{loader.fact_balance_sheet_quarterly}] Loaded {len(df_quarterly)} rows")
     time.sleep(3)
     return True
@@ -305,12 +309,12 @@ def dw_full_load():
     # load_fact_trade(datalake_config=mongo_config,  mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres, dim_repo=dim_repo)
     # load_fact_match(datalake_config=mongo_config, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
     # load_fact_income(datalake_config=mongo_config,  mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
-    # load_fact_balance(datalake_config=mongo_config, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
+    load_fact_balance(datalake_config=mongo_config, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres,dim_repo=dim_repo)
     
     # load_fact_financial_metrics(datalake_config=mongo_config, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres, dim_repo=dim_repo)
     # load_fact_industry(datalake_config=mongo_config, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres, dim_repo=dim_repo)
-    load_fact_business_plan(datalake_config=mongo_config, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres, dim_repo=dim_repo)
-
+    # load_fact_business_plan(datalake_config=mongo_config, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres, dim_repo=dim_repo)
+    print("done")
 
 
 if __name__ == "__main__":

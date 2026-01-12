@@ -228,7 +228,7 @@ class ExtractCophieu68(Cophieu68BeautifulSoupCrawler):
             url = f"{self.urls}{self.endpoint['financial_details_year']}".format(symbol=symbol.lower())
         else:
             url = f"{self.urls}{self.endpoint['financial_details_quarter']}".format(symbol=symbol.lower())
-        
+       
         try:
             soup = self.get_soup(url)
             if not soup:
@@ -282,8 +282,9 @@ class ExtractCophieu68(Cophieu68BeautifulSoupCrawler):
             Optional[BalanceSheet]: Detailed balance sheet data
         """
         try:
-            reports = self.crawl_detailed_financial_report(symbol)
+            reports = self.crawl_detailed_financial_report(symbol, report_type)
             balance_report = reports["table_1"] if reports else None
+            
             return BalanceSheet(symbol=symbol.upper(), report_type=report_type, data=balance_report).__dict__
         except Exception as e:
             self.logger.error(f"Error crawling balance sheet for {symbol}: {e}")
