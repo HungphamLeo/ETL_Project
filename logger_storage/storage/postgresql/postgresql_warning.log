@@ -385,3 +385,32 @@ LINE 1: ...8026212311044096', '^hastc', 'HNX', '0.00', NULL, '13,029,05...
 {"time":"2026-01-11T22:52:00", "level":"ERROR", "message":"Insert failed: null value in column "industry_metric" of relation "fact_industry_summary" violates not-null constraint
 DETAIL:  Failing row contains (798026212311044096, null, ^hastc, HNX, 0, null, 13029058299, 327280.1, null, null, null, 14.03, 3.64, 11.18, 13029058299, 641151166, 208714092, 432445633, 207, 33, 362258905, 23326611, 2026-01-11 15:51:56.406591+00, 2026-01-08 13:23:08.380185+00).
 ", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-12T10:10:25", "level":"ERROR", "message":"Insert failed: column "earning_per_share_eps" of relation "fact_financial_metrics" does not exist
+LINE 1: ...price, high_price, low_price, volume, book_value, earning_pe...
+                                                             ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-12T10:26:59", "level":"ERROR", "message":"Insert failed: invalid input syntax for type numeric: "34.0K  /22.8K"
+LINE 1: ...68', NULL, '69.90', '72.70', '69.60', '13737200', '34.0K  /2...
+                                                             ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-12T10:40:38", "level":"ERROR", "message":"Insert failed: invalid input syntax for type numeric: "6.2K  /4.1K"
+LINE 1: ...', '72.70', '69.60', '13737200', '34.0K  /22.8K', '6.2K  /4....
+                                                             ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-12T10:50:00", "level":"ERROR", "message":"Insert failed: invalid input syntax for type numeric: "6.2K  /4.1K"
+LINE 1: ...', '72.70', '69.60', '13737200', '34.0K  /22.8K', '6.2K  /4....
+                                                             ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-12T10:50:42", "level":"ERROR", "message":"Insert failed: invalid input syntax for type numeric: "6.2K  /4.1K"
+LINE 1: ...', '72.70', '69.60', '13737200', '34.0K  /22.8K', '6.2K  /4....
+                                                             ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-12T10:51:31", "level":"ERROR", "message":"Insert failed: value too long for type character varying(12)
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-12T10:52:32", "level":"ERROR", "message":"Insert failed: null value in column "company_name" of relation "fact_financial_metrics" violates not-null constraint
+DETAIL:  Failing row contains (798398951379177472, 798392516171796480, 68, null, 69.90, 72.70, 69.60, 13737200, 34.0K  /22.8K, 6.2K  /4.1K, 9.2x /13.7x, 1.7x /2.5x, null, null, 0.9, 318,578 Bi, 8,356 Mi
+					 /8,356Mi, 1871639, 67.3 - 52.5, 1,742,176 Bi, 190,186 Bi, 916.0%, 9.84%, 26,907 Bi, 95%, 92%, 3.9/5, 17%, 47%, 2026-01-12 02:50:36.975422).
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-12T10:53:22", "level":"ERROR", "message":"Insert failed: duplicate key value violates unique constraint "fact_financial_metrics_pkey"
+DETAIL:  Key (financial_ratio_key)=(798399169130663936) already exists.
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}

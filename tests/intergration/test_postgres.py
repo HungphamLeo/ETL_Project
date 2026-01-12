@@ -233,7 +233,12 @@ def load_fact_business_plan(datalake_config, table_creator, mongo_reader, logger
 
 # @task
 def load_fact_financial_metrics(datalake_config, table_creator, mongo_reader, logger, pg_client, dim_repo):
-    loader = FactFinancialMetricsLoader(datalake_config, table_creator, mongo_reader, dim_repo, logger, pg_client)
+    loader = FactFinancialMetricsLoader(datalake_config = datalake_config, 
+                                table_creator=table_creator, 
+                                mongo_reader=mongo_reader, 
+                                dim_repo=dim_repo, 
+                                datawarehouse_logger=logger, 
+                                postgres_client=pg_client)
     df, sql = loader.load()
     pg_client.execute(sql)
     pg_client.bulk_insert(f"{loader.schema_name}.{loader.fact_name.upper()}", df)
@@ -270,10 +275,10 @@ def dw_full_load():
     table_creator = TableCreator(machine_id=1, character_specific=None)
     dim_repo = DimRepo(backend_postgres)
 
-    # load_dim_market_type(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
-    # load_dim_industry(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
-    # load_dim_company(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
-    # load_dim_report_type(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
+    load_dim_market_type(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
+    load_dim_industry(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
+    load_dim_company(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
+    load_dim_report_type(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
     
 
     # load_fact_trade(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
@@ -281,7 +286,7 @@ def dw_full_load():
     # load_fact_income(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
     # load_fact_balance(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
     # load_fact_business_plan(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
-    # load_fact_financial_metrics(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
+    load_fact_financial_metrics(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres, dim_repo=dim_repo)
     load_fact_industry(datalake_config=mongo_config, table_creator=table_creator, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres, dim_repo=dim_repo)
 
 

@@ -663,55 +663,54 @@ class FactBusinessPlanLoader(FactLoader):
         return df, sql
 
 class FactFinancialMetricsLoader(FactLoader):
-    def __init__(self, datalake_config, datawarehouse_logger, postgres_client, dim_repo, mongo_reader):
-        table_creator = TableCreator(machine_id=1, character_specific=None)
+    def __init__(self, datalake_config, datawarehouse_logger, table_creator, postgres_client, dim_repo, mongo_reader):
+        
         super().__init__(datalake_config, table_creator, mongo_reader, dim_repo, datawarehouse_logger, postgres_client)
         self.collection_name = self._get_collection("financial_info")
         self.fact_name = self._get_fact_name("fact_financial_metrics", "fact_financial_metrics")
+        self.table_creator = table_creator
     
     def load(self):
         raw = self.mongo.find_table(self.collection_name)
         rows = []
-        for doc in raw:
-            fdoc = FinancialInfoDoc.from_extract(doc)
-            if not fdoc.symbol:
-                self.datawarehouse_logger.warning("financial_metrics doc without symbol: %s", doc)
-                continue
-            company_key = self.get_company_key(fdoc.symbol)
-            for r in fdoc.to_fact_rows():
+    
+        for doc in raw.get("data"):
+            # fdoc = FinancialInfoDoc.from_extract(doc)
+
+            company_key = self.get_company_key(doc.get("symbol"))
                 # period_key = self.get_date_key(r.get("period"))
-                rows.append({
-                    "financial_ratio_key": self.table_creator.get_id(),
-                    "company_key":company_key,
-                    "reference_price":  r.get("reference_price"),
-                    "company_name": r.get("company_name"),
-                    "open_price": r.get("open_price"),
-                    "high_price": r.get("high_price"),
-                    "low_price": r.get("low_price"),
-                    "volume": r.get("volume"),
-                    "book_value": r.get("book_value"),
-                    "earning_per_share(EPS)": r.get("eps"),
-                    "price_on_earning(P/E)": r.get("pe"),
-                    "price_on_book_value(P/B)": r.get("pb"),
-                    "return_on_equity(ROE)": r.get("roe"),
-                    "return_on_assets(ROA)": r.get("roa"),
-                    "beta": r.get("beta"),
-                    "market_cap": r.get("market_cap"),
-                    "listed_volume": r.get("listed_volume"),
-                    "average_volume_52_weeks": r.get("avg_volume_52w"),
-                    "high_low_52_weeks": r.get("high_low_52w"),
-                    "debt": r.get("debt"),
-                    "equity": r.get("equity"),
-                    "debt_to_equity": r.get("debt_to_equity"),
-                    "equity_to_assets": r.get("equity_to_assets"),
-                    "cash": r.get("cash"),
-                    "eps_power": r.get("eps_power"),
-                    "roe_power": r.get("roe_power"),
-                    "invest_efficiency": r.get("invest_efficiency"),
-                    "pb_power": r.get("pb_power"),
-                    "price_growth_power": r.get("price_growth_power"),
-                    "update_time": r.get("update_time")
-                })
+            rows.append({
+                "financial_ratio_key": self.table_creator.get_id(),
+                "company_key":company_key,
+                "reference_price":  doc.get("reference_price"),
+                "company_name": doc.get("company_name"),
+                "open_price": doc.get("open_price"),
+                "high_price": doc.get("high_price"),
+                "low_price": doc.get("low_price"),
+                "volume": doc.get("volume"),
+                "book_value": doc.get("book_value"),
+                "earning_per_share_eps": doc.get("eps"),
+                "price_on_earning_pe": doc.get("pe"),
+                "price_on_book_value_pb": doc.get("pb"),
+                "return_on_equity_roe": doc.get("roe"),
+                "return_on_assets_roa": doc.get("roa"),
+                "beta": doc.get("beta"),
+                "market_cap": doc.get("market_cap"),
+                "listed_volume": doc.get("listed_volume"),
+                "average_volume_52_weeks": doc.get("avg_volume_52w"),
+                "high_low_52_weeks": doc.get("high_low_52w"),
+                "debt": doc.get("debt"),
+                "equity": doc.get("equity"),
+                "debt_to_equity": doc.get("debt_to_equity"),
+                "equity_to_assets": doc.get("equity_to_assets"),
+                "cash": doc.get("cash"),
+                "eps_power": doc.get("eps_power"),
+                "roe_power": doc.get("roe_power"),
+                "invest_efficiency": doc.get("invest_efficiency"),
+                "pb_power": doc.get("pb_power"),
+                "price_growth_power": doc.get("price_growth_power"),
+                "update_time": doc.get("update_time")
+            })
         df = pd.DataFrame(rows)
         sql = self.create_fact_table_sql(self.fact_name)
         return df, sql

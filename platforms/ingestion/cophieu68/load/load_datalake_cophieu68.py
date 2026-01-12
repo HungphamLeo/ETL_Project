@@ -204,9 +204,8 @@ class MongoLoader(MongoWriter):
             db = client[self.database]
             coll = db[collection_name]
             now = self._now_iso()
-            doc = FinancialInfoDoc.from_extract(financial_data).to_mongo_dict()
-            doc["update_time"] = now
-            self._upsert(coll, doc, key_fields=["symbol"])
+            financial_data["update_time"] = now
+            self._upsert(coll, financial_data, key_fields=["symbol"])
         finally:
             client.close()
 
@@ -218,6 +217,7 @@ class MongoLoader(MongoWriter):
             now = self._now_iso()
             doc = TradingDataDoc.from_extract(trading_data).to_mongo_dict()
             doc["update_time"] = now
+            return
             self._upsert(coll, doc, key_fields=["symbol"])
         finally:
             client.close()
