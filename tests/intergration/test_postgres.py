@@ -257,9 +257,9 @@ def load_fact_financial_metrics(datalake_config, mongo_reader, logger, pg_client
                                 datawarehouse_logger=logger, 
                                 postgres_client=pg_client)
     df, sql = loader.load()
-    pd.set_option("display.max_columns", None)
-    pd.set_option("display.max_rows", None)
-    print(len(df))
+    # pd.set_option("display.max_columns", None)
+    # pd.set_option("display.max_rows", None)
+    # print(len(df))
     pg_client.execute(sql)
     pg_client.bulk_insert(f"{loader.schema_name}.{loader.fact_name.upper()}", df)
     logger.info(f"[{loader.fact_name}] Loaded {len(df)} rows")
@@ -307,9 +307,9 @@ def dw_full_load():
     # load_fact_income(datalake_config=mongo_config,  mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
     # load_fact_balance(datalake_config=mongo_config, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
     
-    load_fact_financial_metrics(datalake_config=mongo_config, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres, dim_repo=dim_repo)
+    # load_fact_financial_metrics(datalake_config=mongo_config, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres, dim_repo=dim_repo)
     # load_fact_industry(datalake_config=mongo_config, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres, dim_repo=dim_repo)
-    # load_fact_business_plan(datalake_config=mongo_config, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres, dim_repo=dim_repo)
+    load_fact_business_plan(datalake_config=mongo_config, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres, dim_repo=dim_repo)
 
 
 

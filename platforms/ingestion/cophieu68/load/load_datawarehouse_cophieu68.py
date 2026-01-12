@@ -160,6 +160,7 @@ class DimMarketTypeLoader(DimLoader):
             })
         df = pd.DataFrame(rows)
         sql = self._create_table_sql(self.dim_name)
+        df.drop_duplicates()
         return df, sql
 
 
@@ -194,6 +195,7 @@ class DimIndustryLoader(DimLoader):
                     })
         df = pd.DataFrame(rows)
         sql = self._create_table_sql(self.dim_name)
+        df.drop_duplicates()
         return df, sql
 
     
@@ -245,6 +247,7 @@ class DimCompanyLoader(DimLoader):
 
         df = pd.DataFrame(rows)
         sql = self._create_table_sql(self.dim_name)
+        df.drop_duplicates()
         return df, sql
 
     def get_market_key(self, market_type):
@@ -305,6 +308,7 @@ class DimReportTypeLoader(DimLoader):
         ]
         df = pd.DataFrame(mapping)
         sql = self._create_table_sql(self.dim_name)
+        df.drop_duplicates()
         return df, sql
 
 
@@ -341,6 +345,7 @@ class FactTradeLoader(FactLoader):
             })
         df = pd.DataFrame(rows)
         sql = self.create_fact_table_sql(self.fact_name)
+        df.drop_duplicates()
         return df, sql
 
 
@@ -371,6 +376,7 @@ class FactMatchDetailLoader(FactLoader):
             })
         df = pd.DataFrame(rows)
         sql = self.create_fact_table_sql(self.fact_name)
+        df.drop_duplicates()
         return df, sql
 
 
@@ -484,6 +490,7 @@ class FactIncomeStatementLoader(FactLoader):
         df["currency"] = Pattern_IncomeStatementStandardLoadToDW.currency
         df["unit"] =Pattern_IncomeStatementStandardLoadToDW.unit
         sql = self.create_fact_table_sql(self.fact_income_statement_quarterly)
+        df.drop_duplicates()
         return df, sql
 
     def load_fact_income_statement_annually(self):
@@ -496,6 +503,7 @@ class FactIncomeStatementLoader(FactLoader):
         df["currency"] = Pattern_IncomeStatementStandardLoadToDW.currency
         df["unit"] =Pattern_IncomeStatementStandardLoadToDW.unit
         sql = self.create_fact_table_sql(self.fact_income_statement_annually)
+        df.drop_duplicates()
         return df, sql
 
 # FactBalanceSheetLoader (BalanceSheetDoc)
@@ -606,6 +614,7 @@ class FactBalanceSheetLoader(FactLoader):
         df["currency"] = Pattern_BalanceSheetStandardLoadToDW.currency
         df["unit"] = Pattern_BalanceSheetStandardLoadToDW.unit
         sql = self.create_fact_table_sql(self.fact_balance_sheet_quarterly)
+        df.drop_duplicates()
         return df, sql
     
     def load_fact_balance_sheet_annually(self):
@@ -618,6 +627,7 @@ class FactBalanceSheetLoader(FactLoader):
         df["currency"] = Pattern_BalanceSheetStandardLoadToDW.currency
         df["unit"] = Pattern_BalanceSheetStandardLoadToDW.unit
         sql = self.create_fact_table_sql(self.fact_balance_sheet_annually)
+        df.drop_duplicates()
         return df, sql
     
 
@@ -648,7 +658,7 @@ class FactBusinessPlanLoader(FactLoader):
 
             })
         df = pd.DataFrame(rows)
-        df.drop_duplicate()
+        df.drop_duplicates()
         sql = self.create_fact_table_sql(self.fact_name)
         return df, sql
 
@@ -702,6 +712,7 @@ class FactFinancialMetricsLoader(FactLoader):
                 "update_time": doc.get("update_time")
             })
         df = pd.DataFrame(rows)
+        df.drop_duplicates()
         sql = self.create_fact_table_sql(self.fact_name)
         return df, sql
 
@@ -783,7 +794,7 @@ class FactIndustryLoader(FactLoader):
             })
 
         df = pd.DataFrame(rows)
-     
+        df.drop_duplicates()
         # pd.set_option("display.max_columns", None)
         # pd.set_option("display.max_rows", None)
         # print(df)
