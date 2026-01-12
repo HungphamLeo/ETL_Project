@@ -414,3 +414,37 @@ DETAIL:  Failing row contains (798398951379177472, 798392516171796480, 68, null,
 {"time":"2026-01-12T10:53:22", "level":"ERROR", "message":"Insert failed: duplicate key value violates unique constraint "fact_financial_metrics_pkey"
 DETAIL:  Key (financial_ratio_key)=(798399169130663936) already exists.
 ", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-12T12:49:54", "level":"ERROR", "message":"Insert failed: column "plan_revenue" of relation "fact_business_plan" does not exist
+LINE 1: ...SINESS_PLAN (plan_key, company_key, symbol, year, plan_reven...
+                                                             ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-12T12:54:35", "level":"ERROR", "message":"Insert failed: column "plan_revenue" of relation "fact_business_plan" does not exist
+LINE 1: ...SINESS_PLAN (plan_key, company_key, symbol, year, plan_reven...
+                                                             ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-12T12:58:05", "level":"ERROR", "message":"Insert failed: duplicate key value violates unique constraint "fact_business_plan_pkey"
+DETAIL:  Key (plan_key)=(798430535952109568) already exists.
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-12T12:59:21", "level":"ERROR", "message":"Insert failed: duplicate key value violates unique constraint "fact_business_plan_pkey"
+DETAIL:  Key (plan_key)=(798430895387185152) already exists.
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-12T13:06:16", "level":"ERROR", "message":"Insert failed: duplicate key value violates unique constraint "fact_business_plan_pkey"
+DETAIL:  Key (plan_key)=(798432584081084416) already exists.
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-12T13:13:19", "level":"ERROR", "message":"Insert failed: duplicate key value violates unique constraint "fact_business_plan_pkey"
+DETAIL:  Key (plan_key)=(798434413791678464) already exists.
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-12T13:57:07", "level":"ERROR", "message":"Insert failed: value too long for type character varying(32)
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-12T13:58:04", "level":"ERROR", "message":"Insert failed: value too long for type character varying(32)
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-12T13:58:27", "level":"ERROR", "message":"Insert failed: value too long for type character varying(32)
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-12T14:02:36", "level":"ERROR", "message":"Insert failed: value too long for type character varying(32)
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-12T14:05:09", "level":"ERROR", "message":"Insert failed: duplicate key value violates unique constraint "fact_financial_metrics_pkey"
+DETAIL:  Key (financial_ratio_key)=(fact_financial_metrics_798447434987474944) already exists.
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-12T14:11:32", "level":"ERROR", "message":"Insert failed: duplicate key value violates unique constraint "fact_financial_metrics_pkey"
+DETAIL:  Key (financial_ratio_key)=(fact_financial_metrics_798449027157856256) already exists.
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}

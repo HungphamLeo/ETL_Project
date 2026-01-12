@@ -23,12 +23,10 @@ from platforms.storage.datawarehouse.postgresql.datawarehouse_storage import Pos
 class BaseLoader:
     def __init__(self, 
                  datalake_config: Dict[str, Any], 
-                 table_creator: TableCreator, 
                  mongo_reader: MongoStorageBackend, 
                  datawarehouse_logger: Optional[logging.Logger] = None,
                  postgresql_client: Optional[PostgreSQLWriter] = None):
         self.datalake_config = datalake_config or {}
-        self.table_creator = table_creator
         self.mongo = mongo_reader
         self.postgresql_client = postgresql_client
         self.schema_dw = transform_models.DATA_WAREHOUSE_SCHEMA or {}
@@ -69,11 +67,10 @@ class BaseLoader:
 class DimLoader(BaseLoader):
     def __init__(self, 
                  datalake_config: Dict[str, Any], 
-                 table_creator: TableCreator, 
                  mongo_reader: MongoStorageBackend, 
                  datawarehouse_logger: Optional[logging.Logger] = None,
                  postgresql_client: Optional[PostgreSQLWriter] = None):
-        super().__init__(datalake_config, table_creator, mongo_reader, datawarehouse_logger, postgresql_client)
+        super().__init__(datalake_config, mongo_reader, datawarehouse_logger, postgresql_client)
         self.dim_postgresql_client = postgresql_client
     
 
@@ -81,13 +78,12 @@ class FactLoader(BaseLoader):
     def __init__(
         self,
         datalake_config: dict,
-        table_creator: TableCreator,
         mongo_reader: MongoStorageBackend,
         dim_repo,
         datawarehouse_logger: Optional[logging.Logger] = None,
         postgres_client: Optional[PostgreSQLWriter] = None,
     ):
-        super().__init__(datalake_config, table_creator, mongo_reader, datawarehouse_logger, postgres_client)
+        super().__init__(datalake_config, mongo_reader, datawarehouse_logger, postgres_client)
         self.fact_postgresql_client = postgres_client
         self.dim_repo = dim_repo
     
@@ -136,14 +132,17 @@ class FactLoader(BaseLoader):
 # dim_market_type
 class DimMarketTypeLoader(DimLoader):
     def __init__(self, datalake_config: Dict[str, Any], 
-                 table_creator: TableCreator, 
                  mongo_reader: MongoStorageBackend, 
                  datawarehouse_logger: Optional[logging.Logger] = None,
                  postgresql_client: Optional[PostgreSQLWriter] = None):
-        super().__init__(datalake_config, table_creator, mongo_reader, datawarehouse_logger, postgresql_client)
+       
+        super().__init__(datalake_config, mongo_reader, datawarehouse_logger, postgresql_client)
         # YAML key is 'list_stock' per config
         self.collection_name = self._get_collection("list_stock")
         self.dim_name = "dim_market_type"
+        self.table_creator = TableCreator(machine_id=1, character_specific=self.dim_name)
+        
+        
 
     def load(self):
         raw = self.mongo.find_table(self.collection_name)
@@ -166,10 +165,11 @@ class DimMarketTypeLoader(DimLoader):
 
 # dim_industry
 class DimIndustryLoader(DimLoader):
-    def __init__(self, datalake_config, table_creator, mongo_reader, datawarehouse_logger=None, postgresql_client=None):
-        super().__init__(datalake_config, table_creator, mongo_reader, datawarehouse_logger, postgresql_client)
+    def __init__(self, datalake_config, mongo_reader, datawarehouse_logger=None, postgresql_client=None):
+        super().__init__(datalake_config, mongo_reader, datawarehouse_logger, postgresql_client)
         self.collection_name = self._get_collection("industry_list")
         self.dim_name = "dim_industry"
+        self.table_creator = TableCreator(machine_id=1, character_specific=self.dim_name)
 
     def load(self):
         raw = self.mongo.find_table(self.collection_name)
@@ -200,11 +200,12 @@ class DimIndustryLoader(DimLoader):
 
 # dim_company (SCD2 simplified snapshot)
 class DimCompanyLoader(DimLoader):
-    def __init__(self, datalake_config, table_creator, mongo_reader, datawarehouse_logger=None, postgresql_client=None):
-        super().__init__(datalake_config, table_creator, mongo_reader, datawarehouse_logger, postgresql_client)
+    def __init__(self, datalake_config, mongo_reader, datawarehouse_logger=None, postgresql_client=None):
+        super().__init__(datalake_config, mongo_reader, datawarehouse_logger, postgresql_client)
         # YAML key for company profiles: use 'stock_info' from config
         self.collection_name = self._get_collection("company_profile")
         self.dim_name = "dim_company"
+        self.table_creator = TableCreator(machine_id=1, character_specific=self.dim_name)
 
     def load(self):
         raw = self.mongo.find_table(self.collection_name)
@@ -291,10 +292,11 @@ class DimCompanyLoader(DimLoader):
 
 # dim_report_type
 class DimReportTypeLoader(DimLoader):
-    def __init__(self, datalake_config, table_creator, mongo_reader, datawarehouse_logger=None, postgresql_client=None):
-        super().__init__(datalake_config, table_creator, mongo_reader, datawarehouse_logger, postgresql_client)
+    def __init__(self, datalake_config, mongo_reader, datawarehouse_logger=None, postgresql_client=None):
+        super().__init__(datalake_config, mongo_reader, datawarehouse_logger, postgresql_client)
         # report types are static; no collection required
         self.dim_name = "dim_report_type"
+        self.table_creator = TableCreator(machine_id=1, character_specific=self.dim_name)
 
     def load(self):
         mapping = [
@@ -310,37 +312,33 @@ class DimReportTypeLoader(DimLoader):
 # FactTradeLoader using TradingDataDoc
 class FactTradeLoader(FactLoader):
     def __init__(self, datalake_config, datawarehouse_logger, postgres_client, dim_repo, mongo_reader):
-        table_creator = TableCreator(machine_id=1, character_specific=None)
-        super().__init__(datalake_config, table_creator, mongo_reader, dim_repo, datawarehouse_logger, postgres_client)
+        super().__init__(datalake_config, datawarehouse_logger, postgres_client, dim_repo, mongo_reader )
         self.collection_name = self._get_collection("trading_data")
         self.fact_name = self._get_fact_name("fact_trade", "fact_trade")
+        self.table_creator = TableCreator(machine_id=1, character_specific=self.fact_name)
 
     def load(self):
         raw_docs = self.mongo.find_table(self.collection_name)
         rows = []
-        for doc in raw_docs:
-            tdoc = TradingDataDoc.from_extract(doc)
-            if not tdoc.symbol:
-                self.datawarehouse_logger.warning("trading_data doc without symbol: %s", doc)
-                continue
-            company_key = self.get_company_key(tdoc.symbol)
-            for r in tdoc.to_fact_rows():
-                trade_dt = r.get("trade_datetime")
-                rows.append({
-                    "trade_key": self.table_creator.get_id(),
-                    "trade_date": trade_dt,
-                    "company_key": company_key,
-                    "close_price": r.get("price"),
-                    "open_price": r.get("open_price"),
-                    "high_price": r.get("high_price"),
-                    "low_price": r.get("low_price"),
-                    "volume": r.get("volume"),
-                    "foreign_buy": r.get("foreign_buy"),
-                    "foreign_sell": r.get("foreign_sell"),
-                    "foreign_net_value": r.get("foreign_net_value"),
-                    "update_time": r.get("update_time") or datetime.utcnow().isoformat(),
-                    
-                })
+        for doc in raw_docs.get("data"):
+            company_key = self.get_company_key(doc.get("symbol"))
+
+            trade_dt = doc.get("trade_datetime")
+            rows.append({
+                "trade_key": self.table_creator.get_id(),
+                "trade_date": trade_dt,
+                "company_key": company_key,
+                "close_price": doc.get("price"),
+                "open_price": doc.get("open_price"),
+                "high_price": doc.get("high_price"),
+                "low_price": doc.get("low_price"),
+                "volume": doc.get("volume"),
+                "foreign_buy": doc.get("foreign_buy"),
+                "foreign_sell": doc.get("foreign_sell"),
+                "foreign_net_value": doc.get("foreign_net_value"),
+                "update_time": doc.get("update_time") or datetime.utcnow().isoformat()
+                
+            })
         df = pd.DataFrame(rows)
         sql = self.create_fact_table_sql(self.fact_name)
         return df, sql
@@ -349,32 +347,28 @@ class FactTradeLoader(FactLoader):
 # FactMatchDetailLoader
 class FactMatchDetailLoader(FactLoader):
     def __init__(self, datalake_config, datawarehouse_logger, postgres_client, dim_repo, mongo_reader):
-        table_creator = TableCreator(machine_id=1, character_specific=None)
-        super().__init__(datalake_config, table_creator, mongo_reader, dim_repo, datawarehouse_logger, postgres_client)
+        
+        super().__init__(datalake_config, mongo_reader, dim_repo, datawarehouse_logger, postgres_client)
         self.collection_name = self._get_collection("match_details")
         self.fact_name = self._get_fact_name("fact_match_detail", "fact_match_detail")
+        self.table_creator = TableCreator(machine_id=1, character_specific=self.fact_name)
 
     def load(self):
         raw = list(self.mongo.find_table(self.collection_name) or [])
         rows = []
-        for doc in raw:
-            mdoc = MatchDetailsDoc.from_extract(doc)
-            if not mdoc.symbol:
-                self.datawarehouse_logger.warning("match_details doc without symbol: %s", doc)
-                continue
-            company_key = self.get_company_key(mdoc.symbol)
-            for r in mdoc.to_fact_rows():
-                rows.append({
-                    "match_key": self.table_creator.get_id(),
-                    "company_key": company_key,
-                    "match_datetime": r.get("match_datetime"),
-                    "price": r.get("price"),
-                    "volume": r.get("volume"),
-                    "fluctuation_range": r.get("fluctuation_range"),
-                    "accum_volume": r.get("accum_volume"),
-                    "update_time": r.get("update_time")
-                   
-                })
+        for doc in raw.get("data"):
+            company_key = self.get_company_key(doc.get("symbol"))
+            rows.append({
+                "match_key": self.table_creator.get_id(),
+                "company_key": company_key,
+                "match_datetime": doc.get("match_datetime"),
+                "price": doc.get("price"),
+                "volume": doc.get("volume"),
+                "fluctuation_range": doc.get("fluctuation_range"),
+                "accum_volume": doc.get("accum_volume"),
+                "update_time": doc.get("update_time") or datetime.utcnow().isoformat()
+                
+            })
         df = pd.DataFrame(rows)
         sql = self.create_fact_table_sql(self.fact_name)
         return df, sql
@@ -383,14 +377,15 @@ class FactMatchDetailLoader(FactLoader):
 # FactIncomeStatementLoader (IncomeStatementDoc)
 class FactIncomeStatementLoader(FactLoader):
     def __init__(self, datalake_config, datawarehouse_logger, postgres_client, dim_repo, mongo_reader):
-        table_creator = TableCreator(machine_id=1, character_specific=None)
-        super().__init__(datalake_config, table_creator, mongo_reader, dim_repo, datawarehouse_logger, postgres_client)
+        super().__init__(datalake_config, mongo_reader, dim_repo, datawarehouse_logger, postgres_client)
         # can map both annually/quarterly collections
         self.collection_income_statement_annually = self._get_collection("income_statement_annually")
         self.collection_income_statement_quarterly = self._get_collection("income_statement_quarterly")
         self.fact_income_statement_quarterly = self._get_fact_name("fact_income_statement_quarterly", "fact_income_statement_quarterly")
         self.fact_income_statement_annually = self._get_fact_name("fact_income_statement_annually", "fact_income_statement_annually")
-    
+        self.table_creator_quaterly = TableCreator(machine_id=1, character_specific=self.fact_income_statement_quarterly)
+        self.table_creator_annually = TableCreator(machine_id=1, character_specific=self.fact_income_statement_annually)
+
     def transform_income_statement_quarterly(self, doc):
         data = doc.get("data")
         symbol = doc.get("symbol")
@@ -419,7 +414,7 @@ class FactIncomeStatementLoader(FactLoader):
                 quarter, year = col.split("_")
 
                 rows.append({
-                    "income_key": self.table_creator.get_id(),
+                    "income_key": self.table_creator_quaterly.get_id(),
                     "company_key": company_key,
                     "time_report_type_key": time_report_type_key ,
                     "symbol": symbol,
@@ -462,7 +457,7 @@ class FactIncomeStatementLoader(FactLoader):
                     continue
 
                 rows.append({
-                    "income_key": self.table_creator.get_id(),
+                    "income_key": self.table_creator_annually.get_id(),
                     "company_key": company_key,
                     "time_report_type_key": time_report_type_key ,
                     "symbol": symbol,
@@ -513,6 +508,8 @@ class FactBalanceSheetLoader(FactLoader):
         self.collection_balance_sheet_quarterly = self._get_collection("balance_sheet_quarterly")
         self.fact_balance_sheet_quarterly = self._get_fact_name("fact_balance_sheet_quarterly", "fact_balance_sheet_quarterly")
         self.fact_balance_sheet_annually = self._get_fact_name("fact_balance_sheet_annually", "fact_balance_sheet_annually")
+        self.table_creator_quaterly = TableCreator(machine_id=1, character_specific=self.fact_balance_sheet_quarterly)
+        self.table_creator_annually = TableCreator(machine_id=1, character_specific=self.fact_balance_sheet_annually)
 
     def transform_balance_sheet_quarterly(self, doc):
         data = doc.get("data")
@@ -540,7 +537,7 @@ class FactBalanceSheetLoader(FactLoader):
                     continue
 
                 rows.append({
-                    "balance_key": self.table_creator.get_id(),
+                    "balance_key": self.table_creator_quaterly.get_id(),
                     "company_key": company_key,
                     "time_report_type_key": time_report_type_key ,
                     "symbol": symbol,
@@ -584,7 +581,7 @@ class FactBalanceSheetLoader(FactLoader):
                     continue
 
                 rows.append({
-                    "balance_key": self.table_creator.get_id(),
+                    "balance_key": self.table_creator_annually.get_id(),
                     "company_key": company_key,
                     "time_report_type_key": time_report_type_key ,
                     "symbol": symbol,
@@ -628,47 +625,40 @@ class FactBalanceSheetLoader(FactLoader):
 # FactBusinessPlanLoader
 class FactBusinessPlanLoader(FactLoader):
     def __init__(self, datalake_config, datawarehouse_logger, postgres_client, dim_repo, mongo_reader):
-        table_creator = TableCreator(machine_id=1, character_specific=None)
-        super().__init__(datalake_config, table_creator, mongo_reader, dim_repo, datawarehouse_logger, postgres_client)
+        super().__init__(datalake_config, mongo_reader, dim_repo, datawarehouse_logger, postgres_client)
         self.collection_name = self._get_collection("business_plan")
         self.fact_name = self._get_fact_name("fact_business_plan", "fact_business_plan")
+        self.table_creator = TableCreator(machine_id=1, character_specific=self.fact_name)
 
     def load(self):
         raw = self.mongo.find_table(self.collection_name)
         rows = []
-        for doc in raw:
-            
-            pdoc = BusinessPlanDoc.from_extract(doc)
-            if not pdoc.symbol:
-                self.datawarehouse_logger.warning("business_plan doc without symbol: %s", doc)
-                continue
-            company_key = self.get_company_key(pdoc.symbol)
-            for r in pdoc.to_fact_rows():
-                year = r.get("year")
-                
-                rows.append({
-                    "plan_key": self.table_creator.get_id(),
-                    "company_key": company_key,
-                    "year": year,
-                    "Plan_revenue": r.get("Plan_revenue"),
-                    "Revenue_Achived": r.get("Pass_revenue"),
-                    "Plan_profit": r.get("Plan_profit"),
-                    "Profit_Achived": r.get("Pass_profit"),
-                    "update_time": doc.get("update_time")
+        for doc in raw.get("data"):
+            company_key = self.get_company_key(doc.get("symbol"))
+            rows.append({
+                "plan_key": self.table_creator.get_id(),
+                "company_key": company_key,
+                "symbol": doc.get("symbol"),
+                "year": doc.get("Year"),
+                "plan_revenue": doc.get("Plan_revenue"),
+                "revenue_achived": doc.get("Pass_revenue"),
+                "plan_profit": doc.get("Plan_profit"),
+                "profit_achived": doc.get("Pass_profit"),
+                "update_time": doc.get("update_time")
 
-                })
+            })
         df = pd.DataFrame(rows)
-        
+        df.drop_duplicate()
         sql = self.create_fact_table_sql(self.fact_name)
         return df, sql
 
 class FactFinancialMetricsLoader(FactLoader):
-    def __init__(self, datalake_config, datawarehouse_logger, table_creator, postgres_client, dim_repo, mongo_reader):
+    def __init__(self, datalake_config, datawarehouse_logger, postgres_client, dim_repo, mongo_reader):
         
-        super().__init__(datalake_config, table_creator, mongo_reader, dim_repo, datawarehouse_logger, postgres_client)
+        super().__init__(datalake_config,  mongo_reader, dim_repo, datawarehouse_logger, postgres_client)
         self.collection_name = self._get_collection("financial_info")
         self.fact_name = self._get_fact_name("fact_financial_metrics", "fact_financial_metrics")
-        self.table_creator = table_creator
+        self.table_creator = TableCreator(machine_id=1, character_specific=self.fact_name)
     
     def load(self):
         raw = self.mongo.find_table(self.collection_name)
@@ -716,10 +706,11 @@ class FactFinancialMetricsLoader(FactLoader):
         return df, sql
 
 class FactIndustryLoader(FactLoader):
-    def __init__(self, datalake_config, table_creator, datawarehouse_logger, postgres_client, dim_repo, mongo_reader):
-        super().__init__(datalake_config, table_creator, mongo_reader, dim_repo, datawarehouse_logger, postgres_client)
+    def __init__(self, datalake_config, datawarehouse_logger, postgres_client, dim_repo, mongo_reader):
+        super().__init__(datalake_config,  mongo_reader, dim_repo, datawarehouse_logger, postgres_client)
         self.collection_name = self._get_collection("industry_list")
         self.fact_name = self._get_fact_name("fact_industry_summary", "fact_industry_summary")
+        self.table_creator = TableCreator(machine_id=1, character_specific=self.fact_name)
     
     def parse_number(self,val):
         if val is None:
