@@ -227,12 +227,12 @@ def load_fact_balance(datalake_config, mongo_reader, logger, pg_client, dim_repo
     df_quarterly, sql_quarterly = loader.load_fact_balance_sheet_quarterly()
     pg_client.execute(sql_quarterly)
     pg_client.bulk_insert(f"{loader.schema_name}.{loader.fact_balance_sheet_quarterly.upper()}", df_quarterly)
-    # time.sleep(3)
-    # df_annual, sql_annual = loader.load_fact_balance_sheet_annually()
-    # pg_client.execute(sql_annual)
-    # pg_client.bulk_insert(f"{loader.schema_name}.{loader.fact_balance_sheet_annually.upper()}", df_annual)
+    time.sleep(3)
+    df_annual, sql_annual = loader.load_fact_balance_sheet_annually()
+    pg_client.execute(sql_annual)
+    pg_client.bulk_insert(f"{loader.schema_name}.{loader.fact_balance_sheet_annually.upper()}", df_annual)
 
-    # logger.info(f"[{loader.fact_balance_sheet_annually}] Loaded {len(df_annual)} rows")
+    logger.info(f"[{loader.fact_balance_sheet_annually}] Loaded {len(df_annual)} rows")
     logger.info(f"[{loader.fact_balance_sheet_quarterly}] Loaded {len(df_quarterly)} rows")
     time.sleep(3)
     return True

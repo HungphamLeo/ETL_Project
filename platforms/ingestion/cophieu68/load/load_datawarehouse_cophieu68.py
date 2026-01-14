@@ -512,29 +512,52 @@ class FactBalanceSheetLoader(FactLoader):
         self.collection_balance_sheet_quarterly = self._get_collection("balance_sheet_quarterly")
         self.fact_balance_sheet_quarterly = self._get_fact_name("fact_balance_sheet_quarterly", "fact_balance_sheet_quarterly")
         self.fact_balance_sheet_annually = self._get_fact_name("fact_balance_sheet_annually", "fact_balance_sheet_annually")
-        self.table_creator_quaterly = TableCreator(machine_id=1, character_specific=self.fact_balance_sheet_quarterly)
+        self.table_creator_quarterly = TableCreator(machine_id=1, character_specific=self.fact_balance_sheet_quarterly)
         self.table_creator_annually = TableCreator(machine_id=1, character_specific=self.fact_balance_sheet_annually)
-
+        self.logger = datawarehouse_logger
     def transform_balance_sheet_quarterly(self, doc):
+        """
+        Transform data from MongoDB to PostgreSQL fact table format
+        """
         data = doc.get("data")
         symbol = doc.get("symbol")
         report_type = doc.get("report_type")
         update_time = doc.get("update_time")
-        company_key = self.get_company_key(symbol,self.table_creator_quaterly)
-        time_report_type_key = self.get_report_type_key(report_type = report_type, table_creator=self.table_creator_quaterly)
+
+        company_key = self.get_company_key(symbol, self.table_creator_quarterly)
+        time_report_type_key = self.get_report_type_key(report_type, self.table_creator_quarterly)
 
         rows = []
         for info in data:
-            print(info)
             period_columns = [c for c in list(info.keys()) if c != "Chỉ tiêu"]
-            metric_vi = info["Chỉ tiêu"]
+
+            metric_vi = info.get("Chỉ tiêu")
+            # if not metric_vi:
+            #     raise ValueError("Metric_vi is empty")
+
             mapping = Pattern_BalanceSheetStandardLoadToDW.METRIC_MAPPING.get(metric_vi)
-           
+            if not mapping:
+                # self.logger.warning(f"Metric_vi {metric_vi} is not supported")
+                continue
+
             for col in period_columns:
                 _, quarter, year = col.split(" ")
+                if not quarter or not year:
+                    raise ValueError(f"Invalid period column {col}")
+
+                metric_value = info.get(col)
+                if not metric_value:
+                    self.logger.warning(f"Metric value for column {col} is empty")
+                    continue
+
+                try:
+                    metric_value = float(metric_value)
+                except ValueError:
+                    # self.logger.error(f"Invalid metric value for column {col}: {metric_value}")
+                    continue
 
                 rows.append({
-                    "balance_key": self.table_creator_quaterly.get_id(),
+                    "balance_key": self.table_creator_quarterly.get_id(),
                     "company_key": company_key,
                     "time_report_type_key": time_report_type_key ,
                     "symbol": symbol,
@@ -545,10 +568,9 @@ class FactBalanceSheetLoader(FactLoader):
                     "metric_code": mapping["metric_code"],
                     "metric_name_en": mapping["metric_name_en"],
                     "metric_group": mapping["metric_group"],
-                    "metric_value": float(col),
+                    "metric_value": metric_value,
                     "update_time": update_time
                 })
-                print(len(rows))
         return rows
     
     def transform_balance_sheet_annually(self, doc):
@@ -556,20 +578,39 @@ class FactBalanceSheetLoader(FactLoader):
         symbol = doc.get("symbol")
         report_type = doc.get("report_type")
         update_time = doc.get("update_time")
-        company_key = self.get_company_key(symbol,self.table_creator_annually)
+
+
+        company_key = self.get_company_key(symbol, self.table_creator_annually)
         time_report_type_key = self.get_report_type_key(report_type = report_type, table_creator=self.table_creator_annually)
 
         rows = []
         for info in data:
             period_columns = [c for c in list(info.keys()) if c != "Chỉ tiêu"]
-            metric_vi = info["Chỉ tiêu"]
+            metric_vi = info.get("Chỉ tiêu")
+            if not metric_vi:
+                raise ValueError("Metric_vi is empty")
+
             mapping = Pattern_BalanceSheetStandardLoadToDW.METRIC_MAPPING.get(metric_vi)
             if not mapping:
-                continue  # hoặc log warning
-            
+                # self.logger.warning(f"Metric_vi {metric_vi} is not supported")
+                continue
 
             for col in period_columns:
                 _, year = col.split(" ")
+                if not year:
+                    raise ValueError(f"Invalid period column {col}")
+
+                metric_value = info.get(col)
+                if not metric_value:
+                    # self.logger.warning(f"Metric value for column {col} is empty")
+                    continue
+
+                try:
+                    metric_value = float(metric_value)
+                except ValueError:
+                    # self.logger.error(f"Invalid metric value for column {col}: {metric_value}")
+                    continue
+
                 rows.append({
                     "balance_key": self.table_creator_annually.get_id(),
                     "company_key": company_key,
@@ -581,23 +622,21 @@ class FactBalanceSheetLoader(FactLoader):
                     "metric_code": mapping["metric_code"],
                     "metric_name_en": mapping["metric_name_en"],
                     "metric_group": mapping["metric_group"],
-                    "metric_value": float(info[col]),
+                    "metric_value": metric_value,
                     "update_time": update_time
                 })
-
         return rows
     def load_fact_balance_sheet_quarterly(self):
         raw = self.mongo.find_table(self.collection_balance_sheet_quarterly)
         rows = []
-        print(raw)
+
         for doc in raw.get("data"):
             record = self.transform_balance_sheet_quarterly(doc)
             rows.extend(record)
-        print(len(rows))
         df = pd.DataFrame(rows)
         df["currency"] = Pattern_BalanceSheetStandardLoadToDW.currency
         df["unit"] = Pattern_BalanceSheetStandardLoadToDW.unit
-        sql = self.create_fact_table_sql(self.fact_balance_sheet_quarterly,self.table_creator_quaterly)
+        sql = self.create_fact_table_sql(self.fact_balance_sheet_quarterly,self.table_creator_quarterly)
         df.drop_duplicates()
         return df, sql
     

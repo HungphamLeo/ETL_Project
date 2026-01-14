@@ -271,6 +271,7 @@ class MongoLoader(MongoWriter):
             db = client[self.database]
             coll = db[collection_name]
             now = self._now_iso()
+           
             if balance_data and "data" in balance_data:
                 balance_data["data"] = to_primitive(balance_data["data"])
             doc = BalanceSheetDoc.from_extract(balance_data).to_mongo_dict()

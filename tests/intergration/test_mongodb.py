@@ -254,7 +254,7 @@ def task_schedule_details_financial_statement_quarterly(mongo_config,
             loading_pipeline_logger.error(f"Error loading income statement quarterly for symbol {symbol}: {e}")
         time.sleep(mongo_config.get("delay_call", 0.25))
         try:
-            loading_datalake.load_detail_balance_sheet_quarterly(collection_name=income_statement_quarterly, balance_data=crawl_details_balance_sheet)
+            loading_datalake.load_detail_balance_sheet_quarterly(collection_name=balance_sheet_quarterly, balance_data=crawl_details_balance_sheet)
         except Exception as e:
             loading_pipeline_logger.error(f"Error loading balance sheet quarterly for symbol {symbol}: {e}")
 
