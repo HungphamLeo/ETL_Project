@@ -1201,3 +1201,30 @@ DETAIL:  Key (financial_ratio_key)=(fact_financial_metrics_798449027157856256) a
 {"time":"2026-01-14T23:10:48", "level":"WARNING", "message":"Metric_vi 4. Giao dịch mua bán lại trái phiếu chính phủ is not supported", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/load/load_datawarehouse_cophieu68.py:543"}
 {"time":"2026-01-14T23:10:48", "level":"WARNING", "message":"Metric_vi 5. Tài sản ngắn hạn khác is not supported", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/load/load_datawarehouse_cophieu68.py:543"}
 {"time":"2026-01-14T23:10:48", "level":"WARNING", "message":"Metric_vi B. Tài sản cố định và đầu tư dài hạn is not supported", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/load/load_datawarehouse_cophieu68.py:543"}
+{"time":"2026-01-15T00:01:52", "level":"ERROR", "message":"Insert failed: column "period" of relation "fact_income_statement_quarterly" does not exist
+LINE 1: ...l, time_report_type, financial_report_type, year, period, me...
+                                                             ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-15T00:03:16", "level":"ERROR", "message":"Insert failed: column "period" of relation "fact_income_statement_quarterly" does not exist
+LINE 1: ...l, time_report_type, financial_report_type, year, period, me...
+                                                             ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-15T00:04:39", "level":"ERROR", "message":"Insert failed: column "period" of relation "fact_income_statement_quarterly" does not exist
+LINE 1: ...l, time_report_type, financial_report_type, year, period, me...
+                                                             ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-15T00:07:45", "level":"ERROR", "message":"Insert failed: column "period" of relation "fact_income_statement_quarterly" does not exist
+LINE 1: ...l, time_report_type, financial_report_type, year, period, me...
+                                                             ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-15T00:10:16", "level":"ERROR", "message":"Insert failed: column "period" of relation "fact_income_statement_quarterly" does not exist
+LINE 1: ...l, time_report_type, financial_report_type, year, period, me...
+                                                             ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-15T00:11:32", "level":"ERROR", "message":"Insert failed: duplicate key value violates unique constraint "dim_report_type_pkey"
+DETAIL:  Key (report_type_key)=(Y) already exists.
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-15T00:12:20", "level":"ERROR", "message":"Insert failed: invalid input syntax for type numeric: "NET_INTEREST_INCOME"
+LINE 1: ...VCB', 'quarter', 'income_statement', '2024', '4', 'NET_INTER...
+                                                             ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}

@@ -389,46 +389,64 @@ class FactIncomeStatementLoader(FactLoader):
         self.collection_income_statement_quarterly = self._get_collection("income_statement_quarterly")
         self.fact_income_statement_quarterly = self._get_fact_name("fact_income_statement_quarterly", "fact_income_statement_quarterly")
         self.fact_income_statement_annually = self._get_fact_name("fact_income_statement_annually", "fact_income_statement_annually")
-        self.table_creator_quaterly = TableCreator(machine_id=1, character_specific=self.fact_income_statement_quarterly)
+        self.table_creator_quarterly = TableCreator(machine_id=1, character_specific=self.fact_income_statement_quarterly)
         self.table_creator_annually = TableCreator(machine_id=1, character_specific=self.fact_income_statement_annually)
+        self.logger = datawarehouse_logger
 
     def transform_income_statement_quarterly(self, doc):
+        """
+        Transform data from MongoDB to PostgreSQL fact table format
+        """
         data = doc.get("data")
         symbol = doc.get("symbol")
         report_type = doc.get("report_type")
         update_time = doc.get("update_time")
+        company_key = self.get_company_key(symbol, self.table_creator_quarterly)
+        # if not company_key:
+        #     raise ValueError("Company key is empty")
 
-        period_columns = [c for c in df.columns if c != "Chỉ tiêu"]
-        company_key = self.get_company_key(doc.symbol)
-        time_report_type_key = self.get_report_type_key(report_type = "quarterly")
+        time_report_type_key = self.get_report_type_key(report_type, self.table_creator_quarterly)
+        # if not time_report_type_key:
+        #     raise ValueError("Time report type key is empty")
 
         rows = []
-        for _, r in df.iterrows():
-            metric_vi = r["Chỉ tiêu"]
+        for info in data:
+            period_columns = [c for c in list(info.keys()) if c != "Chỉ tiêu"]
+            metric_vi = info.get("Chỉ tiêu")
+            # if not metric_vi:
+            #     continue  # hoặc log warning
 
             mapping = Pattern_IncomeStatementStandardLoadToDW.METRIC_MAPPING.get(metric_vi)
             if not mapping:
                 continue  # hoặc log warning
 
             for col in period_columns:
-                if pd.isna(r[col]):
-                    continue
+                _, quarter, year = col.split(" ")
+                # if not quarter or not year:
+                #     raise ValueError(f"Invalid period column {col}")
 
-                quarter, year = col.split("_")
+                metric_value = info.get(col)
+                # if not metric_value:
+                #     continue  # hoặc log warning
+
+                try:
+                    metric_value = float(metric_value)
+                except ValueError:
+                    continue  # hoặc log warning
 
                 rows.append({
-                    "income_key": self.table_creator_quaterly.get_id(),
+                    "income_key": self.table_creator_quarterly.get_id(),
                     "company_key": company_key,
-                    "time_report_type_key": time_report_type_key ,
+                    "time_report_type_key": time_report_type_key,
                     "symbol": symbol,
                     "time_report_type": report_type,
                     "financial_report_type": "income_statement",
                     "year": year,
-                    "period": Pattern_IncomeStatementStandardLoadToDW.METRIC_MAPPING["Quý"].get(quarter),  # Quarter_1
+                    "period": quarter,  # Quarter_1
                     "metric_code": mapping["metric_code"],
                     "metric_name_en": mapping["metric_name_en"],
                     "metric_group": mapping["metric_group"],
-                    "metric_value": float(r[col]),
+                    "metric_value": metric_value,
                     "update_time": update_time
                 })
 
@@ -438,17 +456,20 @@ class FactIncomeStatementLoader(FactLoader):
         symbol = doc.get("symbol")
         report_type = doc.get("report_type")
         update_time = doc.get("update_time")
-        if not isinstance(data, pd.DataFrame):
-            return []
+        company_key = self.get_company_key(symbol, self.table_creator_annually)
+        # if not company_key:
+        #     raise ValueError("Company key is empty")
 
-        df = data.copy()
-        period_columns = [c for c in df.columns if c != "Chỉ tiêu"]
-        company_key = self.get_company_key(doc.symbol)
-        time_report_type_key = self.get_report_type_key(report_type = "annually")
+        time_report_type_key = self.get_report_type_key(report_type, self.table_creator_annually)
+        # if not time_report_type_key:
+        #     raise ValueError("Time report type key is empty")
 
         rows = []
-        for _, r in df.iterrows():
-            metric_vi = r["Chỉ tiêu"]
+        for info in data:
+            period_columns = [c for c in list(info.keys()) if c != "Chỉ tiêu"]
+            metric_vi = info.get("Chỉ tiêu")
+            # if not metric_vi:
+            #     continue  # hoặc log warning
 
             mapping = Pattern_IncomeStatementStandardLoadToDW.METRIC_MAPPING.get(metric_vi)
             if not mapping:
@@ -456,13 +477,22 @@ class FactIncomeStatementLoader(FactLoader):
 
             for col in period_columns:
                 _, year = col.split(" ")
-                if pd.isna(r[col]):
-                    continue
+                # if not quarter or not year:
+                #     raise ValueError(f"Invalid period column {col}")
+
+                metric_value = info.get(col)
+                # if not metric_value:
+                #     continue  # hoặc log warning
+
+                try:
+                    metric_value = float(metric_value)
+                except ValueError:
+                    continue  # hoặc log warning
 
                 rows.append({
                     "income_key": self.table_creator_annually.get_id(),
                     "company_key": company_key,
-                    "time_report_type_key": time_report_type_key ,
+                    "time_report_type_key": time_report_type_key,
                     "symbol": symbol,
                     "time_report_type": report_type,
                     "financial_report_type": "income_statement",
@@ -470,32 +500,31 @@ class FactIncomeStatementLoader(FactLoader):
                     "metric_code": mapping["metric_code"],
                     "metric_name_en": mapping["metric_name_en"],
                     "metric_group": mapping["metric_group"],
-                    "metric_value": float(r[col]),
+                    "metric_value": metric_value,
                     "update_time": update_time
                 })
 
         return rows
 
-
     def load_fact_income_statement_quarterly(self):
         raw = self.mongo.find_table(self.collection_income_statement_quarterly)
         rows = []
-        for doc in raw:
+        for doc in raw.get("data"):
             record = self.transform_income_statement_quarterly(doc)
-            rows = list(set(rows.extend(record)))
+            rows.extend(record)
         df = pd.DataFrame(rows)
         df["currency"] = Pattern_IncomeStatementStandardLoadToDW.currency
         df["unit"] =Pattern_IncomeStatementStandardLoadToDW.unit
-        sql = self.create_fact_table_sql(self.fact_income_statement_quarterly, self.table_creator_quaterly)
+        sql = self.create_fact_table_sql(self.fact_income_statement_quarterly, self.table_creator_quarterly)
         df.drop_duplicates()
         return df, sql
 
     def load_fact_income_statement_annually(self):
         raw = self.mongo.find_table(self.collection_income_statement_annually)
         rows = []
-        for doc in raw:
+        for doc in raw.get("data"):
             record = self.transform_income_statement_annually(doc)
-            rows = list(set(rows.extend(record)))
+            rows.extend(record)
         df = pd.DataFrame(rows)
         df["currency"] = Pattern_IncomeStatementStandardLoadToDW.currency
         df["unit"] =Pattern_IncomeStatementStandardLoadToDW.unit

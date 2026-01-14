@@ -1437,3 +1437,45 @@ DETAIL:  Key (financial_ratio_key)=(fact_financial_metrics_798449027157856256) a
 {"time":"2026-01-14T23:24:57", "level":"INFO", "message":"Inserted 71125 rows into DW.FACT_BALANCE_SHEET_ANNUALLY", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:48"}
 {"time":"2026-01-14T23:24:58", "level":"INFO", "message":"[fact_balance_sheet_annually] Loaded 71125 rows", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/tests/intergration/test_postgres.py:235"}
 {"time":"2026-01-14T23:24:58", "level":"INFO", "message":"[fact_balance_sheet_quarterly] Loaded 84109 rows", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/tests/intergration/test_postgres.py:236"}
+{"time":"2026-01-15T00:01:52", "level":"ERROR", "message":"Insert failed: column "period" of relation "fact_income_statement_quarterly" does not exist
+LINE 1: ...l, time_report_type, financial_report_type, year, period, me...
+                                                             ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-15T00:03:16", "level":"ERROR", "message":"Insert failed: column "period" of relation "fact_income_statement_quarterly" does not exist
+LINE 1: ...l, time_report_type, financial_report_type, year, period, me...
+                                                             ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-15T00:04:39", "level":"ERROR", "message":"Insert failed: column "period" of relation "fact_income_statement_quarterly" does not exist
+LINE 1: ...l, time_report_type, financial_report_type, year, period, me...
+                                                             ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-15T00:07:45", "level":"ERROR", "message":"Insert failed: column "period" of relation "fact_income_statement_quarterly" does not exist
+LINE 1: ...l, time_report_type, financial_report_type, year, period, me...
+                                                             ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-15T00:10:00", "level":"INFO", "message":"Inserted 2 rows into DW.DIM_REPORT_TYPE", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:48"}
+{"time":"2026-01-15T00:10:00", "level":"INFO", "message":"[dim_report_type] Loaded 2 rows", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/tests/intergration/test_postgres.py:170"}
+{"time":"2026-01-15T00:10:16", "level":"ERROR", "message":"Insert failed: column "period" of relation "fact_income_statement_quarterly" does not exist
+LINE 1: ...l, time_report_type, financial_report_type, year, period, me...
+                                                             ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-15T00:11:32", "level":"ERROR", "message":"Insert failed: duplicate key value violates unique constraint "dim_report_type_pkey"
+DETAIL:  Key (report_type_key)=(Y) already exists.
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-15T00:11:32", "level":"INFO", "message":"[dim_report_type] Loaded 2 rows", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/tests/intergration/test_postgres.py:170"}
+{"time":"2026-01-15T00:12:03", "level":"INFO", "message":"Inserted 2 rows into DW.DIM_REPORT_TYPE", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:48"}
+{"time":"2026-01-15T00:12:03", "level":"INFO", "message":"[dim_report_type] Loaded 2 rows", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/tests/intergration/test_postgres.py:170"}
+{"time":"2026-01-15T00:12:20", "level":"ERROR", "message":"Insert failed: invalid input syntax for type numeric: "NET_INTEREST_INCOME"
+LINE 1: ...VCB', 'quarter', 'income_statement', '2024', '4', 'NET_INTER...
+                                                             ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-15T00:14:20", "level":"INFO", "message":"Inserted 2 rows into DW.DIM_REPORT_TYPE", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:48"}
+{"time":"2026-01-15T00:14:20", "level":"INFO", "message":"[dim_report_type] Loaded 2 rows", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/tests/intergration/test_postgres.py:170"}
+{"time":"2026-01-15T00:14:50", "level":"INFO", "message":"Inserted 6800 rows into DW.FACT_INCOME_STATEMENT_QUARTERLY", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:48"}
+{"time":"2026-01-15T00:15:16", "level":"INFO", "message":"Inserted 5500 rows into DW.FACT_INCOME_STATEMENT_ANNUALLY", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:48"}
+{"time":"2026-01-15T00:15:16", "level":"INFO", "message":"[fact_income_statement_annually] Loaded 5500 rows", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/tests/intergration/test_postgres.py:218"}
+{"time":"2026-01-15T00:15:16", "level":"INFO", "message":"[fact_income_statement_quarterly] Loaded 6800 rows", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/tests/intergration/test_postgres.py:219"}
+{"time":"2026-01-15T00:17:41", "level":"INFO", "message":"Inserted 84109 rows into DW.FACT_BALANCE_SHEET_QUARTERLY", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:48"}
+{"time":"2026-01-15T00:19:56", "level":"INFO", "message":"Inserted 71125 rows into DW.FACT_BALANCE_SHEET_ANNUALLY", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:48"}
+{"time":"2026-01-15T00:19:56", "level":"INFO", "message":"[fact_balance_sheet_annually] Loaded 71125 rows", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/tests/intergration/test_postgres.py:239"}
+{"time":"2026-01-15T00:19:56", "level":"INFO", "message":"[fact_balance_sheet_quarterly] Loaded 84109 rows", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/tests/intergration/test_postgres.py:240"}
