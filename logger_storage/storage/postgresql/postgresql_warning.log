@@ -1233,3 +1233,19 @@ DETAIL:  Failing row contains (fact_match_detail_799430243059240960, null, null,
 ", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:196"}
 {"time":"2026-01-15T07:10:23", "level":"ERROR", "message":"Insert failed: value too long for type character varying(32)
 ", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-15T07:15:32", "level":"ERROR", "message":"Execute failed: null value in column "symbol" of relation "dim_company" violates not-null constraint
+DETAIL:  Failing row contains (fact_match_detail_799431541640925184, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, t, null, 2026-01-15 00:15:32.263871+00).
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:196"}
+{"time":"2026-01-15T07:15:32", "level":"ERROR", "message":"Insert failed: insert or update on table "fact_match_detail" violates foreign key constraint "fact_match_detail_company_key_fkey"
+DETAIL:  Key (company_key)=(fact_match_detail_799431541640925184) is not present in table "dim_company".
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-15T07:16:31", "level":"ERROR", "message":"Execute failed: null value in column "symbol" of relation "dim_company" violates not-null constraint
+DETAIL:  Failing row contains (fact_match_detail_799431790732251136, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, t, null, 2026-01-15 00:16:31.6707+00).
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:196"}
+{"time":"2026-01-15T07:16:32", "level":"ERROR", "message":"Insert failed: insert or update on table "fact_match_detail" violates foreign key constraint "fact_match_detail_company_key_fkey"
+DETAIL:  Key (company_key)=(fact_match_detail_799431790732251136) is not present in table "dim_company".
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-15T23:33:59", "level":"ERROR", "message":"Insert failed: invalid input syntax for type timestamp with time zone: "09:15"
+LINE 1: ...7741979930624', 'dim_company_798447375281557504', '09:15', 7...
+                                                             ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}

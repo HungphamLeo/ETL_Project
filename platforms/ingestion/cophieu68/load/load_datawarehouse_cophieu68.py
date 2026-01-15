@@ -361,24 +361,29 @@ class FactMatchDetailLoader(FactLoader):
     def load(self):
         raw = self.mongo.find_table(self.collection_name)
         rows = []
-        
-        for doc in raw.get("data"):
-
-            company_key = self.get_company_key(doc.get("symbol"),self.table_creator)
-            rows.append({
-                "match_key": self.table_creator.get_id(),
-                "company_key": company_key,
-                "match_datetime": doc.get("match_datetime"),
-                "price": doc.get("price"),
-                "volume": doc.get("volume"),
-                "fluctuation_range": doc.get("fluctuation_range"),
-                "accum_volume": doc.get("accum_volume"),
-                "update_time": doc.get("update_time") or datetime.utcnow().isoformat()
-                
-            })
+        data = raw.get("data")[0]
+        update_time = data.get("update_time") 
+        for symbol, symbol_data in data.items():
+            if isinstance(symbol_data ,dict) is True:
+                symbol_profile = symbol_data.get("data")
+                company_key = self.get_company_key(symbol, self.table_creator)
+                for match_info in symbol_profile:
+                    rows.append({
+                        "match_key": self.table_creator.get_id(),
+                        "company_key": company_key,
+                        "match_datetime": match_info.get("Time_match"),
+                        "price": match_info.get("Price_match"),
+                        "volume": match_info.get("Volume"),
+                        "fluctuation_range": match_info.get("Increase_decrease"),
+                        "accum_volume": match_info.get("Accum_volume"),
+                        "update_time": update_time or datetime.utcnow().isoformat()
+                        
+                    })
         df = pd.DataFrame(rows)
+        
         sql = self.create_fact_table_sql(self.fact_name, self.table_creator)
         df.drop_duplicates()
+        print(df.head())
         return df, sql
 
 
