@@ -227,3 +227,272 @@ LINE 2: CREATE TABLE IF NOT EXISTS public.FACT_TRADE (
 LINE 2: CREATE TABLE IF NOT EXISTS public.FACT_TRADE (
                                    ^
 ", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:196"}
+{"time":"2026-01-10T09:06:53", "level":"ERROR", "message":"Execute failed: connection to server at "localhost" (127.0.0.1), port 5432 failed: FATAL:  password authentication failed for user "hungpham"
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:196"}
+{"time":"2026-01-10T09:06:53", "level":"ERROR", "message":"Insert failed: connection to server at "localhost" (127.0.0.1), port 5432 failed: FATAL:  password authentication failed for user "hungpham"
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-10T09:06:53", "level":"ERROR", "message":"Execute failed: connection to server at "localhost" (127.0.0.1), port 5432 failed: FATAL:  password authentication failed for user "hungpham"
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:196"}
+{"time":"2026-01-10T09:06:53", "level":"ERROR", "message":"Insert failed: connection to server at "localhost" (127.0.0.1), port 5432 failed: FATAL:  password authentication failed for user "hungpham"
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-10T09:14:57", "level":"ERROR", "message":"Execute failed: connection to server at "localhost" (127.0.0.1), port 5432 failed: FATAL:  password authentication failed for user "hungpham"
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:196"}
+{"time":"2026-01-10T09:14:57", "level":"ERROR", "message":"Insert failed: connection to server at "localhost" (127.0.0.1), port 5432 failed: FATAL:  password authentication failed for user "hungpham"
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-10T09:14:57", "level":"ERROR", "message":"Execute failed: connection to server at "localhost" (127.0.0.1), port 5432 failed: FATAL:  password authentication failed for user "hungpham"
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:196"}
+{"time":"2026-01-10T09:14:58", "level":"ERROR", "message":"Insert failed: connection to server at "localhost" (127.0.0.1), port 5432 failed: FATAL:  password authentication failed for user "hungpham"
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-10T09:14:58", "level":"ERROR", "message":"Query failed: connection to server at "localhost" (127.0.0.1), port 5432 failed: FATAL:  password authentication failed for user "hungpham"
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:217"}
+{"time":"2026-01-10T11:16:19", "level":"ERROR", "message":"Insert failed: column "market_key" of relation "dim_market_type" does not exist
+LINE 1: INSERT INTO DW.DIM_MARKET_TYPE (market_key, market_type, mar...
+                                        ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-10T11:16:18", "level":"ERROR", "message":"Query failed: relation "dw.dim_company" does not exist
+LINE 1: SELECT * FROM dw.dim_company WHERE company_key = 'VCB' AND i...
+                      ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:217"}
+{"time":"2026-01-10T11:18:19", "level":"ERROR", "message":"Insert failed: column "market_key" of relation "dim_market_type" does not exist
+LINE 1: INSERT INTO DW.DIM_MARKET_TYPE (market_key, market_type, mar...
+                                        ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-10T11:20:23", "level":"ERROR", "message":"Insert failed: column "market_key" of relation "dim_market_type" does not exist
+LINE 1: INSERT INTO DW.DIM_MARKET_TYPE (market_key, market_type, mar...
+                                        ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-10T11:31:30", "level":"ERROR", "message":"Insert failed: column "market_key" of relation "dim_market_type" does not exist
+LINE 1: INSERT INTO DW.DIM_MARKET_TYPE (market_key, market_type, mar...
+                                        ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-10T12:31:22", "level":"ERROR", "message":"Insert failed: column "market_key" of relation "dim_market_type" does not exist
+LINE 1: INSERT INTO DW.DIM_MARKET_TYPE (market_key, market_type, mar...
+                                        ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-10T12:52:04", "level":"ERROR", "message":"Insert failed: column "market_key" of relation "dim_market_type" does not exist
+LINE 1: INSERT INTO DW.DIM_MARKET_TYPE (market_key, market_type, mar...
+                                        ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-10T17:28:40", "level":"ERROR", "message":"Insert failed: column "market_key" of relation "dim_market_type" does not exist
+LINE 1: INSERT INTO DW.DIM_MARKET_TYPE (market_key, market_type, mar...
+                                        ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-10T17:48:55", "level":"ERROR", "message":"Insert failed: column "market_key" of relation "dim_market_type" does not exist
+LINE 1: INSERT INTO DW.DIM_MARKET_TYPE (market_key, market_type, mar...
+                                        ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-10T17:49:43", "level":"ERROR", "message":"Execute failed: multiple primary keys for table "dim_market_type" are not allowed
+LINE 4:   "market_type" TEXT PRIMARY KEY,
+                             ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:196"}
+{"time":"2026-01-10T17:49:43", "level":"ERROR", "message":"Insert failed: relation "dw.dim_market_type" does not exist
+LINE 1: INSERT INTO DW.DIM_MARKET_TYPE (market_key, market_type, mar...
+                    ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-10T18:06:03", "level":"ERROR", "message":"Insert failed: duplicate key value violates unique constraint "dim_industry_pkey"
+DETAIL:  Key (industry_key)=(financial_info_) already exists.
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-10T18:25:09", "level":"ERROR", "message":"Query failed: relation "dw.dim_company" does not exist
+LINE 1: SELECT * FROM dw.dim_company WHERE company_key = 'VCB' AND i...
+                      ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:217"}
+{"time":"2026-01-10T18:28:20", "level":"ERROR", "message":"Execute failed: relation "dim_market_type" does not exist
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:196"}
+{"time":"2026-01-10T18:28:20", "level":"ERROR", "message":"Insert failed: relation "dw.dim_company" does not exist
+LINE 1: INSERT INTO DW.DIM_COMPANY (company_key, symbol, company_nam...
+                    ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-10T18:59:44", "level":"ERROR", "message":"Execute failed: relation "dim_market_type" does not exist
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:196"}
+{"time":"2026-01-10T18:59:44", "level":"ERROR", "message":"Insert failed: can't adapt type 'dict'", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-10T19:23:56", "level":"ERROR", "message":"Execute failed: relation "dim_market_type" does not exist
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:196"}
+{"time":"2026-01-10T19:23:56", "level":"ERROR", "message":"Insert failed: relation "private.dim_company" does not exist
+LINE 1: INSERT INTO PRIVATE.DIM_COMPANY (company_key, symbol, compan...
+                    ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-10T19:24:38", "level":"ERROR", "message":"Execute failed: relation "dim_market_type" does not exist
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:196"}
+{"time":"2026-01-10T19:24:38", "level":"ERROR", "message":"Insert failed: relation "dw.dim_company" does not exist
+LINE 1: INSERT INTO DW.DIM_COMPANY (company_key, symbol, company_nam...
+                    ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-10T19:32:11", "level":"ERROR", "message":"Execute failed: there is no unique constraint matching given keys for referenced table "dim_industry"
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:196"}
+{"time":"2026-01-10T19:32:11", "level":"ERROR", "message":"Insert failed: relation "dw.dim_company" does not exist
+LINE 1: INSERT INTO DW.DIM_COMPANY (company_key, symbol, company_nam...
+                    ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-10T19:56:18", "level":"ERROR", "message":"Execute failed: relation "dim_industry" does not exist
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:196"}
+{"time":"2026-01-10T19:56:18", "level":"ERROR", "message":"Insert failed: relation "dw.dim_company" does not exist
+LINE 1: INSERT INTO DW.DIM_COMPANY (company_key, symbol, company_nam...
+                    ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-10T19:56:43", "level":"ERROR", "message":"Execute failed: relation "dim_industry" does not exist
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:196"}
+{"time":"2026-01-10T19:56:43", "level":"ERROR", "message":"Insert failed: relation "dw.dim_company" does not exist
+LINE 1: INSERT INTO DW.DIM_COMPANY (company_key, symbol, company_nam...
+                    ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-11T09:26:51", "level":"ERROR", "message":"Execute failed: relation "dim_industry" does not exist
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:196"}
+{"time":"2026-01-11T09:26:51", "level":"ERROR", "message":"Insert failed: relation "dw.dim_company" does not exist
+LINE 1: INSERT INTO DW.DIM_COMPANY (company_key, symbol, company_nam...
+                    ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-11T09:44:34", "level":"ERROR", "message":"Insert failed: column "industry_sk" of relation "dim_industry" does not exist
+LINE 1: INSERT INTO DW.DIM_INDUSTRY (industry_sk, industry_key, indu...
+                                     ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-11T09:45:38", "level":"ERROR", "message":"Execute failed: relation "dim_industry" does not exist
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:196"}
+{"time":"2026-01-11T09:45:39", "level":"ERROR", "message":"Insert failed: relation "dw.dim_company" does not exist
+LINE 1: INSERT INTO DW.DIM_COMPANY (company_key, symbol, company_nam...
+                    ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-11T09:54:32", "level":"ERROR", "message":"Execute failed: column "industry_sk" referenced in foreign key constraint does not exist
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:196"}
+{"time":"2026-01-11T09:54:32", "level":"ERROR", "message":"Insert failed: relation "dw.dim_company" does not exist
+LINE 1: INSERT INTO DW.DIM_COMPANY (company_key, symbol, company_nam...
+                    ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-11T10:06:32", "level":"ERROR", "message":"Insert failed: invalid input syntax for type timestamp with time zone: ""
+LINE 1: ...tcombank.com.vn', '2009-06-30', NULL, NULL, NULL, '', NULL, ...
+                                                             ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-11T10:41:47", "level":"ERROR", "message":"Insert failed: duplicate key value violates unique constraint "dim_report_type_pkey"
+DETAIL:  Key (report_type_key)=(Y) already exists.
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-11T15:39:02", "level":"ERROR", "message":"Insert failed: 'Earning_Per_Share(EPS'", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-11T16:10:02", "level":"ERROR", "message":"Insert failed: 'Earning_Per_Share(EPS'", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-11T22:16:22", "level":"ERROR", "message":"Insert failed: syntax error at or near "/"
+LINE 1: ...k_Value, Earning_Per_Share_EPS, Price_on_Earning_P/E, Return...
+                                                             ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-11T22:17:25", "level":"ERROR", "message":"Insert failed: column "percentage_change" of relation "fact_industry_summary" does not exist
+LINE 1: ...sk, industry_code, industry_name, industry_index, Percentage...
+                                                             ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-11T22:30:53", "level":"ERROR", "message":"Insert failed: invalid input syntax for type double precision: "0.000.00%"
+LINE 1: ...S ('798026212311044096', '^hastc', 'HNX', '0.00', '0.000.00%...
+                                                             ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-11T22:40:19", "level":"ERROR", "message":"Insert failed: invalid input syntax for type double precision: "13,029,058,299"
+LINE 1: ...8026212311044096', '^hastc', 'HNX', '0.00', NULL, '13,029,05...
+                                                             ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-11T22:52:00", "level":"ERROR", "message":"Insert failed: null value in column "industry_metric" of relation "fact_industry_summary" violates not-null constraint
+DETAIL:  Failing row contains (798026212311044096, null, ^hastc, HNX, 0, null, 13029058299, 327280.1, null, null, null, 14.03, 3.64, 11.18, 13029058299, 641151166, 208714092, 432445633, 207, 33, 362258905, 23326611, 2026-01-11 15:51:56.406591+00, 2026-01-08 13:23:08.380185+00).
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-12T10:10:25", "level":"ERROR", "message":"Insert failed: column "earning_per_share_eps" of relation "fact_financial_metrics" does not exist
+LINE 1: ...price, high_price, low_price, volume, book_value, earning_pe...
+                                                             ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-12T10:26:59", "level":"ERROR", "message":"Insert failed: invalid input syntax for type numeric: "34.0K  /22.8K"
+LINE 1: ...68', NULL, '69.90', '72.70', '69.60', '13737200', '34.0K  /2...
+                                                             ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-12T10:40:38", "level":"ERROR", "message":"Insert failed: invalid input syntax for type numeric: "6.2K  /4.1K"
+LINE 1: ...', '72.70', '69.60', '13737200', '34.0K  /22.8K', '6.2K  /4....
+                                                             ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-12T10:50:00", "level":"ERROR", "message":"Insert failed: invalid input syntax for type numeric: "6.2K  /4.1K"
+LINE 1: ...', '72.70', '69.60', '13737200', '34.0K  /22.8K', '6.2K  /4....
+                                                             ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-12T10:50:42", "level":"ERROR", "message":"Insert failed: invalid input syntax for type numeric: "6.2K  /4.1K"
+LINE 1: ...', '72.70', '69.60', '13737200', '34.0K  /22.8K', '6.2K  /4....
+                                                             ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-12T10:51:31", "level":"ERROR", "message":"Insert failed: value too long for type character varying(12)
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-12T10:52:32", "level":"ERROR", "message":"Insert failed: null value in column "company_name" of relation "fact_financial_metrics" violates not-null constraint
+DETAIL:  Failing row contains (798398951379177472, 798392516171796480, 68, null, 69.90, 72.70, 69.60, 13737200, 34.0K  /22.8K, 6.2K  /4.1K, 9.2x /13.7x, 1.7x /2.5x, null, null, 0.9, 318,578 Bi, 8,356 Mi
+					 /8,356Mi, 1871639, 67.3 - 52.5, 1,742,176 Bi, 190,186 Bi, 916.0%, 9.84%, 26,907 Bi, 95%, 92%, 3.9/5, 17%, 47%, 2026-01-12 02:50:36.975422).
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-12T10:53:22", "level":"ERROR", "message":"Insert failed: duplicate key value violates unique constraint "fact_financial_metrics_pkey"
+DETAIL:  Key (financial_ratio_key)=(798399169130663936) already exists.
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-12T12:49:54", "level":"ERROR", "message":"Insert failed: column "plan_revenue" of relation "fact_business_plan" does not exist
+LINE 1: ...SINESS_PLAN (plan_key, company_key, symbol, year, plan_reven...
+                                                             ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-12T12:54:35", "level":"ERROR", "message":"Insert failed: column "plan_revenue" of relation "fact_business_plan" does not exist
+LINE 1: ...SINESS_PLAN (plan_key, company_key, symbol, year, plan_reven...
+                                                             ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-12T12:58:05", "level":"ERROR", "message":"Insert failed: duplicate key value violates unique constraint "fact_business_plan_pkey"
+DETAIL:  Key (plan_key)=(798430535952109568) already exists.
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-12T12:59:21", "level":"ERROR", "message":"Insert failed: duplicate key value violates unique constraint "fact_business_plan_pkey"
+DETAIL:  Key (plan_key)=(798430895387185152) already exists.
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-12T13:06:16", "level":"ERROR", "message":"Insert failed: duplicate key value violates unique constraint "fact_business_plan_pkey"
+DETAIL:  Key (plan_key)=(798432584081084416) already exists.
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-12T13:13:19", "level":"ERROR", "message":"Insert failed: duplicate key value violates unique constraint "fact_business_plan_pkey"
+DETAIL:  Key (plan_key)=(798434413791678464) already exists.
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-12T13:57:07", "level":"ERROR", "message":"Insert failed: value too long for type character varying(32)
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-12T13:58:04", "level":"ERROR", "message":"Insert failed: value too long for type character varying(32)
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-12T13:58:27", "level":"ERROR", "message":"Insert failed: value too long for type character varying(32)
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-12T14:02:36", "level":"ERROR", "message":"Insert failed: value too long for type character varying(32)
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-12T14:05:09", "level":"ERROR", "message":"Insert failed: duplicate key value violates unique constraint "fact_financial_metrics_pkey"
+DETAIL:  Key (financial_ratio_key)=(fact_financial_metrics_798447434987474944) already exists.
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-12T14:11:32", "level":"ERROR", "message":"Insert failed: duplicate key value violates unique constraint "fact_financial_metrics_pkey"
+DETAIL:  Key (financial_ratio_key)=(fact_financial_metrics_798449027157856256) already exists.
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-15T00:01:52", "level":"ERROR", "message":"Insert failed: column "period" of relation "fact_income_statement_quarterly" does not exist
+LINE 1: ...l, time_report_type, financial_report_type, year, period, me...
+                                                             ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-15T00:03:16", "level":"ERROR", "message":"Insert failed: column "period" of relation "fact_income_statement_quarterly" does not exist
+LINE 1: ...l, time_report_type, financial_report_type, year, period, me...
+                                                             ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-15T00:04:39", "level":"ERROR", "message":"Insert failed: column "period" of relation "fact_income_statement_quarterly" does not exist
+LINE 1: ...l, time_report_type, financial_report_type, year, period, me...
+                                                             ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-15T00:07:45", "level":"ERROR", "message":"Insert failed: column "period" of relation "fact_income_statement_quarterly" does not exist
+LINE 1: ...l, time_report_type, financial_report_type, year, period, me...
+                                                             ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-15T00:10:16", "level":"ERROR", "message":"Insert failed: column "period" of relation "fact_income_statement_quarterly" does not exist
+LINE 1: ...l, time_report_type, financial_report_type, year, period, me...
+                                                             ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-15T00:11:32", "level":"ERROR", "message":"Insert failed: duplicate key value violates unique constraint "dim_report_type_pkey"
+DETAIL:  Key (report_type_key)=(Y) already exists.
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-15T00:12:20", "level":"ERROR", "message":"Insert failed: invalid input syntax for type numeric: "NET_INTEREST_INCOME"
+LINE 1: ...VCB', 'quarter', 'income_statement', '2024', '4', 'NET_INTER...
+                                                             ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-15T07:10:22", "level":"ERROR", "message":"Execute failed: null value in column "symbol" of relation "dim_company" violates not-null constraint
+DETAIL:  Failing row contains (fact_match_detail_799430243059240960, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, t, null, 2026-01-15 00:10:22.732061+00).
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:196"}
+{"time":"2026-01-15T07:10:23", "level":"ERROR", "message":"Insert failed: value too long for type character varying(32)
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-15T07:15:32", "level":"ERROR", "message":"Execute failed: null value in column "symbol" of relation "dim_company" violates not-null constraint
+DETAIL:  Failing row contains (fact_match_detail_799431541640925184, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, t, null, 2026-01-15 00:15:32.263871+00).
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:196"}
+{"time":"2026-01-15T07:15:32", "level":"ERROR", "message":"Insert failed: insert or update on table "fact_match_detail" violates foreign key constraint "fact_match_detail_company_key_fkey"
+DETAIL:  Key (company_key)=(fact_match_detail_799431541640925184) is not present in table "dim_company".
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-15T07:16:31", "level":"ERROR", "message":"Execute failed: null value in column "symbol" of relation "dim_company" violates not-null constraint
+DETAIL:  Failing row contains (fact_match_detail_799431790732251136, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, t, null, 2026-01-15 00:16:31.6707+00).
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:196"}
+{"time":"2026-01-15T07:16:32", "level":"ERROR", "message":"Insert failed: insert or update on table "fact_match_detail" violates foreign key constraint "fact_match_detail_company_key_fkey"
+DETAIL:  Key (company_key)=(fact_match_detail_799431790732251136) is not present in table "dim_company".
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-15T23:33:59", "level":"ERROR", "message":"Insert failed: invalid input syntax for type timestamp with time zone: "09:15"
+LINE 1: ...7741979930624', 'dim_company_798447375281557504', '09:15', 7...
+                                                             ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}

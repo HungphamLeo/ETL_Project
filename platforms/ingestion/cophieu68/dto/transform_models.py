@@ -4,9 +4,9 @@ DATA_WAREHOUSE_SCHEMA = {
 
         "dim_market_type": {
             "grain": "1 record per stock exchange",
-            "columns": {
-                "market_key":      {"type": "VARCHAR(32)", "constraints": "PRIMARY KEY"},
-                "market_type":     {"type": "TEXT",        "constraints": "UNIQUE NOT NULL"},
+            "columns": {  
+                "market_key":     {"type": "VARCHAR(64)", "constraints": "PRIMARY KEY"},              
+                "market_type":     {"type": "TEXT",        "constraints": "NOT NULL"},
                 "market_name":     {"type": "TEXT",        "constraints": ""},
                 "update_time":     {"type": "TIMESTAMPTZ", "constraints": ""},
                 "created_time":    {"type": "TIMESTAMPTZ", "constraints": "DEFAULT NOW()"}
@@ -16,6 +16,7 @@ DATA_WAREHOUSE_SCHEMA = {
         "dim_industry": {
             "grain": "1 record per industry",
             "columns": {
+                "industry_sk":     {"type": "VARCHAR(64)", "constraints": "PRIMARY KEY"},
                 "industry_metric": {"type": "VARCHAR(32)", "constraints": "NOT NULL"},
                 "industry_code": {"type": "TEXT", "constraints": "NOT NULL"},
                 "industry_code_replace": {"type": "TEXT"},
@@ -27,16 +28,18 @@ DATA_WAREHOUSE_SCHEMA = {
                 "created_time": {"type": "TIMESTAMPTZ", "constraints": "DEFAULT NOW()"}
             },
             "constraints": [
-                "PRIMARY KEY (industry_metric, industry_code)"
+                "UNIQUE (industry_sk, industry_metric, industry_code, effective_date)"
             ]
         },
 
         "dim_company": {
             "grain": "1 record per company (SCD2)",
             "columns": {
-                "company_key":     {"type": "VARCHAR(32)", "constraints": "PRIMARY KEY"},
+                "company_key":     {"type": "VARCHAR(64)", "constraints": "PRIMARY KEY"},
                 "symbol":          {"type": "TEXT",        "constraints": "NOT NULL"},
                 "company_name":    {"type": "TEXT"},
+                "market_key":      {"type": "VARCHAR(32)", "constraints": "REFERENCES dw.dim_market_type(market_key)"},
+                "industry_sk":      {"type": "VARCHAR(32)", "constraints": "REFERENCES dw.dim_industry(industry_sk)"},
                 "full_name":       {"type": "TEXT"},
                 "english_name":    {"type": "TEXT"},
                 "short_name":      {"type": "TEXT"},
@@ -45,13 +48,11 @@ DATA_WAREHOUSE_SCHEMA = {
                 "fax":             {"type": "TEXT"},
                 "website":         {"type": "TEXT"},
                 "email":           {"type": "TEXT"},
-                "established_date":{"type": "DATE"},
                 "listed_date":     {"type": "DATE"},
                 "chartered_capital":{"type": "TEXT"},
                 "business_license":{"type": "TEXT"},
                 "tax_code":        {"type": "TEXT"},
-                "market_key":      {"type": "VARCHAR(32)", "constraints": "REFERENCES dim_market_type(market_key)"},
-                "effective_date": {"type": "TIMESTAMPTZ", "constraints": "NOT NULL"},
+                "established_date": {"type": "TIMESTAMPTZ"},
                 "end_date": {"type": "TIMESTAMPTZ"},
                 "is_current": {"type": "BOOLEAN", "constraints": "DEFAULT TRUE"},
                 "update_time": {"type": "TIMESTAMPTZ"},
@@ -60,9 +61,9 @@ DATA_WAREHOUSE_SCHEMA = {
         },
 
         "dim_report_type": {
-            "grain": "Yearly or Quarterly",
+            "grain": "annually or Quarterly",
             "columns": {
-                "report_type_key": {"type": "VARCHAR(32)", "constraints": "PRIMARY KEY"},
+                "report_type_key": {"type": "VARCHAR(64)", "constraints": "PRIMARY KEY"},
                 "report_type_code":{"type": "TEXT",        "constraints": "NOT NULL"},  # Y, Q
                 "description":     {"type": "TEXT",        "constraints": ""}
             }
@@ -74,27 +75,27 @@ DATA_WAREHOUSE_SCHEMA = {
             "grain": "1 record per trade tick",
             "partitions": "RANGE (trade_date_key) monthly",
             "columns": {
-                "industry_key": {"type": "VARCHAR(32)", "constraints": "PRIMARY KEY"},
-                "industry_metric": {"type": "VARCHAR(32)", "constraints": "NOT NULL"},
+                "industry_sk": {"type": "VARCHAR(64)", "constraints": "REFERENCES dw.dim_industry(industry_sk)"},
                 "industry_code": {"type": "TEXT", "constraints": "NOT NULL"},
+                "industry_name": {"type": "TEXT", "constraints": ""},
                 "industry_index":  {"type": "FLOAT", "constraints": ""},
-                "Percentage_change": {"type": "FLOAT", "constraints": ""},
-                "Liquidity": {"type": "FLOAT", "constraints": ""},
-                "Total_Capital": {"type": "FLOAT", "constraints": ""},
-                "Average_Price": {"type": "FLOAT", "constraints": ""},
-                "Book_Value": {"type": "FLOAT", "constraints": ""},
-                "Earning_Per_Share(EPS)": {"type": "FLOAT", "constraints": ""},
-                "Price on Earning(P/E)": {"type": "FLOAT", "constraints": ""},
-                "Return on Asset(ROA)": {"type": "FLOAT", "constraints": ""},
-                "Return on Equity(ROE)": {"type": "FLOAT", "constraints": ""},
-                "Supply_Volumn": {"type": "FLOAT", "constraints": ""},
-                "Total_Asset": {"type": "FLOAT", "constraints": ""},
-                "Total_Equity": {"type": "FLOAT", "constraints": ""},
-                "Total_Liabilities": {"type": "FLOAT", "constraints": ""},
-                "Percentage_Debt_on_Equity": {"type": "FLOAT", "constraints": ""},
-                "Percentage_Equity_on_Assets": {"type": "FLOAT", "constraints": ""},
-                "Revenue": {"type": "FLOAT", "constraints": ""},
-                "Profit_Before_Tax": {"type": "FLOAT", "constraints": ""},
+                "percentage_change": {"type": "FLOAT", "constraints": ""},
+                "liquidity": {"type": "FLOAT", "constraints": ""},
+                "total_capital": {"type": "FLOAT", "constraints": ""},
+                "average_price": {"type": "VARCHAR(8)", "constraints": ""},
+                "book_value": {"type": "VARCHAR(8)", "constraints": ""},
+                "earning_per_share_eps": {"type": "VARCHAR(8)", "constraints": ""},
+                "price_on_earning_pe": {"type": "FLOAT", "constraints": ""},
+                "return_on_asset_roa": {"type": "FLOAT", "constraints": ""},
+                "return_on_equity_roe": {"type": "FLOAT", "constraints": ""},
+                "supply_volumn": {"type": "FLOAT", "constraints": ""},
+                "total_asset": {"type": "FLOAT", "constraints": ""},
+                "total_equity": {"type": "FLOAT", "constraints": ""},
+                "total_liabilities": {"type": "FLOAT", "constraints": ""},
+                "percentage_debt_on_equity": {"type": "FLOAT", "constraints": ""},
+                "percentage_equity_on_assets": {"type": "FLOAT", "constraints": ""},
+                "revenue": {"type": "FLOAT", "constraints": ""},
+                "profit_before_tax": {"type": "FLOAT", "constraints": ""},
                 "created_time":  {"type": "TIMESTAMPTZ", "constraints": "NOT NULL"},
                 "updated_time":  {"type": "TIMESTAMPTZ", "constraints": "NOT NULL"}
                 
@@ -105,9 +106,9 @@ DATA_WAREHOUSE_SCHEMA = {
             "grain": "1 record per trade tick",
             "partitions": "RANGE (trade_date_key) monthly",
             "columns": {
-                "trade_key":       {"type": "VARCHAR(32)", "constraints": "PRIMARY KEY"},
+                "trade_key":       {"type": "VARCHAR(64)", "constraints": "PRIMARY KEY"},
                 "trade_date":      {"type": "DATE",       "constraints": "NOT NULL"},
-                "company_key":     {"type": "VARCHAR(32)", "constraints": "REFERENCES dim_company(company_key)"},
+                "company_key":     {"type": "VARCHAR(32)", "constraints": "REFERENCES dw.dim_company(company_key)"},
                 "close_price":           {"type": "NUMERIC",     "constraints": ""},
                 "open_price":            {"type": "NUMERIC",     "constraints": ""},
                 "high_price":            {"type": "NUMERIC",     "constraints": ""},
@@ -123,120 +124,158 @@ DATA_WAREHOUSE_SCHEMA = {
         "fact_match_detail": {
             "grain": "1 record per match event",
             "columns": {
-                "match_key":       {"type": "VARCHAR(32)", "constraints": "PRIMARY KEY"},
-                "company_key":     {"type": "VARCHAR(32)", "constraints": "REFERENCES dim_company(company_key)"},
+                "match_key":       {"type": "VARCHAR(64)", "constraints": "PRIMARY KEY"},
+                "company_key":     {"type": "VARCHAR(64)", "constraints": "REFERENCES dw.dim_company(company_key)"},
                 "match_datetime":  {"type": "TIMESTAMPTZ", "constraints": ""},
-                "price":           {"type": "NUMERIC",     "constraints": ""},
+                "price":           {"type": "VARCHAR(32)",     "constraints": ""},
                 "volume":          {"type": "BIGINT",      "constraints": ""},
-                "fluctuation_range":{"type": "NUMERIC",     "constraints": ""},
+                "fluctuation_range":{"type": "VARCHAR(32)",     "constraints": ""},
                 "accum_volume":          {"type": "BIGINT",        "constraints": ""},
                 "update_time":     {"type": "TIMESTAMPTZ", "constraints": ""},
                 
             }
         },
 
-        "fact_income_statement_yearly": {
+        "fact_income_statement_annually": {
             "grain": "company × period (Y or Q)",
             "columns": {
-                "income_key":      {"type": "VARCHAR(32)", "constraints": "PRIMARY KEY"},
-                "company_key":     {"type": "VARCHAR(32)", "constraints": "REFERENCES dim_company(company_key)"},
-                "report_type_key": {"type": "VARCHAR(32)", "constraints": "REFERENCES dim_report_type(report_type_key)"},
-                "period_date_key": {"type": "VARCHAR(32)", "constraints": "REFERENCES dim_date(date_key)"},
-                "revenue":         {"type": "NUMERIC",     "constraints": ""},
-                "operating_profit":{"type": "NUMERIC",     "constraints": ""},
-                "net_income":      {"type": "NUMERIC",     "constraints": ""},
-                "eps":             {"type": "NUMERIC",     "constraints": ""}
-                
-            }
+                "income_key":      {"type": "VARCHAR(64)", "constraints": "NOT NULL"},
+                "company_key":     {"type": "VARCHAR(32)", "constraints": "REFERENCES dw.dim_company(company_key)"},
+                "time_report_type_key": {"type": "VARCHAR(32)", "constraints": "REFERENCES dw.dim_report_type(report_type_key)"},
+                "symbol":          {"type": "VARCHAR(32)", "constraints": ""},
+                "time_report_type":{"type": "VARCHAR(32)", "constraints": ""},
+                "financial_report_type":         {"type": "VARCHAR(32)",     "constraints": ""},
+                "year":         {"type": "VARCHAR(32)",     "constraints": ""},   
+                "metric_code":      {"type": "VARCHAR(128)",     "constraints": ""},
+                "metric_name_en":             {"type": "VARCHAR(128)",     "constraints": ""},
+                "metric_group":          {"type": "VARCHAR(128)",     "constraints": ""},
+                "metric_value":          {"type": "VARCHAR(32)",     "constraints": ""},
+                "currency":          {"type": "VARCHAR(3)",     "constraints": ""},
+                "unit":          {"type": "VARCHAR(32)",     "constraints": ""},
+                "update_time":          {"type": "TIMESTAMPTZ",     "constraints": ""},
+            },
+            "constraints": [
+                "PRIMARY KEY (income_key, company_key)"
+            ]
         },
         "fact_income_statement_quarterly": {
             "grain": "company × period (Y or Q)",
             "columns": {
-                "income_key":      {"type": "VARCHAR(32)", "constraints": "PRIMARY KEY"},
-                "company_key":     {"type": "VARCHAR(32)", "constraints": "REFERENCES dim_company(company_key)"},
-                "report_type_key": {"type": "VARCHAR(32)", "constraints": "REFERENCES dim_report_type(report_type_key)"},
-                "period_date_key": {"type": "VARCHAR(32)", "constraints": "REFERENCES dim_date(date_key)"},
-                "revenue":         {"type": "NUMERIC",     "constraints": ""},
-                "operating_profit":{"type": "NUMERIC",     "constraints": ""},
-                "net_income":      {"type": "NUMERIC",     "constraints": ""},
-                "eps":             {"type": "NUMERIC",     "constraints": ""}
-            }
+                "income_key":      {"type": "VARCHAR(64)", "constraints": "NOT NULL"},
+                "company_key":     {"type": "VARCHAR(32)", "constraints": "REFERENCES dw.dim_company(company_key)"},
+                "time_report_type_key": {"type": "VARCHAR(32)", "constraints": "REFERENCES dw.dim_report_type(report_type_key)"},
+                "symbol":          {"type": "VARCHAR(32)", "constraints": ""},
+                "time_report_type":{"type": "VARCHAR(32)", "constraints": ""},
+                "financial_report_type":         {"type": "VARCHAR(32)",     "constraints": ""},
+                "year":          {"type": "VARCHAR(32)",     "constraints": ""},
+                "period":          {"type": "VARCHAR(32)",     "constraints": ""},
+                "metric_code":      {"type": "VARCHAR(128)",     "constraints": ""},
+                "metric_name_en":             {"type": "VARCHAR(128)",     "constraints": ""},
+                "metric_group":          {"type": "VARCHAR(128)",     "constraints": ""},
+                "metric_value":          {"type": "VARCHAR(32)",     "constraints": ""},
+                "currency":          {"type": "VARCHAR(3)",     "constraints": ""},
+                "unit":          {"type": "VARCHAR(32)",     "constraints": ""},
+                "update_time":          {"type": "TIMESTAMPTZ",     "constraints": ""},
+            },
+            "constraints": [
+                "PRIMARY KEY (income_key, company_key)"
+            ]
         },
 
-        "fact_balance_sheet_yearly": {
+        "fact_balance_sheet_annually": {
             "grain": "company × period (Y or Q)",
             "columns": {
-                "bs_key":          {"type": "VARCHAR(32)", "constraints": "PRIMARY KEY"},
-                "company_key":     {"type": "VARCHAR(32)", "constraints": "REFERENCES dim_company(company_key)"},
-                "report_type_key": {"type": "VARCHAR(32)", "constraints": "REFERENCES dim_report_type(report_type_key)"},
-                "period_date_key": {"type": "VARCHAR(32)", "constraints": "REFERENCES dim_date(date_key)"},
-                "total_assets":    {"type": "NUMERIC",     "constraints": ""},
-                "total_liabilities":{"type": "NUMERIC",    "constraints": ""},
-                "shareholder_equity":{"type": "NUMERIC",   "constraints": ""},
-                "cash":            {"type": "NUMERIC",     "constraints": ""},
-                "inventory":       {"type": "NUMERIC",     "constraints": ""}
-            }
+                "balance_key":      {"type": "VARCHAR(128)", "constraints": "NOT NULL"},
+                "company_key":     {"type": "VARCHAR(32)", "constraints": "REFERENCES dw.dim_company(company_key)"},
+                "time_report_type_key": {"type": "VARCHAR(32)", "constraints": "REFERENCES dw.dim_report_type(report_type_key)"},
+                "symbol":          {"type": "VARCHAR(32)", "constraints": ""},
+                "time_report_type":{"type": "VARCHAR(32)", "constraints": ""},
+                "financial_report_type":         {"type": "VARCHAR(32)",     "constraints": ""},
+                "year":          {"type": "VARCHAR(32)",     "constraints": ""},
+                "metric_code":      {"type": "VARCHAR(128)",     "constraints": ""},
+                "metric_name_en":             {"type": "VARCHAR(128)",     "constraints": ""},
+                "metric_group":          {"type": "VARCHAR(128)",     "constraints": ""},
+                "metric_value":          {"type": "NUMERIC",     "constraints": ""},
+                "currency":          {"type": "VARCHAR(3)",     "constraints": ""},
+                "unit":          {"type": "VARCHAR(32)",     "constraints": ""},
+                "update_time":          {"type": "TIMESTAMPTZ",     "constraints": ""},
+            },
+             "constraints": [
+                "PRIMARY KEY (balance_key, company_key)"
+            ]
         },
         "fact_balance_sheet_quarterly": {
             "grain": "company × period (Y or Q)",
             "columns": {
-                "bs_key":          {"type": "VARCHAR(32)", "constraints": "PRIMARY KEY"},
-                "company_key":     {"type": "VARCHAR(32)", "constraints": "REFERENCES dim_company(company_key)"},
-                "report_type_key": {"type": "VARCHAR(32)", "constraints": "REFERENCES dim_report_type(report_type_key)"},
-                "period_date_key": {"type": "VARCHAR(32)", "constraints": "REFERENCES dim_date(date_key)"},
-                "total_assets":    {"type": "NUMERIC",     "constraints": ""},
-                "total_liabilities":{"type": "NUMERIC",    "constraints": ""},
-                "shareholder_equity":{"type": "NUMERIC",   "constraints": ""},
-                "cash":            {"type": "NUMERIC",     "constraints": ""},
-                "inventory":       {"type": "NUMERIC",     "constraints": ""}
-            }
+                "balance_key":      {"type": "VARCHAR(128)", "constraints": "NOT NULL"},
+                "company_key":     {"type": "VARCHAR(32)", "constraints": "REFERENCES dw.dim_company(company_key)"},
+                "time_report_type_key": {"type": "VARCHAR(32)", "constraints": "REFERENCES dw.dim_report_type(report_type_key)"},
+                "symbol":          {"type": "VARCHAR(32)", "constraints": ""},
+                "time_report_type":{"type": "VARCHAR(32)", "constraints": ""},
+                "financial_report_type":         {"type": "VARCHAR(32)",     "constraints": ""},
+                "year":          {"type": "VARCHAR(32)",     "constraints": ""},
+                "period":          {"type": "VARCHAR(32)",     "constraints": ""},
+                "metric_code":      {"type": "VARCHAR(128)",     "constraints": ""},
+                "metric_name_en":             {"type": "VARCHAR(128)",     "constraints": ""},
+                "metric_group":          {"type": "VARCHAR(128)",     "constraints": ""},
+                "metric_value":          {"type": "NUMERIC",     "constraints": ""},
+                "currency":          {"type": "VARCHAR(3)",     "constraints": ""},
+                "unit":          {"type": "VARCHAR(32)",     "constraints": ""},
+                "update_time":          {"type": "TIMESTAMPTZ",     "constraints": ""},
+            },
+             "constraints": [
+                "PRIMARY KEY (balance_key, company_key)"
+            ]
         },
 
         "fact_business_plan": {
             "grain": "company × year plan",
             "columns": {
-                "plan_key":        {"type": "VARCHAR(32)", "constraints": "PRIMARY KEY"},
-                "company_key":     {"type": "VARCHAR(32)", "constraints": "REFERENCES dim_company(company_key)"},
-                "year_key":        {"type": "VARCHAR(32)", "constraints": "REFERENCES dim_date(date_key)"},
-                "target_revenue":  {"type": "NUMERIC",     "constraints": ""},
-                "target_profit":   {"type": "NUMERIC",     "constraints": ""},
-                "capex_plan":      {"type": "NUMERIC",     "constraints": ""}
+                "plan_key":        {"type": "VARCHAR(64)", "constraints": "PRIMARY KEY"},
+                "company_key":     {"type": "VARCHAR(32)", "constraints": "REFERENCES dw.dim_company(company_key)"},
+                "symbol":          {"type": "VARCHAR(32)", "constraints": ""},
+                "year":        {"type": "VARCHAR(5)", "constraints": ""},
+                "plan_revenue":  {"type": "VARCHAR(12)",     "constraints": ""},
+                "revenue_achived":   {"type": "VARCHAR(12)",     "constraints": ""},
+                "plan_profit":      {"type": "VARCHAR(12)",     "constraints": ""},
+                "profit_achived":    {"type": "VARCHAR(12)",     "constraints": ""},
+                "update_time":          {"type": "TIMESTAMPTZ",     "constraints": ""},
             }
         },
 
         "fact_financial_metrics": {
             "grain": "company × period",
             "columns": {
-                "financial_ratio_key":      {"type": "VARCHAR(32)", "constraints": "PRIMARY KEY"},
-                "company_key":     {"type": "VARCHAR(32)", "constraints": "REFERENCES dim_company(company_key)"},
+                "financial_ratio_key":      {"type": "VARCHAR(64)", "constraints": "PRIMARY KEY"},
+                "company_key":     {"type": "VARCHAR(32)", "constraints": "REFERENCES dw.dim_company(company_key)"},
                 "reference_price": {"type": "NUMERIC", "constraints": "NOT NULL "},
-                "company_name":    {"type": "TEXT", "constraints": "NOT NULL "},
+                "company_name":    {"type": "TEXT", "constraints": ""},
                 "open_price":      {"type": "NUMERIC", "constraints": "NOT NULL "},
                 "high_price":      {"type": "NUMERIC", "constraints": "NOT NULL "},
                 "low_price":       {"type": "NUMERIC", "constraints": "NOT NULL "},
-                "volume":          {"type": "BIGINT", "constraints": "NOT NULL "},
-                "book_value":      {"type": "NUMERIC", "constraints": "NOT NULL "},
-                "earning_per_share(EPS)":{"type": "NUMERIC", "constraints": "NOT NULL "},
-                "price_on_earning(P/E)": {"type": "NUMERIC",     "constraints": ""},
-                "price_on_book_value(P/B)": {"type": "NUMERIC",     "constraints": ""},
-                "return_on_equity(ROE)": {"type": "NUMERIC",     "constraints": ""},
-                "return_on_assets(ROA)": {"type": "NUMERIC",     "constraints": ""},
-                "beta":            {"type": "NUMERIC",     "constraints": ""},
-                "market_cap":      {"type": "NUMERIC",     "constraints": ""},
-                "listed_volume":   {"type": "NUMERIC",     "constraints": ""},
-                "average_volume_52_weeks":  {"type": "NUMERIC",     "constraints": ""},
-                "high_low_52_weeks": {"type": "NUMERIC",     "constraints": ""},
-                "debt":             {"type": "NUMERIC",     "constraints": ""},
-                "equity":           {"type": "NUMERIC",     "constraints": ""},
-                "debt_to_equity":   {"type": "NUMERIC",     "constraints": ""},
-                "equity_to_assets": {"type": "NUMERIC",     "constraints": ""},
-                "cash":             {"type": "NUMERIC",     "constraints": ""},
-                "eps_power":        {"type": "NUMERIC",     "constraints": ""},
-                "roe_power":        {"type": "NUMERIC",     "constraints": ""},
-                "invest_efficiency":{"type": "NUMERIC",     "constraints": ""},
-                "pb_power":         {"type": "NUMERIC",     "constraints": ""},
-                "price_growth_power":{"type": "NUMERIC",     "constraints": ""},
-                "update_time":      {"type": "TIMESTAMP", "constraints": "NOT NULL "},
+                "volume":          {"type": "NUMERIC", "constraints": "NOT NULL "},
+                "book_value":      {"type": "VARCHAR(24)", "constraints": "NOT NULL "},
+                "earning_per_share_eps":{"type": "VARCHAR(24)", "constraints": "NOT NULL "},
+                "price_on_earning_pe": {"type": "VARCHAR(24)",     "constraints": ""},
+                "price_on_book_value_pb": {"type": "VARCHAR(24)",     "constraints": ""},
+                "return_on_equity_roe": {"type": "VARCHAR(24)",     "constraints": ""},
+                "return_on_assets_roa": {"type": "VARCHAR(24)",     "constraints": ""},
+                "beta":            {"type": "VARCHAR(24)",     "constraints": ""},
+                "market_cap":      {"type": "VARCHAR(24)",     "constraints": ""},
+                "listed_volume":   {"type": "VARCHAR(24)",     "constraints": ""},
+                "average_volume_52_weeks":  {"type": "VARCHAR(24)",     "constraints": ""},
+                "high_low_52_weeks": {"type": "VARCHAR(24)",     "constraints": ""},
+                "debt":             {"type": "VARCHAR(24)",     "constraints": ""},
+                "equity":           {"type": "VARCHAR(24)",     "constraints": ""},
+                "debt_to_equity":   {"type": "VARCHAR(24)",     "constraints": ""},
+                "equity_to_assets": {"type": "VARCHAR(24)",     "constraints": ""},
+                "cash":             {"type": "VARCHAR(24)",     "constraints": ""},
+                "eps_power":        {"type": "VARCHAR(24)",     "constraints": ""},
+                "roe_power":        {"type": "VARCHAR(24)",     "constraints": ""},
+                "invest_efficiency":{"type": "VARCHAR(24)",     "constraints": ""},
+                "pb_power":         {"type": "VARCHAR(24)",     "constraints": ""},
+                "price_growth_power":{"type": "VARCHAR(24)",     "constraints": ""},
+                "update_time":      {"type": "TIMESTAMP", "constraints": "NOT NULL"},
                
             }
         }
