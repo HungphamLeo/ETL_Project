@@ -287,10 +287,10 @@ class MongoLoader(MongoWriter):
             db = client[self.database]
             coll = db[collection_name]
             now = self._now_iso()
-            doc = MatchDetailsDoc.from_extract(match_data).to_mongo_dict()
-            doc["update_time"] = now
+            # doc = MatchDetailsDoc.to_fact_rows(match_data).to_mongo_dict()
+            match_data["update_time"] = now
             # upsert per symbol; match rows stored under data list
-            self._upsert(coll, doc, key_fields=["symbol"])
+            self._upsert(coll, match_data, key_fields=["symbol"])
         finally:
             client.close()
 

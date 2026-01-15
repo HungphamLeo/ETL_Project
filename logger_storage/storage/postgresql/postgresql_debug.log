@@ -1479,3 +1479,12 @@ LINE 1: ...VCB', 'quarter', 'income_statement', '2024', '4', 'NET_INTER...
 {"time":"2026-01-15T00:19:56", "level":"INFO", "message":"Inserted 71125 rows into DW.FACT_BALANCE_SHEET_ANNUALLY", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:48"}
 {"time":"2026-01-15T00:19:56", "level":"INFO", "message":"[fact_balance_sheet_annually] Loaded 71125 rows", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/tests/intergration/test_postgres.py:239"}
 {"time":"2026-01-15T00:19:56", "level":"INFO", "message":"[fact_balance_sheet_quarterly] Loaded 84109 rows", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/tests/intergration/test_postgres.py:240"}
+{"time":"2026-01-15T06:29:45", "level":"INFO", "message":"[fact_match_detail] Loaded 0 rows", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/tests/intergration/test_postgres.py:202"}
+{"time":"2026-01-15T06:32:46", "level":"INFO", "message":"[fact_match_detail] Loaded 0 rows", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/tests/intergration/test_postgres.py:202"}
+{"time":"2026-01-15T06:33:18", "level":"INFO", "message":"[fact_match_detail] Loaded 0 rows", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/tests/intergration/test_postgres.py:202"}
+{"time":"2026-01-15T07:10:22", "level":"ERROR", "message":"Execute failed: null value in column "symbol" of relation "dim_company" violates not-null constraint
+DETAIL:  Failing row contains (fact_match_detail_799430243059240960, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, t, null, 2026-01-15 00:10:22.732061+00).
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:196"}
+{"time":"2026-01-15T07:10:23", "level":"ERROR", "message":"Insert failed: value too long for type character varying(32)
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-15T07:10:23", "level":"INFO", "message":"[fact_match_detail] Loaded 1 rows", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/tests/intergration/test_postgres.py:202"}

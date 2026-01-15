@@ -371,3 +371,4 @@
 {"time":"2026-01-12T09:33:12", "level":"ERROR", "message":"Error loading financial ratios for symbol VIC: name 'doc' is not defined", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/tests/intergration/test_mongodb.py:310"}
 {"time":"2026-01-12T09:33:13", "level":"ERROR", "message":"Error loading financial ratios for symbol VHM: name 'doc' is not defined", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/tests/intergration/test_mongodb.py:310"}
 {"time":"2026-01-12T09:33:14", "level":"ERROR", "message":"Error loading financial ratios for symbol CTG: name 'doc' is not defined", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/tests/intergration/test_mongodb.py:310"}
+{"time":"2026-01-15T06:45:12", "level":"ERROR", "message":"Error in task_schedule_company_profile: name 'doc' is not defined", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/tests/intergration/test_mongodb.py:195"}

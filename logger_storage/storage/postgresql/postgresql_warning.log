@@ -1228,3 +1228,8 @@ DETAIL:  Key (report_type_key)=(Y) already exists.
 LINE 1: ...VCB', 'quarter', 'income_statement', '2024', '4', 'NET_INTER...
                                                              ^
 ", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-15T07:10:22", "level":"ERROR", "message":"Execute failed: null value in column "symbol" of relation "dim_company" violates not-null constraint
+DETAIL:  Failing row contains (fact_match_detail_799430243059240960, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, t, null, 2026-01-15 00:10:22.732061+00).
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:196"}
+{"time":"2026-01-15T07:10:23", "level":"ERROR", "message":"Insert failed: value too long for type character varying(32)
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}

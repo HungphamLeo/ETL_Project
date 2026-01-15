@@ -125,11 +125,11 @@ DATA_WAREHOUSE_SCHEMA = {
             "grain": "1 record per match event",
             "columns": {
                 "match_key":       {"type": "VARCHAR(64)", "constraints": "PRIMARY KEY"},
-                "company_key":     {"type": "VARCHAR(32)", "constraints": "REFERENCES dw.dim_company(company_key)"},
+                "company_key":     {"type": "VARCHAR(64)", "constraints": "REFERENCES dw.dim_company(company_key)"},
                 "match_datetime":  {"type": "TIMESTAMPTZ", "constraints": ""},
-                "price":           {"type": "NUMERIC",     "constraints": ""},
+                "price":           {"type": "VARCHAR(32)",     "constraints": ""},
                 "volume":          {"type": "BIGINT",      "constraints": ""},
-                "fluctuation_range":{"type": "NUMERIC",     "constraints": ""},
+                "fluctuation_range":{"type": "VARCHAR(32)",     "constraints": ""},
                 "accum_volume":          {"type": "BIGINT",        "constraints": ""},
                 "update_time":     {"type": "TIMESTAMPTZ", "constraints": ""},
                 

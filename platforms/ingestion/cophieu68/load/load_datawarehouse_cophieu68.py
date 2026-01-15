@@ -359,9 +359,11 @@ class FactMatchDetailLoader(FactLoader):
         self.table_creator = TableCreator(machine_id=1, character_specific=self.fact_name)
 
     def load(self):
-        raw = list(self.mongo.find_table(self.collection_name) or [])
+        raw = self.mongo.find_table(self.collection_name)
         rows = []
+        
         for doc in raw.get("data"):
+
             company_key = self.get_company_key(doc.get("symbol"),self.table_creator)
             rows.append({
                 "match_key": self.table_creator.get_id(),

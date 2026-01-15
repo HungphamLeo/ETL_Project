@@ -191,10 +191,14 @@ def load_fact_trade(datalake_config, mongo_reader, logger, pg_client, dim_repo):
 
 # @task
 def load_fact_match(datalake_config, mongo_reader, logger, pg_client, dim_repo):
-    loader = FactMatchDetailLoader(datalake_config, mongo_reader, dim_repo, logger, pg_client)
+    loader = FactMatchDetailLoader(datalake_config = datalake_config, 
+                                mongo_reader=mongo_reader, 
+                                dim_repo=dim_repo, 
+                                datawarehouse_logger=logger, 
+                                postgres_client=pg_client)
     df, sql = loader.load()
     pg_client.execute(sql)
-    pg_client.bulk_insert(df, loader.fact_name)
+    pg_client.bulk_insert(f"{loader.schema_name}.{loader.fact_name.upper()}", df)
     logger.info(f"[{loader.fact_name}] Loaded {len(df)} rows")
     time.sleep(3)
     return True
@@ -307,13 +311,13 @@ def dw_full_load():
     # load_dim_market_type(datalake_config=mongo_config, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
     # load_dim_industry(datalake_config=mongo_config, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
     # load_dim_company(datalake_config=mongo_config,  mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
-    load_dim_report_type(datalake_config=mongo_config,  mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
+    # load_dim_report_type(datalake_config=mongo_config,  mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
     
 
     # load_fact_trade(datalake_config=mongo_config,  mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres, dim_repo=dim_repo)
-    # load_fact_match(datalake_config=mongo_config, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
-    load_fact_income(datalake_config=mongo_config, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres,dim_repo=dim_repo)
-    load_fact_balance(datalake_config=mongo_config, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres,dim_repo=dim_repo)
+    load_fact_match(datalake_config=mongo_config, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres,dim_repo=dim_repo)
+    # load_fact_income(datalake_config=mongo_config, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres,dim_repo=dim_repo)
+    # load_fact_balance(datalake_config=mongo_config, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres,dim_repo=dim_repo)
     
     # load_fact_financial_metrics(datalake_config=mongo_config, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres, dim_repo=dim_repo)
     # load_fact_industry(datalake_config=mongo_config, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres, dim_repo=dim_repo)
