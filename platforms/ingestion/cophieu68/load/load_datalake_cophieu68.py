@@ -93,8 +93,6 @@ class MongoLoader(MongoWriter):
                 doc = BaseDoc.from_extract({"industry_metric": metric, "data": payload}).to_mongo_dict()
                 doc["industry_metric"] = metric
                 doc["update_time"] = now
-                print(doc)
-                time.sleep(10)
                 self._upsert(coll, doc, key_fields=["industry_metric"])
         finally:
             client.close()
@@ -206,9 +204,8 @@ class MongoLoader(MongoWriter):
             db = client[self.database]
             coll = db[collection_name]
             now = self._now_iso()
-            doc = FinancialInfoDoc.from_extract(financial_data).to_mongo_dict()
-            doc["update_time"] = now
-            self._upsert(coll, doc, key_fields=["symbol"])
+            financial_data["update_time"] = now
+            self._upsert(coll, financial_data, key_fields=["symbol"])
         finally:
             client.close()
 
@@ -220,11 +217,12 @@ class MongoLoader(MongoWriter):
             now = self._now_iso()
             doc = TradingDataDoc.from_extract(trading_data).to_mongo_dict()
             doc["update_time"] = now
+            return
             self._upsert(coll, doc, key_fields=["symbol"])
         finally:
             client.close()
 
-    def load_detail_income_statement_yearly(self, collection_name: str, income_data: Any) -> None:
+    def load_detail_income_statement_annually(self, collection_name: str, income_data: Any) -> None:
         client = self._ensure_client()
         try:
             db = client[self.database]
@@ -253,7 +251,7 @@ class MongoLoader(MongoWriter):
             client.close()
         
 
-    def load_detail_balance_sheet_yearly(self, collection_name: str, balance_data: Any) -> None:
+    def load_detail_balance_sheet_annually(self, collection_name: str, balance_data: Any) -> None:
         client = self._ensure_client()
         try:
             db = client[self.database]
@@ -273,6 +271,7 @@ class MongoLoader(MongoWriter):
             db = client[self.database]
             coll = db[collection_name]
             now = self._now_iso()
+           
             if balance_data and "data" in balance_data:
                 balance_data["data"] = to_primitive(balance_data["data"])
             doc = BalanceSheetDoc.from_extract(balance_data).to_mongo_dict()
@@ -288,10 +287,10 @@ class MongoLoader(MongoWriter):
             db = client[self.database]
             coll = db[collection_name]
             now = self._now_iso()
-            doc = MatchDetailsDoc.from_extract(match_data).to_mongo_dict()
-            doc["update_time"] = now
+            # doc = MatchDetailsDoc.to_fact_rows(match_data).to_mongo_dict()
+            match_data["update_time"] = now
             # upsert per symbol; match rows stored under data list
-            self._upsert(coll, doc, key_fields=["symbol"])
+            self._upsert(coll, match_data, key_fields=["symbol"])
         finally:
             client.close()
 

@@ -238,31 +238,31 @@ def task_schedule_details_financial_statement_quarterly(mongo_config,
         time.sleep(mongo_config.get("delay_call", 0.25)) 
 
 @task(retries=mongo_config_etl_arg.get("retries", 3), retry_delay_seconds=mongo_config_etl_arg.get("backoff_seconds", 5))
-def task_schedule_details_financial_statement_yearly(mongo_config, 
+def task_schedule_details_financial_statement_annually(mongo_config, 
                                     crawler: ExtractCophieu68, 
                                     backend_mongo: MongoStorageBackend, 
                                     loading_datalake: MongoLoader,
                                     symbols_list: List,
                                     loading_pipeline_logger: None):
-    income_statement_yearly = mongo_config.get("collections", {}).get("income_statement_yearly", "income_statement_yearly")
-    balance_sheet_yearly = mongo_config.get("collections", {}).get("balance_sheet_yearly", "balance_sheet_yearly")
+    income_statement_annually = mongo_config.get("collections", {}).get("income_statement_annually", "income_statement_annually")
+    balance_sheet_annually = mongo_config.get("collections", {}).get("balance_sheet_annually", "balance_sheet_annually")
     mongo_schema_income_statement = mongo_config.get("documentation", {}).get("income_statement", {})
     mongo_schema_balance_sheet = mongo_config.get("documentation", {}).get("balance_sheet", {})
-    backend_mongo.create_table(name=income_statement_yearly, schema=mongo_schema_income_statement)
-    backend_mongo.create_table(name=balance_sheet_yearly, schema=mongo_schema_balance_sheet)
+    backend_mongo.create_table(name=income_statement_annually, schema=mongo_schema_income_statement)
+    backend_mongo.create_table(name=balance_sheet_annually, schema=mongo_schema_balance_sheet)
     for symbol in symbols_list:
         crawl_details_income_statement = crawler.crawl_details_income_statement(symbol=symbol, report_type="year")
         crawl_details_balance_sheet = crawler.crawl_details_balance_sheet(symbol=symbol, report_type="year")
         try:
-            loading_datalake.load_detail_income_statement_yearly(collection_name=income_statement_yearly, income_data=crawl_details_income_statement)
+            loading_datalake.load_detail_income_statement_annually(collection_name=income_statement_annually, income_data=crawl_details_income_statement)
         except Exception as e:
-            loading_pipeline_logger.error(f"Error loading income statement yearly for symbol {symbol}: {e}")
+            loading_pipeline_logger.error(f"Error loading income statement annually for symbol {symbol}: {e}")
         time.sleep(mongo_config.get("delay_call", 0.25))
 
         try:
-            loading_datalake.load_detail_balance_sheet_yearly(collection_name=balance_sheet_yearly, balance_data=crawl_details_balance_sheet)
+            loading_datalake.load_detail_balance_sheet_annually(collection_name=balance_sheet_annually, balance_data=crawl_details_balance_sheet)
         except Exception as e:
-            loading_pipeline_logger.error(f"Error loading balance sheet yearly for symbol {symbol}: {e}")
+            loading_pipeline_logger.error(f"Error loading balance sheet annually for symbol {symbol}: {e}")
         time.sleep(mongo_config.get("delay_call", 0.25)) 
 
 @task(retries=mongo_config_etl_arg.get("retries", 3), retry_delay_seconds=mongo_config_etl_arg.get("backoff_seconds", 5))
@@ -384,7 +384,7 @@ def cophieu68_etl_flow(config_path):
     # print("financial summary done")
     time.sleep(mongo_config.get("delay_call", 0.25))
 
-    task_schedule_details_financial_statement_yearly(
+    task_schedule_details_financial_statement_annually(
                                     mongo_config = mongo_config,
                                     crawler=crawler,
                                     backend_mongo=backend_mongo,
@@ -392,7 +392,7 @@ def cophieu68_etl_flow(config_path):
                                     symbols_list=symbol_list,
                                     loading_pipeline_logger = loading_pipeline_logger
                                     )
-    # print("financial statement yearly done")
+    # print("financial statement annually done")
     time.sleep(mongo_config.get("delay_call", 0.25))
 
     task_schedule_details_financial_statement_quarterly(

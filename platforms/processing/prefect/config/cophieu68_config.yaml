@@ -120,7 +120,7 @@ project_params:
       connection_pool:
         min_size: 1
         max_size: 10
-      delay_call: 0.3
+      delay_call: 0.2
       reties_etl_flows:
         max_attempts: 3
         backoff_seconds: 60
@@ -137,12 +137,45 @@ project_params:
       maxPoolSize: 50
       retryWrites: true
       writeConcern: "majority"
-      delay_call: 0.3
+      delay_call: 0.2
       reties_etl_flows:
         max_attempts: 3
         backoff_seconds: 60
+      documentation:
+        market_list:
+          bsonType: object
+          additionalProperties: true
+        industry_info:
+          bsonType: object
+          additionalProperties: true
+        company_info:
+          bsonType: object
+          additionalProperties: true
+        match_details:
+          bsonType: object
+          additionalProperties: true
+        financial_summary:
+          bsonType: object
+          additionalProperties: true
+        business_plan:
+          bsonType: object
+          additionalProperties: true
+        income_statement:
+          bsonType: object
+          additionalProperties: true
+        balance_sheet:
+          bsonType: object
+          additionalProperties: true
+        financial_info:
+          bsonType: object
+          additionalProperties: true
+        trading_data:
+          bsonType: object
+          additionalProperties: true
+
   # Add under top-level key `data_warehouse_schema:` (merge into existing config)
   data_warehouse_schema:
+    schema_name: "private"
     dimensions:
       dim_market_type:
         grain: "1 record per stock exchange"
@@ -217,7 +250,7 @@ project_params:
             constraints: "DEFAULT NOW()"
 
       dim_report_type:
-        grain: "Yearly or Quarterly"
+        grain: "annually or Quarterly"
         columns:
           report_type_key:
             type: "VARCHAR(32)"
