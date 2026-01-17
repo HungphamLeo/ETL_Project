@@ -398,16 +398,16 @@ def cophieu68_etl_flow(config_path):
     # time.sleep(mongo_config.get("delay_call", 0.25))
 
     
-    # task_schedule_company_profile(
-    #                                 mongo_config = mongo_config,
-    #                                 crawler=crawler,
-    #                                 backend_mongo=backend_mongo,
-    #                                 loading_datalake=loading_datalake,
-    #                                 symbols_list=symbol_list,
-    #                                 loading_pipeline_logger = loading_pipeline_logger
-    #                             )
-    # print("company profile done")
-    # time.sleep(mongo_config.get("delay_call", 0.25))
+    task_schedule_company_profile(
+                                    mongo_config = mongo_config,
+                                    crawler=crawler,
+                                    backend_mongo=backend_mongo,
+                                    loading_datalake=loading_datalake,
+                                    symbols_list=symbol_list,
+                                    loading_pipeline_logger = loading_pipeline_logger
+                                )
+    print("company profile done")
+    time.sleep(mongo_config.get("delay_call", 0.25))
     
 
     # task_schedule_details_financial_statement_annually(
@@ -444,16 +444,16 @@ def cophieu68_etl_flow(config_path):
     # time.sleep(mongo_config.get("delay_call", 0.25))
 
     
-    task_schedule_match_details(
-                                    mongo_config = mongo_config,
-                                    crawler=crawler,
-                                    backend_mongo=backend_mongo,
-                                    loading_datalake=loading_datalake,
-                                    symbols_list=symbol_list,
-                                    loading_pipeline_logger = loading_pipeline_logger
-                                    )
-    print("match details done")
-    time.sleep(mongo_config.get("delay_call", 0.25))
+    # task_schedule_match_details(
+    #                                 mongo_config = mongo_config,
+    #                                 crawler=crawler,
+    #                                 backend_mongo=backend_mongo,
+    #                                 loading_datalake=loading_datalake,
+    #                                 symbols_list=symbol_list,
+    #                                 loading_pipeline_logger = loading_pipeline_logger
+    #                                 )
+    # print("match details done")
+    # time.sleep(mongo_config.get("delay_call", 0.25))
 
     # task_schedule_details_trading_data(
     #                                 mongo_config = mongo_config,

@@ -114,3 +114,16 @@ class OtherAssetsNet:
     PARENT_OF_ALLOWANCE_OTHER_ON_BALANCE_ASSETS: Optional[float] = None
     OTHER_ASSETS_NET: Optional[float] = None
     update_time: Optional[str] = None
+
+@dataclass
+class BalanceSheetLiabilities:
+    symbol: str
+    time_report_type:Optional[str] = None
+    financial_report_type: Optional[str] = None
+    year: Optional[str] = None
+    period: Optional[str] = None
+    DUE_TO_GOVERNMENT_AND_CENTRAL_BANK: Optional[float] = None
+    DEPOSITS_FROM_CREDIT_INSTITUTIONS: Optional[float] = None
+    BORROWINGS_FROM_CREDIT_INSTITUTIONS: Optional[float] = None
+    DEPOSITS_FROM_CUSTOMERS: Optional[float] = None
+    update_time: Optional[str] = None
