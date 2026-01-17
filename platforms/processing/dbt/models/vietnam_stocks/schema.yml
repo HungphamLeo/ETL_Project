@@ -1,0 +1,14 @@
+models:
+  - name: fct_bs_assets
+    columns:
+      - name: symbol
+        tests: [not_null]
+      - name: year
+        tests: [not_null]
+      - name: total_assets
+        tests: [not_null]
+
+  - name: fct_bs_fixed_assets
+    columns:
+      - name: tangible_fixed_assets_net
+        tests: [not_null]

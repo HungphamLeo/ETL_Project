@@ -123,7 +123,60 @@ class BalanceSheetLiabilities:
     year: Optional[str] = None
     period: Optional[str] = None
     DUE_TO_GOVERNMENT_AND_CENTRAL_BANK: Optional[float] = None
+    DUE_TO_CREDIT_INSTITUTIONS: Optional[float] = None
     DEPOSITS_FROM_CREDIT_INSTITUTIONS: Optional[float] = None
     BORROWINGS_FROM_CREDIT_INSTITUTIONS: Optional[float] = None
-    DEPOSITS_FROM_CUSTOMERS: Optional[float] = None
+    HIERACHY_OF_DEPOSITS_FROM_CREDIT_INSTITUTIONS: Optional[float] = None
+    HIERACHY_OF_BORROWINGS_FROM_CREDIT_INSTITUTIONS: Optional[float] = None
+    PARENT_OF_DEPOSITS_FROM_CREDIT_INSTITUTIONS: Optional[float] = None
+    PARENT_OF_BORROWINGS_FROM_CREDIT_INSTITUTIONS: Optional[float]
+    CUSTOMER_DEPOSITS: Optional[float] = None
+    DERIVATIVES_AND_OTHER_FINANCIAL_LIABILITIES: Optional[float] = None
+    TRUST_AND_INVESTMENT_FUNDS_BANK_BEARING_RISK: Optional[float] = None
+    DEBT_SECURITIES_ISSUED: Optional[float] = None
+    OTHER_LIABILITIES: Optional[float] = None
+    ACCRUED_INTEREST_AND_FEES_PAYABLE: Optional[float] = None
+    DEFERRED_TAX_LIABILITIES: Optional[float] = None
+    PAYABLES_AND_OTHER_LIABILITIES: Optional[float] = None
+    OTHER_PROVISIONS: Optional[float] = None
+    HIERACHY_OF_ACCRUED_INTEREST_AND_FEES_PAYABLE: Optional[float] = None
+    HIERACHY_OF_DEFERRED_TAX_LIABILITIES: Optional[float] = None
+    HIERACHY_OF_PAYABLES_AND_OTHER_LIABILITIES: Optional[float] = None
+    HIERACHY_OF_OTHER_PROVISIONS: Optional[float] = None
+    PARENT_OF_ACCRUED_INTEREST_AND_FEES_PAYABLE: Optional[float] = None
+    PARENT_OF_DEFERRED_TAX_LIABILITIES: Optional[float] = None
+    PARENT_OF_PAYABLES_AND_OTHER_LIABILITIES: Optional[float] = None
+    PARENT_OF_OTHER_PROVISIONS: Optional[float] = None
+    update_time: Optional[str] = None
+
+@dataclass
+class BalanceSheetTotalEquity:
+    symbol: str
+    time_report_type:Optional[str] = None
+    financial_report_type: Optional[str] = None
+    year: Optional[str] = None
+    period: Optional[str] = None
+    OWNERS_EQUITY_BANK: Optional[float] = None
+    BANK_FUNDS: Optional[float] = None
+    FX_TRANSLATION_DIFFERENCES: Optional[float] = None
+    ASSET_REVALUATION_DIFFERENCES: Optional[float] = None
+    RETAINED_EARNINGS_ACCUMULATED_LOSSES: Optional[float] = None
+    OTHER_FUNDS: Optional[float] = None
+    NON_CONTROLLING_INTERESTS: Optional[float] = None
+    TOTAL_EQUITY: Optional[float] = None
+    update_time: Optional[str] = None
+
+@dataclass
+class BalanceSheetOwnersEquityBank:
+    symbol: str
+    time_report_type:Optional[str] = None
+    financial_report_type: Optional[str] = None
+    year: Optional[str] = None
+    period: Optional[str] = None
+    PAID_IN_CAPITAL: Optional[float] = None
+    CAPITAL_FOR_CONSTRUCTION: Optional[float] = None
+    SHARE_PREMIUM: Optional[float] = None
+    TREASURY_SHARES: Optional[float] = None
+    PREFERRED_SHARES: Optional[float] = None
+    OTHER_CAPITAL: Optional[float] = None
     update_time: Optional[str] = None
