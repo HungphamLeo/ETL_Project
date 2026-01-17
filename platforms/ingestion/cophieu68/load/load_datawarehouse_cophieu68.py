@@ -1,7 +1,8 @@
 # ...existing code...
-from datetime import datetime
+from datetime import datetime, date, time
 import logging
 from typing import Optional, Dict, Any
+import pytz
 import pandas as pd
 from shared.utils.files.util_cophieu68 import TableCreator
 from platforms.storage.datalake.mongodb.data_lake_storage import MongoStorageBackend
@@ -223,8 +224,7 @@ class DimCompanyLoader(DimLoader):
                 "company_key": self.table_creator.get_id(),
                 "symbol": symbol,
                 "company_name": profile.get("full_name") or profile.get("company_name") or None,
-                "market_key": self.get_market_key(profile.get("market_type")),
-                "industry_sk": self.get_industry_sk(profile.get("industry_code")),
+                "current_price": profile.get("current_price") or None,
                 "full_name": profile.get("full_name") or None,
                 "english_name": profile.get("english_name") or None,
                 "short_name": profile.get("short_name") or None,
@@ -232,12 +232,13 @@ class DimCompanyLoader(DimLoader):
                 "phone": profile.get("phone") or None,
                 "fax": profile.get("fax") or None,
                 "website": profile.get("website") or None,
-                "email": profile.get("email") or None,
-                "listed_date": profile.get("listed_date"),
-                "chartered_capital": profile.get("chartered_capital") or None,
-                "business_license": profile.get("business_license") or None,
-                "tax_code": profile.get("tax_code") or None,
+                "email_address": profile.get("email") or None,
                 "established_date": profile.get("established_date") or None,
+                "listed_date": profile.get("listed_date"),
+                "listed_volume_initial": profile.get("listed_volume_initial") or None,
+                "listed_volume": profile.get("listed_volume") or None,
+                "circulating_volume": profile.get("circulating_volume") or None,
+                "market_capitalization": profile.get("market_capitalization") or None,
                 "end_date": None,
                 "is_current": True,
                 "update_time": doc.get("update_time") or datetime.utcnow().isoformat(),
@@ -358,6 +359,30 @@ class FactMatchDetailLoader(FactLoader):
         self.fact_name = self._get_fact_name("fact_match_detail", "fact_match_detail")
         self.table_creator = TableCreator(machine_id=1, character_specific=self.fact_name)
 
+
+    def parse_time_to_timestamptz(self,
+        time_str: str,
+        base_date: date | None = None,
+        tz: str = "Asia/Ho_Chi_Minh"
+    ):
+        """
+        Parse '09:15' -> TIMESTAMPTZ
+        """
+        
+        if not time_str:
+            return None
+
+        base_date = base_date or date.today()
+
+        try:
+            t = datetime.strptime(time_str.strip(), "%H:%M").time()
+        except ValueError:
+            return None
+
+        dt = datetime.combine(base_date, t)
+        tzinfo = pytz.timezone(tz)
+        return tzinfo.localize(dt)
+    
     def load(self):
         raw = self.mongo.find_table(self.collection_name)
         rows = []
@@ -371,7 +396,7 @@ class FactMatchDetailLoader(FactLoader):
                     rows.append({
                         "match_key": self.table_creator.get_id(),
                         "company_key": company_key,
-                        "match_datetime": match_info.get("Time_match"),
+                        "match_datetime": self.parse_time_to_timestamptz(match_info.get("Time_match")),
                         "price": match_info.get("Price_match"),
                         "volume": match_info.get("Volume"),
                         "fluctuation_range": match_info.get("Increase_decrease"),

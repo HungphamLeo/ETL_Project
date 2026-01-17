@@ -541,35 +541,51 @@ class ExtractCophieu68(Cophieu68BeautifulSoupCrawler):
     def crawl_company_profile(self, symbol: str) -> Optional[CompanyProfile]:
         """Crawl thông tin chi tiết công ty từ trang profile"""
 
-        url = f"{self.urls}{self.endpoint['company_profile']}".format(symbol=symbol.upper())
+        url = f"{self.urls}{self.endpoint['company_profile']}".format(
+            symbol=symbol.upper()
+        )
         soup = self.get_soup(url)
         if not soup:
             return None
 
-        try:
-            profile = CompanyProfile(symbol=symbol.upper())
+        # Khởi tạo object kết quả
+        profile = CompanyProfile(symbol=symbol.upper())
 
-            field_map = CRAWL_COMPANY_PROFILE_CONFIG["field_map"]
+        field_map = CRAWL_COMPANY_PROFILE_CONFIG["field_map"]
 
-            tables = soup.find_all('table')
-            for table in tables:
-                for row in table.find_all('tr'):
-                    cells = row.find_all(['td', 'th'])
-                    if len(cells) >= 2:
-                        label = cells[0].get_text(strip=True).lower()
-                        value = cells[1].get_text(strip=True)
-                        
-                        # match key in field_map
-                        for key, attr in field_map.items():
-                            if key in label:
-                                setattr(profile, attr, value)
-                                break
+        # ===== 1. Chỉ tìm bảng thông tin công ty (bảng có 'Mã CK') =====
+        profile_table = None
+        for table in soup.find_all("table"):
+            if table.find("td", string=lambda x: x and "Mã CK" in x):
+                profile_table = table
+                break
 
+        if not profile_table:
             return profile
 
-        except Exception as e:
-            self.logger.error(f"Error extracting company profile for {symbol}: {e}")
-            return None
+        # ===== 2. Hàm làm sạch text =====
+        def clean_text(text: str) -> str:
+            text = re.sub(r"\s+", " ", text)
+            return text.strip()
+
+        # ===== 3. Duyệt từng dòng trong bảng =====
+        for row in profile_table.find_all("tr"):
+            cells = row.find_all("td")
+            if len(cells) < 2:
+                continue
+
+            label = clean_text(cells[0].get_text()).lower()
+            value = clean_text(cells[1].get_text())
+
+            # ===== 4. Map label → field =====
+            for key, attr in field_map.items():
+                if key.lower() in label:
+                    # Không cho ghi đè dữ liệu đã có
+                    if getattr(profile, attr):
+                        break
+                    setattr(profile, attr, value)
+                    break
+        return profile
 
         
     def crawl_market_list(self, market_type: str) -> List[str]:

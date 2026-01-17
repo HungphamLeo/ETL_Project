@@ -315,13 +315,13 @@ def dw_full_load():
     
 
     # load_fact_trade(datalake_config=mongo_config,  mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres, dim_repo=dim_repo)
-    load_fact_match(datalake_config=mongo_config, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres,dim_repo=dim_repo)
+    # load_fact_match(datalake_config=mongo_config, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres,dim_repo=dim_repo)
     # load_fact_income(datalake_config=mongo_config, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres,dim_repo=dim_repo)
     # load_fact_balance(datalake_config=mongo_config, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres,dim_repo=dim_repo)
     
     # load_fact_financial_metrics(datalake_config=mongo_config, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres, dim_repo=dim_repo)
     # load_fact_industry(datalake_config=mongo_config, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres, dim_repo=dim_repo)
-    # load_fact_business_plan(datalake_config=mongo_config, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres, dim_repo=dim_repo)
+    load_fact_business_plan(datalake_config=mongo_config, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres, dim_repo=dim_repo)
     print("done")
 
 

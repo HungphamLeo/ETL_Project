@@ -157,19 +157,23 @@ class FinancialStatementReport:
 class CompanyProfile:
     """Thông tin công ty"""
     symbol: str
+    current_price: str = ""
     full_name: str = ""
     english_name: str = ""
     short_name: str = ""
     address: str = ""
-    phone: str = ""
+    phone_number: str = ""
     fax: str = ""
     website: str = ""
-    email: str = ""
+    email_address: str = ""
     established_date: str = ""
     listed_date: str = ""
-    chartered_capital: str = ""
-    business_license: str = ""
-    tax_code: str = ""
+    listed_volume_initial: str = ""
+    listed_volume: str =""
+    circulating_volume: str = ""
+    market_capitalization: str = ""
+    foreign_buy: str = ""
+    foreign_ownership: str = ""
 
 
 @dataclass
@@ -205,20 +209,24 @@ INDUSTRIAL_INFO_TYPE = {"summary_info": 0, "financial_info": 2, "fund_info": 3}
 
 CRAWL_COMPANY_PROFILE_CONFIG = {
     "field_map": {
-        "tên đầy đủ": "full_name",
-        "tên công ty": "full_name",
-        "tên tiếng anh": "english_name",
+        "Mã CK" : "symbol",
+        "Giá hiện tại" : "current_price",
+        "Tên công ty": "full_name",
+        "Tên giao dịch": "english_name",
         "tên viết tắt": "short_name",
-        "địa chỉ": "address",
-        "điện thoại": "phone",
-        "fax": "fax",
-        "website": "website",
-        "email": "email",
-        "ngày thành lập": "established_date",
-        "ngày niêm yết": "listed_date",
-        "vốn điều lệ": "chartered_capital",
-        "giấy phép kinh doanh": "business_license",
-        "mã số thuế": "tax_code",
+        "Địa chỉ": "address",
+        "Điện thoại": "phone_number",
+        "Fax": "fax",
+        "Website": "website",
+        "Email": "email_address",
+        "Ngày thành lập": "established_date",
+        "Ngày niêm yết": "listed_date",
+        "KL niêm yết lần đầu": "listed_volume_initial",
+        "KL niêm yết": "listed_volume",
+        "KL lưu hành": "circulating_volume",
+        "Vốn thị trường": "market_capitalization",
+        "NN mua": "foreign_buy",
+        "NN sở hữu": "foreign_ownership"
     }
 }
 CRAWL_MARKET_LIST_CONFIG = { "VNINDEX" : "vnindex", 
