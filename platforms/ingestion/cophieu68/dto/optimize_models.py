@@ -180,3 +180,64 @@ class BalanceSheetOwnersEquityBank:
     PREFERRED_SHARES: Optional[float] = None
     OTHER_CAPITAL: Optional[float] = None
     update_time: Optional[str] = None
+
+
+@dataclass
+class  IncomeStatementCoreIncomeAndExpense:
+    symbol: str
+    time_report_type:Optional[str] = None
+    financial_report_type: Optional[str] = None
+    year: Optional[str] = None
+    period: Optional[str] = None
+    NET_INTEREST_INCOME: Optional[float] = None
+    INTEREST_AND_SIMILAR_INCOME: Optional[float] = None
+    INTEREST_AND_SIMILAR_EXPENSES: Optional[float] = None
+    NET_FEE_COMMISSION_INCOME: Optional[float] = None
+    FEE_COMMISSION_INCOME: Optional[float] = None
+    NET_FEE_AND_COMMISSION_INCOME: Optional[float] = None
+    FEE_COMMISSION_EXPENSES: Optional[float] = None
+    update_time: Optional[str] = None
+
+@dataclass
+class IncomeStatementFinancialTrading:
+    symbol: str
+    time_report_type:Optional[str] = None
+    financial_report_type: Optional[str] = None
+    year: Optional[str] = None
+    period: Optional[str] = None
+    NET_FX_TRADING_INCOME: Optional[float] = None
+    NET_TRADING_SECURITIES_INCOME: Optional[float] = None
+    NET_INVESTMENT_SECURITIES_INCOME: Optional[float] = None
+    update_time: Optional[str] = None
+
+@dataclass
+class IncomeStatementOtherOperationActivities:
+    symbol: str
+    time_report_type:Optional[str] = None
+    financial_report_type: Optional[str] = None
+    year: Optional[str] = None
+    period: Optional[str] = None
+    NET_OTHER_OPERATIONAL_INCOME: Optional[float] = None
+    OTHER_OPERATING_INCOME: Optional[float] = None
+    OTHER_OPERATING_EXPENSES: Optional[float] = None
+    INCOME_FROM_EQUITY_INVESTMENTS: Optional[float] = None
+    update_time: Optional[str] = None
+
+@dataclass
+class IncomeStatementExpenseAndProfit:
+    symbol: str
+    time_report_type:Optional[str] = None
+    financial_report_type: Optional[str] = None
+    year: Optional[str] = None
+    period: Optional[str] = None
+    OPERATING_EXPENSES: Optional[float] = None
+    OPERATING_PROFIT_BEFORE_CREDIT_PROVISION: Optional[float] = None
+    CREDIT_RISK_PROVISION_EXPENSES: Optional[float] = None
+    PROFIT_BEFORE_TAX: Optional[float] = None
+    CORPORATE_INCOME_TAX_EXPENSE: Optional[float] = None
+    CURRENT_INCOME_TAX_EXPENSE: Optional[float] = None
+    DEFERRED_INCOME_TAX_EXPENSE: Optional[float] = None
+    PROFIT_AFTER_TAX: Optional[float] = None
+    MINORITY_INTERESTS_AND_PREFERRED_DIVIDENDS: Optional[float] = None
+    NET_PROFIT_ATTRIBUTABLE_TO_PARENT: Optional[float]
+    update_time: Optional[str] = None
