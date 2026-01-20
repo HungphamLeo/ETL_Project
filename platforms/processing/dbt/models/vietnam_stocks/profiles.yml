@@ -1,0 +1,12 @@
+my_dbt_project:
+  target: dev
+  outputs:
+    dev:
+      type: postgres
+      host: postgres-local
+      user: hungpham
+      password: hungpham@123
+      port: 5432
+      dbname: etl_project
+      schema: dw
+      threads: 4
