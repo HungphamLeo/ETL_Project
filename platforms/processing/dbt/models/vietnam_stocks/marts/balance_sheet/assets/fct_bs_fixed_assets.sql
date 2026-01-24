@@ -14,7 +14,7 @@ with src as (
 hier as (
     select *,
         case
-            when metric_name_vi_raw ~ '^[IVXLCDM]+\\.' then 'ROMAN'
+            when coalesce(metric_name_vi_raw,'') ~ '^[IVXLCDM]+\.' then 'ROMAN'
             when metric_name_vi_raw ~ '^\\d+\\.' then 'ARABIC'
             when metric_name_vi_raw ~ '^- ' then 'DASH'
         end as hierarchy_type

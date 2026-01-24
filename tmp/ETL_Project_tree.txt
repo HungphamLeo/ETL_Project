@@ -141,10 +141,12 @@
 │   │   │   │       ├── schema.yml
 │   │   │   │       ├── sources.yml
 │   │   │   │       └── staging
+│   │   │   │           ├── stg_fact_balance_sheet.sql
 │   │   │   │           ├── stg_fact_balance_sheet_annually.sql
 │   │   │   │           ├── stg_fact_balance_sheet_quarterly.sql
-│   │   │   │           ├── stg_fact_income_statement_quarterly.sql
-│   │   │   │           └── stg_income_statement_annually.sql
+│   │   │   │           ├── stg_fact_income_statement.sql
+│   │   │   │           ├── stg_fact_income_statement_annually.sql
+│   │   │   │           └── stg_fact_income_statement_quarterly.sql
 │   │   │   ├── profiles
 │   │   │   │   └── profiles.yml
 │   │   │   └── target
@@ -258,4 +260,4 @@
 └── tmp
     └── ETL_Project_tree.txt
 
-129 directories, 130 files
+129 directories, 132 files

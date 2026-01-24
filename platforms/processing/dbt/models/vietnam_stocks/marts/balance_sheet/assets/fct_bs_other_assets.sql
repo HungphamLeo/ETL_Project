@@ -5,13 +5,14 @@ with fact as (
 
 dim as (
     select *
-    from {{ ref('stg_fact_balance_sheet') }}
+    from {{ ref('dim_balance_sheet_metric_hier') }}
 ),
 
 -- leaf metrics we need in this table
 leaf as (
     select
-        f.symbol, f.time_report_type, f.year, f.period, f.metric_code, f.metric_value, f.update_time
+        f.symbol, f.time_report_type, f.year, f.period,
+        f.metric_code, f.metric_value, f.update_time
     from fact f
     where f.metric_code in (
         'RECEIVABLES',
@@ -24,13 +25,13 @@ leaf as (
     )
 ),
 
--- parent lookup for goodwill & allowance
+-- attach hierarchy metadata (parent/display_order/group)
 leaf_with_parent as (
     select
         l.*,
-        d.parent_metric_code,
         d.metric_group,
-        d.display_order
+        d.display_order,
+        d.parent_metric_code
     from leaf l
     left join dim d
       on d.metric_code = l.metric_code
@@ -55,26 +56,24 @@ leaf_with_roman as (
 -- join to fetch parent_value and roman_value from fact
 enriched as (
     select
-        l.symbol, l.time_report_type, l.year, l.period, l.metric_code, l.metric_value, l.update_time,
+        l.symbol, l.time_report_type, l.year, l.period,
+        l.metric_code, l.metric_value, l.update_time,
 
-        -- parent value
         fp.metric_value as parent_metric_value,
-
-        -- roman ancestor value
         fr.metric_value as roman_metric_value
     from leaf_with_roman l
     left join fact fp
       on fp.symbol = l.symbol
      and fp.time_report_type = l.time_report_type
      and fp.year = l.year
-     and ( (fp.period is null and l.period is null) or fp.period = l.period )
+     and fp.period is not distinct from l.period
      and fp.metric_code = l.parent_metric_code
 
     left join fact fr
       on fr.symbol = l.symbol
      and fr.time_report_type = l.time_report_type
      and fr.year = l.year
-     and ( (fr.period is null and l.period is null) or fr.period = l.period )
+     and fr.period is not distinct from l.period
      and fr.metric_code = l.roman_metric_code
 )
 
@@ -93,7 +92,6 @@ select
     max(case when metric_code = 'ALLOWANCE_OTHER_ON_BALANCE_ASSETS' then metric_value end) as allowance_other_on_balance_assets,
     max(case when metric_code = 'OTHER_ASSETS_NET' then metric_value end) as other_assets_net,
 
-    -- hierarchy & parent (as you asked)
     max(case when metric_code = 'GOODWILL' then roman_metric_value end) as hierachy_of_goodwill,
     max(case when metric_code = 'ALLOWANCE_OTHER_ON_BALANCE_ASSETS' then roman_metric_value end) as hierachy_of_allowance_other_on_balance_assets,
 

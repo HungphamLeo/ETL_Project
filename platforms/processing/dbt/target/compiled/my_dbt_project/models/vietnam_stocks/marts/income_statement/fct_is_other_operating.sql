@@ -1,6 +1,6 @@
 with src as (
     select *
-    from "etl_project"."dw"."stg_fact_income_statement"
+    from "etl_project"."dw_stg"."stg_fact_income_statement"
     where metric_code in (
         'NET_OTHER_OPERATIONAL_INCOME',
         'OTHER_OPERATING_INCOME',

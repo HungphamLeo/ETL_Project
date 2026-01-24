@@ -26,24 +26,12 @@ clean-targets:
 models:
   my_dbt_project:
 
-    staging:
-      +schema: stg
-      +materialized: view
+    vietnam_stocks:
 
-    marts:
-      +schema: dw
-      +materialized: table
+      staging:
+        +schema: stg
+        +materialized: view
 
-# ============================
-# Seeds
-# ============================
-seeds:
-  my_dbt_project:
-    +schema: seed
-
-# ============================
-# Snapshots
-# ============================
-snapshots:
-  my_dbt_project:
-    +schema: snap
+      marts:
+        +schema: dw
+        +materialized: table

@@ -1,11 +1,16 @@
 
-  create view "etl_project"."dw"."fct_is_expense_profit__dbt_tmp"
+  
     
-    
-  as (
+
+  create  table "etl_project"."dw_dw"."fct_is_expense_profit__dbt_tmp"
+  
+  
+    as
+  
+  (
     with src as (
     select *
-    from "etl_project"."dw"."stg_fact_income_statement"
+    from "etl_project"."dw_stg"."stg_fact_income_statement"
     where metric_code in (
         'OPERATING_EXPENSES',
         'OPERATING_PROFIT_BEFORE_CREDIT_PROVISION',
@@ -42,3 +47,4 @@ select
 from src
 group by symbol, time_report_type, year, period
   );
+  
