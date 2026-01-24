@@ -98,6 +98,22 @@ services:
     networks:
       - etl-net
 
+  dbt:
+    build:
+      context: ../..
+      dockerfile: infra/docker/processing/dbt/Dockerfile
+    container_name: dbt
+    depends_on:
+      postgres-local:
+        condition: service_healthy
+    volumes:
+      - ../../platforms/processing/dbt:/app/dbt
+      - ../../infra/docker/processing/dbt/profiles.yml:/app/dbt/profiles/profiles.yml
+      - ../../platforms/processing/dbt/config/dbt_project.yml:/app/dbt/dbt_project.yml
+    networks:
+      - etl-net
+
+
 # ============================
 # VOLUMES & NETWORKS
 # ============================

@@ -496,3 +496,9 @@ DETAIL:  Key (company_key)=(fact_match_detail_799431790732251136) is not present
 LINE 1: ...7741979930624', 'dim_company_798447375281557504', '09:15', 7...
                                                              ^
 ", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-17T08:01:47", "level":"ERROR", "message":"Insert failed: duplicate key value violates unique constraint "fact_business_plan_pkey"
+DETAIL:  Key (plan_key)=(fact_business_plan_800167947371810816) already exists.
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-17T08:05:17", "level":"ERROR", "message":"Insert failed: duplicate key value violates unique constraint "fact_business_plan_pkey"
+DETAIL:  Key (plan_key)=(fact_business_plan_800168828406337536) already exists.
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}

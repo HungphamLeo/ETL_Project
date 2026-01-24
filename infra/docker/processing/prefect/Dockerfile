@@ -17,6 +17,9 @@ RUN pip install --no-cache-dir -r requirements_common.txt \
 COPY shared ./shared
 COPY platforms ./platforms
 COPY scripts ./scripts
+COPY services ./services
+COPY tests ./tests
+COPY tmp ./tmp
 
 # ---- entrypoint
 COPY infra/docker/processing/prefect/entrypoint.sh /entrypoint.sh

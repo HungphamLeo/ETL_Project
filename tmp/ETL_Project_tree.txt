@@ -1,5 +1,5 @@
-├── .gitattributes
-├── .gitignore
+.
+├── Makefile
 ├── README.md
 ├── __pycache__
 │   └── utils.cpython-312.pyc
@@ -11,20 +11,50 @@
 │   │       ├── airflow
 │   │       │   └── Dockerfile
 │   │       ├── dbt
+│   │       │   ├── Dockerfile
+│   │       │   └── profiles.yml
 │   │       └── prefect
 │   │           ├── Dockerfile
 │   │           └── entrypoint.sh
 │   ├── docker_compose
-│   │   └── cophieu68.yml
+│   │   ├── cophieu68.yml
+│   │   ├── init.sh
+│   │   └── init.sql
 │   ├── k8s
+│   ├── platforms
+│   │   └── processing
+│   │       └── prefect
+│   │           └── flows
+│   ├── scripts
+│   ├── shared
 │   └── terraform
 ├── launch.json
 ├── logger_storage
 │   ├── ingestion
 │   │   └── cophieu68
+│   │       ├── extract_debug.log
+│   │       ├── extract_error.log
+│   │       ├── extract_info.log
+│   │       ├── extract_warning.log
+│   │       ├── load_debug.log
+│   │       ├── load_error.log
+│   │       ├── load_info.log
+│   │       ├── load_warning.log
+│   │       ├── transform_debug.log
+│   │       ├── transform_error.log
+│   │       ├── transform_info.log
+│   │       └── transform_warning.log
 │   └── storage
 │       ├── mongodb
+│       │   ├── mongodb_debug.log
+│       │   ├── mongodb_error.log
+│       │   ├── mongodb_info.log
+│       │   └── mongodb_warning.log
 │       └── postgresql
+│           ├── postgresql_debug.log
+│           ├── postgresql_error.log
+│           ├── postgresql_info.log
+│           └── postgresql_warning.log
 ├── platforms
 │   ├── api_gateway
 │   ├── blockchain
@@ -36,9 +66,12 @@
 │   │   ├── cophieu68
 │   │   │   ├── dto
 │   │   │   │   ├── __pycache__
-│   │   │   │   │   └── extract_models.cpython-311.pyc
+│   │   │   │   │   ├── extract_models.cpython-311.pyc
+│   │   │   │   │   ├── load_models.cpython-311.pyc
+│   │   │   │   │   └── transform_models.cpython-311.pyc
 │   │   │   │   ├── extract_models.py
 │   │   │   │   ├── load_models.py
+│   │   │   │   ├── optimize_models.py
 │   │   │   │   └── transform_models.py
 │   │   │   ├── extract
 │   │   │   │   ├── __pycache__
@@ -46,17 +79,24 @@
 │   │   │   │   │   ├── extract_cophieu68.cpython-311.pyc
 │   │   │   │   │   └── extract_cophieu68.cpython-312.pyc
 │   │   │   │   └── extract_cophieu68.py
-│   │   │   ├── load
-│   │   │   │   └── load_datalake_cophieu68.py
-│   │   │   └── transform
-│   │   │       ├── dim_table_load.py
-│   │   │       └── fact_table_load.py
+│   │   │   └── load
+│   │   │       ├── __pycache__
+│   │   │       │   ├── dim_table_load.cpython-311.pyc
+│   │   │       │   ├── fact_table_load.cpython-311.pyc
+│   │   │       │   ├── load_datalake_cophieu68.cpython-311.pyc
+│   │   │       │   ├── load_datalake_postgresql.cpython-311.pyc
+│   │   │       │   ├── load_datawarehouse_cophieu68.cpython-311.pyc
+│   │   │       │   └── load_datawarehouse_cophieu68.cpython-313.pyc
+│   │   │       ├── load_datalake_cophieu68.py
+│   │   │       └── load_datawarehouse_cophieu68.py
 │   │   ├── crypto
 │   │   │   ├── binance
 │   │   │   └── okx
 │   │   └── fed_macroeconomic
 │   ├── ml_trading
 │   ├── processing
+│   │   ├── __pycache__
+│   │   │   └── base_processing.cpython-311.pyc
 │   │   ├── airflow
 │   │   │   ├── config
 │   │   │   └── dags
@@ -64,24 +104,104 @@
 │   │   ├── base_processing.py
 │   │   ├── dbt
 │   │   │   ├── config
-│   │   │   └── models
+│   │   │   │   ├── dbt_project.yml
+│   │   │   │   └── target
+│   │   │   │       └── dbt-lsp.log
+│   │   │   ├── dbt_packages
+│   │   │   ├── dbt_project.yml
+│   │   │   ├── logs
+│   │   │   │   └── dbt.log
+│   │   │   ├── models
+│   │   │   │   ├── crypto_assets
+│   │   │   │   ├── foreign_assets
+│   │   │   │   ├── macroeconomics
+│   │   │   │   └── vietnam_stocks
+│   │   │   │       ├── darft
+│   │   │   │       ├── marts
+│   │   │   │       │   ├── balance_sheet
+│   │   │   │       │   │   ├── assets
+│   │   │   │       │   │   │   ├── dim_balance_sheet_metric_hier.sql
+│   │   │   │       │   │   │   ├── fct_bs_assets.sql
+│   │   │   │       │   │   │   ├── fct_bs_fixed_assets.sql
+│   │   │   │       │   │   │   ├── fct_bs_interbank_placements_loans.sql
+│   │   │   │       │   │   │   ├── fct_bs_investment_securities.sql
+│   │   │   │       │   │   │   ├── fct_bs_loans_to_customers.sql
+│   │   │   │       │   │   │   ├── fct_bs_other_assets.sql
+│   │   │   │       │   │   │   └── fct_bs_trading_securities.sql
+│   │   │   │       │   │   ├── equity
+│   │   │   │       │   │   │   ├── fct_bs_owners_equity_bank.sql
+│   │   │   │       │   │   │   └── fct_bs_total_equity.sql
+│   │   │   │       │   │   └── liabilities
+│   │   │   │       │   │       └── fct_bs_liabilities.sql
+│   │   │   │       │   └── income_statement
+│   │   │   │       │       ├── fct_is_core_income_expense.sql
+│   │   │   │       │       ├── fct_is_expense_profit.sql
+│   │   │   │       │       ├── fct_is_financial_trading.sql
+│   │   │   │       │       └── fct_is_other_operating.sql
+│   │   │   │       ├── schema.yml
+│   │   │   │       ├── sources.yml
+│   │   │   │       └── staging
+│   │   │   │           ├── stg_fact_balance_sheet.sql
+│   │   │   │           ├── stg_fact_balance_sheet_annually.sql
+│   │   │   │           ├── stg_fact_balance_sheet_quarterly.sql
+│   │   │   │           ├── stg_fact_income_statement.sql
+│   │   │   │           ├── stg_fact_income_statement_annually.sql
+│   │   │   │           └── stg_fact_income_statement_quarterly.sql
+│   │   │   ├── profiles
+│   │   │   │   └── profiles.yml
+│   │   │   └── target
+│   │   │       ├── compiled
+│   │   │       │   └── my_dbt_project
+│   │   │       │       └── models
+│   │   │       │           └── vietnam_stocks
+│   │   │       │               └── marts
+│   │   │       │                   └── income_statement
+│   │   │       │                       ├── fct_is_core_income_expense.sql
+│   │   │       │                       ├── fct_is_expense_profit.sql
+│   │   │       │                       ├── fct_is_financial_trading.sql
+│   │   │       │                       └── fct_is_other_operating.sql
+│   │   │       ├── dbt-lsp.log
+│   │   │       ├── graph.gpickle
+│   │   │       ├── graph_summary.json
+│   │   │       ├── manifest.json
+│   │   │       ├── partial_parse.msgpack
+│   │   │       ├── run
+│   │   │       │   └── my_dbt_project
+│   │   │       │       └── models
+│   │   │       │           └── vietnam_stocks
+│   │   │       │               └── marts
+│   │   │       │                   └── income_statement
+│   │   │       │                       ├── fct_is_core_income_expense.sql
+│   │   │       │                       ├── fct_is_expense_profit.sql
+│   │   │       │                       ├── fct_is_financial_trading.sql
+│   │   │       │                       └── fct_is_other_operating.sql
+│   │   │       ├── run_results.json
+│   │   │       └── semantic_manifest.json
 │   │   ├── prefect
 │   │   │   ├── config
 │   │   │   │   └── cophieu68_config.yaml
 │   │   │   └── flows
+│   │   │       ├── __pycache__
+│   │   │       │   └── prefect_orchestra_etl.cpython-311.pyc
 │   │   │       └── prefect_orchestra_etl.py
 │   │   ├── spark
 │   │   └── transformer
 │   ├── storage
+│   │   ├── __pycache__
+│   │   │   └── base_storage.cpython-311.pyc
 │   │   ├── base_storage.py
 │   │   ├── cache
 │   │   ├── datalake
 │   │   │   ├── hdfs
 │   │   │   │   └── data_lake_storage.py
 │   │   │   └── mongodb
+│   │   │       ├── __pycache__
+│   │   │       │   └── data_lake_storage.cpython-311.pyc
 │   │   │       └── data_lake_storage.py
 │   │   ├── datawarehouse
 │   │   │   └── postgresql
+│   │   │       ├── __pycache__
+│   │   │       │   └── datawarehouse_storage.cpython-311.pyc
 │   │   │       └── datawarehouse_storage.py
 │   │   └── deltalake
 │   └── streaming
@@ -90,15 +210,20 @@
 │       │   ├── hdfs_publish_base.py
 │       │   └── kafka_publish_base.py
 │       └── schemas
+├── pyproject.toml
 ├── requirements_airflow.txt
 ├── requirements_common.txt
+├── requirements_dbt_postgre.txt
 ├── requirements_prefect.txt
 ├── scripts
 │   ├── bash.sh
 │   ├── cli
+│   │   ├── __pycache__
+│   │   │   └── load_config.cpython-311.pyc
 │   │   ├── load_config.py
 │   │   └── run.py
 │   ├── cophieu68_elt_mongodb.py
+│   ├── cophieu68_etl_mongodb_v1.py
 │   ├── cophieu68_etl_postgresql.py
 │   └── run_cophieu68.ipynb
 ├── services
@@ -111,20 +236,28 @@
 │   ├── reporting
 │   └── user
 ├── shared
-│   ├── common_models
-│   ├── config
 │   ├── events
 │   ├── logger
+│   │   ├── __pycache__
+│   │   │   └── python_main_logger.cpython-311.pyc
 │   │   └── python_main_logger.py
 │   ├── securities
 │   └── utils
 │       ├── files
+│       │   ├── __pycache__
+│       │   │   └── util_cophieu68.cpython-311.pyc
 │       │   └── util_cophieu68.py
 │       └── networks
 ├── tests
 │   ├── e2e
 │   ├── intergration
+│   │   ├── __pycache__
+│   │   │   ├── test_postgres.cpython-312.pyc
+│   │   │   └── test_postgres.cpython-313.pyc
+│   │   ├── test_mongodb.py
+│   │   └── test_postgres.py
 │   └── unit
 └── tmp
     └── ETL_Project_tree.txt
-Makefile
+
+129 directories, 132 files

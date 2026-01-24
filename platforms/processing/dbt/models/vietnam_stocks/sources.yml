@@ -1,0 +1,10 @@
+version: 2
+
+sources:
+  - name: dw
+    schema: dw          # đúng schema dw như bạn nói
+    tables:
+      - name: fact_income_statement_annually
+      - name: fact_income_statement_quarterly
+      - name: fact_balance_sheet_annually
+      - name: fact_balance_sheet_quarterly
