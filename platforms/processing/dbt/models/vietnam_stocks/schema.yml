@@ -1,0 +1,266 @@
+version: 2
+
+models:
+  - name: fct_bs_assets
+    description: Balance Sheet - Assets wide table (annual + quarterly) pivoted from fact_balance_sheet.
+    columns:
+      - name: symbol
+        description: Stock symbol.
+        data_tests: [not_null]
+      - name: time_report_type
+        description: Report frequency/type (e.g., ANNUAL/QUARTERLY or your own codes).
+        data_tests: [not_null]
+      - name: year
+        description: Fiscal year.
+        data_tests: [not_null]
+      - name: period
+        description: Quarter code for quarterly reports; null for annual snapshots.
+      - name: total_assets
+        description: Total assets.
+        data_tests: [not_null]
+
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: [symbol, time_report_type, year, period]
+
+  - name: fct_bs_interbank_placements_loans
+    description: Balance Sheet - Details of interbank placements and loans.
+    columns:
+      - name: symbol
+        data_tests: [not_null]
+      - name: time_report_type
+        data_tests: [not_null]
+      - name: year
+        data_tests: [not_null]
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: [symbol, time_report_type, year, period]
+
+  - name: fct_bs_trading_securities
+    description: Balance Sheet - Details of trading securities.
+    columns:
+      - name: symbol
+        data_tests: [not_null]
+      - name: time_report_type
+        data_tests: [not_null]
+      - name: year
+        data_tests: [not_null]
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: [symbol, time_report_type, year, period]
+
+  - name: fct_bs_loans_to_customers
+    description: Balance Sheet - Details of loans to customers (gross, allowance, net).
+    columns:
+      - name: symbol
+        data_tests: [not_null]
+      - name: time_report_type
+        data_tests: [not_null]
+      - name: year
+        data_tests: [not_null]
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: [symbol, time_report_type, year, period]
+
+  - name: fct_bs_investment_securities
+    description: Balance Sheet - Details of investment securities.
+    columns:
+      - name: symbol
+        data_tests: [not_null]
+      - name: time_report_type
+        data_tests: [not_null]
+      - name: year
+        data_tests: [not_null]
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: [symbol, time_report_type, year, period]
+
+  - name: fct_bs_fixed_assets
+    description: Balance Sheet - Fixed assets breakdown (includes hierarchy/parent helper fields when available).
+    columns:
+      - name: symbol
+        data_tests: [not_null]
+      - name: time_report_type
+        data_tests: [not_null]
+      - name: year
+        data_tests: [not_null]
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: [symbol, time_report_type, year, period]
+
+  - name: fct_bs_other_assets
+    description: Balance Sheet - Other assets breakdown (includes hierarchy/parent helper fields when available).
+    columns:
+      - name: symbol
+        data_tests: [not_null]
+      - name: time_report_type
+        data_tests: [not_null]
+      - name: year
+        data_tests: [not_null]
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: [symbol, time_report_type, year, period]
+
+  - name: fct_bs_liabilities
+    description: Balance Sheet - Liabilities wide table (includes hierarchy/parent helper fields when available).
+    columns:
+      - name: symbol
+        data_tests: [not_null]
+      - name: time_report_type
+        data_tests: [not_null]
+      - name: year
+        data_tests: [not_null]
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: [symbol, time_report_type, year, period]
+
+  - name: fct_bs_total_equity
+    description: Balance Sheet - Total equity wide table.
+    columns:
+      - name: symbol
+        data_tests: [not_null]
+      - name: time_report_type
+        data_tests: [not_null]
+      - name: year
+        data_tests: [not_null]
+      - name: total_equity
+        data_tests: [not_null]
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: [symbol, time_report_type, year, period]
+
+  - name: fct_bs_owners_equity_bank
+    description: Balance Sheet - Owner's equity breakdown (bank).
+    columns:
+      - name: symbol
+        data_tests: [not_null]
+      - name: time_report_type
+        data_tests: [not_null]
+      - name: year
+        data_tests: [not_null]
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: [symbol, time_report_type, year, period]
+
+  - name: fct_is_core_income_expense
+    description: >
+      Income Statement - Core Income & Expense section.
+      Wide table pivoted from fact_income_statement (quarterly & annual).
+    columns:
+      - name: symbol
+        description: Stock symbol.
+        data_tests: [not_null]
+
+      - name: time_report_type
+        description: Report frequency (ANNUAL / QUARTERLY).
+        data_tests: [not_null]
+
+      - name: year
+        description: Fiscal year.
+        data_tests: [not_null]
+
+      - name: period
+        description: Quarter identifier (Q1–Q4) or NULL for annual reports.
+
+      - name: net_interest_income
+        description: Net interest income.
+
+      - name: interest_and_similar_income
+        description: Interest and similar income.
+
+      - name: interest_and_similar_expenses
+        description: Interest and similar expenses.
+
+      - name: net_fee_commission_income
+        description: Net fee and commission income.
+
+      - name: fee_commission_income
+        description: Fee and commission income.
+
+      - name: net_fee_and_commission_income
+        description: Net fee and commission income (alternative metric code).
+
+      - name: fee_commission_expenses
+        description: Fee and commission expenses.
+
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: [symbol, time_report_type, year, period]
+
+  - name: fct_is_financial_trading
+    description: >
+      Income Statement - Financial trading activities.
+    columns:
+      - name: symbol
+        data_tests: [not_null]
+
+      - name: time_report_type
+        data_tests: [not_null]
+
+      - name: year
+        data_tests: [not_null]
+
+      - name: period
+
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: [symbol, time_report_type, year, period]
+
+  - name: fct_is_other_operating
+    description: >
+      Income Statement - Other operating activities.
+    columns:
+      - name: symbol
+        data_tests: [not_null]
+
+      - name: time_report_type
+        data_tests: [not_null]
+
+      - name: year
+        data_tests: [not_null]
+
+      - name: period
+
+      - name: net_other_operational_income
+        description: Net other operating income.
+
+      - name: other_operating_income
+        description: Other operating income.
+
+      - name: other_operating_expenses
+        description: Other operating expenses.
+
+      - name: income_from_equity_investments
+        description: Income from equity investments.
+
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: [symbol, time_report_type, year, period]
+
+  - name: fct_is_expense_profit
+    description: >
+      Income Statement - Expenses and profit section.
+    columns:
+      - name: symbol
+        data_tests: [not_null]
+
+      - name: time_report_type
+        data_tests: [not_null]
+
+      - name: year
+        data_tests: [not_null]
+
+      - name: period
+
+      - name: profit_before_tax
+        description: Profit before tax.
+
+      - name: profit_after_tax
+        description: Profit after tax.
+
+      - name: net_profit_attributable_to_parent
+        description: Net profit attributable to parent shareholders.
+
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: [symbol, time_report_type, year, period]

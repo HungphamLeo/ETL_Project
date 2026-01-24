@@ -1,0 +1,6 @@
+dbt deps
+dbt run --select staging.income_statement
+dbt run --select marts.income_statement
+dbt run --select marts.income_statement
+
+dbt build --select staging.income_statement marts.income_statement

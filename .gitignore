@@ -9,4 +9,7 @@ env/
 .env
 .log
 .pyc
+.csv
+.yml
+.png
 __pycache__/
