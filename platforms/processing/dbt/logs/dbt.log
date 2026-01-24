@@ -1,0 +1,668 @@
+[0m12:00:39.872253 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x777480898610>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x777480c745d0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7774809c9dd0>]}
+
+
+============================== 12:00:39.891837 | de8580fe-8fcc-4a49-b45d-0b556f11388c ==============================
+[0m12:00:39.891837 [info ] [MainThread]: Running with dbt=1.7.15
+[0m12:00:39.896468 [debug] [MainThread]: running dbt with arguments {'printer_width': '80', 'indirect_selection': 'eager', 'log_cache_events': 'False', 'write_json': 'True', 'partial_parse': 'True', 'cache_selected_only': 'False', 'warn_error': 'None', 'debug': 'False', 'version_check': 'True', 'log_path': '/app/dbt/logs', 'fail_fast': 'False', 'profiles_dir': '/app/dbt/profiles', 'use_colors': 'True', 'use_experimental_parser': 'False', 'no_print': 'None', 'quiet': 'False', 'log_format': 'default', 'introspect': 'True', 'invocation_command': 'dbt debug', 'warn_error_options': 'WarnErrorOptions(include=[], exclude=[])', 'target_path': 'None', 'static_parser': 'True', 'send_anonymous_usage_stats': 'True'}
+[0m12:00:39.899016 [info ] [MainThread]: dbt version: 1.7.15
+[0m12:00:39.900936 [info ] [MainThread]: python version: 3.11.14
+[0m12:00:39.903017 [info ] [MainThread]: python path: /usr/local/bin/python3.11
+[0m12:00:39.906796 [info ] [MainThread]: os info: Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.41
+[0m12:00:40.087632 [info ] [MainThread]: Using profiles dir at /app/dbt/profiles
+[0m12:00:40.090469 [info ] [MainThread]: Using profiles.yml file at /app/dbt/profiles/profiles.yml
+[0m12:00:40.093194 [info ] [MainThread]: Using dbt_project.yml file at /app/dbt/dbt_project.yml
+[0m12:00:40.097859 [info ] [MainThread]: adapter type: postgres
+[0m12:00:40.100616 [info ] [MainThread]: adapter version: 1.7.15
+[0m12:00:40.253082 [info ] [MainThread]: Configuration:
+[0m12:00:40.256529 [info ] [MainThread]:   profiles.yml file [[32mOK found and valid[0m]
+[0m12:00:40.260052 [info ] [MainThread]:   dbt_project.yml file [[32mOK found and valid[0m]
+[0m12:00:40.262102 [info ] [MainThread]: Required dependencies:
+[0m12:00:40.264599 [debug] [MainThread]: Executing "git --help"
+[0m12:00:40.289160 [debug] [MainThread]: STDOUT: "b"usage: git [-v | --version] [-h | --help] [-C <path>] [-c <name>=<value>]\n           [--exec-path[=<path>]] [--html-path] [--man-path] [--info-path]\n           [-p | --paginate | -P | --no-pager] [--no-replace-objects] [--no-lazy-fetch]\n           [--no-optional-locks] [--no-advice] [--bare] [--git-dir=<path>]\n           [--work-tree=<path>] [--namespace=<name>] [--config-env=<name>=<envvar>]\n           <command> [<args>]\n\nThese are common Git commands used in various situations:\n\nstart a working area (see also: git help tutorial)\n   clone     Clone a repository into a new directory\n   init      Create an empty Git repository or reinitialize an existing one\n\nwork on the current change (see also: git help everyday)\n   add       Add file contents to the index\n   mv        Move or rename a file, a directory, or a symlink\n   restore   Restore working tree files\n   rm        Remove files from the working tree and from the index\n\nexamine the history and state (see also: git help revisions)\n   bisect    Use binary search to find the commit that introduced a bug\n   diff      Show changes between commits, commit and working tree, etc\n   grep      Print lines matching a pattern\n   log       Show commit logs\n   show      Show various types of objects\n   status    Show the working tree status\n\ngrow, mark and tweak your common history\n   branch    List, create, or delete branches\n   commit    Record changes to the repository\n   merge     Join two or more development histories together\n   rebase    Reapply commits on top of another base tip\n   reset     Reset current HEAD to the specified state\n   switch    Switch branches\n   tag       Create, list, delete or verify a tag object signed with GPG\n\ncollaborate (see also: git help workflows)\n   fetch     Download objects and refs from another repository\n   pull      Fetch from and integrate with another repository or a local branch\n   push      Update remote refs along with associated objects\n\n'git help -a' and 'git help -g' list available subcommands and some\nconcept guides. See 'git help <command>' or 'git help <concept>'\nto read about a specific subcommand or concept.\nSee 'git help git' for an overview of the system.\n""
+[0m12:00:40.292309 [debug] [MainThread]: STDERR: "b''"
+[0m12:00:40.294566 [info ] [MainThread]:  - git [[32mOK found[0m]
+
+[0m12:00:40.298807 [info ] [MainThread]: Connection:
+[0m12:00:40.304327 [info ] [MainThread]:   host: postgres-local
+[0m12:00:40.308496 [info ] [MainThread]:   port: 5432
+[0m12:00:40.314072 [info ] [MainThread]:   user: hungpham
+[0m12:00:40.317358 [info ] [MainThread]:   database: etl_project
+[0m12:00:40.320495 [info ] [MainThread]:   schema: dw
+[0m12:00:40.326055 [info ] [MainThread]:   connect_timeout: 10
+[0m12:00:40.329013 [info ] [MainThread]:   role: None
+[0m12:00:40.331259 [info ] [MainThread]:   search_path: None
+[0m12:00:40.333484 [info ] [MainThread]:   keepalives_idle: 0
+[0m12:00:40.341588 [info ] [MainThread]:   sslmode: None
+[0m12:00:40.345214 [info ] [MainThread]:   sslcert: None
+[0m12:00:40.351089 [info ] [MainThread]:   sslkey: None
+[0m12:00:40.354933 [info ] [MainThread]:   sslrootcert: None
+[0m12:00:40.358969 [info ] [MainThread]:   application_name: dbt
+[0m12:00:40.364120 [info ] [MainThread]:   retries: 1
+[0m12:00:40.368038 [info ] [MainThread]: Registered adapter: postgres=1.7.15
+[0m12:00:40.379920 [debug] [MainThread]: Acquiring new postgres connection 'debug'
+[0m12:00:40.385368 [debug] [MainThread]: Using postgres connection "debug"
+[0m12:00:40.389833 [debug] [MainThread]: On debug: select 1 as id
+[0m12:00:40.393147 [debug] [MainThread]: Opening a new connection, currently in state init
+[0m12:00:40.452328 [debug] [MainThread]: SQL status: SELECT 1 in 0.0 seconds
+[0m12:00:40.457850 [debug] [MainThread]: On debug: Close
+[0m12:00:40.460923 [info ] [MainThread]:   Connection test: [[32mOK connection ok[0m]
+
+[0m12:00:40.466813 [info ] [MainThread]: [32mAll checks passed![0m
+[0m12:00:40.473307 [debug] [MainThread]: Resource report: {"command_name": "debug", "command_success": true, "command_wall_clock_time": 0.72147274, "process_user_time": 3.533643, "process_kernel_time": 0.837337, "process_mem_max_rss": "113940", "process_in_blocks": "109384", "process_out_blocks": "1872"}
+[0m12:00:40.476321 [debug] [MainThread]: Command `dbt debug` succeeded at 12:00:40.475884 after 0.72 seconds
+[0m12:00:40.482538 [debug] [MainThread]: Connection 'debug' was properly closed.
+[0m12:00:40.484293 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7774808c8e90>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7774802d1910>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x77748035b490>]}
+[0m12:00:40.487354 [debug] [MainThread]: Flushing usage events
+[0m12:47:23.568025 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x70f570c3ec90>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x70f570c3d8d0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x70f570c3ea10>]}
+
+
+============================== 12:47:23.584996 | e9831fbf-9393-4c5a-9bfa-88fa1614f86b ==============================
+[0m12:47:23.584996 [info ] [MainThread]: Running with dbt=1.7.15
+[0m12:47:23.589109 [debug] [MainThread]: running dbt with arguments {'printer_width': '80', 'indirect_selection': 'eager', 'log_cache_events': 'False', 'write_json': 'True', 'partial_parse': 'True', 'cache_selected_only': 'False', 'warn_error': 'None', 'debug': 'False', 'profiles_dir': '/app/dbt/profiles', 'log_path': '/app/dbt/logs', 'fail_fast': 'False', 'version_check': 'True', 'use_colors': 'True', 'use_experimental_parser': 'False', 'no_print': 'None', 'quiet': 'False', 'warn_error_options': 'WarnErrorOptions(include=[], exclude=[])', 'static_parser': 'True', 'log_format': 'default', 'invocation_command': 'dbt deps', 'target_path': 'None', 'introspect': 'True', 'send_anonymous_usage_stats': 'True'}
+[0m12:47:23.820115 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'project_id', 'label': 'e9831fbf-9393-4c5a-9bfa-88fa1614f86b', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x70f570b14250>]}
+[0m12:47:23.827308 [info ] [MainThread]: Warning: No packages were found in packages.yml
+[0m12:47:23.833639 [info ] [MainThread]: Warning: No packages were found in packages.yml
+[0m12:47:23.841580 [debug] [MainThread]: Resource report: {"command_name": "deps", "command_success": true, "command_wall_clock_time": 0.46050763, "process_user_time": 3.495486, "process_kernel_time": 0.636634, "process_mem_max_rss": "106816", "process_in_blocks": "25656", "process_out_blocks": "1872"}
+[0m12:47:23.847424 [debug] [MainThread]: Command `dbt deps` succeeded at 12:47:23.846956 after 0.47 seconds
+[0m12:47:23.850278 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x70f570e8fbd0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x70f57588a450>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x70f570a8ca90>]}
+[0m12:47:23.852951 [debug] [MainThread]: Flushing usage events
+[0m12:47:29.700818 [debug] [MainThread]: Error sending anonymous usage statistics. Disabling tracking for this execution. If you wish to permanently disable tracking, see: https://docs.getdbt.com/reference/global-configs#send-anonymous-usage-stats.
+[0m16:37:05.055449 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x78c328c2ff90>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x78c328c2f510>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x78c328c2f350>]}
+
+
+============================== 16:37:05.163528 | f2e16bd8-63fe-463e-88fc-3e45609e0903 ==============================
+[0m16:37:05.163528 [info ] [MainThread]: Running with dbt=1.7.15
+[0m16:37:05.185780 [debug] [MainThread]: running dbt with arguments {'printer_width': '80', 'indirect_selection': 'eager', 'write_json': 'True', 'log_cache_events': 'False', 'partial_parse': 'True', 'cache_selected_only': 'False', 'profiles_dir': '/app/dbt/profiles', 'fail_fast': 'False', 'version_check': 'True', 'log_path': '/app/dbt/logs', 'warn_error': 'None', 'debug': 'False', 'use_colors': 'True', 'use_experimental_parser': 'False', 'no_print': 'None', 'quiet': 'False', 'warn_error_options': 'WarnErrorOptions(include=[], exclude=[])', 'static_parser': 'True', 'introspect': 'True', 'log_format': 'default', 'target_path': 'None', 'invocation_command': 'dbt run --select staging.income_statement', 'send_anonymous_usage_stats': 'True'}
+[0m16:37:08.195305 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'project_id', 'label': 'f2e16bd8-63fe-463e-88fc-3e45609e0903', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x78c328c49f50>]}
+[0m16:37:09.041663 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'adapter_info', 'label': 'f2e16bd8-63fe-463e-88fc-3e45609e0903', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x78c328c48450>]}
+[0m16:37:09.047526 [info ] [MainThread]: Registered adapter: postgres=1.7.15
+[0m16:37:09.177245 [debug] [MainThread]: checksum: e4cfa841c1cf2b310128daf3fe81590497b767fe3788aa75c7f0bcc4959f94d1, vars: {}, profile: , target: , version: 1.7.15
+[0m16:37:09.189797 [info ] [MainThread]: Unable to do partial parsing because saved manifest not found. Starting full parse.
+[0m16:37:09.196719 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'partial_parser', 'label': 'f2e16bd8-63fe-463e-88fc-3e45609e0903', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x78c328f46a10>]}
+[0m16:37:15.570576 [error] [MainThread]: Encountered an error:
+Compilation Error
+  Model 'model.my_dbt_project.fct_bs_other_assets' (models/vietnam_stocks/marts/balance_sheet/assets/fct_bs_other_assets.sql) depends on a node named 'dim_balance_sheet_metric_hier' which was not found
+[0m16:37:15.576506 [debug] [MainThread]: Resource report: {"command_name": "run", "command_wall_clock_time": 11.497606, "process_user_time": 22.600494, "process_kernel_time": 6.28583, "process_mem_max_rss": "117684", "process_in_blocks": "107992", "process_out_blocks": "1872", "command_success": false}
+[0m16:37:15.579417 [debug] [MainThread]: Command `dbt run` failed at 16:37:15.578873 after 11.50 seconds
+[0m16:37:15.582960 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x78c328a78390>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x78c327d38f10>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x78c328a782d0>]}
+[0m16:37:15.586547 [debug] [MainThread]: Flushing usage events
+[0m16:43:53.871442 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x72279f37c5d0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x72279f37c850>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x72279f37c6d0>]}
+
+
+============================== 16:43:53.928474 | 459bb00b-7ea1-421a-b147-93f654691b37 ==============================
+[0m16:43:53.928474 [info ] [MainThread]: Running with dbt=1.7.15
+[0m16:43:53.934042 [debug] [MainThread]: running dbt with arguments {'printer_width': '80', 'indirect_selection': 'eager', 'write_json': 'True', 'log_cache_events': 'False', 'partial_parse': 'True', 'cache_selected_only': 'False', 'profiles_dir': '/app/dbt/profiles', 'fail_fast': 'False', 'warn_error': 'None', 'log_path': '/app/dbt/logs', 'debug': 'False', 'version_check': 'True', 'use_colors': 'True', 'use_experimental_parser': 'False', 'no_print': 'None', 'quiet': 'False', 'log_format': 'default', 'introspect': 'True', 'static_parser': 'True', 'invocation_command': 'dbt run --select staging.income_statement', 'target_path': 'None', 'warn_error_options': 'WarnErrorOptions(include=[], exclude=[])', 'send_anonymous_usage_stats': 'True'}
+[0m16:43:54.570285 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'project_id', 'label': '459bb00b-7ea1-421a-b147-93f654691b37', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x72279f1bd6d0>]}
+[0m16:43:54.753703 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'adapter_info', 'label': '459bb00b-7ea1-421a-b147-93f654691b37', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x72279f3859d0>]}
+[0m16:43:54.759579 [info ] [MainThread]: Registered adapter: postgres=1.7.15
+[0m16:43:54.836464 [debug] [MainThread]: checksum: e4cfa841c1cf2b310128daf3fe81590497b767fe3788aa75c7f0bcc4959f94d1, vars: {}, profile: , target: , version: 1.7.15
+[0m16:43:54.848669 [info ] [MainThread]: Unable to do partial parsing because saved manifest not found. Starting full parse.
+[0m16:43:54.855237 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'partial_parser', 'label': '459bb00b-7ea1-421a-b147-93f654691b37', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x72279e9db910>]}
+[0m16:44:01.903077 [error] [MainThread]: Encountered an error:
+Compilation Error
+  Model 'model.my_dbt_project.fct_bs_liabilities' (models/vietnam_stocks/marts/balance_sheet/liabilities/fct_bs_liabilities.sql) depends on a node named 'dim_balance_sheet_metric_hier' which was not found
+[0m16:44:01.908245 [debug] [MainThread]: Resource report: {"command_name": "run", "command_wall_clock_time": 8.219808, "process_user_time": 8.579543, "process_kernel_time": 1.208935, "process_mem_max_rss": "117376", "process_in_blocks": "51168", "process_out_blocks": "1872", "command_success": false}
+[0m16:44:01.911499 [debug] [MainThread]: Command `dbt run` failed at 16:44:01.911005 after 8.22 seconds
+[0m16:44:01.916309 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x72279f37c850>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7227a3fba490>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7227a3fba510>]}
+[0m16:44:01.920511 [debug] [MainThread]: Flushing usage events
+[0m17:32:02.758108 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x742fa2d76a90>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x742fa2da8f10>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x742fa2da8d90>]}
+
+
+============================== 17:32:02.790388 | bdd122e0-17d1-4509-b9d0-5d30fcc3d6f8 ==============================
+[0m17:32:02.790388 [info ] [MainThread]: Running with dbt=1.7.15
+[0m17:32:02.797844 [debug] [MainThread]: running dbt with arguments {'printer_width': '80', 'indirect_selection': 'eager', 'log_cache_events': 'False', 'write_json': 'True', 'partial_parse': 'True', 'cache_selected_only': 'False', 'warn_error': 'None', 'version_check': 'True', 'debug': 'False', 'log_path': '/app/dbt/logs', 'fail_fast': 'False', 'profiles_dir': '/app/dbt/profiles', 'use_colors': 'True', 'use_experimental_parser': 'False', 'no_print': 'None', 'quiet': 'False', 'log_format': 'default', 'introspect': 'True', 'static_parser': 'True', 'warn_error_options': 'WarnErrorOptions(include=[], exclude=[])', 'target_path': 'None', 'invocation_command': 'dbt run --select staging.income_statement', 'send_anonymous_usage_stats': 'True'}
+[0m17:32:03.466767 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'project_id', 'label': 'bdd122e0-17d1-4509-b9d0-5d30fcc3d6f8', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x742fa25e2690>]}
+[0m17:32:03.808539 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'adapter_info', 'label': 'bdd122e0-17d1-4509-b9d0-5d30fcc3d6f8', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x742fa3931210>]}
+[0m17:32:03.814825 [info ] [MainThread]: Registered adapter: postgres=1.7.15
+[0m17:32:03.937842 [debug] [MainThread]: checksum: e4cfa841c1cf2b310128daf3fe81590497b767fe3788aa75c7f0bcc4959f94d1, vars: {}, profile: , target: , version: 1.7.15
+[0m17:32:03.952456 [info ] [MainThread]: Unable to do partial parsing because saved manifest not found. Starting full parse.
+[0m17:32:03.961056 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'partial_parser', 'label': 'bdd122e0-17d1-4509-b9d0-5d30fcc3d6f8', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x742fa210d850>]}
+[0m17:32:12.832915 [error] [MainThread]: Encountered an error:
+Compilation Error
+  Model 'model.my_dbt_project.stg_fact_balance_sheet' (models/vietnam_stocks/staging/stg_fact_balance_sheet.sql) depends on a node named 'fact_balance_sheet' which was not found
+[0m17:32:12.845584 [debug] [MainThread]: Resource report: {"command_name": "run", "command_wall_clock_time": 10.756376, "process_user_time": 10.933585, "process_kernel_time": 2.85552, "process_mem_max_rss": "117304", "process_in_blocks": "97056", "process_out_blocks": "1872", "command_success": false}
+[0m17:32:12.849622 [debug] [MainThread]: Command `dbt run` failed at 17:32:12.849188 after 10.76 seconds
+[0m17:32:12.852962 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x742fa2da6990>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x742fa216ff50>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x742fa7b464d0>]}
+[0m17:32:12.856676 [debug] [MainThread]: Flushing usage events
+[0m17:59:56.201661 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x77d6219ca050>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x77d6219c8150>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x77d6219d7190>]}
+
+
+============================== 17:59:56.214865 | b5dd74aa-be07-4c0d-91d3-9a75ea9aa4ca ==============================
+[0m17:59:56.214865 [info ] [MainThread]: Running with dbt=1.7.15
+[0m17:59:56.218441 [debug] [MainThread]: running dbt with arguments {'printer_width': '80', 'indirect_selection': 'eager', 'log_cache_events': 'False', 'write_json': 'True', 'partial_parse': 'True', 'cache_selected_only': 'False', 'profiles_dir': '/app/dbt/profiles', 'debug': 'False', 'version_check': 'True', 'log_path': '/app/dbt/logs', 'fail_fast': 'False', 'warn_error': 'None', 'use_colors': 'True', 'use_experimental_parser': 'False', 'no_print': 'None', 'quiet': 'False', 'log_format': 'default', 'invocation_command': 'dbt debug', 'static_parser': 'True', 'introspect': 'True', 'target_path': 'None', 'warn_error_options': 'WarnErrorOptions(include=[], exclude=[])', 'send_anonymous_usage_stats': 'True'}
+[0m17:59:56.221715 [info ] [MainThread]: dbt version: 1.7.15
+[0m17:59:56.226352 [info ] [MainThread]: python version: 3.11.14
+[0m17:59:56.232121 [info ] [MainThread]: python path: /usr/local/bin/python3.11
+[0m17:59:56.237339 [info ] [MainThread]: os info: Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.41
+[0m17:59:56.425959 [info ] [MainThread]: Using profiles dir at /app/dbt/profiles
+[0m17:59:56.428614 [info ] [MainThread]: Using profiles.yml file at /app/dbt/profiles/profiles.yml
+[0m17:59:56.431026 [info ] [MainThread]: Using dbt_project.yml file at /app/dbt/dbt_project.yml
+[0m17:59:56.433699 [info ] [MainThread]: adapter type: postgres
+[0m17:59:56.437923 [info ] [MainThread]: adapter version: 1.7.15
+[0m17:59:56.659084 [info ] [MainThread]: Configuration:
+[0m17:59:56.661314 [info ] [MainThread]:   profiles.yml file [[32mOK found and valid[0m]
+[0m17:59:56.663271 [info ] [MainThread]:   dbt_project.yml file [[32mOK found and valid[0m]
+[0m17:59:56.669671 [info ] [MainThread]: Required dependencies:
+[0m17:59:56.676809 [debug] [MainThread]: Executing "git --help"
+[0m17:59:56.747821 [debug] [MainThread]: STDOUT: "b"usage: git [-v | --version] [-h | --help] [-C <path>] [-c <name>=<value>]\n           [--exec-path[=<path>]] [--html-path] [--man-path] [--info-path]\n           [-p | --paginate | -P | --no-pager] [--no-replace-objects] [--no-lazy-fetch]\n           [--no-optional-locks] [--no-advice] [--bare] [--git-dir=<path>]\n           [--work-tree=<path>] [--namespace=<name>] [--config-env=<name>=<envvar>]\n           <command> [<args>]\n\nThese are common Git commands used in various situations:\n\nstart a working area (see also: git help tutorial)\n   clone     Clone a repository into a new directory\n   init      Create an empty Git repository or reinitialize an existing one\n\nwork on the current change (see also: git help everyday)\n   add       Add file contents to the index\n   mv        Move or rename a file, a directory, or a symlink\n   restore   Restore working tree files\n   rm        Remove files from the working tree and from the index\n\nexamine the history and state (see also: git help revisions)\n   bisect    Use binary search to find the commit that introduced a bug\n   diff      Show changes between commits, commit and working tree, etc\n   grep      Print lines matching a pattern\n   log       Show commit logs\n   show      Show various types of objects\n   status    Show the working tree status\n\ngrow, mark and tweak your common history\n   branch    List, create, or delete branches\n   commit    Record changes to the repository\n   merge     Join two or more development histories together\n   rebase    Reapply commits on top of another base tip\n   reset     Reset current HEAD to the specified state\n   switch    Switch branches\n   tag       Create, list, delete or verify a tag object signed with GPG\n\ncollaborate (see also: git help workflows)\n   fetch     Download objects and refs from another repository\n   pull      Fetch from and integrate with another repository or a local branch\n   push      Update remote refs along with associated objects\n\n'git help -a' and 'git help -g' list available subcommands and some\nconcept guides. See 'git help <command>' or 'git help <concept>'\nto read about a specific subcommand or concept.\nSee 'git help git' for an overview of the system.\n""
+[0m17:59:56.755352 [debug] [MainThread]: STDERR: "b''"
+[0m17:59:56.758904 [info ] [MainThread]:  - git [[32mOK found[0m]
+
+[0m17:59:56.763697 [info ] [MainThread]: Connection:
+[0m17:59:56.767977 [info ] [MainThread]:   host: postgres-local
+[0m17:59:56.771422 [info ] [MainThread]:   port: 5432
+[0m17:59:56.774384 [info ] [MainThread]:   user: hungpham
+[0m17:59:56.782324 [info ] [MainThread]:   database: etl_project
+[0m17:59:56.788720 [info ] [MainThread]:   schema: dw
+[0m17:59:56.799105 [info ] [MainThread]:   connect_timeout: 10
+[0m17:59:56.806466 [info ] [MainThread]:   role: None
+[0m17:59:56.812729 [info ] [MainThread]:   search_path: None
+[0m17:59:56.818680 [info ] [MainThread]:   keepalives_idle: 0
+[0m17:59:56.823723 [info ] [MainThread]:   sslmode: None
+[0m17:59:56.831271 [info ] [MainThread]:   sslcert: None
+[0m17:59:56.837262 [info ] [MainThread]:   sslkey: None
+[0m17:59:56.856854 [info ] [MainThread]:   sslrootcert: None
+[0m17:59:56.864618 [info ] [MainThread]:   application_name: dbt
+[0m17:59:56.871866 [info ] [MainThread]:   retries: 1
+[0m17:59:56.876196 [info ] [MainThread]: Registered adapter: postgres=1.7.15
+[0m17:59:56.880440 [debug] [MainThread]: Acquiring new postgres connection 'debug'
+[0m17:59:56.884928 [debug] [MainThread]: Using postgres connection "debug"
+[0m17:59:56.888810 [debug] [MainThread]: On debug: select 1 as id
+[0m17:59:56.891695 [debug] [MainThread]: Opening a new connection, currently in state init
+[0m17:59:57.017539 [debug] [MainThread]: SQL status: SELECT 1 in 0.0 seconds
+[0m17:59:57.024561 [debug] [MainThread]: On debug: Close
+[0m17:59:57.028157 [info ] [MainThread]:   Connection test: [[32mOK connection ok[0m]
+
+[0m17:59:57.032586 [info ] [MainThread]: [32mAll checks passed![0m
+[0m17:59:57.041600 [debug] [MainThread]: Resource report: {"command_name": "debug", "command_success": true, "command_wall_clock_time": 0.9589867, "process_user_time": 4.322108, "process_kernel_time": 0.849809, "process_mem_max_rss": "114080", "process_in_blocks": "35800", "process_out_blocks": "1872"}
+[0m17:59:57.057711 [debug] [MainThread]: Command `dbt debug` succeeded at 17:59:57.057224 after 0.98 seconds
+[0m17:59:57.061166 [debug] [MainThread]: Connection 'debug' was properly closed.
+[0m17:59:57.064510 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x77d62180c250>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x77d621c13e10>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x77d620f7dc90>]}
+[0m17:59:57.068960 [debug] [MainThread]: Flushing usage events
+[0m18:00:47.573878 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x789b6c4154d0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x789b6c5d5a90>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x789b6c3fb3d0>]}
+
+
+============================== 18:00:47.592233 | cc9315e7-fe1b-4492-9ce0-5e6f7c71efa3 ==============================
+[0m18:00:47.592233 [info ] [MainThread]: Running with dbt=1.7.15
+[0m18:00:47.596596 [debug] [MainThread]: running dbt with arguments {'printer_width': '80', 'indirect_selection': 'eager', 'log_cache_events': 'False', 'write_json': 'True', 'partial_parse': 'True', 'cache_selected_only': 'False', 'warn_error': 'None', 'debug': 'False', 'fail_fast': 'False', 'log_path': '/app/dbt/logs', 'version_check': 'True', 'profiles_dir': '/app/dbt/profiles', 'use_colors': 'True', 'use_experimental_parser': 'False', 'no_print': 'None', 'quiet': 'False', 'log_format': 'default', 'introspect': 'True', 'invocation_command': 'dbt run --select staging.income_statement', 'warn_error_options': 'WarnErrorOptions(include=[], exclude=[])', 'target_path': 'None', 'static_parser': 'True', 'send_anonymous_usage_stats': 'True'}
+[0m18:00:47.876288 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'project_id', 'label': 'cc9315e7-fe1b-4492-9ce0-5e6f7c71efa3', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x789b6bb52e50>]}
+[0m18:00:48.049156 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'adapter_info', 'label': 'cc9315e7-fe1b-4492-9ce0-5e6f7c71efa3', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x789b6c415850>]}
+[0m18:00:48.052855 [info ] [MainThread]: Registered adapter: postgres=1.7.15
+[0m18:00:48.088807 [debug] [MainThread]: checksum: e4cfa841c1cf2b310128daf3fe81590497b767fe3788aa75c7f0bcc4959f94d1, vars: {}, profile: , target: , version: 1.7.15
+[0m18:00:48.100624 [info ] [MainThread]: Unable to do partial parsing because saved manifest not found. Starting full parse.
+[0m18:00:48.104719 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'partial_parser', 'label': 'cc9315e7-fe1b-4492-9ce0-5e6f7c71efa3', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x789b6c5d7010>]}
+[0m18:00:51.942254 [warn ] [MainThread]: [[33mWARNING[0m]: Configuration paths exist in your dbt_project.yml file which do not apply to any resources.
+There are 4 unused configuration paths:
+- models.my_dbt_project.staging
+- models.my_dbt_project.marts
+- seeds.my_dbt_project
+- snapshots.my_dbt_project
+[0m18:00:51.973507 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'load_project', 'label': 'cc9315e7-fe1b-4492-9ce0-5e6f7c71efa3', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x789b6ab086d0>]}
+[0m18:00:52.090583 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'resource_counts', 'label': 'cc9315e7-fe1b-4492-9ce0-5e6f7c71efa3', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x789b6b765f50>]}
+[0m18:00:52.096746 [info ] [MainThread]: Found 17 models, 2 sources, 0 exposures, 0 metrics, 401 macros, 0 groups, 0 semantic models
+[0m18:00:52.100125 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'runnable_timing', 'label': 'cc9315e7-fe1b-4492-9ce0-5e6f7c71efa3', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x789b6b397c50>]}
+[0m18:00:52.108116 [warn ] [MainThread]: The selection criterion 'staging.income_statement' does not match any nodes
+[0m18:00:52.114788 [info ] [MainThread]: 
+[0m18:00:52.120018 [warn ] [MainThread]: Nothing to do. Try checking your model configs and model specification args
+[0m18:00:52.125960 [debug] [MainThread]: Command end result
+[0m18:00:52.264440 [debug] [MainThread]: Resource report: {"command_name": "run", "command_success": true, "command_wall_clock_time": 4.8392124, "process_user_time": 6.602201, "process_kernel_time": 1.06772, "process_mem_max_rss": "121512", "process_in_blocks": "7016", "process_out_blocks": "1872"}
+[0m18:00:52.271663 [debug] [MainThread]: Command `dbt run` succeeded at 18:00:52.269172 after 4.85 seconds
+[0m18:00:52.282784 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x789b6c449150>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x789b6afcec10>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x789b6cfdb6d0>]}
+[0m18:00:52.288260 [debug] [MainThread]: Flushing usage events
+[0m18:12:39.358143 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7fa1002dcc10>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7fa1002e4350>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7fa101888410>]}
+
+
+============================== 18:12:39.395983 | 3e47c2b6-a6a3-4705-a82e-a1d2323a4dd8 ==============================
+[0m18:12:39.395983 [info ] [MainThread]: Running with dbt=1.7.15
+[0m18:12:39.398858 [debug] [MainThread]: running dbt with arguments {'printer_width': '80', 'indirect_selection': 'eager', 'log_cache_events': 'False', 'write_json': 'True', 'partial_parse': 'True', 'cache_selected_only': 'False', 'profiles_dir': '/app/dbt/profiles', 'debug': 'False', 'version_check': 'True', 'log_path': '/app/dbt/logs', 'fail_fast': 'False', 'warn_error': 'None', 'use_colors': 'True', 'use_experimental_parser': 'False', 'no_print': 'None', 'quiet': 'False', 'log_format': 'default', 'introspect': 'True', 'invocation_command': 'dbt run --select models/vietnam_stocks/marts/income_statement', 'warn_error_options': 'WarnErrorOptions(include=[], exclude=[])', 'target_path': 'None', 'static_parser': 'True', 'send_anonymous_usage_stats': 'True'}
+[0m18:12:40.098184 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'project_id', 'label': '3e47c2b6-a6a3-4705-a82e-a1d2323a4dd8', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7fa0ff79c150>]}
+[0m18:12:40.210361 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'adapter_info', 'label': '3e47c2b6-a6a3-4705-a82e-a1d2323a4dd8', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7fa0ff794b10>]}
+[0m18:12:40.213781 [info ] [MainThread]: Registered adapter: postgres=1.7.15
+[0m18:12:40.250728 [debug] [MainThread]: checksum: e4cfa841c1cf2b310128daf3fe81590497b767fe3788aa75c7f0bcc4959f94d1, vars: {}, profile: , target: , version: 1.7.15
+[0m18:12:42.236079 [debug] [MainThread]: Partial parsing enabled: 0 files deleted, 0 files added, 0 files changed.
+[0m18:12:42.239497 [debug] [MainThread]: Partial parsing enabled, no changes found, skipping parsing
+[0m18:12:42.244363 [warn ] [MainThread]: [[33mWARNING[0m]: Configuration paths exist in your dbt_project.yml file which do not apply to any resources.
+There are 4 unused configuration paths:
+- models.my_dbt_project.marts
+- models.my_dbt_project.staging
+- seeds.my_dbt_project
+- snapshots.my_dbt_project
+[0m18:12:42.260605 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'load_project', 'label': '3e47c2b6-a6a3-4705-a82e-a1d2323a4dd8', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7fa0fef7b2d0>]}
+[0m18:12:42.368028 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'resource_counts', 'label': '3e47c2b6-a6a3-4705-a82e-a1d2323a4dd8', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7fa0ff397910>]}
+[0m18:12:42.372344 [info ] [MainThread]: Found 17 models, 2 sources, 0 exposures, 0 metrics, 401 macros, 0 groups, 0 semantic models
+[0m18:12:42.376001 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'runnable_timing', 'label': '3e47c2b6-a6a3-4705-a82e-a1d2323a4dd8', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7fa0feb0bf10>]}
+[0m18:12:42.417117 [info ] [MainThread]: 
+[0m18:12:42.425411 [debug] [MainThread]: Acquiring new postgres connection 'master'
+[0m18:12:42.433875 [debug] [ThreadPool]: Acquiring new postgres connection 'list_etl_project'
+[0m18:12:42.489615 [debug] [ThreadPool]: Using postgres connection "list_etl_project"
+[0m18:12:42.498978 [debug] [ThreadPool]: On list_etl_project: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "connection_name": "list_etl_project"} */
+
+    select distinct nspname from pg_namespace
+  
+[0m18:12:42.505412 [debug] [ThreadPool]: Opening a new connection, currently in state init
+[0m18:12:42.605921 [debug] [ThreadPool]: SQL status: SELECT 6 in 0.0 seconds
+[0m18:12:42.610514 [debug] [ThreadPool]: On list_etl_project: Close
+[0m18:12:42.619694 [debug] [ThreadPool]: Re-using an available connection from the pool (formerly list_etl_project, now list_etl_project_dw)
+[0m18:12:42.634993 [debug] [ThreadPool]: Using postgres connection "list_etl_project_dw"
+[0m18:12:42.638008 [debug] [ThreadPool]: On list_etl_project_dw: BEGIN
+[0m18:12:42.640990 [debug] [ThreadPool]: Opening a new connection, currently in state closed
+[0m18:12:42.664506 [debug] [ThreadPool]: SQL status: BEGIN in 0.0 seconds
+[0m18:12:42.668171 [debug] [ThreadPool]: Using postgres connection "list_etl_project_dw"
+[0m18:12:42.670754 [debug] [ThreadPool]: On list_etl_project_dw: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "connection_name": "list_etl_project_dw"} */
+select
+      'etl_project' as database,
+      tablename as name,
+      schemaname as schema,
+      'table' as type
+    from pg_tables
+    where schemaname ilike 'dw'
+    union all
+    select
+      'etl_project' as database,
+      viewname as name,
+      schemaname as schema,
+      'view' as type
+    from pg_views
+    where schemaname ilike 'dw'
+    union all
+    select
+      'etl_project' as database,
+      matviewname as name,
+      schemaname as schema,
+      'materialized_view' as type
+    from pg_matviews
+    where schemaname ilike 'dw'
+  
+[0m18:12:42.705415 [debug] [ThreadPool]: SQL status: SELECT 12 in 0.0 seconds
+[0m18:12:42.710444 [debug] [ThreadPool]: On list_etl_project_dw: ROLLBACK
+[0m18:12:42.713377 [debug] [ThreadPool]: On list_etl_project_dw: Close
+[0m18:12:42.735616 [debug] [MainThread]: Using postgres connection "master"
+[0m18:12:42.738782 [debug] [MainThread]: On master: BEGIN
+[0m18:12:42.741855 [debug] [MainThread]: Opening a new connection, currently in state init
+[0m18:12:42.767562 [debug] [MainThread]: SQL status: BEGIN in 0.0 seconds
+[0m18:12:42.770321 [debug] [MainThread]: Using postgres connection "master"
+[0m18:12:42.774152 [debug] [MainThread]: On master: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "connection_name": "master"} */
+with relation as (
+        select
+            pg_rewrite.ev_class as class,
+            pg_rewrite.oid as id
+        from pg_rewrite
+    ),
+    class as (
+        select
+            oid as id,
+            relname as name,
+            relnamespace as schema,
+            relkind as kind
+        from pg_class
+    ),
+    dependency as (
+        select distinct
+            pg_depend.objid as id,
+            pg_depend.refobjid as ref
+        from pg_depend
+    ),
+    schema as (
+        select
+            pg_namespace.oid as id,
+            pg_namespace.nspname as name
+        from pg_namespace
+        where nspname != 'information_schema' and nspname not like 'pg\_%'
+    ),
+    referenced as (
+        select
+            relation.id AS id,
+            referenced_class.name ,
+            referenced_class.schema ,
+            referenced_class.kind
+        from relation
+        join class as referenced_class on relation.class=referenced_class.id
+        where referenced_class.kind in ('r', 'v', 'm')
+    ),
+    relationships as (
+        select
+            referenced.name as referenced_name,
+            referenced.schema as referenced_schema_id,
+            dependent_class.name as dependent_name,
+            dependent_class.schema as dependent_schema_id,
+            referenced.kind as kind
+        from referenced
+        join dependency on referenced.id=dependency.id
+        join class as dependent_class on dependency.ref=dependent_class.id
+        where
+            (referenced.name != dependent_class.name or
+             referenced.schema != dependent_class.schema)
+    )
+
+    select
+        referenced_schema.name as referenced_schema,
+        relationships.referenced_name as referenced_name,
+        dependent_schema.name as dependent_schema,
+        relationships.dependent_name as dependent_name
+    from relationships
+    join schema as dependent_schema on relationships.dependent_schema_id=dependent_schema.id
+    join schema as referenced_schema on relationships.referenced_schema_id=referenced_schema.id
+    group by referenced_schema, referenced_name, dependent_schema, dependent_name
+    order by referenced_schema, referenced_name, dependent_schema, dependent_name;
+[0m18:12:42.805137 [debug] [MainThread]: SQL status: SELECT 0 in 0.0 seconds
+[0m18:12:42.808804 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'runnable_timing', 'label': '3e47c2b6-a6a3-4705-a82e-a1d2323a4dd8', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7fa100339cd0>]}
+[0m18:12:42.811726 [debug] [MainThread]: On master: ROLLBACK
+[0m18:12:42.815829 [debug] [MainThread]: Using postgres connection "master"
+[0m18:12:42.818698 [debug] [MainThread]: On master: BEGIN
+[0m18:12:42.828321 [debug] [MainThread]: SQL status: BEGIN in 0.0 seconds
+[0m18:12:42.830958 [debug] [MainThread]: On master: COMMIT
+[0m18:12:42.836301 [debug] [MainThread]: Using postgres connection "master"
+[0m18:12:42.838777 [debug] [MainThread]: On master: COMMIT
+[0m18:12:42.841907 [debug] [MainThread]: SQL status: COMMIT in 0.0 seconds
+[0m18:12:42.845106 [debug] [MainThread]: On master: Close
+[0m18:12:42.850941 [info ] [MainThread]: Concurrency: 4 threads (target='dev')
+[0m18:12:42.865206 [info ] [MainThread]: 
+[0m18:12:42.925493 [debug] [Thread-2 (]: Began running node model.my_dbt_project.fct_is_expense_profit
+[0m18:12:42.927730 [debug] [Thread-1 (]: Began running node model.my_dbt_project.fct_is_core_income_expense
+[0m18:12:42.930092 [debug] [Thread-3 (]: Began running node model.my_dbt_project.fct_is_financial_trading
+[0m18:12:42.932493 [debug] [Thread-4 (]: Began running node model.my_dbt_project.fct_is_other_operating
+[0m18:12:42.937801 [info ] [Thread-2 (]: 2 of 4 START sql view model dw.fct_is_expense_profit ........................... [RUN]
+[0m18:12:42.945088 [info ] [Thread-1 (]: 1 of 4 START sql view model dw.fct_is_core_income_expense ...................... [RUN]
+[0m18:12:42.951396 [info ] [Thread-3 (]: 3 of 4 START sql view model dw.fct_is_financial_trading ........................ [RUN]
+[0m18:12:42.955562 [info ] [Thread-4 (]: 4 of 4 START sql view model dw.fct_is_other_operating .......................... [RUN]
+[0m18:12:42.961639 [debug] [Thread-2 (]: Acquiring new postgres connection 'model.my_dbt_project.fct_is_expense_profit'
+[0m18:12:42.974160 [debug] [Thread-1 (]: Re-using an available connection from the pool (formerly list_etl_project_dw, now model.my_dbt_project.fct_is_core_income_expense)
+[0m18:12:42.996111 [debug] [Thread-1 (]: Began compiling node model.my_dbt_project.fct_is_core_income_expense
+[0m18:12:42.987087 [debug] [Thread-4 (]: Acquiring new postgres connection 'model.my_dbt_project.fct_is_other_operating'
+[0m18:12:43.033005 [debug] [Thread-4 (]: Began compiling node model.my_dbt_project.fct_is_other_operating
+[0m18:12:42.980685 [debug] [Thread-3 (]: Acquiring new postgres connection 'model.my_dbt_project.fct_is_financial_trading'
+[0m18:12:42.992636 [debug] [Thread-2 (]: Began compiling node model.my_dbt_project.fct_is_expense_profit
+[0m18:12:43.030041 [debug] [Thread-1 (]: Writing injected SQL for node "model.my_dbt_project.fct_is_core_income_expense"
+[0m18:12:43.058557 [debug] [Thread-4 (]: Writing injected SQL for node "model.my_dbt_project.fct_is_other_operating"
+[0m18:12:43.062517 [debug] [Thread-3 (]: Began compiling node model.my_dbt_project.fct_is_financial_trading
+[0m18:12:43.077981 [debug] [Thread-2 (]: Writing injected SQL for node "model.my_dbt_project.fct_is_expense_profit"
+[0m18:12:43.096421 [debug] [Thread-3 (]: Writing injected SQL for node "model.my_dbt_project.fct_is_financial_trading"
+[0m18:12:43.134303 [debug] [Thread-4 (]: Timing info for model.my_dbt_project.fct_is_other_operating (compile): 18:12:43.040019 => 18:12:43.130019
+[0m18:12:43.140434 [debug] [Thread-4 (]: Began executing node model.my_dbt_project.fct_is_other_operating
+[0m18:12:43.145183 [debug] [Thread-3 (]: Timing info for model.my_dbt_project.fct_is_financial_trading (compile): 18:12:43.088999 => 18:12:43.144005
+[0m18:12:43.186125 [debug] [Thread-1 (]: Timing info for model.my_dbt_project.fct_is_core_income_expense (compile): 18:12:42.999433 => 18:12:43.181278
+[0m18:12:43.256685 [debug] [Thread-1 (]: Began executing node model.my_dbt_project.fct_is_core_income_expense
+[0m18:12:43.222980 [debug] [Thread-2 (]: Timing info for model.my_dbt_project.fct_is_expense_profit (compile): 18:12:43.068502 => 18:12:43.222290
+[0m18:12:43.324998 [debug] [Thread-2 (]: Began executing node model.my_dbt_project.fct_is_expense_profit
+[0m18:12:43.212660 [debug] [Thread-3 (]: Began executing node model.my_dbt_project.fct_is_financial_trading
+[0m18:12:43.340341 [debug] [Thread-1 (]: Writing runtime sql for node "model.my_dbt_project.fct_is_core_income_expense"
+[0m18:12:43.341144 [debug] [Thread-4 (]: Writing runtime sql for node "model.my_dbt_project.fct_is_other_operating"
+[0m18:12:43.352918 [debug] [Thread-2 (]: Writing runtime sql for node "model.my_dbt_project.fct_is_expense_profit"
+[0m18:12:43.375633 [debug] [Thread-3 (]: Writing runtime sql for node "model.my_dbt_project.fct_is_financial_trading"
+[0m18:12:43.412732 [debug] [Thread-1 (]: Using postgres connection "model.my_dbt_project.fct_is_core_income_expense"
+[0m18:12:43.416613 [debug] [Thread-1 (]: On model.my_dbt_project.fct_is_core_income_expense: BEGIN
+[0m18:12:43.426545 [debug] [Thread-1 (]: Opening a new connection, currently in state closed
+[0m18:12:43.421001 [debug] [Thread-2 (]: Using postgres connection "model.my_dbt_project.fct_is_expense_profit"
+[0m18:12:43.447746 [debug] [Thread-2 (]: On model.my_dbt_project.fct_is_expense_profit: BEGIN
+[0m18:12:43.444317 [debug] [Thread-4 (]: Using postgres connection "model.my_dbt_project.fct_is_other_operating"
+[0m18:12:43.468400 [debug] [Thread-2 (]: Opening a new connection, currently in state init
+[0m18:12:43.472965 [debug] [Thread-3 (]: Using postgres connection "model.my_dbt_project.fct_is_financial_trading"
+[0m18:12:43.512469 [debug] [Thread-3 (]: On model.my_dbt_project.fct_is_financial_trading: BEGIN
+[0m18:12:43.522643 [debug] [Thread-3 (]: Opening a new connection, currently in state init
+[0m18:12:43.497167 [debug] [Thread-4 (]: On model.my_dbt_project.fct_is_other_operating: BEGIN
+[0m18:12:43.535560 [debug] [Thread-4 (]: Opening a new connection, currently in state init
+[0m18:12:43.516056 [debug] [Thread-1 (]: SQL status: BEGIN in 0.0 seconds
+[0m18:12:43.545190 [debug] [Thread-1 (]: Using postgres connection "model.my_dbt_project.fct_is_core_income_expense"
+[0m18:12:43.551642 [debug] [Thread-1 (]: On model.my_dbt_project.fct_is_core_income_expense: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "node_id": "model.my_dbt_project.fct_is_core_income_expense"} */
+
+  create view "etl_project"."dw"."fct_is_core_income_expense__dbt_tmp"
+    
+    
+  as (
+    with src as (
+    select *
+    from "etl_project"."dw"."stg_fact_income_statement"
+    where metric_code in (
+        'NET_INTEREST_INCOME',
+        'INTEREST_AND_SIMILAR_INCOME',
+        'INTEREST_AND_SIMILAR_EXPENSES',
+        'NET_FEE_COMMISSION_INCOME',
+        'FEE_COMMISSION_INCOME',
+        'NET_FEE_AND_COMMISSION_INCOME',
+        'FEE_COMMISSION_EXPENSES'
+    )
+)
+
+select
+    symbol,
+    time_report_type,
+    'income_statement' as financial_report_type,
+    year,
+    period,
+
+    max(case when metric_code = 'NET_INTEREST_INCOME' then metric_value end) as net_interest_income,
+    max(case when metric_code = 'INTEREST_AND_SIMILAR_INCOME' then metric_value end) as interest_and_similar_income,
+    max(case when metric_code = 'INTEREST_AND_SIMILAR_EXPENSES' then metric_value end) as interest_and_similar_expenses,
+    max(case when metric_code = 'NET_FEE_COMMISSION_INCOME' then metric_value end) as net_fee_commission_income,
+    max(case when metric_code = 'FEE_COMMISSION_INCOME' then metric_value end) as fee_commission_income,
+    max(case when metric_code = 'NET_FEE_AND_COMMISSION_INCOME' then metric_value end) as net_fee_and_commission_income,
+    max(case when metric_code = 'FEE_COMMISSION_EXPENSES' then metric_value end) as fee_commission_expenses,
+
+    max(update_time) as update_time
+from src
+group by symbol, time_report_type, year, period
+  );
+[0m18:12:43.559138 [debug] [Thread-2 (]: SQL status: BEGIN in 0.0 seconds
+[0m18:12:43.561816 [debug] [Thread-2 (]: Using postgres connection "model.my_dbt_project.fct_is_expense_profit"
+[0m18:12:43.564956 [debug] [Thread-2 (]: On model.my_dbt_project.fct_is_expense_profit: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "node_id": "model.my_dbt_project.fct_is_expense_profit"} */
+
+  create view "etl_project"."dw"."fct_is_expense_profit__dbt_tmp"
+    
+    
+  as (
+    with src as (
+    select *
+    from "etl_project"."dw"."stg_fact_income_statement"
+    where metric_code in (
+        'OPERATING_EXPENSES',
+        'OPERATING_PROFIT_BEFORE_CREDIT_PROVISION',
+        'CREDIT_RISK_PROVISION_EXPENSES',
+        'PROFIT_BEFORE_TAX',
+        'CORPORATE_INCOME_TAX_EXPENSE',
+        'CURRENT_INCOME_TAX_EXPENSE',
+        'DEFERRED_INCOME_TAX_EXPENSE',
+        'PROFIT_AFTER_TAX',
+        'MINORITY_INTERESTS_AND_PREFERRED_DIVIDENDS',
+        'NET_PROFIT_ATTRIBUTABLE_TO_PARENT'
+    )
+)
+
+select
+    symbol,
+    time_report_type,
+    'income_statement' as financial_report_type,
+    year,
+    period,
+
+    max(case when metric_code = 'OPERATING_EXPENSES' then metric_value end) as operating_expenses,
+    max(case when metric_code = 'OPERATING_PROFIT_BEFORE_CREDIT_PROVISION' then metric_value end) as operating_profit_before_credit_provision,
+    max(case when metric_code = 'CREDIT_RISK_PROVISION_EXPENSES' then metric_value end) as credit_risk_provision_expenses,
+    max(case when metric_code = 'PROFIT_BEFORE_TAX' then metric_value end) as profit_before_tax,
+    max(case when metric_code = 'CORPORATE_INCOME_TAX_EXPENSE' then metric_value end) as corporate_income_tax_expense,
+    max(case when metric_code = 'CURRENT_INCOME_TAX_EXPENSE' then metric_value end) as current_income_tax_expense,
+    max(case when metric_code = 'DEFERRED_INCOME_TAX_EXPENSE' then metric_value end) as deferred_income_tax_expense,
+    max(case when metric_code = 'PROFIT_AFTER_TAX' then metric_value end) as profit_after_tax,
+    max(case when metric_code = 'MINORITY_INTERESTS_AND_PREFERRED_DIVIDENDS' then metric_value end) as minority_interests_and_preferred_dividends,
+    max(case when metric_code = 'NET_PROFIT_ATTRIBUTABLE_TO_PARENT' then metric_value end) as net_profit_attributable_to_parent,
+
+    max(update_time) as update_time
+from src
+group by symbol, time_report_type, year, period
+  );
+[0m18:12:43.568991 [debug] [Thread-1 (]: Postgres adapter: Postgres error: relation "dw.stg_fact_income_statement" does not exist
+LINE 9:     from "etl_project"."dw"."stg_fact_income_statement"
+                 ^
+
+[0m18:12:43.592033 [debug] [Thread-2 (]: Postgres adapter: Postgres error: relation "dw.stg_fact_income_statement" does not exist
+LINE 9:     from "etl_project"."dw"."stg_fact_income_statement"
+                 ^
+
+[0m18:12:43.595772 [debug] [Thread-2 (]: On model.my_dbt_project.fct_is_expense_profit: ROLLBACK
+[0m18:12:43.593400 [debug] [Thread-1 (]: On model.my_dbt_project.fct_is_core_income_expense: ROLLBACK
+[0m18:12:43.602139 [debug] [Thread-2 (]: Timing info for model.my_dbt_project.fct_is_expense_profit (execute): 18:12:43.342594 => 18:12:43.599255
+[0m18:12:43.608973 [debug] [Thread-1 (]: Timing info for model.my_dbt_project.fct_is_core_income_expense (execute): 18:12:43.285556 => 18:12:43.608265
+[0m18:12:43.610194 [debug] [Thread-3 (]: SQL status: BEGIN in 0.0 seconds
+[0m18:12:43.611657 [debug] [Thread-4 (]: SQL status: BEGIN in 0.0 seconds
+[0m18:12:43.613564 [debug] [Thread-2 (]: On model.my_dbt_project.fct_is_expense_profit: Close
+[0m18:12:43.618759 [debug] [Thread-1 (]: On model.my_dbt_project.fct_is_core_income_expense: Close
+[0m18:12:43.623022 [debug] [Thread-3 (]: Using postgres connection "model.my_dbt_project.fct_is_financial_trading"
+[0m18:12:43.626553 [debug] [Thread-4 (]: Using postgres connection "model.my_dbt_project.fct_is_other_operating"
+[0m18:12:43.645950 [debug] [Thread-3 (]: On model.my_dbt_project.fct_is_financial_trading: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "node_id": "model.my_dbt_project.fct_is_financial_trading"} */
+
+  create view "etl_project"."dw"."fct_is_financial_trading__dbt_tmp"
+    
+    
+  as (
+    with src as (
+    select *
+    from "etl_project"."dw"."stg_fact_income_statement"
+    where metric_code in (
+        'NET_FX_TRADING_INCOME',
+        'NET_TRADING_SECURITIES_INCOME',
+        'NET_INVESTMENT_SECURITIES_INCOME'
+    )
+)
+
+select
+    symbol,
+    time_report_type,
+    'income_statement' as financial_report_type,
+    year,
+    period,
+
+    max(case when metric_code = 'NET_FX_TRADING_INCOME' then metric_value end) as net_fx_trading_income,
+    max(case when metric_code = 'NET_TRADING_SECURITIES_INCOME' then metric_value end) as net_trading_securities_income,
+    max(case when metric_code = 'NET_INVESTMENT_SECURITIES_INCOME' then metric_value end) as net_investment_securities_income,
+
+    max(update_time) as update_time
+from src
+group by symbol, time_report_type, year, period
+  );
+[0m18:12:43.651189 [debug] [Thread-4 (]: On model.my_dbt_project.fct_is_other_operating: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "node_id": "model.my_dbt_project.fct_is_other_operating"} */
+
+  create view "etl_project"."dw"."fct_is_other_operating__dbt_tmp"
+    
+    
+  as (
+    with src as (
+    select *
+    from "etl_project"."dw"."stg_fact_income_statement"
+    where metric_code in (
+        'NET_OTHER_OPERATIONAL_INCOME',
+        'OTHER_OPERATING_INCOME',
+        'OTHER_OPERATING_EXPENSES',
+        'INCOME_FROM_EQUITY_INVESTMENTS'
+    )
+)
+
+select
+    symbol,
+    time_report_type,
+    'income_statement' as financial_report_type,
+    year,
+    period,
+
+    max(case when metric_code = 'NET_OTHER_OPERATIONAL_INCOME' then metric_value end) as net_other_operational_income,
+    max(case when metric_code = 'OTHER_OPERATING_INCOME' then metric_value end) as other_operating_income,
+    max(case when metric_code = 'OTHER_OPERATING_EXPENSES' then metric_value end) as other_operating_expenses,
+    max(case when metric_code = 'INCOME_FROM_EQUITY_INVESTMENTS' then metric_value end) as income_from_equity_investments,
+
+    max(update_time) as update_time
+from src
+group by symbol, time_report_type, year, period
+  );
+[0m18:12:43.659180 [debug] [Thread-1 (]: Database Error in model fct_is_core_income_expense (models/vietnam_stocks/marts/income_statement/fct_is_core_income_expense.sql)
+  relation "dw.stg_fact_income_statement" does not exist
+  LINE 9:     from "etl_project"."dw"."stg_fact_income_statement"
+                   ^
+  compiled Code at target/run/my_dbt_project/models/vietnam_stocks/marts/income_statement/fct_is_core_income_expense.sql
+[0m18:12:43.663709 [debug] [Thread-2 (]: Database Error in model fct_is_expense_profit (models/vietnam_stocks/marts/income_statement/fct_is_expense_profit.sql)
+  relation "dw.stg_fact_income_statement" does not exist
+  LINE 9:     from "etl_project"."dw"."stg_fact_income_statement"
+                   ^
+  compiled Code at target/run/my_dbt_project/models/vietnam_stocks/marts/income_statement/fct_is_expense_profit.sql
+[0m18:12:43.665408 [debug] [Thread-3 (]: Postgres adapter: Postgres error: relation "dw.stg_fact_income_statement" does not exist
+LINE 9:     from "etl_project"."dw"."stg_fact_income_statement"
+                 ^
+
+[0m18:12:43.669670 [debug] [Thread-4 (]: Postgres adapter: Postgres error: relation "dw.stg_fact_income_statement" does not exist
+LINE 9:     from "etl_project"."dw"."stg_fact_income_statement"
+                 ^
+
+[0m18:12:43.670912 [debug] [Thread-1 (]: Sending event: {'category': 'dbt', 'action': 'run_model', 'label': '3e47c2b6-a6a3-4705-a82e-a1d2323a4dd8', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7fa0ff3a1e90>]}
+[0m18:12:43.674113 [debug] [Thread-2 (]: Sending event: {'category': 'dbt', 'action': 'run_model', 'label': '3e47c2b6-a6a3-4705-a82e-a1d2323a4dd8', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7fa0fef88cd0>]}
+[0m18:12:43.676996 [debug] [Thread-3 (]: On model.my_dbt_project.fct_is_financial_trading: ROLLBACK
+[0m18:12:43.681099 [debug] [Thread-4 (]: On model.my_dbt_project.fct_is_other_operating: ROLLBACK
+[0m18:12:43.687695 [error] [Thread-1 (]: 1 of 4 ERROR creating sql view model dw.fct_is_core_income_expense ............. [[31mERROR[0m in 0.70s]
+[0m18:12:43.693340 [error] [Thread-2 (]: 2 of 4 ERROR creating sql view model dw.fct_is_expense_profit .................. [[31mERROR[0m in 0.71s]
+[0m18:12:43.698389 [debug] [Thread-3 (]: Timing info for model.my_dbt_project.fct_is_financial_trading (execute): 18:12:43.354942 => 18:12:43.697771
+[0m18:12:43.702101 [debug] [Thread-4 (]: Timing info for model.my_dbt_project.fct_is_other_operating (execute): 18:12:43.153371 => 18:12:43.701315
+[0m18:12:43.705404 [debug] [Thread-1 (]: Finished running node model.my_dbt_project.fct_is_core_income_expense
+[0m18:12:43.708922 [debug] [Thread-2 (]: Finished running node model.my_dbt_project.fct_is_expense_profit
+[0m18:12:43.712003 [debug] [Thread-3 (]: On model.my_dbt_project.fct_is_financial_trading: Close
+[0m18:12:43.716116 [debug] [Thread-4 (]: On model.my_dbt_project.fct_is_other_operating: Close
+[0m18:12:43.732445 [debug] [Thread-3 (]: Database Error in model fct_is_financial_trading (models/vietnam_stocks/marts/income_statement/fct_is_financial_trading.sql)
+  relation "dw.stg_fact_income_statement" does not exist
+  LINE 9:     from "etl_project"."dw"."stg_fact_income_statement"
+                   ^
+  compiled Code at target/run/my_dbt_project/models/vietnam_stocks/marts/income_statement/fct_is_financial_trading.sql
+[0m18:12:43.753503 [debug] [Thread-4 (]: Database Error in model fct_is_other_operating (models/vietnam_stocks/marts/income_statement/fct_is_other_operating.sql)
+  relation "dw.stg_fact_income_statement" does not exist
+  LINE 9:     from "etl_project"."dw"."stg_fact_income_statement"
+                   ^
+  compiled Code at target/run/my_dbt_project/models/vietnam_stocks/marts/income_statement/fct_is_other_operating.sql
+[0m18:12:43.770593 [debug] [Thread-3 (]: Sending event: {'category': 'dbt', 'action': 'run_model', 'label': '3e47c2b6-a6a3-4705-a82e-a1d2323a4dd8', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7fa0ff7f4fd0>]}
+[0m18:12:43.794520 [debug] [Thread-4 (]: Sending event: {'category': 'dbt', 'action': 'run_model', 'label': '3e47c2b6-a6a3-4705-a82e-a1d2323a4dd8', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7fa0ff7e9c50>]}
+[0m18:12:43.802962 [error] [Thread-3 (]: 3 of 4 ERROR creating sql view model dw.fct_is_financial_trading ............... [[31mERROR[0m in 0.78s]
+[0m18:12:43.809152 [error] [Thread-4 (]: 4 of 4 ERROR creating sql view model dw.fct_is_other_operating ................. [[31mERROR[0m in 0.81s]
+[0m18:12:43.825018 [debug] [Thread-3 (]: Finished running node model.my_dbt_project.fct_is_financial_trading
+[0m18:12:43.836718 [debug] [Thread-4 (]: Finished running node model.my_dbt_project.fct_is_other_operating
+[0m18:12:43.902016 [debug] [MainThread]: Using postgres connection "master"
+[0m18:12:43.912555 [debug] [MainThread]: On master: BEGIN
+[0m18:12:43.919398 [debug] [MainThread]: Opening a new connection, currently in state closed
+[0m18:12:43.965135 [debug] [MainThread]: SQL status: BEGIN in 0.0 seconds
+[0m18:12:43.968557 [debug] [MainThread]: On master: COMMIT
+[0m18:12:43.992986 [debug] [MainThread]: Using postgres connection "master"
+[0m18:12:44.004464 [debug] [MainThread]: On master: COMMIT
+[0m18:12:44.011705 [debug] [MainThread]: SQL status: COMMIT in 0.0 seconds
+[0m18:12:44.020780 [debug] [MainThread]: On master: Close
+[0m18:12:44.032270 [debug] [MainThread]: Connection 'master' was properly closed.
+[0m18:12:44.035932 [debug] [MainThread]: Connection 'model.my_dbt_project.fct_is_core_income_expense' was properly closed.
+[0m18:12:44.042169 [debug] [MainThread]: Connection 'model.my_dbt_project.fct_is_expense_profit' was properly closed.
+[0m18:12:44.047017 [debug] [MainThread]: Connection 'model.my_dbt_project.fct_is_financial_trading' was properly closed.
+[0m18:12:44.052368 [debug] [MainThread]: Connection 'model.my_dbt_project.fct_is_other_operating' was properly closed.
+[0m18:12:44.057280 [info ] [MainThread]: 
+[0m18:12:44.062369 [info ] [MainThread]: Finished running 4 view models in 0 hours 0 minutes and 1.63 seconds (1.63s).
+[0m18:12:44.078772 [debug] [MainThread]: Command end result
+[0m18:12:44.214529 [info ] [MainThread]: 
+[0m18:12:44.221376 [info ] [MainThread]: [31mCompleted with 4 errors and 0 warnings:[0m
+[0m18:12:44.227658 [info ] [MainThread]: 
+[0m18:12:44.232618 [error] [MainThread]:   Database Error in model fct_is_core_income_expense (models/vietnam_stocks/marts/income_statement/fct_is_core_income_expense.sql)
+  relation "dw.stg_fact_income_statement" does not exist
+  LINE 9:     from "etl_project"."dw"."stg_fact_income_statement"
+                   ^
+  compiled Code at target/run/my_dbt_project/models/vietnam_stocks/marts/income_statement/fct_is_core_income_expense.sql
+[0m18:12:44.239128 [info ] [MainThread]: 
+[0m18:12:44.244503 [error] [MainThread]:   Database Error in model fct_is_expense_profit (models/vietnam_stocks/marts/income_statement/fct_is_expense_profit.sql)
+  relation "dw.stg_fact_income_statement" does not exist
+  LINE 9:     from "etl_project"."dw"."stg_fact_income_statement"
+                   ^
+  compiled Code at target/run/my_dbt_project/models/vietnam_stocks/marts/income_statement/fct_is_expense_profit.sql
+[0m18:12:44.250626 [info ] [MainThread]: 
+[0m18:12:44.256981 [error] [MainThread]:   Database Error in model fct_is_financial_trading (models/vietnam_stocks/marts/income_statement/fct_is_financial_trading.sql)
+  relation "dw.stg_fact_income_statement" does not exist
+  LINE 9:     from "etl_project"."dw"."stg_fact_income_statement"
+                   ^
+  compiled Code at target/run/my_dbt_project/models/vietnam_stocks/marts/income_statement/fct_is_financial_trading.sql
+[0m18:12:44.264742 [info ] [MainThread]: 
+[0m18:12:44.277570 [error] [MainThread]:   Database Error in model fct_is_other_operating (models/vietnam_stocks/marts/income_statement/fct_is_other_operating.sql)
+  relation "dw.stg_fact_income_statement" does not exist
+  LINE 9:     from "etl_project"."dw"."stg_fact_income_statement"
+                   ^
+  compiled Code at target/run/my_dbt_project/models/vietnam_stocks/marts/income_statement/fct_is_other_operating.sql
+[0m18:12:44.287859 [info ] [MainThread]: 
+[0m18:12:44.304118 [info ] [MainThread]: Done. PASS=0 WARN=0 ERROR=4 SKIP=0 TOTAL=4
+[0m18:12:44.321665 [debug] [MainThread]: Resource report: {"command_name": "run", "command_wall_clock_time": 5.115832, "process_user_time": 6.816889, "process_kernel_time": 1.974415, "process_mem_max_rss": "123344", "process_in_blocks": "42352", "process_out_blocks": "1968", "command_success": false}
+[0m18:12:44.329129 [debug] [MainThread]: Command `dbt run` failed at 18:12:44.328696 after 5.12 seconds
+[0m18:12:44.338643 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7fa105245750>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7fa1050d23d0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7fa1050d1910>]}
+[0m18:12:44.359086 [debug] [MainThread]: Flushing usage events

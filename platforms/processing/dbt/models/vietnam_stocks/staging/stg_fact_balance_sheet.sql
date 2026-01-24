@@ -1,12 +1,10 @@
-select
-    symbol,
-    time_report_type,
-    financial_report_type,
-    year,
-    period,
-    metric_code,
-    metric_value,
-    metric_name_vi_raw,
-    update_time
-from {{ ref('fact_balance_sheet') }}
-where financial_report_type = 'balance_sheet'
+with q as (
+    select * from {{ ref('stg_fact_balance_sheet_quarterly') }}
+),
+a as (
+    select * from {{ ref('stg_fact_balance_sheet_annually') }}
+)
+
+select * from q
+union all
+select * from a

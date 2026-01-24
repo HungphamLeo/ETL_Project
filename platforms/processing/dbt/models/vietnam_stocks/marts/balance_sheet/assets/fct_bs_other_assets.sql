@@ -5,7 +5,7 @@ with fact as (
 
 dim as (
     select *
-    from {{ ref('dim_balance_sheet_metric_hier') }}
+    from {{ ref('stg_fact_balance_sheet') }}
 ),
 
 -- leaf metrics we need in this table
