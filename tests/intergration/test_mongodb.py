@@ -343,6 +343,44 @@ def task_schedule_details_trading_data(mongo_config,
             loading_pipeline_logger.error(f"Failed to load trading data for symbol {symbol}, index {index} Error: {e}")
         time.sleep(delay_call)
 
+def task_schedule_company_belong_to_industry_sectors(mongo_config, 
+                                        crawler: ExtractCophieu68, 
+                                        backend_mongo: MongoStorageBackend, 
+                                        loading_datalake: MongoLoader,
+                                        symbols_list: List,
+                                        loading_pipeline_logger: None):
+    industry_sectors_collection = mongo_config.get("collections", {}).get("industry_sectors", "industry_sectors")
+    mongo_schema = mongo_config.get("documentation", {}).get("industry_sectors", "industry_sectors")
+    backend_mongo.create_table(name=industry_sectors_collection, schema=mongo_schema)
+
+    max_attempts = mongo_config.get("retries_loading", {}).get("max_attempts", 3)
+    backoff_seconds = mongo_config.get("retries_loading", {}).get("backoff_seconds", 0.5)
+    delay_call = mongo_config.get("delay_call", 0.25)
+
+    data =crawler.crawl_company_info_belong_to_industry_sectors()
+    try:
+        loading_datalake.load_company_belong_to_industry_sector(collection_name=industry_sectors_collection, industry_sector_data=data)
+    except Exception as e:
+        loading_pipeline_logger.error(f"Failed to load company belong to industry sectors data. Error: {e}")
+    time.sleep(delay_call)
+
+def task_schedule_company_belong_to_market_types(mongo_config, 
+                                        crawler: ExtractCophieu68, 
+                                        backend_mongo: MongoStorageBackend, 
+                                        loading_datalake: MongoLoader,
+                                        symbols_list: List,
+                                        loading_pipeline_logger: None):
+    market_types_collection = mongo_config.get("collections", {}).get("market_types", "market_types")
+    mongo_schema = mongo_config.get("documentation", {}).get("market_types", "market_types")
+    backend_mongo.create_table(name=market_types_collection, schema=mongo_schema)
+    data =crawler.crawl_company_info_belong_to_market_type()
+    try:
+        loading_datalake.load_company_belong_to_market_type(collection_name=market_types_collection, market_type_data=data)
+    except Exception as e:
+        loading_pipeline_logger.error(f"Failed to load company belong to market types data. Error: {e}")
+    time.sleep(delay_call)
+
+
 # @task(retries=mongo_config_etl_arg.get("retries", 3), retry_delay_seconds=mongo_config_etl_arg.get("backoff_seconds", 5))
 def get_symbol_list(config , logger):
     mongo_config, _, backend_mongo = build_backend(config, logger)
@@ -455,6 +493,28 @@ def cophieu68_etl_flow(config_path):
     print("match details done")
     time.sleep(mongo_config.get("delay_call", 0.25))
 
+    task_schedule_company_belong_to_industry_sectors(
+                                    mongo_config = mongo_config,
+                                    crawler=crawler,
+                                    backend_mongo=backend_mongo,
+                                    loading_datalake=loading_datalake,
+                                    symbols_list=symbol_list,
+                                    loading_pipeline_logger = loading_pipeline_logger
+                                    )
+    print("company belong to industry sectors done")
+    time.sleep(mongo_config.get("delay_call", 0.25))
+
+    task_schedule_company_belong_to_market_types(
+                                    mongo_config = mongo_config,
+                                    crawler=crawler,
+                                    backend_mongo=backend_mongo,
+                                    loading_datalake=loading_datalake,
+                                    symbols_list=symbol_list,
+                                    loading_pipeline_logger = loading_pipeline_logger
+                                    )
+    print("company belong to market types done")
+    time.sleep(mongo_config.get("delay_call", 0.25))
+    
     task_schedule_details_trading_data(
                                     mongo_config = mongo_config,
                                     crawler=crawler,

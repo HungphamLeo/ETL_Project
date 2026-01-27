@@ -291,13 +291,61 @@ class ExtractCophieu68(Cophieu68BeautifulSoupCrawler):
             return None
 
 
-    # def crawl_summary_cashflow_statement(self, symbol: str) -> Optional[CashflowStatementReport]:
-    #     reports = self.crawl_financial_report(symbol)
-    #     cashflow_report = reports.get("cashflow") if reports else None
-    #     if cashflow_report:
-    #         return cashflow_report
-    #     return None
-    
+    def crawl_company_info_belong_to_industry_sectors(self):
+        """Crawl danh sách công ty theo ngành"""
+        rows = []
+        for industry_name, industry_code in MAPPING_INDUSTRY_CODE.items():
+            time.sleep(0.25)
+            url = f"{self.urls}{self.endpoint['company_industry_sector']}".format(industry_code=industry_code)
+            re = pd.read_html(url)
+            data = re[0].values
+            for item in data:
+                try:
+                    rows.append(
+                        CompanyBelongToIndustrySector(
+                        industry_code=industry_code,
+                        industry_name=industry_name,
+                        symbol=item[0].split("  ")[1].upper(),
+                        company_name=item[0].split("  ")[2],
+                        close_price=float(item[1]),
+                        Increase_decrease=float(item[2]),
+                        volumn24h=float(item[3]) if item[3] else None,
+                        volumn52w=float(item[4]) if item[4] else None,
+                        listed_volumn=float(item[5]) if item[5] else None,
+                        market_capitalization=float(item[6]) if item[6] else None
+                        )
+                    )
+                except Exception:
+                    continue
+        return rows
+
+    def crawl_company_info_belong_to_market_type(self):
+        """Crawl danh sách công ty theo sàn"""
+        rows = []
+        for market_type_name, market_type_code in CRAWL_MARKET_LIST_CONFIG.items():
+            time.sleep(0.25)
+            url = f"{self.urls}{self.endpoint['company_market_type_sector']}".format(industry_code=market_type_code)
+            re = pd.read_html(url)
+            data = re[0].values
+            for item in data:
+                try:
+                    rows.append(
+                        CompanyBelongToMarketType(
+                        market_type_code=market_type_code,
+                        market_type_name=market_type_name,
+                        symbol=item[0].split("  ")[1].upper(),
+                        company_name=item[0].split("  ")[2],
+                        close_price=float(item[1]),
+                        Increase_decrease=float(item[2]),
+                        volumn24h=float(item[3]) if item[3] else None,
+                        volumn52w=float(item[4]) if item[4] else None,
+                        listed_volumn=float(item[5]) if item[5] else None,
+                        market_capitalization=float(item[6]) if item[6] else None
+                        )
+                    )
+                except Exception:
+                    continue
+        return rows
 
     def crawl_industry_info(self, type_info: str) -> Optional[pd.DataFrame]:
         """Crawl bảng thông tin ngành (Giá TB, Giá sổ sách, EPS, PE, ROA, ROE)"""

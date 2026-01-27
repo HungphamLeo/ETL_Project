@@ -101,6 +101,8 @@ project_params:
         stock_category:
           - "/category/category_index.php"
           - "/category/category_financial.php"
+        company_industry_sector: "/market/markets.php?id={industry_code}"
+        company_market_type_sector: "/market/markets.php?id={market_type_code}"
       rate_limit_per_minute: 60
       retry:
         max_attempts: 3
