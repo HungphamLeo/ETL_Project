@@ -1,4 +1,4 @@
-# ...existing code...
+
 from datetime import datetime, date, time
 import logging
 from typing import Optional, Dict, Any
@@ -16,7 +16,8 @@ from platforms.ingestion.cophieu68.dto.load_models import (
     BusinessPlanDoc,
     FinancialInfoDoc,
     Pattern_IncomeStatementStandardLoadToDW,
-    Pattern_BalanceSheetStandardLoadToDW
+    Pattern_BalanceSheetStandardLoadToDW,
+    Unit_And_Currency
 )
 from platforms.storage.datawarehouse.postgresql.datawarehouse_storage import PostgreSQLWriter
 
@@ -889,5 +890,72 @@ class FactCompanyIndustrySectors(FactLoader):
     def __init__(self, datalake_config, datawarehouse_logger, postgres_client, dim_repo, mongo_reader):
         super().__init__(datalake_config,  mongo_reader, dim_repo, datawarehouse_logger, postgres_client)
         self.collection_name = self._get_collection("industry_sectors")
-        self.fact_name = self._get_fact_name("fact_industry_summary", "fact_industry_summary")
+        self.fact_name = self._get_fact_name("fact_company_belong_to_industry", "fact_company_belong_to_industry")
         self.table_creator = TableCreator(machine_id=1, character_specific=self.fact_name)
+    
+    def load(self):
+        raw = self.mongo.find_table(self.collection_name)
+        rows = []
+        import time as time_sleep
+        for doc in raw.get("data"):
+            time_sleep.sleep(0.001)
+            # fdoc = FinancialInfoDoc.from_extract(doc)
+
+            #company_key = self.get_company_key(doc.get("symbol"),self.table_creator)
+            rows.append({
+                "company_industry_sector_keys": self.table_creator.get_id(),
+                "industry_code": doc.get("industry_code"),
+                "industry_name": doc.get("industry_name"),
+                "company_name": doc.get("company_name"),
+                "close_price": doc.get("close_price"),
+                "fluctuation_range": doc.get("Increase_decrease"),
+                "volumn24h": doc.get("volumn24h"),
+                "volumn52w" : doc.get("volumn52w"),
+                "listed_volumn": doc.get("listed_volumn"),
+                "market_capitalization": doc.get("market_capitalization"),
+                "currency": Unit_And_Currency.currency,
+                "unit":Unit_And_Currency.unit,
+                "update_time": doc.get("update_time")
+            })
+        df = pd.DataFrame(rows)
+        df.drop_duplicates()
+        sql = self.create_fact_table_sql(self.fact_name,self.table_creator)
+        return df, sql
+
+
+class FactCompanyMarketTypeSectors(FactLoader):
+    def __init__(self, datalake_config, datawarehouse_logger, postgres_client, dim_repo, mongo_reader):
+        super().__init__(datalake_config,  mongo_reader, dim_repo, datawarehouse_logger, postgres_client)
+        self.collection_name = self._get_collection("market_types_sector")
+        self.fact_name = self._get_fact_name("fact_company_belong_to_market_type", "fact_company_belong_to_market_type")
+        self.table_creator = TableCreator(machine_id=1, character_specific=self.fact_name)
+    
+    def load(self):
+        raw = self.mongo.find_table(self.collection_name)
+        rows = []
+        import time as time_sleep
+        for doc in raw.get("data"):
+            # fdoc = FinancialInfoDoc.from_extract(doc)
+            time_sleep.sleep(0.001)
+            #company_key = self.get_company_key(doc.get("symbol"),self.table_creator)
+                # period_key = self.get_date_key(r.get("period"))
+            rows.append({
+                "company_market_type_sector_keys": self.table_creator.get_id(),
+                # "company_key":company_key,
+                "market_type_code": doc.get("industry_code"),
+                "market_type_name": doc.get("market_type_name"),
+                "company_name": doc.get("company_name"),
+                "close_price": doc.get("close_price"),
+                "fluctuation_range": doc.get("Increase_decrease"),
+                "volumn24h": doc.get("volumn24h"),
+                "volumn52w" : doc.get("volumn52w"),
+                "listed_volumn": doc.get("listed_volumn"),
+                "market_capitalization": doc.get("market_capitalization"),
+                "currency": Unit_And_Currency.currency,
+                "unit":Unit_And_Currency.unit,
+                "update_time": doc.get("update_time")
+            })
+        df = pd.DataFrame(rows)
+        df.drop_duplicates()
+        sql = self.create_fact_table_sql(self.fact_name,self.table_creator)
+        return df, sql

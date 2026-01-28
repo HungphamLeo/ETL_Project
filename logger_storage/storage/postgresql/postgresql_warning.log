@@ -1255,3 +1255,18 @@ DETAIL:  Key (plan_key)=(fact_business_plan_800167947371810816) already exists.
 {"time":"2026-01-17T08:05:17", "level":"ERROR", "message":"Insert failed: duplicate key value violates unique constraint "fact_business_plan_pkey"
 DETAIL:  Key (plan_key)=(fact_business_plan_800168828406337536) already exists.
 ", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-28T16:05:18", "level":"ERROR", "message":"Execute failed: duplicate key value violates unique constraint "dim_company_pkey"
+DETAIL:  Key (company_key)=(fact_company_belong_to_industry_804275906808909824) already exists.
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:196"}
+{"time":"2026-01-28T16:05:43", "level":"ERROR", "message":"Insert failed: column "company_key" of relation "fact_company_belong_to_industry" does not exist
+LINE 1: ...BELONG_TO_INDUSTRY (company_industry_sector_keys, company_ke...
+                                                             ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-28T16:12:17", "level":"ERROR", "message":"Insert failed: column "company_key" of relation "fact_company_belong_to_industry" does not exist
+LINE 1: ...BELONG_TO_INDUSTRY (company_industry_sector_keys, company_ke...
+                                                             ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-28T16:14:25", "level":"ERROR", "message":"Insert failed: value too long for type character varying(56)
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-28T16:15:18", "level":"ERROR", "message":"Insert failed: value too long for type character varying(56)
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}

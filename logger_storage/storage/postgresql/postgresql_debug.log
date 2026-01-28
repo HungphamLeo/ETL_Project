@@ -1563,3 +1563,22 @@ DETAIL:  Key (plan_key)=(fact_business_plan_800168828406337536) already exists.
 {"time":"2026-01-22T06:58:55", "level":"INFO", "message":"[fact_industry_summary] Loaded 48 rows", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/tests/intergration/test_postgres.py:291"}
 {"time":"2026-01-22T06:59:10", "level":"INFO", "message":"Inserted 374 rows into DW.FACT_BUSINESS_PLAN", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:48"}
 {"time":"2026-01-22T06:59:10", "level":"INFO", "message":"[fact_business_plan] Loaded 374 rows", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/tests/intergration/test_postgres.py:259"}
+{"time":"2026-01-28T16:05:18", "level":"ERROR", "message":"Execute failed: duplicate key value violates unique constraint "dim_company_pkey"
+DETAIL:  Key (company_key)=(fact_company_belong_to_industry_804275906808909824) already exists.
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:196"}
+{"time":"2026-01-28T16:05:43", "level":"ERROR", "message":"Insert failed: column "company_key" of relation "fact_company_belong_to_industry" does not exist
+LINE 1: ...BELONG_TO_INDUSTRY (company_industry_sector_keys, company_ke...
+                                                             ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-28T16:05:43", "level":"INFO", "message":"[fact_company_belong_to_industry] Loaded 916 rows", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/tests/intergration/test_postgres.py:305"}
+{"time":"2026-01-28T16:12:17", "level":"ERROR", "message":"Insert failed: column "company_key" of relation "fact_company_belong_to_industry" does not exist
+LINE 1: ...BELONG_TO_INDUSTRY (company_industry_sector_keys, company_ke...
+                                                             ^
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-28T16:12:17", "level":"INFO", "message":"[fact_company_belong_to_industry] Loaded 916 rows", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/tests/intergration/test_postgres.py:305"}
+{"time":"2026-01-28T16:14:25", "level":"ERROR", "message":"Insert failed: value too long for type character varying(56)
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-28T16:14:25", "level":"INFO", "message":"[fact_company_belong_to_industry] Loaded 916 rows", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/tests/intergration/test_postgres.py:305"}
+{"time":"2026-01-28T16:15:18", "level":"ERROR", "message":"Insert failed: value too long for type character varying(56)
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-28T16:15:18", "level":"INFO", "message":"[fact_company_belong_to_market_type] Loaded 1496 rows", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/tests/intergration/test_postgres.py:318"}
