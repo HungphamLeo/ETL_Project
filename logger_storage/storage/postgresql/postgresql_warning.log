@@ -1270,3 +1270,18 @@ LINE 1: ...BELONG_TO_INDUSTRY (company_industry_sector_keys, company_ke...
 ", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
 {"time":"2026-01-28T16:15:18", "level":"ERROR", "message":"Insert failed: value too long for type character varying(56)
 ", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-28T16:20:57", "level":"ERROR", "message":"Insert failed: value too long for type character varying(56)
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-28T16:21:13", "level":"ERROR", "message":"Insert failed: value too long for type character varying(56)
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-28T16:22:19", "level":"ERROR", "message":"Insert failed: value too long for type character varying(56)
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-28T16:22:25", "level":"ERROR", "message":"Insert failed: value too long for type character varying(56)
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-28T16:24:39", "level":"ERROR", "message":"Insert failed: value too long for type character varying(24)
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-28T16:24:45", "level":"ERROR", "message":"Insert failed: duplicate key value violates unique constraint "fact_company_belong_to_market_type_pkey"
+DETAIL:  Key (company_market_type_sector_keys)=(fact_company_belong_to_market_type_804280784260173824) already exists.
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-01-28T16:26:54", "level":"ERROR", "message":"Insert failed: value too long for type character varying(32)
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}

@@ -348,7 +348,7 @@ def dw_full_load():
     # load_fact_industry(datalake_config=mongo_config, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres, dim_repo=dim_repo)
     # load_fact_business_plan(datalake_config=mongo_config, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres, dim_repo=dim_repo)
 
-    # load_fact_comapny_belong_to_industry_sector(datalake_config=mongo_config, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres, dim_repo=dim_repo)
+    load_fact_comapny_belong_to_industry_sector(datalake_config=mongo_config, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres, dim_repo=dim_repo)
     load_fact_comapny_belong_to_market_type_sector(datalake_config=mongo_config, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres, dim_repo=dim_repo)
     print("done")
 
