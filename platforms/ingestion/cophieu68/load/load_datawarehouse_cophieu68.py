@@ -885,3 +885,9 @@ class FactIndustryLoader(FactLoader):
         sql = self.create_fact_table_sql(self.fact_name,self.table_creator)
         return df, sql
                    
+class FactCompanyIndustrySectors(FactLoader):
+    def __init__(self, datalake_config, datawarehouse_logger, postgres_client, dim_repo, mongo_reader):
+        super().__init__(datalake_config,  mongo_reader, dim_repo, datawarehouse_logger, postgres_client)
+        self.collection_name = self._get_collection("industry_sectors")
+        self.fact_name = self._get_fact_name("fact_industry_summary", "fact_industry_summary")
+        self.table_creator = TableCreator(machine_id=1, character_specific=self.fact_name)

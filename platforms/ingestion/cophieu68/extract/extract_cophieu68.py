@@ -324,7 +324,7 @@ class ExtractCophieu68(Cophieu68BeautifulSoupCrawler):
         rows = []
         for market_type_name, market_type_code in CRAWL_MARKET_LIST_CONFIG.items():
             time.sleep(0.25)
-            url = f"{self.urls}{self.endpoint['company_market_type_sector']}".format(industry_code=market_type_code)
+            url = f"{self.urls}{self.endpoint['company_market_type_sector']}".format(market_type_code=market_type_code)
             re = pd.read_html(url)
             data = re[0].values
             for item in data:

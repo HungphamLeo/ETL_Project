@@ -3,6 +3,7 @@ import time
 from datetime import datetime
 from typing import List, Dict, Any, Optional, Iterable
 import logging
+from dataclasses import asdict
 from platforms.storage.datalake.mongodb.data_lake_storage import MongoWriter
 from platforms.storage.base_storage import to_primitive
 from platforms.ingestion.cophieu68.dto.load_models import (
@@ -331,6 +332,9 @@ class MongoLoader(MongoWriter):
             coll = db[collection_name]
             now = self._now_iso()
             for data in company_industry_data:
+                # Convert dataclass to dict if necessary
+                if not isinstance(data, dict):
+                    data = asdict(data)
                 data["update_time"] = now
                 self._upsert(coll, data, key_fields=["industry_code","symbol"])
         finally:
@@ -343,6 +347,9 @@ class MongoLoader(MongoWriter):
             coll = db[collection_name]
             now = self._now_iso()
             for data in company_market_type_data:
+                # Convert dataclass to dict if necessary
+                if not isinstance(data, dict):
+                    data = asdict(data)
                 data["update_time"] = now
                 self._upsert(coll, data, key_fields=["market_type_code","symbol"])
         finally:
