@@ -9,7 +9,8 @@ from platforms.processing.base_processing import FileConfigLoader, DefaultLogger
 from platforms.ingestion.cophieu68.load.load_datawarehouse_cophieu68 import (
     DimMarketTypeLoader, DimIndustryLoader, DimCompanyLoader, DimReportTypeLoader,
     FactTradeLoader, FactMatchDetailLoader, FactIncomeStatementLoader, 
-    FactBalanceSheetLoader, FactBusinessPlanLoader, FactFinancialMetricsLoader, FactIndustryLoader
+    FactBalanceSheetLoader, FactBusinessPlanLoader, FactFinancialMetricsLoader, FactIndustryLoader,
+    FactCompanyIndustrySectors, FactCompanyMarketTypeSectors
 )
 from platforms.ingestion.cophieu68.dto.extract_models import (
     CRAWL_MARKET_LIST_CONFIG,
@@ -292,7 +293,31 @@ def load_fact_industry(datalake_config, mongo_reader, logger, pg_client, dim_rep
     time.sleep(3)
     return True
 #
+def load_fact_comapny_belong_to_industry_sector(datalake_config, mongo_reader, logger, pg_client, dim_repo):
+    loader = FactCompanyIndustrySectors(datalake_config = datalake_config, 
+                                mongo_reader=mongo_reader, 
+                                dim_repo=dim_repo, 
+                                datawarehouse_logger=logger, 
+                                postgres_client=pg_client)
+    df, sql = loader.load()
+    pg_client.execute(sql)
+    pg_client.bulk_insert(f"{loader.schema_name}.{loader.fact_name.upper()}", df)
+    logger.info(f"[{loader.fact_name}] Loaded {len(df)} rows")
+    time.sleep(3)
+    return True
 
+def load_fact_comapny_belong_to_market_type_sector(datalake_config, mongo_reader, logger, pg_client, dim_repo):
+    loader = FactCompanyMarketTypeSectors(datalake_config = datalake_config, 
+                                mongo_reader=mongo_reader, 
+                                dim_repo=dim_repo, 
+                                datawarehouse_logger=logger, 
+                                postgres_client=pg_client)
+    df, sql = loader.load()
+    pg_client.execute(sql)
+    pg_client.bulk_insert(f"{loader.schema_name}.{loader.fact_name.upper()}", df)
+    logger.info(f"[{loader.fact_name}] Loaded {len(df)} rows")
+    time.sleep(3)
+    return True
 # =========================
 # MAIN PREFECT FLOW
 # =========================
@@ -308,20 +333,23 @@ def dw_full_load():
     
     dim_repo = DimRepo(backend_postgres)
 
-    load_dim_market_type(datalake_config=mongo_config, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
-    load_dim_industry(datalake_config=mongo_config, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
-    load_dim_company(datalake_config=mongo_config,  mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
-    load_dim_report_type(datalake_config=mongo_config,  mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
+    # load_dim_market_type(datalake_config=mongo_config, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
+    # load_dim_industry(datalake_config=mongo_config, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
+    # load_dim_company(datalake_config=mongo_config,  mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
+    # load_dim_report_type(datalake_config=mongo_config,  mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
     
 
     # load_fact_trade(datalake_config=mongo_config,  mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres, dim_repo=dim_repo)
-    load_fact_match(datalake_config=mongo_config, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres,dim_repo=dim_repo)
-    load_fact_income(datalake_config=mongo_config, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres,dim_repo=dim_repo)
-    load_fact_balance(datalake_config=mongo_config, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres,dim_repo=dim_repo)
+    # load_fact_match(datalake_config=mongo_config, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres,dim_repo=dim_repo)
+    # load_fact_income(datalake_config=mongo_config, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres,dim_repo=dim_repo)
+    # load_fact_balance(datalake_config=mongo_config, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres,dim_repo=dim_repo)
     
-    load_fact_financial_metrics(datalake_config=mongo_config, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres, dim_repo=dim_repo)
-    load_fact_industry(datalake_config=mongo_config, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres, dim_repo=dim_repo)
-    load_fact_business_plan(datalake_config=mongo_config, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres, dim_repo=dim_repo)
+    # load_fact_financial_metrics(datalake_config=mongo_config, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres, dim_repo=dim_repo)
+    # load_fact_industry(datalake_config=mongo_config, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres, dim_repo=dim_repo)
+    # load_fact_business_plan(datalake_config=mongo_config, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres, dim_repo=dim_repo)
+
+    load_fact_comapny_belong_to_industry_sector(datalake_config=mongo_config, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres, dim_repo=dim_repo)
+    load_fact_comapny_belong_to_market_type_sector(datalake_config=mongo_config, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres, dim_repo=dim_repo)
     print("done")
 
 

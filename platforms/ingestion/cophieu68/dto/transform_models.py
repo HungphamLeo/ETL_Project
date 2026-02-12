@@ -278,7 +278,46 @@ DATA_WAREHOUSE_SCHEMA = {
                 "update_time":      {"type": "TIMESTAMP", "constraints": "NOT NULL"},
                
             }
+        },
+        "fact_company_belong_to_industry": {
+            "grain": "company × period",
+            "columns": {
+                "company_industry_sector_keys":{"type": "VARCHAR(64)", "constraints": "PRIMARY KEY"},
+                "industry_code": {"type": "VARCHAR(54)",     "constraints": ""},
+                "industry_name": {"type": "VARCHAR(54)",     "constraints": ""},
+                "symbol":        {"type": "VARCHAR(4)",     "constraints": ""},
+                "company_name":    {"type": "VARCHAR(124)",     "constraints": ""},
+                "close_price":   {"type": "VARCHAR(12)",     "constraints": ""},
+                "fluctuation_range":   {"type": "VARCHAR(6)",     "constraints": ""},
+                "volumn24h":   {"type": "VARCHAR(54)",     "constraints": ""},
+                "volumn52w":   {"type": "VARCHAR(54)",     "constraints": ""},
+                "listed_volumn":   {"type": "VARCHAR(54)",     "constraints": ""},
+                "market_capitalization": {"type": "VARCHAR(54)",     "constraints": ""},
+                "currency":         {"type": "VARCHAR(3)",     "constraints": ""},
+                "unit":          {"type": "VARCHAR(12)",     "constraints": ""},
+                "update_time":      {"type": "TIMESTAMP", "constraints": "NOT NULL"}
+            }
+        },
+        "fact_company_belong_to_market_type": {
+            "grain": "company × period",
+            "columns": {
+                "company_market_type_sector_keys":{"type": "VARCHAR(64)", "constraints": "PRIMARY KEY"},
+                "market_type_code": {"type": "VARCHAR(54)",     "constraints": ""},
+                "market_type_name": {"type": "VARCHAR(54)",     "constraints": ""},
+                "symbol":        {"type": "VARCHAR(4)",     "constraints": ""},
+                "company_name":    {"type": "VARCHAR(124)",     "constraints": ""},
+                "close_price":   {"type": "VARCHAR(12)",     "constraints": ""},
+                "fluctuation_range":   {"type": "VARCHAR(6)",     "constraints": ""},
+                "volumn24h":   {"type": "VARCHAR(54)",     "constraints": ""},
+                "volumn52w":   {"type": "VARCHAR(54)",     "constraints": ""},
+                "listed_volumn":   {"type": "VARCHAR(54)",     "constraints": ""},
+                "market_capitalization": {"type": "VARCHAR(54)",     "constraints": ""},
+                "currency":         {"type": "VARCHAR(3)",     "constraints": ""},
+                "unit":          {"type": "VARCHAR(12)",     "constraints": ""},
+                "update_time":      {"type": "TIMESTAMP", "constraints": "NOT NULL"}
+            }
         }
+
     },
 
     "staging": {
