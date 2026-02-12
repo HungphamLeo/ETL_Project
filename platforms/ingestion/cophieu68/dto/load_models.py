@@ -214,6 +214,10 @@ def doc_from_extract(kind: str, payload: Any) -> BaseDoc:
     cls = _DOC_TYPE_MAP.get(kind, BaseDoc)
     return cls.from_extract(payload)
 
+@dataclass
+class Unit_And_Currency:
+    currency:Optional[str] = "VND"
+    unit:Optional[str] = "billions"
 
 
 @dataclass

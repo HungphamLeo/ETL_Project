@@ -3,6 +3,7 @@ import time
 from datetime import datetime
 from typing import List, Dict, Any, Optional, Iterable
 import logging
+from dataclasses import asdict
 from platforms.storage.datalake.mongodb.data_lake_storage import MongoWriter
 from platforms.storage.base_storage import to_primitive
 from platforms.ingestion.cophieu68.dto.load_models import (
@@ -321,5 +322,35 @@ class MongoLoader(MongoWriter):
                     doc["report_type"] = report_data["report_type"]
             doc["update_time"] = now
             self._upsert(coll, doc, key_fields=["symbol", "table_index", "report_type"])
+        finally:
+            client.close()
+    
+    def load_company_belong_to_industry_sector(self, collection_name: str, company_industry_data: Any) -> None:
+        client = self._ensure_client()
+        try:
+            db = client[self.database]
+            coll = db[collection_name]
+            now = self._now_iso()
+            for data in company_industry_data:
+                # Convert dataclass to dict if necessary
+                if not isinstance(data, dict):
+                    data = asdict(data)
+                data["update_time"] = now
+                self._upsert(coll, data, key_fields=["industry_code","symbol"])
+        finally:
+            client.close()
+
+    def load_company_belong_to_market_type(self, collection_name: str, company_market_type_data: Any) -> None:
+        client = self._ensure_client()
+        try:
+            db = client[self.database]
+            coll = db[collection_name]
+            now = self._now_iso()
+            for data in company_market_type_data:
+                # Convert dataclass to dict if necessary
+                if not isinstance(data, dict):
+                    data = asdict(data)
+                data["update_time"] = now
+                self._upsert(coll, data, key_fields=["market_type_code","symbol"])
         finally:
             client.close()
