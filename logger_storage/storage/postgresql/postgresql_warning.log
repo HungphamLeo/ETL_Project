@@ -1285,3 +1285,6 @@ DETAIL:  Key (company_market_type_sector_keys)=(fact_company_belong_to_market_ty
 ", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
 {"time":"2026-01-28T16:26:54", "level":"ERROR", "message":"Insert failed: value too long for type character varying(32)
 ", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}
+{"time":"2026-03-29T12:04:12", "level":"ERROR", "message":"Insert failed: duplicate key value violates unique constraint "dim_report_type_pkey"
+DETAIL:  Key (report_type_key)=(Y) already exists.
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/storage/datawarehouse/postgresql/datawarehouse_storage.py:51"}

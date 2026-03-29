@@ -408,3 +408,5 @@ def cophieu68_etl_flow(config_path):
 
 def run_etl_cophieu69_mongodb_v1():
     cophieu68_etl_flow(config_path = config_path)
+
+#cd /mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project && python3 scripts/cophieu68_etl_mongodb_v1.py
