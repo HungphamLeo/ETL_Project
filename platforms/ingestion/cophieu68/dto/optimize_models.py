@@ -25,6 +25,14 @@ class BalanceSheetAsset:
     OTHER_ASSETS_NET: Optional[float] = None
     TOTAL_ASSETS: Optional[float] = None
     update_time: Optional[str] = None
+# Tiền và tài sản quý (CASH_AND_VALUABLES)
+# Tiền gửi tại NHNN (DEPOSITS_WITH_CENTRAL_BANK)
+# Chứng khoán ngắn hạn đủ điều kiện / tín phiếu (T_BILLS_AND_ELIGIBLE_SHORT_TERM_SECURITIES)
+# Cho vay và tiền gửi liên ngân hàng (INTERBANK_PLACEMENTS_AND_LOANS)
+# Chứng khoán kinh doanh (ròng), công cụ phái sinh, tài sản tài chính khác
+# Cho vay khách hàng (ròng) (LOANS_TO_CUSTOMERS_NET)
+# Chứng khoán đầu tư, đầu tư dài hạn, TSCĐ, BĐS đầu tư, tài sản khác (đều dạng ròng)
+# Tổng tài sản (TOTAL_ASSETS)
 
 @dataclass
 class InterbankPlacementsAndLoansDetails:
