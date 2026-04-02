@@ -14419,3 +14419,2038 @@ drop table if exists "etl_project"."dw_dw"."fct_bs_liabilities__dbt_backup" casc
 [0m09:17:36.003345 [debug] [MainThread]: Command `dbt build` succeeded at 09:17:36.003005 after 16.99 seconds
 [0m09:17:36.005786 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7d204d7b7990>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7d20519b5750>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7d20519b6290>]}
 [0m09:17:36.008004 [debug] [MainThread]: Flushing usage events
+[0m05:19:43.752206 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7b129dfe2850>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7b129dfe3050>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7b129dfe3390>]}
+
+
+============================== 05:19:43.792272 | 47b28e98-efb3-44a6-930c-5d2cc20faf50 ==============================
+[0m05:19:43.792272 [info ] [MainThread]: Running with dbt=1.7.15
+[0m05:19:43.799247 [debug] [MainThread]: running dbt with arguments {'printer_width': '80', 'indirect_selection': 'eager', 'write_json': 'True', 'log_cache_events': 'False', 'partial_parse': 'True', 'cache_selected_only': 'False', 'warn_error': 'None', 'debug': 'False', 'version_check': 'True', 'log_path': '/app/dbt/logs', 'fail_fast': 'False', 'profiles_dir': '/app/dbt/profiles', 'use_colors': 'True', 'use_experimental_parser': 'False', 'no_print': 'None', 'quiet': 'False', 'log_format': 'default', 'static_parser': 'True', 'invocation_command': 'dbt build', 'warn_error_options': 'WarnErrorOptions(include=[], exclude=[])', 'target_path': 'None', 'introspect': 'True', 'send_anonymous_usage_stats': 'True'}
+[0m05:19:45.086966 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'project_id', 'label': '47b28e98-efb3-44a6-930c-5d2cc20faf50', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7b129d7b4690>]}
+[0m05:19:45.423101 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'adapter_info', 'label': '47b28e98-efb3-44a6-930c-5d2cc20faf50', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7b129e001b90>]}
+[0m05:19:45.452015 [info ] [MainThread]: Registered adapter: postgres=1.7.15
+[0m05:19:46.144989 [debug] [MainThread]: checksum: e4cfa841c1cf2b310128daf3fe81590497b767fe3788aa75c7f0bcc4959f94d1, vars: {}, profile: , target: , version: 1.7.15
+[0m05:19:53.383908 [debug] [MainThread]: Partial parsing enabled: 0 files deleted, 0 files added, 0 files changed.
+[0m05:19:53.386562 [debug] [MainThread]: Partial parsing enabled, no changes found, skipping parsing
+[0m05:19:53.403631 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'load_project', 'label': '47b28e98-efb3-44a6-930c-5d2cc20faf50', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7b129d7c0f50>]}
+[0m05:19:53.539444 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'resource_counts', 'label': '47b28e98-efb3-44a6-930c-5d2cc20faf50', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7b129d3dbf50>]}
+[0m05:19:53.542014 [info ] [MainThread]: Found 21 models, 4 sources, 0 exposures, 0 metrics, 516 macros, 0 groups, 0 semantic models
+[0m05:19:53.552375 [info ] [MainThread]: 
+[0m05:19:53.557419 [debug] [MainThread]: Acquiring new postgres connection 'master'
+[0m05:19:53.568071 [debug] [ThreadPool]: Acquiring new postgres connection 'list_etl_project'
+[0m05:19:53.571999 [debug] [ThreadPool]: Acquiring new postgres connection 'list_etl_project'
+[0m05:19:53.626523 [debug] [ThreadPool]: Using postgres connection "list_etl_project"
+[0m05:19:53.644340 [debug] [ThreadPool]: Using postgres connection "list_etl_project"
+[0m05:19:53.658969 [debug] [ThreadPool]: On list_etl_project: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "connection_name": "list_etl_project"} */
+
+    select distinct nspname from pg_namespace
+  
+[0m05:19:53.670958 [debug] [ThreadPool]: On list_etl_project: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "connection_name": "list_etl_project"} */
+
+    select distinct nspname from pg_namespace
+  
+[0m05:19:53.675854 [debug] [ThreadPool]: Opening a new connection, currently in state init
+[0m05:19:53.680705 [debug] [ThreadPool]: Opening a new connection, currently in state init
+[0m05:19:53.829952 [debug] [ThreadPool]: SQL status: SELECT 8 in 0.0 seconds
+[0m05:19:53.821779 [debug] [ThreadPool]: SQL status: SELECT 8 in 0.0 seconds
+[0m05:19:53.839144 [debug] [ThreadPool]: On list_etl_project: Close
+[0m05:19:53.845452 [debug] [ThreadPool]: On list_etl_project: Close
+[0m05:19:53.855799 [debug] [ThreadPool]: Re-using an available connection from the pool (formerly list_etl_project, now create_etl_project_dw_dw)
+[0m05:19:53.859090 [debug] [ThreadPool]: Creating schema "database: "etl_project"
+schema: "dw_dw"
+"
+[0m05:19:53.874996 [debug] [ThreadPool]: Using postgres connection "create_etl_project_dw_dw"
+[0m05:19:53.877984 [debug] [ThreadPool]: On create_etl_project_dw_dw: BEGIN
+[0m05:19:53.881156 [debug] [ThreadPool]: Opening a new connection, currently in state closed
+[0m05:19:53.903763 [debug] [ThreadPool]: SQL status: BEGIN in 0.0 seconds
+[0m05:19:53.907910 [debug] [ThreadPool]: Using postgres connection "create_etl_project_dw_dw"
+[0m05:19:53.910961 [debug] [ThreadPool]: On create_etl_project_dw_dw: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "connection_name": "create_etl_project_dw_dw"} */
+create schema if not exists "dw_dw"
+[0m05:19:53.930412 [debug] [ThreadPool]: SQL status: CREATE SCHEMA in 0.0 seconds
+[0m05:19:53.933907 [debug] [ThreadPool]: On create_etl_project_dw_dw: COMMIT
+[0m05:19:53.937312 [debug] [ThreadPool]: Using postgres connection "create_etl_project_dw_dw"
+[0m05:19:53.940012 [debug] [ThreadPool]: On create_etl_project_dw_dw: COMMIT
+[0m05:19:53.944649 [debug] [ThreadPool]: SQL status: COMMIT in 0.0 seconds
+[0m05:19:53.947245 [debug] [ThreadPool]: On create_etl_project_dw_dw: Close
+[0m05:19:53.968879 [debug] [ThreadPool]: Re-using an available connection from the pool (formerly create_etl_project_dw_dw, now list_etl_project_dw_dw)
+[0m05:19:53.971811 [debug] [ThreadPool]: Re-using an available connection from the pool (formerly list_etl_project, now list_etl_project_dw_stg)
+[0m05:19:54.042524 [debug] [ThreadPool]: Using postgres connection "list_etl_project_dw_dw"
+[0m05:19:54.066241 [debug] [ThreadPool]: Using postgres connection "list_etl_project_dw_stg"
+[0m05:19:54.070076 [debug] [ThreadPool]: On list_etl_project_dw_dw: BEGIN
+[0m05:19:54.093124 [debug] [ThreadPool]: On list_etl_project_dw_stg: BEGIN
+[0m05:19:54.115625 [debug] [ThreadPool]: Opening a new connection, currently in state closed
+[0m05:19:54.128631 [debug] [ThreadPool]: Opening a new connection, currently in state closed
+[0m05:19:54.186748 [debug] [ThreadPool]: SQL status: BEGIN in 0.0 seconds
+[0m05:19:54.223777 [debug] [ThreadPool]: Using postgres connection "list_etl_project_dw_dw"
+[0m05:19:54.198308 [debug] [ThreadPool]: SQL status: BEGIN in 0.0 seconds
+[0m05:19:54.261556 [debug] [ThreadPool]: On list_etl_project_dw_dw: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "connection_name": "list_etl_project_dw_dw"} */
+select
+      'etl_project' as database,
+      tablename as name,
+      schemaname as schema,
+      'table' as type
+    from pg_tables
+    where schemaname ilike 'dw_dw'
+    union all
+    select
+      'etl_project' as database,
+      viewname as name,
+      schemaname as schema,
+      'view' as type
+    from pg_views
+    where schemaname ilike 'dw_dw'
+    union all
+    select
+      'etl_project' as database,
+      matviewname as name,
+      schemaname as schema,
+      'materialized_view' as type
+    from pg_matviews
+    where schemaname ilike 'dw_dw'
+  
+[0m05:19:54.289353 [debug] [ThreadPool]: Using postgres connection "list_etl_project_dw_stg"
+[0m05:19:54.349999 [debug] [ThreadPool]: On list_etl_project_dw_stg: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "connection_name": "list_etl_project_dw_stg"} */
+select
+      'etl_project' as database,
+      tablename as name,
+      schemaname as schema,
+      'table' as type
+    from pg_tables
+    where schemaname ilike 'dw_stg'
+    union all
+    select
+      'etl_project' as database,
+      viewname as name,
+      schemaname as schema,
+      'view' as type
+    from pg_views
+    where schemaname ilike 'dw_stg'
+    union all
+    select
+      'etl_project' as database,
+      matviewname as name,
+      schemaname as schema,
+      'materialized_view' as type
+    from pg_matviews
+    where schemaname ilike 'dw_stg'
+  
+[0m05:19:54.367873 [debug] [ThreadPool]: SQL status: SELECT 0 in 0.0 seconds
+[0m05:19:54.389160 [debug] [ThreadPool]: SQL status: SELECT 6 in 0.0 seconds
+[0m05:19:54.406914 [debug] [ThreadPool]: On list_etl_project_dw_dw: ROLLBACK
+[0m05:19:54.432464 [debug] [ThreadPool]: On list_etl_project_dw_stg: ROLLBACK
+[0m05:19:54.450928 [debug] [ThreadPool]: On list_etl_project_dw_dw: Close
+[0m05:19:54.454544 [debug] [ThreadPool]: On list_etl_project_dw_stg: Close
+[0m05:19:54.485250 [debug] [MainThread]: Using postgres connection "master"
+[0m05:19:54.488985 [debug] [MainThread]: On master: BEGIN
+[0m05:19:54.491619 [debug] [MainThread]: Opening a new connection, currently in state init
+[0m05:19:54.519014 [debug] [MainThread]: SQL status: BEGIN in 0.0 seconds
+[0m05:19:54.521963 [debug] [MainThread]: Using postgres connection "master"
+[0m05:19:54.525439 [debug] [MainThread]: On master: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "connection_name": "master"} */
+with relation as (
+        select
+            pg_rewrite.ev_class as class,
+            pg_rewrite.oid as id
+        from pg_rewrite
+    ),
+    class as (
+        select
+            oid as id,
+            relname as name,
+            relnamespace as schema,
+            relkind as kind
+        from pg_class
+    ),
+    dependency as (
+        select distinct
+            pg_depend.objid as id,
+            pg_depend.refobjid as ref
+        from pg_depend
+    ),
+    schema as (
+        select
+            pg_namespace.oid as id,
+            pg_namespace.nspname as name
+        from pg_namespace
+        where nspname != 'information_schema' and nspname not like 'pg\_%'
+    ),
+    referenced as (
+        select
+            relation.id AS id,
+            referenced_class.name ,
+            referenced_class.schema ,
+            referenced_class.kind
+        from relation
+        join class as referenced_class on relation.class=referenced_class.id
+        where referenced_class.kind in ('r', 'v', 'm')
+    ),
+    relationships as (
+        select
+            referenced.name as referenced_name,
+            referenced.schema as referenced_schema_id,
+            dependent_class.name as dependent_name,
+            dependent_class.schema as dependent_schema_id,
+            referenced.kind as kind
+        from referenced
+        join dependency on referenced.id=dependency.id
+        join class as dependent_class on dependency.ref=dependent_class.id
+        where
+            (referenced.name != dependent_class.name or
+             referenced.schema != dependent_class.schema)
+    )
+
+    select
+        referenced_schema.name as referenced_schema,
+        relationships.referenced_name as referenced_name,
+        dependent_schema.name as dependent_schema,
+        relationships.dependent_name as dependent_name
+    from relationships
+    join schema as dependent_schema on relationships.dependent_schema_id=dependent_schema.id
+    join schema as referenced_schema on relationships.referenced_schema_id=referenced_schema.id
+    group by referenced_schema, referenced_name, dependent_schema, dependent_name
+    order by referenced_schema, referenced_name, dependent_schema, dependent_name;
+[0m05:19:54.606638 [debug] [MainThread]: SQL status: SELECT 8 in 0.0 seconds
+[0m05:19:54.630851 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'runnable_timing', 'label': '47b28e98-efb3-44a6-930c-5d2cc20faf50', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7b129d356110>]}
+[0m05:19:54.641988 [debug] [MainThread]: On master: ROLLBACK
+[0m05:19:54.652667 [debug] [MainThread]: Using postgres connection "master"
+[0m05:19:54.661722 [debug] [MainThread]: On master: BEGIN
+[0m05:19:54.670554 [debug] [MainThread]: SQL status: BEGIN in 0.0 seconds
+[0m05:19:54.674763 [debug] [MainThread]: On master: COMMIT
+[0m05:19:54.680424 [debug] [MainThread]: Using postgres connection "master"
+[0m05:19:54.685261 [debug] [MainThread]: On master: COMMIT
+[0m05:19:54.689424 [debug] [MainThread]: SQL status: COMMIT in 0.0 seconds
+[0m05:19:54.693156 [debug] [MainThread]: On master: Close
+[0m05:19:54.703631 [info ] [MainThread]: Concurrency: 4 threads (target='dev')
+[0m05:19:54.709335 [info ] [MainThread]: 
+[0m05:19:54.748043 [debug] [Thread-1 (]: Began running node model.my_dbt_project.stg_fact_balance_sheet_annually
+[0m05:19:54.749347 [debug] [Thread-2 (]: Began running node model.my_dbt_project.stg_fact_balance_sheet_quarterly
+[0m05:19:54.750473 [debug] [Thread-3 (]: Began running node model.my_dbt_project.stg_fact_income_statement_annually
+[0m05:19:54.759503 [debug] [Thread-4 (]: Began running node model.my_dbt_project.stg_fact_income_statement_quarterly
+[0m05:19:54.850240 [info ] [Thread-1 (]: 1 of 21 START sql view model dw_stg.stg_fact_balance_sheet_annually ............ [RUN]
+[0m05:19:54.861583 [info ] [Thread-2 (]: 2 of 21 START sql view model dw_stg.stg_fact_balance_sheet_quarterly ........... [RUN]
+[0m05:19:54.870226 [info ] [Thread-3 (]: 3 of 21 START sql view model dw_stg.stg_fact_income_statement_annually ......... [RUN]
+[0m05:19:54.905802 [debug] [Thread-3 (]: Acquiring new postgres connection 'model.my_dbt_project.stg_fact_income_statement_annually'
+[0m05:19:54.995236 [debug] [Thread-3 (]: Began compiling node model.my_dbt_project.stg_fact_income_statement_annually
+[0m05:19:54.899905 [debug] [Thread-2 (]: Re-using an available connection from the pool (formerly list_etl_project_dw_dw, now model.my_dbt_project.stg_fact_balance_sheet_quarterly)
+[0m05:19:55.115238 [debug] [Thread-2 (]: Began compiling node model.my_dbt_project.stg_fact_balance_sheet_quarterly
+[0m05:19:54.890311 [debug] [Thread-1 (]: Re-using an available connection from the pool (formerly list_etl_project_dw_stg, now model.my_dbt_project.stg_fact_balance_sheet_annually)
+[0m05:19:55.075801 [debug] [Thread-3 (]: Writing injected SQL for node "model.my_dbt_project.stg_fact_income_statement_annually"
+[0m05:19:54.876720 [info ] [Thread-4 (]: 4 of 21 START sql view model dw_stg.stg_fact_income_statement_quarterly ........ [RUN]
+[0m05:19:55.153754 [debug] [Thread-1 (]: Began compiling node model.my_dbt_project.stg_fact_balance_sheet_annually
+[0m05:19:55.193709 [debug] [Thread-2 (]: Using postgres connection "model.my_dbt_project.stg_fact_balance_sheet_quarterly"
+[0m05:19:55.197846 [debug] [Thread-4 (]: Acquiring new postgres connection 'model.my_dbt_project.stg_fact_income_statement_quarterly'
+[0m05:19:55.641588 [debug] [Thread-2 (]: On model.my_dbt_project.stg_fact_balance_sheet_quarterly: BEGIN
+[0m05:19:55.652366 [debug] [Thread-1 (]: Using postgres connection "model.my_dbt_project.stg_fact_balance_sheet_annually"
+[0m05:19:55.651151 [debug] [Thread-3 (]: Timing info for model.my_dbt_project.stg_fact_income_statement_annually (compile): 05:19:55.004465 => 05:19:55.645592
+[0m05:19:55.665604 [debug] [Thread-3 (]: Began executing node model.my_dbt_project.stg_fact_income_statement_annually
+[0m05:19:55.658194 [debug] [Thread-2 (]: Opening a new connection, currently in state closed
+[0m05:19:55.661459 [debug] [Thread-1 (]: On model.my_dbt_project.stg_fact_balance_sheet_annually: BEGIN
+[0m05:19:55.751332 [debug] [Thread-1 (]: Opening a new connection, currently in state closed
+[0m05:19:55.654687 [debug] [Thread-4 (]: Began compiling node model.my_dbt_project.stg_fact_income_statement_quarterly
+[0m05:19:55.760970 [debug] [Thread-2 (]: SQL status: BEGIN in 0.0 seconds
+[0m05:19:55.829473 [debug] [Thread-4 (]: Writing injected SQL for node "model.my_dbt_project.stg_fact_income_statement_quarterly"
+[0m05:19:55.846683 [debug] [Thread-1 (]: SQL status: BEGIN in 0.0 seconds
+[0m05:19:55.858496 [debug] [Thread-2 (]: Using postgres connection "model.my_dbt_project.stg_fact_balance_sheet_quarterly"
+[0m05:19:55.921326 [debug] [Thread-3 (]: Writing runtime sql for node "model.my_dbt_project.stg_fact_income_statement_annually"
+[0m05:19:55.922677 [debug] [Thread-1 (]: Using postgres connection "model.my_dbt_project.stg_fact_balance_sheet_annually"
+[0m05:19:55.926575 [debug] [Thread-2 (]: On model.my_dbt_project.stg_fact_balance_sheet_quarterly: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "node_id": "model.my_dbt_project.stg_fact_balance_sheet_quarterly"} */
+
+      select
+          column_name,
+          data_type,
+          character_maximum_length,
+          numeric_precision,
+          numeric_scale
+
+      from "etl_project".INFORMATION_SCHEMA.columns
+      where table_name = 'fact_balance_sheet_quarterly'
+        
+        and table_schema = 'dw'
+        
+      order by ordinal_position
+
+  
+[0m05:19:55.937534 [debug] [Thread-1 (]: On model.my_dbt_project.stg_fact_balance_sheet_annually: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "node_id": "model.my_dbt_project.stg_fact_balance_sheet_annually"} */
+
+      select
+          column_name,
+          data_type,
+          character_maximum_length,
+          numeric_precision,
+          numeric_scale
+
+      from "etl_project".INFORMATION_SCHEMA.columns
+      where table_name = 'fact_balance_sheet_annually'
+        
+        and table_schema = 'dw'
+        
+      order by ordinal_position
+
+  
+[0m05:19:56.487579 [debug] [Thread-4 (]: Timing info for model.my_dbt_project.stg_fact_income_statement_quarterly (compile): 05:19:55.802306 => 05:19:56.483856
+[0m05:19:56.502824 [debug] [Thread-4 (]: Began executing node model.my_dbt_project.stg_fact_income_statement_quarterly
+[0m05:19:56.531012 [debug] [Thread-3 (]: Using postgres connection "model.my_dbt_project.stg_fact_income_statement_annually"
+[0m05:19:56.561184 [debug] [Thread-3 (]: On model.my_dbt_project.stg_fact_income_statement_annually: BEGIN
+[0m05:19:56.579497 [debug] [Thread-3 (]: Opening a new connection, currently in state init
+[0m05:19:56.566563 [debug] [Thread-4 (]: Writing runtime sql for node "model.my_dbt_project.stg_fact_income_statement_quarterly"
+[0m05:19:56.623849 [debug] [Thread-1 (]: SQL status: SELECT 14 in 0.0 seconds
+[0m05:19:56.645304 [debug] [Thread-2 (]: SQL status: SELECT 15 in 0.0 seconds
+[0m05:19:56.675086 [debug] [Thread-1 (]: Using postgres connection "model.my_dbt_project.stg_fact_balance_sheet_annually"
+[0m05:19:56.673238 [debug] [Thread-4 (]: Using postgres connection "model.my_dbt_project.stg_fact_income_statement_quarterly"
+[0m05:19:56.664962 [debug] [Thread-3 (]: SQL status: BEGIN in 0.0 seconds
+[0m05:19:56.689753 [debug] [Thread-2 (]: Using postgres connection "model.my_dbt_project.stg_fact_balance_sheet_quarterly"
+[0m05:19:56.692596 [debug] [Thread-1 (]: On model.my_dbt_project.stg_fact_balance_sheet_annually: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "node_id": "model.my_dbt_project.stg_fact_balance_sheet_annually"} */
+
+      select
+          column_name,
+          data_type,
+          character_maximum_length,
+          numeric_precision,
+          numeric_scale
+
+      from "etl_project".INFORMATION_SCHEMA.columns
+      where table_name = 'fact_balance_sheet_annually'
+        
+        and table_schema = 'dw'
+        
+      order by ordinal_position
+
+  
+[0m05:19:56.700320 [debug] [Thread-4 (]: On model.my_dbt_project.stg_fact_income_statement_quarterly: BEGIN
+[0m05:19:56.709662 [debug] [Thread-3 (]: Using postgres connection "model.my_dbt_project.stg_fact_income_statement_annually"
+[0m05:19:56.723895 [debug] [Thread-3 (]: On model.my_dbt_project.stg_fact_income_statement_annually: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "node_id": "model.my_dbt_project.stg_fact_income_statement_annually"} */
+
+  create view "etl_project"."dw_stg"."stg_fact_income_statement_annually__dbt_tmp"
+    
+    
+  as (
+    select
+    symbol,
+    'ANNUAL'::text as time_report_type,
+    'income_statement'::text as financial_report_type,
+    cast(year as int) as year,
+    null::text as period,
+    metric_code,
+    cast(metric_value as numeric(20,4)) as metric_value,
+    cast(update_time as timestamp) as update_time
+from "etl_project"."dw"."fact_income_statement_annually"
+  );
+[0m05:19:56.720014 [debug] [Thread-4 (]: Opening a new connection, currently in state init
+[0m05:19:56.712037 [debug] [Thread-2 (]: On model.my_dbt_project.stg_fact_balance_sheet_quarterly: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "node_id": "model.my_dbt_project.stg_fact_balance_sheet_quarterly"} */
+
+      select
+          column_name,
+          data_type,
+          character_maximum_length,
+          numeric_precision,
+          numeric_scale
+
+      from "etl_project".INFORMATION_SCHEMA.columns
+      where table_name = 'fact_balance_sheet_quarterly'
+        
+        and table_schema = 'dw'
+        
+      order by ordinal_position
+
+  
+[0m05:19:56.727531 [debug] [Thread-1 (]: SQL status: SELECT 14 in 0.0 seconds
+[0m05:19:56.767142 [debug] [Thread-2 (]: SQL status: SELECT 15 in 0.0 seconds
+[0m05:19:56.768158 [debug] [Thread-1 (]: Using postgres connection "model.my_dbt_project.stg_fact_balance_sheet_annually"
+[0m05:19:56.787065 [debug] [Thread-4 (]: SQL status: BEGIN in 0.0 seconds
+[0m05:19:56.790484 [debug] [Thread-2 (]: Using postgres connection "model.my_dbt_project.stg_fact_balance_sheet_quarterly"
+[0m05:19:56.791649 [debug] [Thread-3 (]: SQL status: CREATE VIEW in 0.0 seconds
+[0m05:19:56.792423 [debug] [Thread-1 (]: On model.my_dbt_project.stg_fact_balance_sheet_annually: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "node_id": "model.my_dbt_project.stg_fact_balance_sheet_annually"} */
+
+      select
+          column_name,
+          data_type,
+          character_maximum_length,
+          numeric_precision,
+          numeric_scale
+
+      from "etl_project".INFORMATION_SCHEMA.columns
+      where table_name = 'fact_balance_sheet_annually'
+        
+        and table_schema = 'dw'
+        
+      order by ordinal_position
+
+  
+[0m05:19:56.794357 [debug] [Thread-4 (]: Using postgres connection "model.my_dbt_project.stg_fact_income_statement_quarterly"
+[0m05:19:56.820748 [debug] [Thread-4 (]: On model.my_dbt_project.stg_fact_income_statement_quarterly: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "node_id": "model.my_dbt_project.stg_fact_income_statement_quarterly"} */
+
+  create view "etl_project"."dw_stg"."stg_fact_income_statement_quarterly__dbt_tmp"
+    
+    
+  as (
+    select
+    symbol,
+    'QUARTERLY'::text as time_report_type,
+    'income_statement'::text as financial_report_type,
+    cast(year as int) as year,
+    cast(period as text) as period,
+    metric_code,
+    cast(metric_value as numeric(20,4)) as metric_value,
+    cast(update_time as timestamp) as update_time
+from "etl_project"."dw"."fact_income_statement_quarterly"
+  );
+[0m05:19:56.817723 [debug] [Thread-3 (]: Using postgres connection "model.my_dbt_project.stg_fact_income_statement_annually"
+[0m05:19:56.796421 [debug] [Thread-2 (]: On model.my_dbt_project.stg_fact_balance_sheet_quarterly: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "node_id": "model.my_dbt_project.stg_fact_balance_sheet_quarterly"} */
+
+      select
+          column_name,
+          data_type,
+          character_maximum_length,
+          numeric_precision,
+          numeric_scale
+
+      from "etl_project".INFORMATION_SCHEMA.columns
+      where table_name = 'fact_balance_sheet_quarterly'
+        
+        and table_schema = 'dw'
+        
+      order by ordinal_position
+
+  
+[0m05:19:56.832530 [debug] [Thread-1 (]: SQL status: SELECT 14 in 0.0 seconds
+[0m05:19:56.831485 [debug] [Thread-3 (]: On model.my_dbt_project.stg_fact_income_statement_annually: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "node_id": "model.my_dbt_project.stg_fact_income_statement_annually"} */
+alter table "etl_project"."dw_stg"."stg_fact_income_statement_annually" rename to "stg_fact_income_statement_annually__dbt_backup"
+[0m05:19:56.848433 [debug] [Thread-4 (]: SQL status: CREATE VIEW in 0.0 seconds
+[0m05:19:56.851551 [debug] [Thread-1 (]: Writing injected SQL for node "model.my_dbt_project.stg_fact_balance_sheet_annually"
+[0m05:19:56.868166 [debug] [Thread-4 (]: Using postgres connection "model.my_dbt_project.stg_fact_income_statement_quarterly"
+[0m05:19:56.877824 [debug] [Thread-4 (]: On model.my_dbt_project.stg_fact_income_statement_quarterly: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "node_id": "model.my_dbt_project.stg_fact_income_statement_quarterly"} */
+alter table "etl_project"."dw_stg"."stg_fact_income_statement_quarterly" rename to "stg_fact_income_statement_quarterly__dbt_backup"
+[0m05:19:56.872674 [debug] [Thread-2 (]: SQL status: SELECT 15 in 0.0 seconds
+[0m05:19:56.869833 [debug] [Thread-3 (]: SQL status: ALTER TABLE in 0.0 seconds
+[0m05:19:56.891841 [debug] [Thread-4 (]: SQL status: ALTER TABLE in 0.0 seconds
+[0m05:19:56.894719 [debug] [Thread-2 (]: Writing injected SQL for node "model.my_dbt_project.stg_fact_balance_sheet_quarterly"
+[0m05:19:56.913518 [debug] [Thread-3 (]: Using postgres connection "model.my_dbt_project.stg_fact_income_statement_annually"
+[0m05:19:57.069614 [debug] [Thread-4 (]: Using postgres connection "model.my_dbt_project.stg_fact_income_statement_quarterly"
+[0m05:19:57.071347 [debug] [Thread-1 (]: Timing info for model.my_dbt_project.stg_fact_balance_sheet_annually (compile): 05:19:55.205255 => 05:19:57.070482
+[0m05:19:57.084495 [debug] [Thread-1 (]: Began executing node model.my_dbt_project.stg_fact_balance_sheet_annually
+[0m05:19:57.081496 [debug] [Thread-4 (]: On model.my_dbt_project.stg_fact_income_statement_quarterly: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "node_id": "model.my_dbt_project.stg_fact_income_statement_quarterly"} */
+alter table "etl_project"."dw_stg"."stg_fact_income_statement_quarterly__dbt_tmp" rename to "stg_fact_income_statement_quarterly"
+[0m05:19:57.077748 [debug] [Thread-3 (]: On model.my_dbt_project.stg_fact_income_statement_annually: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "node_id": "model.my_dbt_project.stg_fact_income_statement_annually"} */
+alter table "etl_project"."dw_stg"."stg_fact_income_statement_annually__dbt_tmp" rename to "stg_fact_income_statement_annually"
+[0m05:19:57.108461 [debug] [Thread-4 (]: SQL status: ALTER TABLE in 0.0 seconds
+[0m05:19:57.111057 [debug] [Thread-1 (]: Writing runtime sql for node "model.my_dbt_project.stg_fact_balance_sheet_annually"
+[0m05:19:57.115436 [debug] [Thread-3 (]: SQL status: ALTER TABLE in 0.0 seconds
+[0m05:19:57.130605 [debug] [Thread-2 (]: Timing info for model.my_dbt_project.stg_fact_balance_sheet_quarterly (compile): 05:19:55.122340 => 05:19:57.129982
+[0m05:19:57.211604 [debug] [Thread-2 (]: Began executing node model.my_dbt_project.stg_fact_balance_sheet_quarterly
+[0m05:19:57.205484 [debug] [Thread-1 (]: Using postgres connection "model.my_dbt_project.stg_fact_balance_sheet_annually"
+[0m05:19:57.255724 [debug] [Thread-4 (]: On model.my_dbt_project.stg_fact_income_statement_quarterly: COMMIT
+[0m05:19:57.310882 [debug] [Thread-4 (]: Using postgres connection "model.my_dbt_project.stg_fact_income_statement_quarterly"
+[0m05:19:57.314983 [debug] [Thread-4 (]: On model.my_dbt_project.stg_fact_income_statement_quarterly: COMMIT
+[0m05:19:57.307913 [debug] [Thread-1 (]: On model.my_dbt_project.stg_fact_balance_sheet_annually: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "node_id": "model.my_dbt_project.stg_fact_balance_sheet_annually"} */
+
+  create view "etl_project"."dw_stg"."stg_fact_balance_sheet_annually__dbt_tmp"
+    
+    
+  as (
+    select
+    symbol,
+    'ANNUALLY'::text as time_report_type,
+    'income_statement'::text as financial_report_type,
+    cast(year as int) as year,
+    null::text as period, 
+    metric_code,
+    cast(metric_value as numeric(20,4)) as metric_value,
+    null::text as metric_name_vi_raw,
+    "metric_name_en"     as metric_name_en,
+    "metric_group"       as metric_group,
+    cast(update_time as timestamp) as update_time
+from "etl_project"."dw"."fact_balance_sheet_annually"
+  );
+[0m05:19:57.296552 [debug] [Thread-3 (]: On model.my_dbt_project.stg_fact_income_statement_annually: COMMIT
+[0m05:19:57.305699 [debug] [Thread-2 (]: Writing runtime sql for node "model.my_dbt_project.stg_fact_balance_sheet_quarterly"
+[0m05:19:57.327150 [debug] [Thread-4 (]: SQL status: COMMIT in 0.0 seconds
+[0m05:19:57.330533 [debug] [Thread-3 (]: Using postgres connection "model.my_dbt_project.stg_fact_income_statement_annually"
+[0m05:19:57.346649 [debug] [Thread-1 (]: SQL status: CREATE VIEW in 0.0 seconds
+[0m05:19:57.372543 [debug] [Thread-4 (]: Applying DROP to: "etl_project"."dw_stg"."stg_fact_income_statement_quarterly__dbt_backup"
+[0m05:19:57.373691 [debug] [Thread-3 (]: On model.my_dbt_project.stg_fact_income_statement_annually: COMMIT
+[0m05:19:57.389265 [debug] [Thread-2 (]: Using postgres connection "model.my_dbt_project.stg_fact_balance_sheet_quarterly"
+[0m05:19:57.392105 [debug] [Thread-1 (]: Using postgres connection "model.my_dbt_project.stg_fact_balance_sheet_annually"
+[0m05:19:57.419134 [debug] [Thread-4 (]: Using postgres connection "model.my_dbt_project.stg_fact_income_statement_quarterly"
+[0m05:19:57.433430 [debug] [Thread-4 (]: On model.my_dbt_project.stg_fact_income_statement_quarterly: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "node_id": "model.my_dbt_project.stg_fact_income_statement_quarterly"} */
+drop view if exists "etl_project"."dw_stg"."stg_fact_income_statement_quarterly__dbt_backup" cascade
+[0m05:19:57.425484 [debug] [Thread-3 (]: SQL status: COMMIT in 0.0 seconds
+[0m05:19:57.428253 [debug] [Thread-1 (]: On model.my_dbt_project.stg_fact_balance_sheet_annually: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "node_id": "model.my_dbt_project.stg_fact_balance_sheet_annually"} */
+alter table "etl_project"."dw_stg"."stg_fact_balance_sheet_annually" rename to "stg_fact_balance_sheet_annually__dbt_backup"
+[0m05:19:57.423273 [debug] [Thread-2 (]: On model.my_dbt_project.stg_fact_balance_sheet_quarterly: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "node_id": "model.my_dbt_project.stg_fact_balance_sheet_quarterly"} */
+
+  create view "etl_project"."dw_stg"."stg_fact_balance_sheet_quarterly__dbt_tmp"
+    
+    
+  as (
+    select
+    symbol,
+    'QUARTERLY'::text as time_report_type,
+    'balance_sheet'::text as financial_report_type,
+    cast(year as int) as year,
+    cast(period as text) as period,
+
+    metric_code,
+    cast(metric_value as numeric(20,4)) as metric_value,
+
+    null::text as metric_name_vi_raw,
+    "metric_name_en"     as metric_name_en,
+    "metric_group"       as metric_group,
+
+    cast(update_time as timestamp) as update_time
+from "etl_project"."dw"."fact_balance_sheet_quarterly"
+  );
+[0m05:19:57.452650 [debug] [Thread-3 (]: Applying DROP to: "etl_project"."dw_stg"."stg_fact_income_statement_annually__dbt_backup"
+[0m05:19:57.453603 [debug] [Thread-4 (]: SQL status: DROP VIEW in 0.0 seconds
+[0m05:19:57.457766 [debug] [Thread-1 (]: SQL status: ALTER TABLE in 0.0 seconds
+[0m05:19:57.465277 [debug] [Thread-2 (]: SQL status: CREATE VIEW in 0.0 seconds
+[0m05:19:57.462559 [debug] [Thread-3 (]: Using postgres connection "model.my_dbt_project.stg_fact_income_statement_annually"
+[0m05:19:57.497246 [debug] [Thread-3 (]: On model.my_dbt_project.stg_fact_income_statement_annually: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "node_id": "model.my_dbt_project.stg_fact_income_statement_annually"} */
+drop view if exists "etl_project"."dw_stg"."stg_fact_income_statement_annually__dbt_backup" cascade
+[0m05:19:57.483424 [debug] [Thread-1 (]: Using postgres connection "model.my_dbt_project.stg_fact_balance_sheet_annually"
+[0m05:19:57.495463 [debug] [Thread-2 (]: Using postgres connection "model.my_dbt_project.stg_fact_balance_sheet_quarterly"
+[0m05:19:57.472898 [debug] [Thread-4 (]: Timing info for model.my_dbt_project.stg_fact_income_statement_quarterly (execute): 05:19:56.512323 => 05:19:57.471139
+[0m05:19:57.509443 [debug] [Thread-4 (]: On model.my_dbt_project.stg_fact_income_statement_quarterly: Close
+[0m05:19:57.504611 [debug] [Thread-3 (]: SQL status: DROP VIEW in 0.0 seconds
+[0m05:19:57.506787 [debug] [Thread-2 (]: On model.my_dbt_project.stg_fact_balance_sheet_quarterly: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "node_id": "model.my_dbt_project.stg_fact_balance_sheet_quarterly"} */
+alter table "etl_project"."dw_stg"."stg_fact_balance_sheet_quarterly" rename to "stg_fact_balance_sheet_quarterly__dbt_backup"
+[0m05:19:57.503717 [debug] [Thread-1 (]: On model.my_dbt_project.stg_fact_balance_sheet_annually: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "node_id": "model.my_dbt_project.stg_fact_balance_sheet_annually"} */
+alter table "etl_project"."dw_stg"."stg_fact_balance_sheet_annually__dbt_tmp" rename to "stg_fact_balance_sheet_annually"
+[0m05:19:57.514467 [debug] [Thread-4 (]: Sending event: {'category': 'dbt', 'action': 'run_model', 'label': '47b28e98-efb3-44a6-930c-5d2cc20faf50', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7b129cfc0850>]}
+[0m05:19:57.529997 [info ] [Thread-4 (]: 4 of 21 OK created sql view model dw_stg.stg_fact_income_statement_quarterly ... [[32mCREATE VIEW[0m in 2.32s]
+[0m05:19:57.534140 [debug] [Thread-4 (]: Finished running node model.my_dbt_project.stg_fact_income_statement_quarterly
+[0m05:19:57.522432 [debug] [Thread-3 (]: Timing info for model.my_dbt_project.stg_fact_income_statement_annually (execute): 05:19:55.668564 => 05:19:57.521970
+[0m05:19:57.531649 [debug] [Thread-1 (]: SQL status: ALTER TABLE in 0.0 seconds
+[0m05:19:57.526094 [debug] [Thread-2 (]: SQL status: ALTER TABLE in 0.0 seconds
+[0m05:19:57.538719 [debug] [Thread-3 (]: On model.my_dbt_project.stg_fact_income_statement_annually: Close
+[0m05:19:57.550578 [debug] [Thread-1 (]: On model.my_dbt_project.stg_fact_balance_sheet_annually: COMMIT
+[0m05:19:57.634430 [debug] [Thread-1 (]: Using postgres connection "model.my_dbt_project.stg_fact_balance_sheet_annually"
+[0m05:19:57.658201 [debug] [Thread-1 (]: On model.my_dbt_project.stg_fact_balance_sheet_annually: COMMIT
+[0m05:19:57.567635 [debug] [Thread-2 (]: Using postgres connection "model.my_dbt_project.stg_fact_balance_sheet_quarterly"
+[0m05:19:57.669440 [debug] [Thread-2 (]: On model.my_dbt_project.stg_fact_balance_sheet_quarterly: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "node_id": "model.my_dbt_project.stg_fact_balance_sheet_quarterly"} */
+alter table "etl_project"."dw_stg"."stg_fact_balance_sheet_quarterly__dbt_tmp" rename to "stg_fact_balance_sheet_quarterly"
+[0m05:19:57.666934 [debug] [Thread-1 (]: SQL status: COMMIT in 0.0 seconds
+[0m05:19:57.571154 [debug] [Thread-3 (]: Sending event: {'category': 'dbt', 'action': 'run_model', 'label': '47b28e98-efb3-44a6-930c-5d2cc20faf50', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7b129c343850>]}
+[0m05:19:57.678172 [debug] [Thread-2 (]: SQL status: ALTER TABLE in 0.0 seconds
+[0m05:19:57.696511 [debug] [Thread-1 (]: Applying DROP to: "etl_project"."dw_stg"."stg_fact_balance_sheet_annually__dbt_backup"
+[0m05:19:57.700555 [info ] [Thread-3 (]: 3 of 21 OK created sql view model dw_stg.stg_fact_income_statement_annually .... [[32mCREATE VIEW[0m in 2.67s]
+[0m05:19:57.709029 [debug] [Thread-2 (]: On model.my_dbt_project.stg_fact_balance_sheet_quarterly: COMMIT
+[0m05:19:57.727805 [debug] [Thread-2 (]: Using postgres connection "model.my_dbt_project.stg_fact_balance_sheet_quarterly"
+[0m05:19:57.724351 [debug] [Thread-3 (]: Finished running node model.my_dbt_project.stg_fact_income_statement_annually
+[0m05:19:57.716277 [debug] [Thread-1 (]: Using postgres connection "model.my_dbt_project.stg_fact_balance_sheet_annually"
+[0m05:19:57.735755 [debug] [Thread-2 (]: On model.my_dbt_project.stg_fact_balance_sheet_quarterly: COMMIT
+[0m05:19:57.744682 [debug] [Thread-4 (]: Began running node model.my_dbt_project.stg_fact_income_statement
+[0m05:19:57.792213 [debug] [Thread-1 (]: On model.my_dbt_project.stg_fact_balance_sheet_annually: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "node_id": "model.my_dbt_project.stg_fact_balance_sheet_annually"} */
+drop view if exists "etl_project"."dw_stg"."stg_fact_balance_sheet_annually__dbt_backup" cascade
+[0m05:19:57.839544 [debug] [Thread-2 (]: SQL status: COMMIT in 0.0 seconds
+[0m05:19:57.832868 [info ] [Thread-4 (]: 5 of 21 START sql view model dw_stg.stg_fact_income_statement .................. [RUN]
+[0m05:19:57.868912 [debug] [Thread-1 (]: SQL status: DROP VIEW in 0.0 seconds
+[0m05:19:57.872777 [debug] [Thread-2 (]: Applying DROP to: "etl_project"."dw_stg"."stg_fact_balance_sheet_quarterly__dbt_backup"
+[0m05:19:57.876944 [debug] [Thread-4 (]: Re-using an available connection from the pool (formerly model.my_dbt_project.stg_fact_income_statement_quarterly, now model.my_dbt_project.stg_fact_income_statement)
+[0m05:19:57.992915 [debug] [Thread-4 (]: Began compiling node model.my_dbt_project.stg_fact_income_statement
+[0m05:19:57.989436 [debug] [Thread-2 (]: Using postgres connection "model.my_dbt_project.stg_fact_balance_sheet_quarterly"
+[0m05:19:57.982502 [debug] [Thread-1 (]: Timing info for model.my_dbt_project.stg_fact_balance_sheet_annually (execute): 05:19:57.087005 => 05:19:57.981843
+[0m05:19:58.012102 [debug] [Thread-1 (]: On model.my_dbt_project.stg_fact_balance_sheet_annually: Close
+[0m05:19:58.008742 [debug] [Thread-2 (]: On model.my_dbt_project.stg_fact_balance_sheet_quarterly: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "node_id": "model.my_dbt_project.stg_fact_balance_sheet_quarterly"} */
+drop view if exists "etl_project"."dw_stg"."stg_fact_balance_sheet_quarterly__dbt_backup" cascade
+[0m05:19:58.006292 [debug] [Thread-4 (]: Writing injected SQL for node "model.my_dbt_project.stg_fact_income_statement"
+[0m05:19:58.018448 [debug] [Thread-1 (]: Sending event: {'category': 'dbt', 'action': 'run_model', 'label': '47b28e98-efb3-44a6-930c-5d2cc20faf50', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7b129cb00190>]}
+[0m05:19:58.049850 [debug] [Thread-2 (]: SQL status: DROP VIEW in 0.0 seconds
+[0m05:19:58.045658 [info ] [Thread-1 (]: 1 of 21 OK created sql view model dw_stg.stg_fact_balance_sheet_annually ....... [[32mCREATE VIEW[0m in 3.13s]
+[0m05:19:58.067913 [debug] [Thread-2 (]: Timing info for model.my_dbt_project.stg_fact_balance_sheet_quarterly (execute): 05:19:57.256302 => 05:19:58.066618
+[0m05:19:58.088992 [debug] [Thread-4 (]: Timing info for model.my_dbt_project.stg_fact_income_statement (compile): 05:19:57.995440 => 05:19:58.087666
+[0m05:19:58.074672 [debug] [Thread-1 (]: Finished running node model.my_dbt_project.stg_fact_balance_sheet_annually
+[0m05:19:58.092694 [debug] [Thread-2 (]: On model.my_dbt_project.stg_fact_balance_sheet_quarterly: Close
+[0m05:19:58.185561 [debug] [Thread-4 (]: Began executing node model.my_dbt_project.stg_fact_income_statement
+[0m05:19:58.225986 [debug] [Thread-2 (]: Sending event: {'category': 'dbt', 'action': 'run_model', 'label': '47b28e98-efb3-44a6-930c-5d2cc20faf50', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7b129cf1e890>]}
+[0m05:19:58.265283 [debug] [Thread-4 (]: Writing runtime sql for node "model.my_dbt_project.stg_fact_income_statement"
+[0m05:19:58.267777 [info ] [Thread-2 (]: 2 of 21 OK created sql view model dw_stg.stg_fact_balance_sheet_quarterly ...... [[32mCREATE VIEW[0m in 3.33s]
+[0m05:19:58.282978 [debug] [Thread-2 (]: Finished running node model.my_dbt_project.stg_fact_balance_sheet_quarterly
+[0m05:19:58.297770 [debug] [Thread-3 (]: Began running node model.my_dbt_project.stg_fact_balance_sheet
+[0m05:19:58.304274 [info ] [Thread-3 (]: 6 of 21 START sql view model dw_stg.stg_fact_balance_sheet ..................... [RUN]
+[0m05:19:58.380701 [debug] [Thread-3 (]: Re-using an available connection from the pool (formerly model.my_dbt_project.stg_fact_income_statement_annually, now model.my_dbt_project.stg_fact_balance_sheet)
+[0m05:19:58.411762 [debug] [Thread-3 (]: Began compiling node model.my_dbt_project.stg_fact_balance_sheet
+[0m05:19:58.473844 [debug] [Thread-3 (]: Writing injected SQL for node "model.my_dbt_project.stg_fact_balance_sheet"
+[0m05:19:58.543438 [debug] [Thread-4 (]: Using postgres connection "model.my_dbt_project.stg_fact_income_statement"
+[0m05:19:58.560242 [debug] [Thread-4 (]: On model.my_dbt_project.stg_fact_income_statement: BEGIN
+[0m05:19:58.571653 [debug] [Thread-4 (]: Opening a new connection, currently in state closed
+[0m05:19:58.616106 [debug] [Thread-4 (]: SQL status: BEGIN in 0.0 seconds
+[0m05:19:58.619429 [debug] [Thread-4 (]: Using postgres connection "model.my_dbt_project.stg_fact_income_statement"
+[0m05:19:58.627939 [debug] [Thread-4 (]: On model.my_dbt_project.stg_fact_income_statement: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "node_id": "model.my_dbt_project.stg_fact_income_statement"} */
+
+  create view "etl_project"."dw_stg"."stg_fact_income_statement__dbt_tmp"
+    
+    
+  as (
+    with q as (
+    select * from "etl_project"."dw_stg"."stg_fact_income_statement_quarterly"
+),
+a as (
+    select * from "etl_project"."dw_stg"."stg_fact_income_statement_annually"
+)
+
+select * from q
+union all
+select * from a
+  );
+[0m05:19:58.653703 [debug] [Thread-3 (]: Timing info for model.my_dbt_project.stg_fact_balance_sheet (compile): 05:19:58.440148 => 05:19:58.652106
+[0m05:19:58.660323 [debug] [Thread-3 (]: Began executing node model.my_dbt_project.stg_fact_balance_sheet
+[0m05:19:58.666073 [debug] [Thread-4 (]: SQL status: CREATE VIEW in 0.0 seconds
+[0m05:19:58.696399 [debug] [Thread-3 (]: Writing runtime sql for node "model.my_dbt_project.stg_fact_balance_sheet"
+[0m05:19:58.739886 [debug] [Thread-4 (]: Using postgres connection "model.my_dbt_project.stg_fact_income_statement"
+[0m05:19:58.756295 [debug] [Thread-4 (]: On model.my_dbt_project.stg_fact_income_statement: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "node_id": "model.my_dbt_project.stg_fact_income_statement"} */
+alter table "etl_project"."dw_stg"."stg_fact_income_statement__dbt_tmp" rename to "stg_fact_income_statement"
+[0m05:19:58.804351 [debug] [Thread-4 (]: SQL status: ALTER TABLE in 0.0 seconds
+[0m05:19:58.872717 [debug] [Thread-4 (]: On model.my_dbt_project.stg_fact_income_statement: COMMIT
+[0m05:19:58.984508 [debug] [Thread-4 (]: Using postgres connection "model.my_dbt_project.stg_fact_income_statement"
+[0m05:19:59.025631 [debug] [Thread-4 (]: On model.my_dbt_project.stg_fact_income_statement: COMMIT
+[0m05:19:59.084935 [debug] [Thread-4 (]: SQL status: COMMIT in 0.0 seconds
+[0m05:19:59.141946 [debug] [Thread-3 (]: Using postgres connection "model.my_dbt_project.stg_fact_balance_sheet"
+[0m05:19:59.184225 [debug] [Thread-4 (]: Applying DROP to: "etl_project"."dw_stg"."stg_fact_income_statement__dbt_backup"
+[0m05:19:59.337026 [debug] [Thread-4 (]: Using postgres connection "model.my_dbt_project.stg_fact_income_statement"
+[0m05:19:59.233340 [debug] [Thread-3 (]: On model.my_dbt_project.stg_fact_balance_sheet: BEGIN
+[0m05:19:59.412697 [debug] [Thread-4 (]: On model.my_dbt_project.stg_fact_income_statement: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "node_id": "model.my_dbt_project.stg_fact_income_statement"} */
+drop view if exists "etl_project"."dw_stg"."stg_fact_income_statement__dbt_backup" cascade
+[0m05:19:59.428484 [debug] [Thread-3 (]: Opening a new connection, currently in state closed
+[0m05:19:59.456785 [debug] [Thread-4 (]: SQL status: DROP VIEW in 0.0 seconds
+[0m05:19:59.497452 [debug] [Thread-4 (]: Timing info for model.my_dbt_project.stg_fact_income_statement (execute): 05:19:58.232744 => 05:19:59.496412
+[0m05:19:59.514640 [debug] [Thread-4 (]: On model.my_dbt_project.stg_fact_income_statement: Close
+[0m05:19:59.623795 [debug] [Thread-4 (]: Sending event: {'category': 'dbt', 'action': 'run_model', 'label': '47b28e98-efb3-44a6-930c-5d2cc20faf50', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7b129cbf0410>]}
+[0m05:19:59.677435 [debug] [Thread-3 (]: SQL status: BEGIN in 0.0 seconds
+[0m05:19:59.712551 [info ] [Thread-4 (]: 5 of 21 OK created sql view model dw_stg.stg_fact_income_statement ............. [[32mCREATE VIEW[0m in 1.75s]
+[0m05:19:59.733631 [debug] [Thread-3 (]: Using postgres connection "model.my_dbt_project.stg_fact_balance_sheet"
+[0m05:19:59.749115 [debug] [Thread-4 (]: Finished running node model.my_dbt_project.stg_fact_income_statement
+[0m05:19:59.759311 [debug] [Thread-3 (]: On model.my_dbt_project.stg_fact_balance_sheet: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "node_id": "model.my_dbt_project.stg_fact_balance_sheet"} */
+
+  create view "etl_project"."dw_stg"."stg_fact_balance_sheet__dbt_tmp"
+    
+    
+  as (
+    with q as (
+    select * from "etl_project"."dw_stg"."stg_fact_balance_sheet_quarterly"
+),
+a as (
+    select * from "etl_project"."dw_stg"."stg_fact_balance_sheet_annually"
+)
+
+select * from q
+union all
+select * from a
+  );
+[0m05:19:59.783814 [debug] [Thread-2 (]: Began running node model.my_dbt_project.fct_is_core_income_expense
+[0m05:19:59.785838 [debug] [Thread-1 (]: Began running node model.my_dbt_project.fct_is_expense_profit
+[0m05:19:59.787702 [debug] [Thread-4 (]: Began running node model.my_dbt_project.fct_is_financial_trading
+[0m05:19:59.899499 [info ] [Thread-2 (]: 7 of 21 START sql table model dw_dw.fct_is_core_income_expense ................. [RUN]
+[0m05:19:59.915506 [info ] [Thread-1 (]: 8 of 21 START sql table model dw_dw.fct_is_expense_profit ...................... [RUN]
+[0m05:19:59.933249 [info ] [Thread-4 (]: 9 of 21 START sql table model dw_dw.fct_is_financial_trading ................... [RUN]
+[0m05:19:59.971830 [debug] [Thread-3 (]: SQL status: CREATE VIEW in 0.0 seconds
+[0m05:20:00.079838 [debug] [Thread-2 (]: Re-using an available connection from the pool (formerly model.my_dbt_project.stg_fact_balance_sheet_quarterly, now model.my_dbt_project.fct_is_core_income_expense)
+[0m05:20:00.257996 [debug] [Thread-2 (]: Began compiling node model.my_dbt_project.fct_is_core_income_expense
+[0m05:20:00.213611 [debug] [Thread-4 (]: Re-using an available connection from the pool (formerly model.my_dbt_project.stg_fact_income_statement, now model.my_dbt_project.fct_is_financial_trading)
+[0m05:20:00.255868 [debug] [Thread-3 (]: Using postgres connection "model.my_dbt_project.stg_fact_balance_sheet"
+[0m05:20:00.193771 [debug] [Thread-1 (]: Re-using an available connection from the pool (formerly model.my_dbt_project.stg_fact_balance_sheet_annually, now model.my_dbt_project.fct_is_expense_profit)
+[0m05:20:00.290629 [debug] [Thread-4 (]: Began compiling node model.my_dbt_project.fct_is_financial_trading
+[0m05:20:00.286209 [debug] [Thread-2 (]: Writing injected SQL for node "model.my_dbt_project.fct_is_core_income_expense"
+[0m05:20:00.298186 [debug] [Thread-3 (]: On model.my_dbt_project.stg_fact_balance_sheet: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "node_id": "model.my_dbt_project.stg_fact_balance_sheet"} */
+alter table "etl_project"."dw_stg"."stg_fact_balance_sheet__dbt_tmp" rename to "stg_fact_balance_sheet"
+[0m05:20:00.301841 [debug] [Thread-1 (]: Began compiling node model.my_dbt_project.fct_is_expense_profit
+[0m05:20:00.355400 [debug] [Thread-4 (]: Writing injected SQL for node "model.my_dbt_project.fct_is_financial_trading"
+[0m05:20:00.364640 [debug] [Thread-3 (]: SQL status: ALTER TABLE in 0.0 seconds
+[0m05:20:00.407603 [debug] [Thread-1 (]: Writing injected SQL for node "model.my_dbt_project.fct_is_expense_profit"
+[0m05:20:00.480483 [debug] [Thread-3 (]: On model.my_dbt_project.stg_fact_balance_sheet: COMMIT
+[0m05:20:00.511866 [debug] [Thread-3 (]: Using postgres connection "model.my_dbt_project.stg_fact_balance_sheet"
+[0m05:20:00.545242 [debug] [Thread-3 (]: On model.my_dbt_project.stg_fact_balance_sheet: COMMIT
+[0m05:20:00.554742 [debug] [Thread-2 (]: Timing info for model.my_dbt_project.fct_is_core_income_expense (compile): 05:20:00.261119 => 05:20:00.552848
+[0m05:20:00.567969 [debug] [Thread-1 (]: Timing info for model.my_dbt_project.fct_is_expense_profit (compile): 05:20:00.366310 => 05:20:00.564631
+[0m05:20:00.580566 [debug] [Thread-3 (]: SQL status: COMMIT in 0.0 seconds
+[0m05:20:00.602999 [debug] [Thread-2 (]: Began executing node model.my_dbt_project.fct_is_core_income_expense
+[0m05:20:00.615118 [debug] [Thread-1 (]: Began executing node model.my_dbt_project.fct_is_expense_profit
+[0m05:20:00.647512 [debug] [Thread-4 (]: Timing info for model.my_dbt_project.fct_is_financial_trading (compile): 05:20:00.309876 => 05:20:00.646351
+[0m05:20:00.781188 [debug] [Thread-4 (]: Began executing node model.my_dbt_project.fct_is_financial_trading
+[0m05:20:00.701884 [debug] [Thread-3 (]: Applying DROP to: "etl_project"."dw_stg"."stg_fact_balance_sheet__dbt_backup"
+[0m05:20:00.914927 [debug] [Thread-3 (]: Using postgres connection "model.my_dbt_project.stg_fact_balance_sheet"
+[0m05:20:00.961145 [debug] [Thread-3 (]: On model.my_dbt_project.stg_fact_balance_sheet: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "node_id": "model.my_dbt_project.stg_fact_balance_sheet"} */
+drop view if exists "etl_project"."dw_stg"."stg_fact_balance_sheet__dbt_backup" cascade
+[0m05:20:01.040968 [debug] [Thread-4 (]: Writing runtime sql for node "model.my_dbt_project.fct_is_financial_trading"
+[0m05:20:01.042969 [debug] [Thread-3 (]: SQL status: DROP VIEW in 0.0 seconds
+[0m05:20:01.054252 [debug] [Thread-1 (]: Writing runtime sql for node "model.my_dbt_project.fct_is_expense_profit"
+[0m05:20:01.056958 [debug] [Thread-2 (]: Writing runtime sql for node "model.my_dbt_project.fct_is_core_income_expense"
+[0m05:20:01.071347 [debug] [Thread-3 (]: Timing info for model.my_dbt_project.stg_fact_balance_sheet (execute): 05:19:58.669569 => 05:20:01.070447
+[0m05:20:01.079188 [debug] [Thread-3 (]: On model.my_dbt_project.stg_fact_balance_sheet: Close
+[0m05:20:01.084198 [debug] [Thread-3 (]: Sending event: {'category': 'dbt', 'action': 'run_model', 'label': '47b28e98-efb3-44a6-930c-5d2cc20faf50', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7b129c316150>]}
+[0m05:20:01.087870 [debug] [Thread-1 (]: Using postgres connection "model.my_dbt_project.fct_is_expense_profit"
+[0m05:20:01.092044 [debug] [Thread-4 (]: Using postgres connection "model.my_dbt_project.fct_is_financial_trading"
+[0m05:20:01.116076 [debug] [Thread-4 (]: On model.my_dbt_project.fct_is_financial_trading: BEGIN
+[0m05:20:01.102366 [debug] [Thread-2 (]: Using postgres connection "model.my_dbt_project.fct_is_core_income_expense"
+[0m05:20:01.104729 [debug] [Thread-1 (]: On model.my_dbt_project.fct_is_expense_profit: BEGIN
+[0m05:20:01.096136 [info ] [Thread-3 (]: 6 of 21 OK created sql view model dw_stg.stg_fact_balance_sheet ................ [[32mCREATE VIEW[0m in 2.70s]
+[0m05:20:01.127810 [debug] [Thread-4 (]: Opening a new connection, currently in state closed
+[0m05:20:01.133134 [debug] [Thread-2 (]: On model.my_dbt_project.fct_is_core_income_expense: BEGIN
+[0m05:20:01.149617 [debug] [Thread-1 (]: Opening a new connection, currently in state closed
+[0m05:20:01.229874 [debug] [Thread-3 (]: Finished running node model.my_dbt_project.stg_fact_balance_sheet
+[0m05:20:01.243950 [debug] [Thread-2 (]: Opening a new connection, currently in state closed
+[0m05:20:01.268136 [debug] [Thread-3 (]: Began running node model.my_dbt_project.fct_is_other_operating
+[0m05:20:01.275665 [debug] [Thread-4 (]: SQL status: BEGIN in 0.0 seconds
+[0m05:20:01.294922 [debug] [Thread-1 (]: SQL status: BEGIN in 0.0 seconds
+[0m05:20:01.310130 [debug] [Thread-1 (]: Using postgres connection "model.my_dbt_project.fct_is_expense_profit"
+[0m05:20:01.306224 [debug] [Thread-4 (]: Using postgres connection "model.my_dbt_project.fct_is_financial_trading"
+[0m05:20:01.298865 [info ] [Thread-3 (]: 10 of 21 START sql table model dw_dw.fct_is_other_operating .................... [RUN]
+[0m05:20:01.318964 [debug] [Thread-1 (]: On model.my_dbt_project.fct_is_expense_profit: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "node_id": "model.my_dbt_project.fct_is_expense_profit"} */
+
+  
+    
+
+  create  table "etl_project"."dw_dw"."fct_is_expense_profit__dbt_tmp"
+  
+  
+    as
+  
+  (
+    with src as (
+    select *
+    from "etl_project"."dw_stg"."stg_fact_income_statement"
+    where metric_code in (
+        'OPERATING_EXPENSES',
+        'OPERATING_PROFIT_BEFORE_CREDIT_PROVISION',
+        'CREDIT_RISK_PROVISION_EXPENSES',
+        'PROFIT_BEFORE_TAX',
+        'CORPORATE_INCOME_TAX_EXPENSE',
+        'CURRENT_INCOME_TAX_EXPENSE',
+        'DEFERRED_INCOME_TAX_EXPENSE',
+        'PROFIT_AFTER_TAX',
+        'MINORITY_INTERESTS_AND_PREFERRED_DIVIDENDS',
+        'NET_PROFIT_ATTRIBUTABLE_TO_PARENT'
+    )
+)
+
+select
+    symbol,
+    time_report_type,
+    'income_statement' as financial_report_type,
+    year,
+    period,
+
+    max(case when metric_code = 'OPERATING_EXPENSES' then metric_value end) as operating_expenses,
+    max(case when metric_code = 'OPERATING_PROFIT_BEFORE_CREDIT_PROVISION' then metric_value end) as operating_profit_before_credit_provision,
+    max(case when metric_code = 'CREDIT_RISK_PROVISION_EXPENSES' then metric_value end) as credit_risk_provision_expenses,
+    max(case when metric_code = 'PROFIT_BEFORE_TAX' then metric_value end) as profit_before_tax,
+    max(case when metric_code = 'CORPORATE_INCOME_TAX_EXPENSE' then metric_value end) as corporate_income_tax_expense,
+    max(case when metric_code = 'CURRENT_INCOME_TAX_EXPENSE' then metric_value end) as current_income_tax_expense,
+    max(case when metric_code = 'DEFERRED_INCOME_TAX_EXPENSE' then metric_value end) as deferred_income_tax_expense,
+    max(case when metric_code = 'PROFIT_AFTER_TAX' then metric_value end) as profit_after_tax,
+    max(case when metric_code = 'MINORITY_INTERESTS_AND_PREFERRED_DIVIDENDS' then metric_value end) as minority_interests_and_preferred_dividends,
+    max(case when metric_code = 'NET_PROFIT_ATTRIBUTABLE_TO_PARENT' then metric_value end) as net_profit_attributable_to_parent,
+
+    max(update_time) as update_time
+from src
+group by symbol, time_report_type, year, period
+  );
+  
+[0m05:20:01.330146 [debug] [Thread-4 (]: On model.my_dbt_project.fct_is_financial_trading: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "node_id": "model.my_dbt_project.fct_is_financial_trading"} */
+
+  
+    
+
+  create  table "etl_project"."dw_dw"."fct_is_financial_trading__dbt_tmp"
+  
+  
+    as
+  
+  (
+    with src as (
+    select *
+    from "etl_project"."dw_stg"."stg_fact_income_statement"
+    where metric_code in (
+        'NET_FX_TRADING_INCOME',
+        'NET_TRADING_SECURITIES_INCOME',
+        'NET_INVESTMENT_SECURITIES_INCOME'
+    )
+)
+
+select
+    symbol,
+    time_report_type,
+    'income_statement' as financial_report_type,
+    year,
+    period,
+
+    max(case when metric_code = 'NET_FX_TRADING_INCOME' then metric_value end) as net_fx_trading_income,
+    max(case when metric_code = 'NET_TRADING_SECURITIES_INCOME' then metric_value end) as net_trading_securities_income,
+    max(case when metric_code = 'NET_INVESTMENT_SECURITIES_INCOME' then metric_value end) as net_investment_securities_income,
+
+    max(update_time) as update_time
+from src
+group by symbol, time_report_type, year, period
+  );
+  
+[0m05:20:01.333402 [debug] [Thread-2 (]: SQL status: BEGIN in 0.0 seconds
+[0m05:20:01.431664 [debug] [Thread-2 (]: Using postgres connection "model.my_dbt_project.fct_is_core_income_expense"
+[0m05:20:01.436286 [debug] [Thread-2 (]: On model.my_dbt_project.fct_is_core_income_expense: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "node_id": "model.my_dbt_project.fct_is_core_income_expense"} */
+
+  
+    
+
+  create  table "etl_project"."dw_dw"."fct_is_core_income_expense__dbt_tmp"
+  
+  
+    as
+  
+  (
+    with src as (
+    select *
+    from "etl_project"."dw_stg"."stg_fact_income_statement"
+    where metric_code in (
+        'NET_INTEREST_INCOME',
+        'INTEREST_AND_SIMILAR_INCOME',
+        'INTEREST_AND_SIMILAR_EXPENSES',
+        'NET_FEE_COMMISSION_INCOME',
+        'FEE_COMMISSION_INCOME',
+        'NET_FEE_AND_COMMISSION_INCOME',
+        'FEE_COMMISSION_EXPENSES'
+    )
+)
+
+select
+    symbol,
+    time_report_type,
+    'income_statement' as financial_report_type,
+    year,
+    period,
+
+    max(case when metric_code = 'NET_INTEREST_INCOME' then metric_value end) as net_interest_income,
+    max(case when metric_code = 'INTEREST_AND_SIMILAR_INCOME' then metric_value end) as interest_and_similar_income,
+    max(case when metric_code = 'INTEREST_AND_SIMILAR_EXPENSES' then metric_value end) as interest_and_similar_expenses,
+    max(case when metric_code = 'NET_FEE_COMMISSION_INCOME' then metric_value end) as net_fee_commission_income,
+    max(case when metric_code = 'FEE_COMMISSION_INCOME' then metric_value end) as fee_commission_income,
+    max(case when metric_code = 'NET_FEE_AND_COMMISSION_INCOME' then metric_value end) as net_fee_and_commission_income,
+    max(case when metric_code = 'FEE_COMMISSION_EXPENSES' then metric_value end) as fee_commission_expenses,
+
+    max(update_time) as update_time
+from src
+group by symbol, time_report_type, year, period
+  );
+  
+[0m05:20:01.337797 [debug] [Thread-3 (]: Re-using an available connection from the pool (formerly model.my_dbt_project.stg_fact_balance_sheet, now model.my_dbt_project.fct_is_other_operating)
+[0m05:20:01.443027 [debug] [Thread-3 (]: Began compiling node model.my_dbt_project.fct_is_other_operating
+[0m05:20:01.500465 [debug] [Thread-3 (]: Writing injected SQL for node "model.my_dbt_project.fct_is_other_operating"
+[0m05:20:01.546774 [debug] [Thread-3 (]: Timing info for model.my_dbt_project.fct_is_other_operating (compile): 05:20:01.452433 => 05:20:01.545739
+[0m05:20:01.557444 [debug] [Thread-3 (]: Began executing node model.my_dbt_project.fct_is_other_operating
+[0m05:20:01.608715 [debug] [Thread-3 (]: Writing runtime sql for node "model.my_dbt_project.fct_is_other_operating"
+[0m05:20:01.656548 [debug] [Thread-4 (]: SQL status: SELECT 700 in 0.0 seconds
+[0m05:20:01.680969 [debug] [Thread-4 (]: Using postgres connection "model.my_dbt_project.fct_is_financial_trading"
+[0m05:20:01.681463 [debug] [Thread-1 (]: SQL status: SELECT 700 in 0.0 seconds
+[0m05:20:01.684820 [debug] [Thread-4 (]: On model.my_dbt_project.fct_is_financial_trading: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "node_id": "model.my_dbt_project.fct_is_financial_trading"} */
+alter table "etl_project"."dw_dw"."fct_is_financial_trading__dbt_tmp" rename to "fct_is_financial_trading"
+[0m05:20:01.703664 [debug] [Thread-3 (]: Using postgres connection "model.my_dbt_project.fct_is_other_operating"
+[0m05:20:01.705983 [debug] [Thread-1 (]: Using postgres connection "model.my_dbt_project.fct_is_expense_profit"
+[0m05:20:01.708162 [debug] [Thread-2 (]: SQL status: SELECT 700 in 0.0 seconds
+[0m05:20:01.711967 [debug] [Thread-4 (]: SQL status: ALTER TABLE in 0.0 seconds
+[0m05:20:01.715326 [debug] [Thread-3 (]: On model.my_dbt_project.fct_is_other_operating: BEGIN
+[0m05:20:01.719155 [debug] [Thread-1 (]: On model.my_dbt_project.fct_is_expense_profit: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "node_id": "model.my_dbt_project.fct_is_expense_profit"} */
+alter table "etl_project"."dw_dw"."fct_is_expense_profit__dbt_tmp" rename to "fct_is_expense_profit"
+[0m05:20:01.732088 [debug] [Thread-2 (]: Using postgres connection "model.my_dbt_project.fct_is_core_income_expense"
+[0m05:20:01.764108 [debug] [Thread-3 (]: Opening a new connection, currently in state closed
+[0m05:20:01.776993 [debug] [Thread-4 (]: On model.my_dbt_project.fct_is_financial_trading: COMMIT
+[0m05:20:01.805875 [debug] [Thread-4 (]: Using postgres connection "model.my_dbt_project.fct_is_financial_trading"
+[0m05:20:01.785315 [debug] [Thread-2 (]: On model.my_dbt_project.fct_is_core_income_expense: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "node_id": "model.my_dbt_project.fct_is_core_income_expense"} */
+alter table "etl_project"."dw_dw"."fct_is_core_income_expense__dbt_tmp" rename to "fct_is_core_income_expense"
+[0m05:20:01.784076 [debug] [Thread-1 (]: SQL status: ALTER TABLE in 0.0 seconds
+[0m05:20:01.823650 [debug] [Thread-4 (]: On model.my_dbt_project.fct_is_financial_trading: COMMIT
+[0m05:20:01.839952 [debug] [Thread-3 (]: SQL status: BEGIN in 0.0 seconds
+[0m05:20:01.859500 [debug] [Thread-3 (]: Using postgres connection "model.my_dbt_project.fct_is_other_operating"
+[0m05:20:01.853687 [debug] [Thread-1 (]: On model.my_dbt_project.fct_is_expense_profit: COMMIT
+[0m05:20:01.872488 [debug] [Thread-1 (]: Using postgres connection "model.my_dbt_project.fct_is_expense_profit"
+[0m05:20:01.875394 [debug] [Thread-1 (]: On model.my_dbt_project.fct_is_expense_profit: COMMIT
+[0m05:20:01.864317 [debug] [Thread-3 (]: On model.my_dbt_project.fct_is_other_operating: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "node_id": "model.my_dbt_project.fct_is_other_operating"} */
+
+  
+    
+
+  create  table "etl_project"."dw_dw"."fct_is_other_operating__dbt_tmp"
+  
+  
+    as
+  
+  (
+    with src as (
+    select *
+    from "etl_project"."dw_stg"."stg_fact_income_statement"
+    where metric_code in (
+        'NET_OTHER_OPERATIONAL_INCOME',
+        'OTHER_OPERATING_INCOME',
+        'OTHER_OPERATING_EXPENSES',
+        'INCOME_FROM_EQUITY_INVESTMENTS'
+    )
+)
+
+select
+    symbol,
+    time_report_type,
+    'income_statement' as financial_report_type,
+    year,
+    period,
+
+    max(case when metric_code = 'NET_OTHER_OPERATIONAL_INCOME' then metric_value end) as net_other_operational_income,
+    max(case when metric_code = 'OTHER_OPERATING_INCOME' then metric_value end) as other_operating_income,
+    max(case when metric_code = 'OTHER_OPERATING_EXPENSES' then metric_value end) as other_operating_expenses,
+    max(case when metric_code = 'INCOME_FROM_EQUITY_INVESTMENTS' then metric_value end) as income_from_equity_investments,
+
+    max(update_time) as update_time
+from src
+group by symbol, time_report_type, year, period
+  );
+  
+[0m05:20:01.846535 [debug] [Thread-2 (]: SQL status: ALTER TABLE in 0.0 seconds
+[0m05:20:01.862113 [debug] [Thread-4 (]: SQL status: COMMIT in 0.0 seconds
+[0m05:20:01.892890 [debug] [Thread-1 (]: SQL status: COMMIT in 0.0 seconds
+[0m05:20:01.904961 [debug] [Thread-2 (]: On model.my_dbt_project.fct_is_core_income_expense: COMMIT
+[0m05:20:01.952804 [debug] [Thread-2 (]: Using postgres connection "model.my_dbt_project.fct_is_core_income_expense"
+[0m05:20:01.946090 [debug] [Thread-1 (]: Applying DROP to: "etl_project"."dw_dw"."fct_is_expense_profit__dbt_backup"
+[0m05:20:01.929488 [debug] [Thread-4 (]: Applying DROP to: "etl_project"."dw_dw"."fct_is_financial_trading__dbt_backup"
+[0m05:20:01.981961 [debug] [Thread-4 (]: Using postgres connection "model.my_dbt_project.fct_is_financial_trading"
+[0m05:20:01.987886 [debug] [Thread-4 (]: On model.my_dbt_project.fct_is_financial_trading: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "node_id": "model.my_dbt_project.fct_is_financial_trading"} */
+drop table if exists "etl_project"."dw_dw"."fct_is_financial_trading__dbt_backup" cascade
+[0m05:20:01.955449 [debug] [Thread-2 (]: On model.my_dbt_project.fct_is_core_income_expense: COMMIT
+[0m05:20:01.977420 [debug] [Thread-1 (]: Using postgres connection "model.my_dbt_project.fct_is_expense_profit"
+[0m05:20:01.990683 [debug] [Thread-4 (]: SQL status: DROP TABLE in 0.0 seconds
+[0m05:20:02.001370 [debug] [Thread-1 (]: On model.my_dbt_project.fct_is_expense_profit: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "node_id": "model.my_dbt_project.fct_is_expense_profit"} */
+drop table if exists "etl_project"."dw_dw"."fct_is_expense_profit__dbt_backup" cascade
+[0m05:20:02.009306 [debug] [Thread-2 (]: SQL status: COMMIT in 0.0 seconds
+[0m05:20:02.027523 [debug] [Thread-3 (]: SQL status: SELECT 700 in 0.0 seconds
+[0m05:20:02.046895 [debug] [Thread-4 (]: Timing info for model.my_dbt_project.fct_is_financial_trading (execute): 05:20:00.816085 => 05:20:02.038340
+[0m05:20:02.140851 [debug] [Thread-4 (]: On model.my_dbt_project.fct_is_financial_trading: Close
+[0m05:20:02.085011 [debug] [Thread-2 (]: Applying DROP to: "etl_project"."dw_dw"."fct_is_core_income_expense__dbt_backup"
+[0m05:20:02.137529 [debug] [Thread-3 (]: Using postgres connection "model.my_dbt_project.fct_is_other_operating"
+[0m05:20:02.167735 [debug] [Thread-3 (]: On model.my_dbt_project.fct_is_other_operating: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "node_id": "model.my_dbt_project.fct_is_other_operating"} */
+alter table "etl_project"."dw_dw"."fct_is_other_operating__dbt_tmp" rename to "fct_is_other_operating"
+[0m05:20:02.148165 [debug] [Thread-4 (]: Sending event: {'category': 'dbt', 'action': 'run_model', 'label': '47b28e98-efb3-44a6-930c-5d2cc20faf50', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7b129c776050>]}
+[0m05:20:02.154108 [debug] [Thread-2 (]: Using postgres connection "model.my_dbt_project.fct_is_core_income_expense"
+[0m05:20:02.057246 [debug] [Thread-1 (]: SQL status: DROP TABLE in 0.0 seconds
+[0m05:20:02.178623 [debug] [Thread-3 (]: SQL status: ALTER TABLE in 0.0 seconds
+[0m05:20:02.182749 [info ] [Thread-4 (]: 9 of 21 OK created sql table model dw_dw.fct_is_financial_trading .............. [[32mSELECT 700[0m in 1.94s]
+[0m05:20:02.187091 [debug] [Thread-2 (]: On model.my_dbt_project.fct_is_core_income_expense: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "node_id": "model.my_dbt_project.fct_is_core_income_expense"} */
+drop table if exists "etl_project"."dw_dw"."fct_is_core_income_expense__dbt_backup" cascade
+[0m05:20:02.201388 [debug] [Thread-1 (]: Timing info for model.my_dbt_project.fct_is_expense_profit (execute): 05:20:00.737660 => 05:20:02.200985
+[0m05:20:02.322642 [debug] [Thread-1 (]: On model.my_dbt_project.fct_is_expense_profit: Close
+[0m05:20:02.219877 [debug] [Thread-4 (]: Finished running node model.my_dbt_project.fct_is_financial_trading
+[0m05:20:02.349980 [debug] [Thread-4 (]: Began running node model.my_dbt_project.dim_balance_sheet_metric_hier
+[0m05:20:02.359298 [info ] [Thread-4 (]: 11 of 21 START sql table model dw_dw.dim_balance_sheet_metric_hier ............. [RUN]
+[0m05:20:02.331460 [debug] [Thread-1 (]: Sending event: {'category': 'dbt', 'action': 'run_model', 'label': '47b28e98-efb3-44a6-930c-5d2cc20faf50', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7b129cf96b90>]}
+[0m05:20:02.245404 [debug] [Thread-2 (]: SQL status: DROP TABLE in 0.0 seconds
+[0m05:20:02.212314 [debug] [Thread-3 (]: On model.my_dbt_project.fct_is_other_operating: COMMIT
+[0m05:20:02.365963 [debug] [Thread-4 (]: Re-using an available connection from the pool (formerly model.my_dbt_project.fct_is_financial_trading, now model.my_dbt_project.dim_balance_sheet_metric_hier)
+[0m05:20:02.372648 [info ] [Thread-1 (]: 8 of 21 OK created sql table model dw_dw.fct_is_expense_profit ................. [[32mSELECT 700[0m in 2.14s]
+[0m05:20:02.389924 [debug] [Thread-2 (]: Timing info for model.my_dbt_project.fct_is_core_income_expense (execute): 05:20:00.703175 => 05:20:02.386305
+[0m05:20:02.393618 [debug] [Thread-3 (]: Using postgres connection "model.my_dbt_project.fct_is_other_operating"
+[0m05:20:02.494004 [debug] [Thread-4 (]: Began compiling node model.my_dbt_project.dim_balance_sheet_metric_hier
+[0m05:20:02.521926 [debug] [Thread-1 (]: Finished running node model.my_dbt_project.fct_is_expense_profit
+[0m05:20:02.526256 [debug] [Thread-2 (]: On model.my_dbt_project.fct_is_core_income_expense: Close
+[0m05:20:02.533056 [debug] [Thread-3 (]: On model.my_dbt_project.fct_is_other_operating: COMMIT
+[0m05:20:02.668645 [debug] [Thread-1 (]: Began running node model.my_dbt_project.fct_bs_assets
+[0m05:20:02.709427 [debug] [Thread-2 (]: Sending event: {'category': 'dbt', 'action': 'run_model', 'label': '47b28e98-efb3-44a6-930c-5d2cc20faf50', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7b129d3f9950>]}
+[0m05:20:02.753837 [debug] [Thread-3 (]: SQL status: COMMIT in 0.0 seconds
+[0m05:20:02.762444 [debug] [Thread-4 (]: Writing injected SQL for node "model.my_dbt_project.dim_balance_sheet_metric_hier"
+[0m05:20:02.765694 [info ] [Thread-1 (]: 12 of 21 START sql table model dw_dw.fct_bs_assets ............................. [RUN]
+[0m05:20:02.797637 [debug] [Thread-1 (]: Re-using an available connection from the pool (formerly model.my_dbt_project.fct_is_expense_profit, now model.my_dbt_project.fct_bs_assets)
+[0m05:20:02.791602 [debug] [Thread-3 (]: Applying DROP to: "etl_project"."dw_dw"."fct_is_other_operating__dbt_backup"
+[0m05:20:02.770571 [info ] [Thread-2 (]: 7 of 21 OK created sql table model dw_dw.fct_is_core_income_expense ............ [[32mSELECT 700[0m in 2.64s]
+[0m05:20:03.085164 [debug] [Thread-2 (]: Finished running node model.my_dbt_project.fct_is_core_income_expense
+[0m05:20:02.811988 [debug] [Thread-3 (]: Using postgres connection "model.my_dbt_project.fct_is_other_operating"
+[0m05:20:02.802013 [debug] [Thread-1 (]: Began compiling node model.my_dbt_project.fct_bs_assets
+[0m05:20:03.111349 [debug] [Thread-2 (]: Began running node model.my_dbt_project.fct_bs_fixed_assets
+[0m05:20:03.137437 [debug] [Thread-3 (]: On model.my_dbt_project.fct_is_other_operating: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "node_id": "model.my_dbt_project.fct_is_other_operating"} */
+drop table if exists "etl_project"."dw_dw"."fct_is_other_operating__dbt_backup" cascade
+[0m05:20:03.215345 [debug] [Thread-1 (]: Writing injected SQL for node "model.my_dbt_project.fct_bs_assets"
+[0m05:20:03.239727 [info ] [Thread-2 (]: 13 of 21 START sql table model dw_dw.fct_bs_fixed_assets ....................... [RUN]
+[0m05:20:03.413183 [debug] [Thread-3 (]: SQL status: DROP TABLE in 0.0 seconds
+[0m05:20:03.467358 [debug] [Thread-2 (]: Re-using an available connection from the pool (formerly model.my_dbt_project.fct_is_core_income_expense, now model.my_dbt_project.fct_bs_fixed_assets)
+[0m05:20:03.496678 [debug] [Thread-3 (]: Timing info for model.my_dbt_project.fct_is_other_operating (execute): 05:20:01.560971 => 05:20:03.495996
+[0m05:20:03.507012 [debug] [Thread-2 (]: Began compiling node model.my_dbt_project.fct_bs_fixed_assets
+[0m05:20:03.510006 [debug] [Thread-4 (]: Timing info for model.my_dbt_project.dim_balance_sheet_metric_hier (compile): 05:20:02.536163 => 05:20:03.509030
+[0m05:20:03.533917 [debug] [Thread-3 (]: On model.my_dbt_project.fct_is_other_operating: Close
+[0m05:20:03.606333 [debug] [Thread-1 (]: Timing info for model.my_dbt_project.fct_bs_assets (compile): 05:20:03.180325 => 05:20:03.597958
+[0m05:20:03.610692 [debug] [Thread-2 (]: Writing injected SQL for node "model.my_dbt_project.fct_bs_fixed_assets"
+[0m05:20:03.612864 [debug] [Thread-4 (]: Began executing node model.my_dbt_project.dim_balance_sheet_metric_hier
+[0m05:20:03.620290 [debug] [Thread-3 (]: Sending event: {'category': 'dbt', 'action': 'run_model', 'label': '47b28e98-efb3-44a6-930c-5d2cc20faf50', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7b129c39b450>]}
+[0m05:20:03.623763 [debug] [Thread-1 (]: Began executing node model.my_dbt_project.fct_bs_assets
+[0m05:20:03.650596 [debug] [Thread-4 (]: Writing runtime sql for node "model.my_dbt_project.dim_balance_sheet_metric_hier"
+[0m05:20:03.653172 [info ] [Thread-3 (]: 10 of 21 OK created sql table model dw_dw.fct_is_other_operating ............... [[32mSELECT 700[0m in 2.28s]
+[0m05:20:03.689398 [debug] [Thread-1 (]: Writing runtime sql for node "model.my_dbt_project.fct_bs_assets"
+[0m05:20:03.696752 [debug] [Thread-3 (]: Finished running node model.my_dbt_project.fct_is_other_operating
+[0m05:20:03.704940 [debug] [Thread-2 (]: Timing info for model.my_dbt_project.fct_bs_fixed_assets (compile): 05:20:03.586054 => 05:20:03.703116
+[0m05:20:03.713198 [debug] [Thread-3 (]: Began running node model.my_dbt_project.fct_bs_interbank_placements_loans
+[0m05:20:03.850098 [debug] [Thread-2 (]: Began executing node model.my_dbt_project.fct_bs_fixed_assets
+[0m05:20:03.886715 [info ] [Thread-3 (]: 14 of 21 START sql table model dw_dw.fct_bs_interbank_placements_loans ......... [RUN]
+[0m05:20:03.935661 [debug] [Thread-1 (]: Using postgres connection "model.my_dbt_project.fct_bs_assets"
+[0m05:20:03.956803 [debug] [Thread-2 (]: Writing runtime sql for node "model.my_dbt_project.fct_bs_fixed_assets"
+[0m05:20:04.035527 [debug] [Thread-3 (]: Re-using an available connection from the pool (formerly model.my_dbt_project.fct_is_other_operating, now model.my_dbt_project.fct_bs_interbank_placements_loans)
+[0m05:20:04.064425 [debug] [Thread-1 (]: On model.my_dbt_project.fct_bs_assets: BEGIN
+[0m05:20:04.076677 [debug] [Thread-4 (]: Using postgres connection "model.my_dbt_project.dim_balance_sheet_metric_hier"
+[0m05:20:04.093071 [debug] [Thread-3 (]: Began compiling node model.my_dbt_project.fct_bs_interbank_placements_loans
+[0m05:20:04.099988 [debug] [Thread-1 (]: Opening a new connection, currently in state closed
+[0m05:20:04.114410 [debug] [Thread-4 (]: On model.my_dbt_project.dim_balance_sheet_metric_hier: BEGIN
+[0m05:20:04.146847 [debug] [Thread-3 (]: Writing injected SQL for node "model.my_dbt_project.fct_bs_interbank_placements_loans"
+[0m05:20:04.159483 [debug] [Thread-4 (]: Opening a new connection, currently in state closed
+[0m05:20:04.167528 [debug] [Thread-2 (]: Using postgres connection "model.my_dbt_project.fct_bs_fixed_assets"
+[0m05:20:04.183637 [debug] [Thread-2 (]: On model.my_dbt_project.fct_bs_fixed_assets: BEGIN
+[0m05:20:04.192145 [debug] [Thread-2 (]: Opening a new connection, currently in state closed
+[0m05:20:04.209078 [debug] [Thread-1 (]: SQL status: BEGIN in 0.0 seconds
+[0m05:20:04.218475 [debug] [Thread-1 (]: Using postgres connection "model.my_dbt_project.fct_bs_assets"
+[0m05:20:04.224012 [debug] [Thread-1 (]: On model.my_dbt_project.fct_bs_assets: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "node_id": "model.my_dbt_project.fct_bs_assets"} */
+
+  
+    
+
+  create  table "etl_project"."dw_dw"."fct_bs_assets__dbt_tmp"
+  
+  
+    as
+  
+  (
+    with src as (
+    select *
+    from "etl_project"."dw_stg"."stg_fact_balance_sheet"
+    where metric_code in (
+        'CASH_AND_VALUABLES',
+        'DEPOSITS_WITH_CENTRAL_BANK',
+        'T_BILLS_AND_ELIGIBLE_SHORT_TERM_SECURITIES',
+        'INTERBANK_PLACEMENTS_AND_LOANS',
+        'TRADING_SECURITIES_NET',
+        'DERIVATIVES_AND_OTHER_FINANCIAL_ASSETS',
+        'LOANS_TO_CUSTOMERS_NET',
+        'INVESTMENT_SECURITIES_NET',
+        'LONG_TERM_INVESTMENTS_NET',
+        'FIXED_ASSETS_NET',
+        'INVESTMENT_PROPERTIES_NET',
+        'OTHER_ASSETS_NET',
+        'TOTAL_ASSETS'
+    )
+)
+
+select
+    symbol,
+    time_report_type,
+    'balance_sheet' as financial_report_type,
+    year,
+    period,
+
+    max(case when metric_code = 'CASH_AND_VALUABLES' then metric_value end) as cash_and_valuables,
+    max(case when metric_code = 'DEPOSITS_WITH_CENTRAL_BANK' then metric_value end) as deposits_with_central_bank,
+    max(case when metric_code = 'T_BILLS_AND_ELIGIBLE_SHORT_TERM_SECURITIES' then metric_value end) as t_bills_and_eligible_short_term_securities,
+    max(case when metric_code = 'INTERBANK_PLACEMENTS_AND_LOANS' then metric_value end) as interbank_placements_and_loans,
+    max(case when metric_code = 'TRADING_SECURITIES_NET' then metric_value end) as trading_securities_net,
+    max(case when metric_code = 'DERIVATIVES_AND_OTHER_FINANCIAL_ASSETS' then metric_value end) as derivatives_and_other_financial_assets,
+    max(case when metric_code = 'LOANS_TO_CUSTOMERS_NET' then metric_value end) as loans_to_customers_net,
+    max(case when metric_code = 'INVESTMENT_SECURITIES_NET' then metric_value end) as investment_securities_net,
+    max(case when metric_code = 'LONG_TERM_INVESTMENTS_NET' then metric_value end) as long_term_investments_net,
+    max(case when metric_code = 'FIXED_ASSETS_NET' then metric_value end) as fixed_assets_net,
+    max(case when metric_code = 'INVESTMENT_PROPERTIES_NET' then metric_value end) as investment_properties_net,
+    max(case when metric_code = 'OTHER_ASSETS_NET' then metric_value end) as other_assets_net,
+    max(case when metric_code = 'TOTAL_ASSETS' then metric_value end) as total_assets,
+
+    max(update_time) as update_time
+from src
+group by symbol, time_report_type, year, period
+  );
+  
+[0m05:20:04.233325 [debug] [Thread-4 (]: SQL status: BEGIN in 0.0 seconds
+[0m05:20:04.241057 [debug] [Thread-4 (]: Using postgres connection "model.my_dbt_project.dim_balance_sheet_metric_hier"
+[0m05:20:04.251458 [debug] [Thread-4 (]: On model.my_dbt_project.dim_balance_sheet_metric_hier: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "node_id": "model.my_dbt_project.dim_balance_sheet_metric_hier"} */
+
+  
+    
+
+  create  table "etl_project"."dw_dw"."dim_balance_sheet_metric_hier__dbt_tmp"
+  
+  
+    as
+  
+  (
+    with base as (
+    select distinct
+        metric_group,
+        metric_code,
+        metric_name_vi_raw,
+        metric_name_en
+    from "etl_project"."dw_stg"."stg_fact_balance_sheet"
+    where metric_code is not null
+),
+
+parsed as (
+    select
+        metric_group,
+        metric_code,
+        metric_name_vi_raw,
+        metric_name_en,
+
+        case
+            when metric_name_vi_raw ~ '^[IVXLCDM]+\\.' then 'ROMAN'
+            when metric_name_vi_raw ~ '^\\d+\\.' then 'ARABIC'
+            when metric_name_vi_raw ~ '^\\-\\s+' then 'DASH'
+            when upper(metric_name_vi_raw) ~ '^TỔNG' then 'TOTAL'
+            else 'LEAF'
+        end as node_type,
+
+        case
+            when metric_name_vi_raw ~ '^[IVXLCDM]+\\.' then substring(metric_name_vi_raw from '^([IVXLCDM]+)\\.')
+            else null
+        end as roman_no,
+
+        case
+            when metric_name_vi_raw ~ '^\\d+\\.' then cast(substring(metric_name_vi_raw from '^(\\d+)\\.') as int)
+            else null
+        end as arabic_no
+    from base
+),
+
+ordered as (
+    select
+        *,
+        case
+            when metric_group = 'ASSETS' then 10
+            when metric_group = 'LIABILITIES' then 20
+            when metric_group = 'EQUITY' then 30
+            else 90
+        end as grp_order,
+
+        coalesce(
+            case upper(roman_no)
+                when 'I' then 1 when 'II' then 2 when 'III' then 3 when 'IV' then 4 when 'V' then 5
+                when 'VI' then 6 when 'VII' then 7 when 'VIII' then 8 when 'IX' then 9 when 'X' then 10
+                when 'XI' then 11 when 'XII' then 12 when 'XIII' then 13 when 'XIV' then 14 when 'XV' then 15
+                else null
+            end, 999
+        ) as roman_order,
+
+        coalesce(arabic_no, 999) as arabic_order,
+
+        case
+            when node_type = 'DASH' then 1
+            when node_type = 'LEAF' then 2
+            when node_type = 'TOTAL' then 3
+            else 0
+        end as tail_order
+    from parsed
+),
+
+ranked as (
+    select
+        *,
+        row_number() over (
+            order by grp_order, roman_order, arabic_order, tail_order, metric_name_vi_raw, metric_code
+        ) as display_order
+    from ordered
+),
+
+ctx as (
+    select
+        *,
+        max(case when node_type = 'ROMAN' then metric_code end)
+            over (partition by metric_group order by display_order rows between unbounded preceding and current row)
+            as current_roman_metric_code,
+
+        max(case when node_type = 'ARABIC' then metric_code end)
+            over (partition by metric_group order by display_order rows between unbounded preceding and current row)
+            as current_arabic_metric_code
+    from ranked
+)
+
+select
+    md5(cast(coalesce(cast(metric_code as TEXT), '_dbt_utils_surrogate_key_null_') as TEXT)) as metric_key,
+    metric_group,
+    metric_code,
+    metric_name_vi_raw as metric_name_vi,
+    metric_name_en,
+    node_type,
+    display_order,
+    case
+        when node_type = 'ROMAN' then 1
+        when node_type = 'ARABIC' then 2
+        when node_type in ('DASH','LEAF') then 3
+        when node_type = 'TOTAL' then 9
+        else 3
+    end as level,
+    case
+        when node_type = 'ARABIC' then current_roman_metric_code
+        when node_type in ('DASH','LEAF') then coalesce(current_arabic_metric_code, current_roman_metric_code)
+        else null
+    end as parent_metric_code
+from ctx
+  );
+  
+[0m05:20:04.249521 [debug] [Thread-2 (]: SQL status: BEGIN in 0.0 seconds
+[0m05:20:04.268436 [debug] [Thread-2 (]: Using postgres connection "model.my_dbt_project.fct_bs_fixed_assets"
+[0m05:20:04.259337 [debug] [Thread-3 (]: Timing info for model.my_dbt_project.fct_bs_interbank_placements_loans (compile): 05:20:04.128038 => 05:20:04.254382
+[0m05:20:04.280458 [debug] [Thread-3 (]: Began executing node model.my_dbt_project.fct_bs_interbank_placements_loans
+[0m05:20:04.273093 [debug] [Thread-2 (]: On model.my_dbt_project.fct_bs_fixed_assets: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "node_id": "model.my_dbt_project.fct_bs_fixed_assets"} */
+
+  
+    
+
+  create  table "etl_project"."dw_dw"."fct_bs_fixed_assets__dbt_tmp"
+  
+  
+    as
+  
+  (
+    with src as (
+    select *
+    from "etl_project"."dw_stg"."stg_fact_balance_sheet"
+    where metric_code in (
+        'TANGIBLE_FIXED_ASSETS_NET',
+        'FIXED_ASSETS_COST',
+        'ACCUMULATED_DEPRECIATION',
+        'FINANCE_LEASE_FIXED_ASSETS_NET',
+        'INTANGIBLE_ASSETS_NET',
+        'CIP_CONSTRUCTION_IN_PROGRESS'
+    )
+),
+
+hier as (
+    select *,
+        case
+            when coalesce(metric_name_vi_raw,'') ~ '^[IVXLCDM]+\.' then 'ROMAN'
+            when metric_name_vi_raw ~ '^\\d+\\.' then 'ARABIC'
+            when metric_name_vi_raw ~ '^- ' then 'DASH'
+        end as hierarchy_type
+    from src
+)
+
+select
+    symbol,
+    time_report_type,
+    year,
+    period,
+
+    max(case when metric_code = 'TANGIBLE_FIXED_ASSETS_NET' then metric_value end) as tangible_fixed_assets_net,
+    max(case when metric_code = 'FIXED_ASSETS_COST' then metric_value end) as fixed_assets_cost,
+    max(case when metric_code = 'ACCUMULATED_DEPRECIATION' then metric_value end) as accumulated_depreciation,
+
+    max(case when metric_code = 'FIXED_ASSETS_COST' and hierarchy_type='ROMAN' then metric_value end)
+        as hierachy_of_fixed_assets_cost,
+
+    max(case when metric_code = 'ACCUMULATED_DEPRECIATION' and hierarchy_type='ROMAN' then metric_value end)
+        as hierachy_of_accumulated_depreciation,
+
+    max(case when metric_code = 'FINANCE_LEASE_FIXED_ASSETS_NET' then metric_value end) as finance_lease_fixed_assets_net,
+    max(case when metric_code = 'INTANGIBLE_ASSETS_NET' then metric_value end) as intangible_assets_net,
+    max(case when metric_code = 'CIP_CONSTRUCTION_IN_PROGRESS' then metric_value end) as cip_construction_in_progress,
+
+    max(update_time) as update_time
+from hier
+group by symbol, time_report_type, year, period
+  );
+  
+[0m05:20:04.318975 [debug] [Thread-3 (]: Writing runtime sql for node "model.my_dbt_project.fct_bs_interbank_placements_loans"
+[0m05:20:04.403994 [debug] [Thread-3 (]: Using postgres connection "model.my_dbt_project.fct_bs_interbank_placements_loans"
+[0m05:20:04.415695 [debug] [Thread-3 (]: On model.my_dbt_project.fct_bs_interbank_placements_loans: BEGIN
+[0m05:20:04.418670 [debug] [Thread-3 (]: Opening a new connection, currently in state closed
+[0m05:20:04.549041 [debug] [Thread-3 (]: SQL status: BEGIN in 0.0 seconds
+[0m05:20:04.553501 [debug] [Thread-3 (]: Using postgres connection "model.my_dbt_project.fct_bs_interbank_placements_loans"
+[0m05:20:04.557436 [debug] [Thread-3 (]: On model.my_dbt_project.fct_bs_interbank_placements_loans: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "node_id": "model.my_dbt_project.fct_bs_interbank_placements_loans"} */
+
+  
+    
+
+  create  table "etl_project"."dw_dw"."fct_bs_interbank_placements_loans__dbt_tmp"
+  
+  
+    as
+  
+  (
+    with fact as (
+    select *
+    from "etl_project"."dw_stg"."stg_fact_balance_sheet"
+    where metric_code in (
+        'PLACEMENTS_WITH_CREDIT_INSTITUTIONS',
+        'LOANS_TO_CREDIT_INSTITUTIONS',
+        'ECL_ALLOWANCE_LOANS_TO_CREDIT_INSTITUTIONS',
+        'INTERBANK_PLACEMENTS_AND_LOANS'
+    )
+)
+
+select
+    symbol,
+    time_report_type,
+    'balance_sheet' as financial_report_type,
+    year,
+    period,
+
+    max(case when metric_code = 'PLACEMENTS_WITH_CREDIT_INSTITUTIONS' then metric_value end) as placements_with_credit_institutions,
+    max(case when metric_code = 'LOANS_TO_CREDIT_INSTITUTIONS' then metric_value end) as loans_to_credit_institutions,
+    max(case when metric_code = 'ECL_ALLOWANCE_LOANS_TO_CREDIT_INSTITUTIONS' then metric_value end) as ecl_allowance_loans_to_credit_institutions,
+    max(case when metric_code = 'INTERBANK_PLACEMENTS_AND_LOANS' then metric_value end) as interbank_placements_and_loans,
+
+    max(update_time) as update_time
+from fact
+group by symbol, time_report_type, year, period
+  );
+  
+[0m05:20:05.511817 [debug] [Thread-3 (]: SQL status: SELECT 600 in 1.0 seconds
+[0m05:20:05.528920 [debug] [Thread-3 (]: Using postgres connection "model.my_dbt_project.fct_bs_interbank_placements_loans"
+[0m05:20:05.534388 [debug] [Thread-3 (]: On model.my_dbt_project.fct_bs_interbank_placements_loans: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "node_id": "model.my_dbt_project.fct_bs_interbank_placements_loans"} */
+alter table "etl_project"."dw_dw"."fct_bs_interbank_placements_loans__dbt_tmp" rename to "fct_bs_interbank_placements_loans"
+[0m05:20:05.538500 [debug] [Thread-3 (]: SQL status: ALTER TABLE in 0.0 seconds
+[0m05:20:05.548617 [debug] [Thread-3 (]: On model.my_dbt_project.fct_bs_interbank_placements_loans: COMMIT
+[0m05:20:05.554969 [debug] [Thread-3 (]: Using postgres connection "model.my_dbt_project.fct_bs_interbank_placements_loans"
+[0m05:20:05.557292 [debug] [Thread-3 (]: On model.my_dbt_project.fct_bs_interbank_placements_loans: COMMIT
+[0m05:20:05.596034 [debug] [Thread-3 (]: SQL status: COMMIT in 0.0 seconds
+[0m05:20:05.608556 [debug] [Thread-3 (]: Applying DROP to: "etl_project"."dw_dw"."fct_bs_interbank_placements_loans__dbt_backup"
+[0m05:20:05.615208 [debug] [Thread-3 (]: Using postgres connection "model.my_dbt_project.fct_bs_interbank_placements_loans"
+[0m05:20:05.616929 [debug] [Thread-3 (]: On model.my_dbt_project.fct_bs_interbank_placements_loans: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "node_id": "model.my_dbt_project.fct_bs_interbank_placements_loans"} */
+drop table if exists "etl_project"."dw_dw"."fct_bs_interbank_placements_loans__dbt_backup" cascade
+[0m05:20:05.619231 [debug] [Thread-3 (]: SQL status: DROP TABLE in 0.0 seconds
+[0m05:20:05.627376 [debug] [Thread-3 (]: Timing info for model.my_dbt_project.fct_bs_interbank_placements_loans (execute): 05:20:04.286673 => 05:20:05.622743
+[0m05:20:05.629011 [debug] [Thread-3 (]: On model.my_dbt_project.fct_bs_interbank_placements_loans: Close
+[0m05:20:05.632559 [debug] [Thread-3 (]: Sending event: {'category': 'dbt', 'action': 'run_model', 'label': '47b28e98-efb3-44a6-930c-5d2cc20faf50', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7b129cb1f590>]}
+[0m05:20:05.635968 [info ] [Thread-3 (]: 14 of 21 OK created sql table model dw_dw.fct_bs_interbank_placements_loans .... [[32mSELECT 600[0m in 1.60s]
+[0m05:20:05.647064 [debug] [Thread-3 (]: Finished running node model.my_dbt_project.fct_bs_interbank_placements_loans
+[0m05:20:05.654773 [debug] [Thread-3 (]: Began running node model.my_dbt_project.fct_bs_investment_securities
+[0m05:20:05.661671 [info ] [Thread-3 (]: 15 of 21 START sql table model dw_dw.fct_bs_investment_securities .............. [RUN]
+[0m05:20:05.669896 [debug] [Thread-3 (]: Re-using an available connection from the pool (formerly model.my_dbt_project.fct_bs_interbank_placements_loans, now model.my_dbt_project.fct_bs_investment_securities)
+[0m05:20:05.685505 [debug] [Thread-3 (]: Began compiling node model.my_dbt_project.fct_bs_investment_securities
+[0m05:20:05.747227 [debug] [Thread-3 (]: Writing injected SQL for node "model.my_dbt_project.fct_bs_investment_securities"
+[0m05:20:05.808450 [debug] [Thread-3 (]: Timing info for model.my_dbt_project.fct_bs_investment_securities (compile): 05:20:05.722958 => 05:20:05.806970
+[0m05:20:05.897913 [debug] [Thread-3 (]: Began executing node model.my_dbt_project.fct_bs_investment_securities
+[0m05:20:05.939335 [debug] [Thread-3 (]: Writing runtime sql for node "model.my_dbt_project.fct_bs_investment_securities"
+[0m05:20:05.961262 [debug] [Thread-3 (]: Using postgres connection "model.my_dbt_project.fct_bs_investment_securities"
+[0m05:20:05.964570 [debug] [Thread-3 (]: On model.my_dbt_project.fct_bs_investment_securities: BEGIN
+[0m05:20:05.967223 [debug] [Thread-4 (]: SQL status: SELECT 65 in 2.0 seconds
+[0m05:20:05.971683 [debug] [Thread-3 (]: Opening a new connection, currently in state closed
+[0m05:20:05.989347 [debug] [Thread-4 (]: Using postgres connection "model.my_dbt_project.dim_balance_sheet_metric_hier"
+[0m05:20:05.994065 [debug] [Thread-4 (]: On model.my_dbt_project.dim_balance_sheet_metric_hier: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "node_id": "model.my_dbt_project.dim_balance_sheet_metric_hier"} */
+alter table "etl_project"."dw_dw"."dim_balance_sheet_metric_hier__dbt_tmp" rename to "dim_balance_sheet_metric_hier"
+[0m05:20:05.998683 [debug] [Thread-4 (]: SQL status: ALTER TABLE in 0.0 seconds
+[0m05:20:06.005797 [debug] [Thread-4 (]: On model.my_dbt_project.dim_balance_sheet_metric_hier: COMMIT
+[0m05:20:06.009914 [debug] [Thread-4 (]: Using postgres connection "model.my_dbt_project.dim_balance_sheet_metric_hier"
+[0m05:20:06.016102 [debug] [Thread-4 (]: On model.my_dbt_project.dim_balance_sheet_metric_hier: COMMIT
+[0m05:20:06.042441 [debug] [Thread-3 (]: SQL status: BEGIN in 0.0 seconds
+[0m05:20:06.051066 [debug] [Thread-3 (]: Using postgres connection "model.my_dbt_project.fct_bs_investment_securities"
+[0m05:20:06.053373 [debug] [Thread-3 (]: On model.my_dbt_project.fct_bs_investment_securities: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "node_id": "model.my_dbt_project.fct_bs_investment_securities"} */
+
+  
+    
+
+  create  table "etl_project"."dw_dw"."fct_bs_investment_securities__dbt_tmp"
+  
+  
+    as
+  
+  (
+    with fact as (
+    select *
+    from "etl_project"."dw_stg"."stg_fact_balance_sheet"
+    where metric_code in (
+        'AFS_SECURITIES',
+        'HTM_SECURITIES',
+        'ALLOWANCE_INVESTMENT_SECURITIES',
+        'INVESTMENT_SECURITIES_NET'
+    )
+)
+
+select
+    symbol,
+    time_report_type,
+    'balance_sheet' as financial_report_type,
+    year,
+    period,
+
+    max(case when metric_code = 'AFS_SECURITIES' then metric_value end) as afs_securities,
+    max(case when metric_code = 'HTM_SECURITIES' then metric_value end) as htm_securities,
+    max(case when metric_code = 'ALLOWANCE_INVESTMENT_SECURITIES' then metric_value end) as allowance_investment_securities,
+    max(case when metric_code = 'INVESTMENT_SECURITIES_NET' then metric_value end) as investment_securities_net,
+
+    max(update_time) as update_time
+from fact
+group by symbol, time_report_type, year, period
+  );
+  
+[0m05:20:06.063561 [debug] [Thread-4 (]: SQL status: COMMIT in 0.0 seconds
+[0m05:20:06.077777 [debug] [Thread-4 (]: Applying DROP to: "etl_project"."dw_dw"."dim_balance_sheet_metric_hier__dbt_backup"
+[0m05:20:06.084709 [debug] [Thread-4 (]: Using postgres connection "model.my_dbt_project.dim_balance_sheet_metric_hier"
+[0m05:20:06.096469 [debug] [Thread-4 (]: On model.my_dbt_project.dim_balance_sheet_metric_hier: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "node_id": "model.my_dbt_project.dim_balance_sheet_metric_hier"} */
+drop table if exists "etl_project"."dw_dw"."dim_balance_sheet_metric_hier__dbt_backup" cascade
+[0m05:20:06.101928 [debug] [Thread-4 (]: SQL status: DROP TABLE in 0.0 seconds
+[0m05:20:06.114163 [debug] [Thread-4 (]: Timing info for model.my_dbt_project.dim_balance_sheet_metric_hier (execute): 05:20:03.633062 => 05:20:06.112129
+[0m05:20:06.120966 [debug] [Thread-4 (]: On model.my_dbt_project.dim_balance_sheet_metric_hier: Close
+[0m05:20:06.123949 [debug] [Thread-4 (]: Sending event: {'category': 'dbt', 'action': 'run_model', 'label': '47b28e98-efb3-44a6-930c-5d2cc20faf50', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7b129cb01e10>]}
+[0m05:20:06.127235 [info ] [Thread-4 (]: 11 of 21 OK created sql table model dw_dw.dim_balance_sheet_metric_hier ........ [[32mSELECT 65[0m in 3.76s]
+[0m05:20:06.130723 [debug] [Thread-4 (]: Finished running node model.my_dbt_project.dim_balance_sheet_metric_hier
+[0m05:20:06.135563 [debug] [Thread-4 (]: Began running node model.my_dbt_project.fct_bs_loans_to_customers
+[0m05:20:06.138019 [info ] [Thread-4 (]: 16 of 21 START sql table model dw_dw.fct_bs_loans_to_customers ................. [RUN]
+[0m05:20:06.149753 [debug] [Thread-4 (]: Re-using an available connection from the pool (formerly model.my_dbt_project.dim_balance_sheet_metric_hier, now model.my_dbt_project.fct_bs_loans_to_customers)
+[0m05:20:06.159558 [debug] [Thread-4 (]: Began compiling node model.my_dbt_project.fct_bs_loans_to_customers
+[0m05:20:06.186021 [debug] [Thread-4 (]: Writing injected SQL for node "model.my_dbt_project.fct_bs_loans_to_customers"
+[0m05:20:06.380813 [debug] [Thread-1 (]: SQL status: SELECT 15045 in 2.0 seconds
+[0m05:20:06.411549 [debug] [Thread-1 (]: Using postgres connection "model.my_dbt_project.fct_bs_assets"
+[0m05:20:06.415769 [debug] [Thread-1 (]: On model.my_dbt_project.fct_bs_assets: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "node_id": "model.my_dbt_project.fct_bs_assets"} */
+alter table "etl_project"."dw_dw"."fct_bs_assets__dbt_tmp" rename to "fct_bs_assets"
+[0m05:20:06.427425 [debug] [Thread-1 (]: SQL status: ALTER TABLE in 0.0 seconds
+[0m05:20:06.433847 [debug] [Thread-4 (]: Timing info for model.my_dbt_project.fct_bs_loans_to_customers (compile): 05:20:06.165294 => 05:20:06.429060
+[0m05:20:06.455023 [debug] [Thread-4 (]: Began executing node model.my_dbt_project.fct_bs_loans_to_customers
+[0m05:20:06.442260 [debug] [Thread-1 (]: On model.my_dbt_project.fct_bs_assets: COMMIT
+[0m05:20:06.479958 [debug] [Thread-1 (]: Using postgres connection "model.my_dbt_project.fct_bs_assets"
+[0m05:20:06.483063 [debug] [Thread-1 (]: On model.my_dbt_project.fct_bs_assets: COMMIT
+[0m05:20:06.476782 [debug] [Thread-4 (]: Writing runtime sql for node "model.my_dbt_project.fct_bs_loans_to_customers"
+[0m05:20:06.491702 [debug] [Thread-1 (]: SQL status: COMMIT in 0.0 seconds
+[0m05:20:06.508564 [debug] [Thread-1 (]: Applying DROP to: "etl_project"."dw_dw"."fct_bs_assets__dbt_backup"
+[0m05:20:06.512176 [debug] [Thread-1 (]: Using postgres connection "model.my_dbt_project.fct_bs_assets"
+[0m05:20:06.515591 [debug] [Thread-1 (]: On model.my_dbt_project.fct_bs_assets: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "node_id": "model.my_dbt_project.fct_bs_assets"} */
+drop table if exists "etl_project"."dw_dw"."fct_bs_assets__dbt_backup" cascade
+[0m05:20:06.519975 [debug] [Thread-1 (]: SQL status: DROP TABLE in 0.0 seconds
+[0m05:20:06.525479 [debug] [Thread-1 (]: Timing info for model.my_dbt_project.fct_bs_assets (execute): 05:20:03.657383 => 05:20:06.525017
+[0m05:20:06.527993 [debug] [Thread-1 (]: On model.my_dbt_project.fct_bs_assets: Close
+[0m05:20:06.538264 [debug] [Thread-1 (]: Sending event: {'category': 'dbt', 'action': 'run_model', 'label': '47b28e98-efb3-44a6-930c-5d2cc20faf50', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7b129c3e23d0>]}
+[0m05:20:06.541282 [debug] [Thread-3 (]: SQL status: SELECT 600 in 0.0 seconds
+[0m05:20:06.545439 [debug] [Thread-4 (]: Using postgres connection "model.my_dbt_project.fct_bs_loans_to_customers"
+[0m05:20:06.548729 [info ] [Thread-1 (]: 12 of 21 OK created sql table model dw_dw.fct_bs_assets ........................ [[32mSELECT 15045[0m in 3.74s]
+[0m05:20:06.602208 [debug] [Thread-3 (]: Using postgres connection "model.my_dbt_project.fct_bs_investment_securities"
+[0m05:20:06.679737 [debug] [Thread-4 (]: On model.my_dbt_project.fct_bs_loans_to_customers: BEGIN
+[0m05:20:06.697293 [debug] [Thread-1 (]: Finished running node model.my_dbt_project.fct_bs_assets
+[0m05:20:06.713637 [debug] [Thread-1 (]: Began running node model.my_dbt_project.fct_bs_owners_equity_bank
+[0m05:20:06.709635 [debug] [Thread-4 (]: Opening a new connection, currently in state closed
+[0m05:20:06.701591 [debug] [Thread-3 (]: On model.my_dbt_project.fct_bs_investment_securities: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "node_id": "model.my_dbt_project.fct_bs_investment_securities"} */
+alter table "etl_project"."dw_dw"."fct_bs_investment_securities__dbt_tmp" rename to "fct_bs_investment_securities"
+[0m05:20:06.716794 [info ] [Thread-1 (]: 17 of 21 START sql table model dw_dw.fct_bs_owners_equity_bank ................. [RUN]
+[0m05:20:06.738586 [debug] [Thread-1 (]: Re-using an available connection from the pool (formerly model.my_dbt_project.fct_bs_assets, now model.my_dbt_project.fct_bs_owners_equity_bank)
+[0m05:20:06.746474 [debug] [Thread-3 (]: SQL status: ALTER TABLE in 0.0 seconds
+[0m05:20:06.749855 [debug] [Thread-1 (]: Began compiling node model.my_dbt_project.fct_bs_owners_equity_bank
+[0m05:20:06.855138 [debug] [Thread-4 (]: SQL status: BEGIN in 0.0 seconds
+[0m05:20:07.093443 [debug] [Thread-4 (]: Using postgres connection "model.my_dbt_project.fct_bs_loans_to_customers"
+[0m05:20:07.060700 [debug] [Thread-1 (]: Writing injected SQL for node "model.my_dbt_project.fct_bs_owners_equity_bank"
+[0m05:20:06.901288 [debug] [Thread-3 (]: On model.my_dbt_project.fct_bs_investment_securities: COMMIT
+[0m05:20:07.247346 [debug] [Thread-4 (]: On model.my_dbt_project.fct_bs_loans_to_customers: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "node_id": "model.my_dbt_project.fct_bs_loans_to_customers"} */
+
+  
+    
+
+  create  table "etl_project"."dw_dw"."fct_bs_loans_to_customers__dbt_tmp"
+  
+  
+    as
+  
+  (
+    with fact as (
+    select *
+    from "etl_project"."dw_stg"."stg_fact_balance_sheet"
+    where metric_code in (
+        'LOANS_TO_CUSTOMERS_GROSS',
+        'ECL_ALLOWANCE_LOANS_TO_CUSTOMERS',
+        'LOANS_TO_CUSTOMERS_NET'
+    )
+)
+
+select
+    symbol,
+    time_report_type,
+    'balance_sheet' as financial_report_type,
+    year,
+    period,
+
+    max(case when metric_code = 'LOANS_TO_CUSTOMERS_GROSS' then metric_value end) as loans_to_customers_gross,
+    max(case when metric_code = 'ECL_ALLOWANCE_LOANS_TO_CUSTOMERS' then metric_value end) as ecl_allowance_loans_to_customers,
+    max(case when metric_code = 'LOANS_TO_CUSTOMERS_NET' then metric_value end) as loans_to_customers_net,
+
+    max(update_time) as update_time
+from fact
+group by symbol, time_report_type, year, period
+  );
+  
+[0m05:20:07.463781 [debug] [Thread-3 (]: Using postgres connection "model.my_dbt_project.fct_bs_investment_securities"
+[0m05:20:07.512772 [debug] [Thread-3 (]: On model.my_dbt_project.fct_bs_investment_securities: COMMIT
+[0m05:20:07.530178 [debug] [Thread-3 (]: SQL status: COMMIT in 0.0 seconds
+[0m05:20:07.573917 [debug] [Thread-3 (]: Applying DROP to: "etl_project"."dw_dw"."fct_bs_investment_securities__dbt_backup"
+[0m05:20:07.586303 [debug] [Thread-3 (]: Using postgres connection "model.my_dbt_project.fct_bs_investment_securities"
+[0m05:20:07.591846 [debug] [Thread-3 (]: On model.my_dbt_project.fct_bs_investment_securities: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "node_id": "model.my_dbt_project.fct_bs_investment_securities"} */
+drop table if exists "etl_project"."dw_dw"."fct_bs_investment_securities__dbt_backup" cascade
+[0m05:20:07.587980 [debug] [Thread-1 (]: Timing info for model.my_dbt_project.fct_bs_owners_equity_bank (compile): 05:20:06.951689 => 05:20:07.587213
+[0m05:20:07.603650 [debug] [Thread-1 (]: Began executing node model.my_dbt_project.fct_bs_owners_equity_bank
+[0m05:20:07.675868 [debug] [Thread-3 (]: SQL status: DROP TABLE in 0.0 seconds
+[0m05:20:07.705512 [debug] [Thread-1 (]: Writing runtime sql for node "model.my_dbt_project.fct_bs_owners_equity_bank"
+[0m05:20:07.724758 [debug] [Thread-3 (]: Timing info for model.my_dbt_project.fct_bs_investment_securities (execute): 05:20:05.902066 => 05:20:07.714695
+[0m05:20:07.735147 [debug] [Thread-3 (]: On model.my_dbt_project.fct_bs_investment_securities: Close
+[0m05:20:07.742683 [debug] [Thread-3 (]: Sending event: {'category': 'dbt', 'action': 'run_model', 'label': '47b28e98-efb3-44a6-930c-5d2cc20faf50', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7b129bf42bd0>]}
+[0m05:20:07.751535 [info ] [Thread-3 (]: 15 of 21 OK created sql table model dw_dw.fct_bs_investment_securities ......... [[32mSELECT 600[0m in 2.07s]
+[0m05:20:07.767501 [debug] [Thread-3 (]: Finished running node model.my_dbt_project.fct_bs_investment_securities
+[0m05:20:07.780422 [debug] [Thread-3 (]: Began running node model.my_dbt_project.fct_bs_total_equity
+[0m05:20:07.795119 [info ] [Thread-3 (]: 18 of 21 START sql table model dw_dw.fct_bs_total_equity ....................... [RUN]
+[0m05:20:07.892979 [debug] [Thread-3 (]: Re-using an available connection from the pool (formerly model.my_dbt_project.fct_bs_investment_securities, now model.my_dbt_project.fct_bs_total_equity)
+[0m05:20:07.901123 [debug] [Thread-3 (]: Began compiling node model.my_dbt_project.fct_bs_total_equity
+[0m05:20:07.915024 [debug] [Thread-1 (]: Using postgres connection "model.my_dbt_project.fct_bs_owners_equity_bank"
+[0m05:20:07.928949 [debug] [Thread-1 (]: On model.my_dbt_project.fct_bs_owners_equity_bank: BEGIN
+[0m05:20:07.926417 [debug] [Thread-3 (]: Writing injected SQL for node "model.my_dbt_project.fct_bs_total_equity"
+[0m05:20:07.933598 [debug] [Thread-1 (]: Opening a new connection, currently in state closed
+[0m05:20:08.073337 [debug] [Thread-3 (]: Timing info for model.my_dbt_project.fct_bs_total_equity (compile): 05:20:07.906127 => 05:20:08.072339
+[0m05:20:08.077922 [debug] [Thread-3 (]: Began executing node model.my_dbt_project.fct_bs_total_equity
+[0m05:20:08.105234 [debug] [Thread-3 (]: Writing runtime sql for node "model.my_dbt_project.fct_bs_total_equity"
+[0m05:20:08.112421 [debug] [Thread-4 (]: SQL status: SELECT 600 in 1.0 seconds
+[0m05:20:08.128400 [debug] [Thread-1 (]: SQL status: BEGIN in 0.0 seconds
+[0m05:20:08.149332 [debug] [Thread-1 (]: Using postgres connection "model.my_dbt_project.fct_bs_owners_equity_bank"
+[0m05:20:08.150541 [debug] [Thread-4 (]: Using postgres connection "model.my_dbt_project.fct_bs_loans_to_customers"
+[0m05:20:08.155623 [debug] [Thread-1 (]: On model.my_dbt_project.fct_bs_owners_equity_bank: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "node_id": "model.my_dbt_project.fct_bs_owners_equity_bank"} */
+
+  
+    
+
+  create  table "etl_project"."dw_dw"."fct_bs_owners_equity_bank__dbt_tmp"
+  
+  
+    as
+  
+  (
+    with fact as (
+    select *
+    from "etl_project"."dw_stg"."stg_fact_balance_sheet"
+    where metric_code in (
+        'PAID_IN_CAPITAL',
+        'CAPITAL_FOR_CONSTRUCTION',
+        'SHARE_PREMIUM',
+        'TREASURY_SHARES',
+        'PREFERRED_SHARES',
+        'OTHER_CAPITAL'
+    )
+)
+
+select
+    symbol,
+    time_report_type,
+    'balance_sheet' as financial_report_type,
+    year,
+    period,
+
+    max(case when metric_code = 'PAID_IN_CAPITAL' then metric_value end) as paid_in_capital,
+    max(case when metric_code = 'CAPITAL_FOR_CONSTRUCTION' then metric_value end) as capital_for_construction,
+    max(case when metric_code = 'SHARE_PREMIUM' then metric_value end) as share_premium,
+    max(case when metric_code = 'TREASURY_SHARES' then metric_value end) as treasury_shares,
+    max(case when metric_code = 'PREFERRED_SHARES' then metric_value end) as preferred_shares,
+    max(case when metric_code = 'OTHER_CAPITAL' then metric_value end) as other_capital,
+
+    max(update_time) as update_time
+from fact
+group by symbol, time_report_type, year, period
+  );
+  
+[0m05:20:08.159954 [debug] [Thread-4 (]: On model.my_dbt_project.fct_bs_loans_to_customers: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "node_id": "model.my_dbt_project.fct_bs_loans_to_customers"} */
+alter table "etl_project"."dw_dw"."fct_bs_loans_to_customers__dbt_tmp" rename to "fct_bs_loans_to_customers"
+[0m05:20:08.168538 [debug] [Thread-3 (]: Using postgres connection "model.my_dbt_project.fct_bs_total_equity"
+[0m05:20:08.169883 [debug] [Thread-4 (]: SQL status: ALTER TABLE in 0.0 seconds
+[0m05:20:08.176448 [debug] [Thread-3 (]: On model.my_dbt_project.fct_bs_total_equity: BEGIN
+[0m05:20:08.191916 [debug] [Thread-3 (]: Opening a new connection, currently in state closed
+[0m05:20:08.189261 [debug] [Thread-2 (]: SQL status: SELECT 15045 in 4.0 seconds
+[0m05:20:08.185257 [debug] [Thread-4 (]: On model.my_dbt_project.fct_bs_loans_to_customers: COMMIT
+[0m05:20:08.218046 [debug] [Thread-2 (]: Using postgres connection "model.my_dbt_project.fct_bs_fixed_assets"
+[0m05:20:08.223378 [debug] [Thread-2 (]: On model.my_dbt_project.fct_bs_fixed_assets: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "node_id": "model.my_dbt_project.fct_bs_fixed_assets"} */
+alter table "etl_project"."dw_dw"."fct_bs_fixed_assets__dbt_tmp" rename to "fct_bs_fixed_assets"
+[0m05:20:08.219798 [debug] [Thread-4 (]: Using postgres connection "model.my_dbt_project.fct_bs_loans_to_customers"
+[0m05:20:08.229715 [debug] [Thread-4 (]: On model.my_dbt_project.fct_bs_loans_to_customers: COMMIT
+[0m05:20:08.238582 [debug] [Thread-3 (]: SQL status: BEGIN in 0.0 seconds
+[0m05:20:08.235279 [debug] [Thread-2 (]: SQL status: ALTER TABLE in 0.0 seconds
+[0m05:20:08.255838 [debug] [Thread-3 (]: Using postgres connection "model.my_dbt_project.fct_bs_total_equity"
+[0m05:20:08.260772 [debug] [Thread-4 (]: SQL status: COMMIT in 0.0 seconds
+[0m05:20:08.299376 [debug] [Thread-2 (]: On model.my_dbt_project.fct_bs_fixed_assets: COMMIT
+[0m05:20:08.301930 [debug] [Thread-3 (]: On model.my_dbt_project.fct_bs_total_equity: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "node_id": "model.my_dbt_project.fct_bs_total_equity"} */
+
+  
+    
+
+  create  table "etl_project"."dw_dw"."fct_bs_total_equity__dbt_tmp"
+  
+  
+    as
+  
+  (
+    with fact as (
+    select *
+    from "etl_project"."dw_stg"."stg_fact_balance_sheet"
+    where metric_code in (
+        'OWNERS_EQUITY_BANK',
+        'BANK_FUNDS',
+        'FX_TRANSLATION_DIFFERENCES',
+        'ASSET_REVALUATION_DIFFERENCES',
+        'RETAINED_EARNINGS_ACCUMULATED_LOSSES',
+        'OTHER_FUNDS',
+        'NON_CONTROLLING_INTERESTS',
+        'TOTAL_EQUITY'
+    )
+)
+
+select
+    symbol,
+    time_report_type,
+    'balance_sheet' as financial_report_type,
+    year,
+    period,
+
+    max(case when metric_code = 'OWNERS_EQUITY_BANK' then metric_value end) as owners_equity_bank,
+    max(case when metric_code = 'BANK_FUNDS' then metric_value end) as bank_funds,
+    max(case when metric_code = 'FX_TRANSLATION_DIFFERENCES' then metric_value end) as fx_translation_differences,
+    max(case when metric_code = 'ASSET_REVALUATION_DIFFERENCES' then metric_value end) as asset_revaluation_differences,
+    max(case when metric_code = 'RETAINED_EARNINGS_ACCUMULATED_LOSSES' then metric_value end) as retained_earnings_accumulated_losses,
+    max(case when metric_code = 'OTHER_FUNDS' then metric_value end) as other_funds,
+    max(case when metric_code = 'NON_CONTROLLING_INTERESTS' then metric_value end) as non_controlling_interests,
+    max(case when metric_code = 'TOTAL_EQUITY' then metric_value end) as total_equity,
+
+    max(update_time) as update_time
+from fact
+group by symbol, time_report_type, year, period
+  );
+  
+[0m05:20:08.349533 [debug] [Thread-4 (]: Applying DROP to: "etl_project"."dw_dw"."fct_bs_loans_to_customers__dbt_backup"
+[0m05:20:08.365115 [debug] [Thread-4 (]: Using postgres connection "model.my_dbt_project.fct_bs_loans_to_customers"
+[0m05:20:08.352797 [debug] [Thread-2 (]: Using postgres connection "model.my_dbt_project.fct_bs_fixed_assets"
+[0m05:20:08.370905 [debug] [Thread-4 (]: On model.my_dbt_project.fct_bs_loans_to_customers: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "node_id": "model.my_dbt_project.fct_bs_loans_to_customers"} */
+drop table if exists "etl_project"."dw_dw"."fct_bs_loans_to_customers__dbt_backup" cascade
+[0m05:20:08.380334 [debug] [Thread-2 (]: On model.my_dbt_project.fct_bs_fixed_assets: COMMIT
+[0m05:20:08.391043 [debug] [Thread-4 (]: SQL status: DROP TABLE in 0.0 seconds
+[0m05:20:08.401222 [debug] [Thread-4 (]: Timing info for model.my_dbt_project.fct_bs_loans_to_customers (execute): 05:20:06.458505 => 05:20:08.399528
+[0m05:20:08.440225 [debug] [Thread-2 (]: SQL status: COMMIT in 0.0 seconds
+[0m05:20:08.445857 [debug] [Thread-4 (]: On model.my_dbt_project.fct_bs_loans_to_customers: Close
+[0m05:20:08.507910 [debug] [Thread-2 (]: Applying DROP to: "etl_project"."dw_dw"."fct_bs_fixed_assets__dbt_backup"
+[0m05:20:08.535149 [debug] [Thread-4 (]: Sending event: {'category': 'dbt', 'action': 'run_model', 'label': '47b28e98-efb3-44a6-930c-5d2cc20faf50', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7b129e02e310>]}
+[0m05:20:08.554292 [debug] [Thread-2 (]: Using postgres connection "model.my_dbt_project.fct_bs_fixed_assets"
+[0m05:20:08.572551 [info ] [Thread-4 (]: 16 of 21 OK created sql table model dw_dw.fct_bs_loans_to_customers ............ [[32mSELECT 600[0m in 2.38s]
+[0m05:20:08.584565 [debug] [Thread-2 (]: On model.my_dbt_project.fct_bs_fixed_assets: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "node_id": "model.my_dbt_project.fct_bs_fixed_assets"} */
+drop table if exists "etl_project"."dw_dw"."fct_bs_fixed_assets__dbt_backup" cascade
+[0m05:20:08.607563 [debug] [Thread-4 (]: Finished running node model.my_dbt_project.fct_bs_loans_to_customers
+[0m05:20:08.630327 [debug] [Thread-2 (]: SQL status: DROP TABLE in 0.0 seconds
+[0m05:20:08.661748 [debug] [Thread-4 (]: Began running node model.my_dbt_project.fct_bs_trading_securities
+[0m05:20:08.747867 [debug] [Thread-2 (]: Timing info for model.my_dbt_project.fct_bs_fixed_assets (execute): 05:20:03.899982 => 05:20:08.743310
+[0m05:20:08.805550 [debug] [Thread-2 (]: On model.my_dbt_project.fct_bs_fixed_assets: Close
+[0m05:20:08.778920 [info ] [Thread-4 (]: 19 of 21 START sql table model dw_dw.fct_bs_trading_securities ................. [RUN]
+[0m05:20:08.820263 [debug] [Thread-2 (]: Sending event: {'category': 'dbt', 'action': 'run_model', 'label': '47b28e98-efb3-44a6-930c-5d2cc20faf50', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7b129c7bb450>]}
+[0m05:20:08.825730 [debug] [Thread-4 (]: Re-using an available connection from the pool (formerly model.my_dbt_project.fct_bs_loans_to_customers, now model.my_dbt_project.fct_bs_trading_securities)
+[0m05:20:08.835958 [info ] [Thread-2 (]: 13 of 21 OK created sql table model dw_dw.fct_bs_fixed_assets .................. [[32mSELECT 15045[0m in 5.35s]
+[0m05:20:08.890444 [debug] [Thread-4 (]: Began compiling node model.my_dbt_project.fct_bs_trading_securities
+[0m05:20:08.951862 [debug] [Thread-2 (]: Finished running node model.my_dbt_project.fct_bs_fixed_assets
+[0m05:20:08.993372 [debug] [Thread-4 (]: Writing injected SQL for node "model.my_dbt_project.fct_bs_trading_securities"
+[0m05:20:09.105330 [debug] [Thread-2 (]: Began running node model.my_dbt_project.fct_bs_liabilities
+[0m05:20:09.127447 [info ] [Thread-2 (]: 20 of 21 START sql table model dw_dw.fct_bs_liabilities ........................ [RUN]
+[0m05:20:09.138463 [debug] [Thread-2 (]: Re-using an available connection from the pool (formerly model.my_dbt_project.fct_bs_fixed_assets, now model.my_dbt_project.fct_bs_liabilities)
+[0m05:20:09.146964 [debug] [Thread-2 (]: Began compiling node model.my_dbt_project.fct_bs_liabilities
+[0m05:20:09.259392 [debug] [Thread-2 (]: Writing injected SQL for node "model.my_dbt_project.fct_bs_liabilities"
+[0m05:20:09.317305 [debug] [Thread-4 (]: Timing info for model.my_dbt_project.fct_bs_trading_securities (compile): 05:20:08.961964 => 05:20:09.296158
+[0m05:20:09.352713 [debug] [Thread-4 (]: Began executing node model.my_dbt_project.fct_bs_trading_securities
+[0m05:20:09.481462 [debug] [Thread-4 (]: Writing runtime sql for node "model.my_dbt_project.fct_bs_trading_securities"
+[0m05:20:09.485619 [debug] [Thread-2 (]: Timing info for model.my_dbt_project.fct_bs_liabilities (compile): 05:20:09.154786 => 05:20:09.428574
+[0m05:20:09.499911 [debug] [Thread-2 (]: Began executing node model.my_dbt_project.fct_bs_liabilities
+[0m05:20:09.677122 [debug] [Thread-4 (]: Using postgres connection "model.my_dbt_project.fct_bs_trading_securities"
+[0m05:20:09.713999 [debug] [Thread-2 (]: Writing runtime sql for node "model.my_dbt_project.fct_bs_liabilities"
+[0m05:20:09.718951 [debug] [Thread-4 (]: On model.my_dbt_project.fct_bs_trading_securities: BEGIN
+[0m05:20:09.733901 [debug] [Thread-4 (]: Opening a new connection, currently in state closed
+[0m05:20:09.791514 [debug] [Thread-2 (]: Using postgres connection "model.my_dbt_project.fct_bs_liabilities"
+[0m05:20:09.804200 [debug] [Thread-2 (]: On model.my_dbt_project.fct_bs_liabilities: BEGIN
+[0m05:20:09.809472 [debug] [Thread-2 (]: Opening a new connection, currently in state closed
+[0m05:20:09.823183 [debug] [Thread-1 (]: SQL status: SELECT 600 in 2.0 seconds
+[0m05:20:09.924826 [debug] [Thread-1 (]: Using postgres connection "model.my_dbt_project.fct_bs_owners_equity_bank"
+[0m05:20:09.936170 [debug] [Thread-1 (]: On model.my_dbt_project.fct_bs_owners_equity_bank: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "node_id": "model.my_dbt_project.fct_bs_owners_equity_bank"} */
+alter table "etl_project"."dw_dw"."fct_bs_owners_equity_bank__dbt_tmp" rename to "fct_bs_owners_equity_bank"
+[0m05:20:09.969313 [debug] [Thread-4 (]: SQL status: BEGIN in 0.0 seconds
+[0m05:20:09.977303 [debug] [Thread-1 (]: SQL status: ALTER TABLE in 0.0 seconds
+[0m05:20:09.997056 [debug] [Thread-4 (]: Using postgres connection "model.my_dbt_project.fct_bs_trading_securities"
+[0m05:20:10.019268 [debug] [Thread-4 (]: On model.my_dbt_project.fct_bs_trading_securities: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "node_id": "model.my_dbt_project.fct_bs_trading_securities"} */
+
+  
+    
+
+  create  table "etl_project"."dw_dw"."fct_bs_trading_securities__dbt_tmp"
+  
+  
+    as
+  
+  (
+    with fact as (
+    select *
+    from "etl_project"."dw_stg"."stg_fact_balance_sheet"
+    where metric_code in (
+        'TRADING_SECURITIES_GROSS',
+        'ALLOWANCE_TRADING_SECURITIES',
+        'TRADING_SECURITIES_NET'
+    )
+)
+
+select
+    symbol,
+    time_report_type,
+    'balance_sheet' as financial_report_type,
+    year,
+    period,
+
+    max(case when metric_code = 'TRADING_SECURITIES_GROSS' then metric_value end) as trading_securities_gross,
+    max(case when metric_code = 'ALLOWANCE_TRADING_SECURITIES' then metric_value end) as allowance_trading_securities,
+    max(case when metric_code = 'TRADING_SECURITIES_NET' then metric_value end) as trading_securities_net,
+
+    max(update_time) as update_time
+from fact
+group by symbol, time_report_type, year, period
+  );
+  
+[0m05:20:10.028774 [debug] [Thread-1 (]: On model.my_dbt_project.fct_bs_owners_equity_bank: COMMIT
+[0m05:20:10.030920 [debug] [Thread-2 (]: SQL status: BEGIN in 0.0 seconds
+[0m05:20:10.032192 [debug] [Thread-3 (]: SQL status: SELECT 1102 in 2.0 seconds
+[0m05:20:10.039574 [debug] [Thread-1 (]: Using postgres connection "model.my_dbt_project.fct_bs_owners_equity_bank"
+[0m05:20:10.044210 [debug] [Thread-2 (]: Using postgres connection "model.my_dbt_project.fct_bs_liabilities"
+[0m05:20:10.089583 [debug] [Thread-1 (]: On model.my_dbt_project.fct_bs_owners_equity_bank: COMMIT
+[0m05:20:10.085029 [debug] [Thread-3 (]: Using postgres connection "model.my_dbt_project.fct_bs_total_equity"
+[0m05:20:10.102470 [debug] [Thread-3 (]: On model.my_dbt_project.fct_bs_total_equity: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "node_id": "model.my_dbt_project.fct_bs_total_equity"} */
+alter table "etl_project"."dw_dw"."fct_bs_total_equity__dbt_tmp" rename to "fct_bs_total_equity"
+[0m05:20:10.096555 [debug] [Thread-2 (]: On model.my_dbt_project.fct_bs_liabilities: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "node_id": "model.my_dbt_project.fct_bs_liabilities"} */
+
+  
+    
+
+  create  table "etl_project"."dw_dw"."fct_bs_liabilities__dbt_tmp"
+  
+  
+    as
+  
+  (
+    with fact as (
+    select *
+    from "etl_project"."dw_stg"."stg_fact_balance_sheet"
+),
+
+dim as (
+    select *
+    from "etl_project"."dw_dw"."dim_balance_sheet_metric_hier"
+),
+
+leaf as (
+    select
+        f.symbol, f.time_report_type, f.year, f.period, f.metric_code, f.metric_value, f.update_time
+    from fact f
+    where f.metric_code in (
+        'DUE_TO_GOVERNMENT_AND_CENTRAL_BANK',
+        'DUE_TO_CREDIT_INSTITUTIONS',
+        'DEPOSITS_FROM_CREDIT_INSTITUTIONS',
+        'BORROWINGS_FROM_CREDIT_INSTITUTIONS',
+        'CUSTOMER_DEPOSITS',
+        'DERIVATIVES_AND_OTHER_FINANCIAL_LIABILITIES',
+        'TRUST_AND_INVESTMENT_FUNDS_BANK_BEARING_RISK',
+        'DEBT_SECURITIES_ISSUED',
+        'OTHER_LIABILITIES',
+        'ACCRUED_INTEREST_AND_FEES_PAYABLE',
+        'DEFERRED_TAX_LIABILITIES',
+        'PAYABLES_AND_OTHER_LIABILITIES',
+        'OTHER_PROVISIONS'
+    )
+),
+
+leaf_ctx as (
+    select
+        l.*,
+        d.parent_metric_code,
+        d.metric_group,
+        d.display_order,
+        (
+          select d2.metric_code
+          from dim d2
+          where d2.metric_group = d.metric_group
+            and d2.node_type = 'ROMAN'
+            and d2.display_order <= d.display_order
+          order by d2.display_order desc
+          limit 1
+        ) as roman_metric_code
+    from leaf l
+    left join dim d on d.metric_code = l.metric_code
+),
+
+enriched as (
+    select
+        c.*,
+        fp.metric_value as parent_metric_value,
+        fr.metric_value as roman_metric_value
+    from leaf_ctx c
+    left join fact fp
+      on fp.symbol = c.symbol
+     and fp.time_report_type = c.time_report_type
+     and fp.year = c.year
+     and ( (fp.period is null and c.period is null) or fp.period = c.period )
+     and fp.metric_code = c.parent_metric_code
+
+    left join fact fr
+      on fr.symbol = c.symbol
+     and fr.time_report_type = c.time_report_type
+     and fr.year = c.year
+     and ( (fr.period is null and c.period is null) or fr.period = c.period )
+     and fr.metric_code = c.roman_metric_code
+)
+
+select
+    symbol,
+    time_report_type,
+    'balance_sheet' as financial_report_type,
+    year,
+    period,
+
+    max(case when metric_code = 'DUE_TO_GOVERNMENT_AND_CENTRAL_BANK' then metric_value end) as due_to_government_and_central_bank,
+    max(case when metric_code = 'DUE_TO_CREDIT_INSTITUTIONS' then metric_value end) as due_to_credit_institutions,
+
+    max(case when metric_code = 'DEPOSITS_FROM_CREDIT_INSTITUTIONS' then metric_value end) as deposits_from_credit_institutions,
+    max(case when metric_code = 'BORROWINGS_FROM_CREDIT_INSTITUTIONS' then metric_value end) as borrowings_from_credit_institutions,
+
+    max(case when metric_code = 'DEPOSITS_FROM_CREDIT_INSTITUTIONS' then roman_metric_value end) as hierachy_of_deposits_from_credit_institutions,
+    max(case when metric_code = 'BORROWINGS_FROM_CREDIT_INSTITUTIONS' then roman_metric_value end) as hierachy_of_borrowings_from_credit_institutions,
+
+    max(case when metric_code = 'DEPOSITS_FROM_CREDIT_INSTITUTIONS' then parent_metric_value end) as parent_of_deposits_from_credit_institutions,
+    max(case when metric_code = 'BORROWINGS_FROM_CREDIT_INSTITUTIONS' then parent_metric_value end) as parent_of_borrowings_from_credit_institutions,
+
+    max(case when metric_code = 'CUSTOMER_DEPOSITS' then metric_value end) as customer_deposits,
+    max(case when metric_code = 'DERIVATIVES_AND_OTHER_FINANCIAL_LIABILITIES' then metric_value end) as derivatives_and_other_financial_liabilities,
+    max(case when metric_code = 'TRUST_AND_INVESTMENT_FUNDS_BANK_BEARING_RISK' then metric_value end) as trust_and_investment_funds_bank_bearing_risk,
+    max(case when metric_code = 'DEBT_SECURITIES_ISSUED' then metric_value end) as debt_securities_issued,
+    max(case when metric_code = 'OTHER_LIABILITIES' then metric_value end) as other_liabilities,
+
+    max(case when metric_code = 'ACCRUED_INTEREST_AND_FEES_PAYABLE' then metric_value end) as accrued_interest_and_fees_payable,
+    max(case when metric_code = 'DEFERRED_TAX_LIABILITIES' then metric_value end) as deferred_tax_liabilities,
+    max(case when metric_code = 'PAYABLES_AND_OTHER_LIABILITIES' then metric_value end) as payables_and_other_liabilities,
+    max(case when metric_code = 'OTHER_PROVISIONS' then metric_value end) as other_provisions,
+
+    max(case when metric_code = 'ACCRUED_INTEREST_AND_FEES_PAYABLE' then roman_metric_value end) as hierachy_of_accrued_interest_and_fees_payable,
+    max(case when metric_code = 'DEFERRED_TAX_LIABILITIES' then roman_metric_value end) as hierachy_of_deferred_tax_liabilities,
+    max(case when metric_code = 'PAYABLES_AND_OTHER_LIABILITIES' then roman_metric_value end) as hierachy_of_payables_and_other_liabilities,
+    max(case when metric_code = 'OTHER_PROVISIONS' then roman_metric_value end) as hierachy_of_other_provisions,
+
+    max(case when metric_code = 'ACCRUED_INTEREST_AND_FEES_PAYABLE' then parent_metric_value end) as parent_of_accrued_interest_and_fees_payable,
+    max(case when metric_code = 'DEFERRED_TAX_LIABILITIES' then parent_metric_value end) as parent_of_deferred_tax_liabilities,
+    max(case when metric_code = 'PAYABLES_AND_OTHER_LIABILITIES' then parent_metric_value end) as parent_of_payables_and_other_liabilities,
+    max(case when metric_code = 'OTHER_PROVISIONS' then parent_metric_value end) as parent_of_other_provisions,
+
+    max(update_time) as update_time
+from enriched
+group by symbol, time_report_type, year, period
+  );
+  
+[0m05:20:10.106326 [debug] [Thread-1 (]: SQL status: COMMIT in 0.0 seconds
+[0m05:20:10.114510 [debug] [Thread-3 (]: SQL status: ALTER TABLE in 0.0 seconds
+[0m05:20:10.135662 [debug] [Thread-1 (]: Applying DROP to: "etl_project"."dw_dw"."fct_bs_owners_equity_bank__dbt_backup"
+[0m05:20:10.148719 [debug] [Thread-3 (]: On model.my_dbt_project.fct_bs_total_equity: COMMIT
+[0m05:20:10.164518 [debug] [Thread-1 (]: Using postgres connection "model.my_dbt_project.fct_bs_owners_equity_bank"
+[0m05:20:10.166766 [debug] [Thread-3 (]: Using postgres connection "model.my_dbt_project.fct_bs_total_equity"
+[0m05:20:10.170628 [debug] [Thread-1 (]: On model.my_dbt_project.fct_bs_owners_equity_bank: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "node_id": "model.my_dbt_project.fct_bs_owners_equity_bank"} */
+drop table if exists "etl_project"."dw_dw"."fct_bs_owners_equity_bank__dbt_backup" cascade
+[0m05:20:10.174734 [debug] [Thread-3 (]: On model.my_dbt_project.fct_bs_total_equity: COMMIT
+[0m05:20:10.183763 [debug] [Thread-1 (]: SQL status: DROP TABLE in 0.0 seconds
+[0m05:20:10.191429 [debug] [Thread-3 (]: SQL status: COMMIT in 0.0 seconds
+[0m05:20:10.199843 [debug] [Thread-1 (]: Timing info for model.my_dbt_project.fct_bs_owners_equity_bank (execute): 05:20:07.606450 => 05:20:10.199070
+[0m05:20:10.251949 [debug] [Thread-1 (]: On model.my_dbt_project.fct_bs_owners_equity_bank: Close
+[0m05:20:10.238651 [debug] [Thread-3 (]: Applying DROP to: "etl_project"."dw_dw"."fct_bs_total_equity__dbt_backup"
+[0m05:20:10.276044 [debug] [Thread-3 (]: Using postgres connection "model.my_dbt_project.fct_bs_total_equity"
+[0m05:20:10.267435 [debug] [Thread-1 (]: Sending event: {'category': 'dbt', 'action': 'run_model', 'label': '47b28e98-efb3-44a6-930c-5d2cc20faf50', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7b129bf73c10>]}
+[0m05:20:10.283923 [debug] [Thread-3 (]: On model.my_dbt_project.fct_bs_total_equity: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "node_id": "model.my_dbt_project.fct_bs_total_equity"} */
+drop table if exists "etl_project"."dw_dw"."fct_bs_total_equity__dbt_backup" cascade
+[0m05:20:10.291329 [info ] [Thread-1 (]: 17 of 21 OK created sql table model dw_dw.fct_bs_owners_equity_bank ............ [[32mSELECT 600[0m in 3.53s]
+[0m05:20:10.308388 [debug] [Thread-1 (]: Finished running node model.my_dbt_project.fct_bs_owners_equity_bank
+[0m05:20:10.313028 [debug] [Thread-1 (]: Began running node model.my_dbt_project.fct_bs_other_assets
+[0m05:20:10.319906 [debug] [Thread-3 (]: SQL status: DROP TABLE in 0.0 seconds
+[0m05:20:10.321042 [info ] [Thread-1 (]: 21 of 21 START sql table model dw_dw.fct_bs_other_assets ....................... [RUN]
+[0m05:20:10.342521 [debug] [Thread-3 (]: Timing info for model.my_dbt_project.fct_bs_total_equity (execute): 05:20:08.080613 => 05:20:10.341532
+[0m05:20:10.457202 [debug] [Thread-1 (]: Re-using an available connection from the pool (formerly model.my_dbt_project.fct_bs_owners_equity_bank, now model.my_dbt_project.fct_bs_other_assets)
+[0m05:20:10.472754 [debug] [Thread-1 (]: Began compiling node model.my_dbt_project.fct_bs_other_assets
+[0m05:20:10.466055 [debug] [Thread-3 (]: On model.my_dbt_project.fct_bs_total_equity: Close
+[0m05:20:10.551643 [debug] [Thread-1 (]: Writing injected SQL for node "model.my_dbt_project.fct_bs_other_assets"
+[0m05:20:10.598163 [debug] [Thread-3 (]: Sending event: {'category': 'dbt', 'action': 'run_model', 'label': '47b28e98-efb3-44a6-930c-5d2cc20faf50', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7b129bf42b10>]}
+[0m05:20:10.619275 [info ] [Thread-3 (]: 18 of 21 OK created sql table model dw_dw.fct_bs_total_equity .................. [[32mSELECT 1102[0m in 2.71s]
+[0m05:20:10.647914 [debug] [Thread-3 (]: Finished running node model.my_dbt_project.fct_bs_total_equity
+[0m05:20:10.695513 [debug] [Thread-1 (]: Timing info for model.my_dbt_project.fct_bs_other_assets (compile): 05:20:10.479572 => 05:20:10.694160
+[0m05:20:10.766745 [debug] [Thread-1 (]: Began executing node model.my_dbt_project.fct_bs_other_assets
+[0m05:20:10.841094 [debug] [Thread-1 (]: Writing runtime sql for node "model.my_dbt_project.fct_bs_other_assets"
+[0m05:20:10.892867 [debug] [Thread-1 (]: Using postgres connection "model.my_dbt_project.fct_bs_other_assets"
+[0m05:20:10.905765 [debug] [Thread-1 (]: On model.my_dbt_project.fct_bs_other_assets: BEGIN
+[0m05:20:10.911152 [debug] [Thread-1 (]: Opening a new connection, currently in state closed
+[0m05:20:11.153480 [debug] [Thread-1 (]: SQL status: BEGIN in 0.0 seconds
+[0m05:20:11.242444 [debug] [Thread-1 (]: Using postgres connection "model.my_dbt_project.fct_bs_other_assets"
+[0m05:20:11.303320 [debug] [Thread-1 (]: On model.my_dbt_project.fct_bs_other_assets: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "node_id": "model.my_dbt_project.fct_bs_other_assets"} */
+
+  
+    
+
+  create  table "etl_project"."dw_dw"."fct_bs_other_assets__dbt_tmp"
+  
+  
+    as
+  
+  (
+    with fact as (
+    select *
+    from "etl_project"."dw_stg"."stg_fact_balance_sheet"
+),
+
+dim as (
+    select *
+    from "etl_project"."dw_dw"."dim_balance_sheet_metric_hier"
+),
+
+-- leaf metrics we need in this table
+leaf as (
+    select
+        f.symbol, f.time_report_type, f.year, f.period,
+        f.metric_code, f.metric_value, f.update_time
+    from fact f
+    where f.metric_code in (
+        'RECEIVABLES',
+        'ACCRUED_INTEREST_AND_FEES_RECEIVABLE',
+        'DEFERRED_TAX_ASSETS',
+        'OTHER_ASSETS_GROSS',
+        'GOODWILL',
+        'ALLOWANCE_OTHER_ON_BALANCE_ASSETS',
+        'OTHER_ASSETS_NET'
+    )
+),
+
+-- attach hierarchy metadata (parent/display_order/group)
+leaf_with_parent as (
+    select
+        l.*,
+        d.metric_group,
+        d.display_order,
+        d.parent_metric_code
+    from leaf l
+    left join dim d
+      on d.metric_code = l.metric_code
+),
+
+-- get roman ancestor metric_code for each leaf metric_code (nearest ROMAN by display_order)
+leaf_with_roman as (
+    select
+        x.*,
+        (
+          select d2.metric_code
+          from dim d2
+          where d2.metric_group = x.metric_group
+            and d2.node_type = 'ROMAN'
+            and d2.display_order <= x.display_order
+          order by d2.display_order desc
+          limit 1
+        ) as roman_metric_code
+    from leaf_with_parent x
+),
+
+-- join to fetch parent_value and roman_value from fact
+enriched as (
+    select
+        l.symbol, l.time_report_type, l.year, l.period,
+        l.metric_code, l.metric_value, l.update_time,
+
+        fp.metric_value as parent_metric_value,
+        fr.metric_value as roman_metric_value
+    from leaf_with_roman l
+    left join fact fp
+      on fp.symbol = l.symbol
+     and fp.time_report_type = l.time_report_type
+     and fp.year = l.year
+     and fp.period is not distinct from l.period
+     and fp.metric_code = l.parent_metric_code
+
+    left join fact fr
+      on fr.symbol = l.symbol
+     and fr.time_report_type = l.time_report_type
+     and fr.year = l.year
+     and fr.period is not distinct from l.period
+     and fr.metric_code = l.roman_metric_code
+)
+
+select
+    symbol,
+    time_report_type,
+    'balance_sheet' as financial_report_type,
+    year,
+    period,
+
+    max(case when metric_code = 'RECEIVABLES' then metric_value end) as receivables_net,
+    max(case when metric_code = 'ACCRUED_INTEREST_AND_FEES_RECEIVABLE' then metric_value end) as accrued_interest_and_fees_receivable,
+    max(case when metric_code = 'DEFERRED_TAX_ASSETS' then metric_value end) as deferred_tax_assets,
+    max(case when metric_code = 'OTHER_ASSETS_GROSS' then metric_value end) as other_assets_gross,
+    max(case when metric_code = 'GOODWILL' then metric_value end) as goodwill,
+    max(case when metric_code = 'ALLOWANCE_OTHER_ON_BALANCE_ASSETS' then metric_value end) as allowance_other_on_balance_assets,
+    max(case when metric_code = 'OTHER_ASSETS_NET' then metric_value end) as other_assets_net,
+
+    max(case when metric_code = 'GOODWILL' then roman_metric_value end) as hierachy_of_goodwill,
+    max(case when metric_code = 'ALLOWANCE_OTHER_ON_BALANCE_ASSETS' then roman_metric_value end) as hierachy_of_allowance_other_on_balance_assets,
+
+    max(case when metric_code = 'GOODWILL' then parent_metric_value end) as parent_of_goodwill,
+    max(case when metric_code = 'ALLOWANCE_OTHER_ON_BALANCE_ASSETS' then parent_metric_value end) as parent_of_allowance_other_on_balance_assets,
+
+    max(update_time) as update_time
+from enriched
+group by symbol, time_report_type, year, period
+  );
+  
+[0m05:20:11.709547 [debug] [Thread-4 (]: SQL status: SELECT 14342 in 2.0 seconds
+[0m05:20:11.744338 [debug] [Thread-4 (]: Using postgres connection "model.my_dbt_project.fct_bs_trading_securities"
+[0m05:20:11.757246 [debug] [Thread-4 (]: On model.my_dbt_project.fct_bs_trading_securities: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "node_id": "model.my_dbt_project.fct_bs_trading_securities"} */
+alter table "etl_project"."dw_dw"."fct_bs_trading_securities__dbt_tmp" rename to "fct_bs_trading_securities"
+[0m05:20:11.788040 [debug] [Thread-4 (]: SQL status: ALTER TABLE in 0.0 seconds
+[0m05:20:11.807382 [debug] [Thread-4 (]: On model.my_dbt_project.fct_bs_trading_securities: COMMIT
+[0m05:20:11.816414 [debug] [Thread-4 (]: Using postgres connection "model.my_dbt_project.fct_bs_trading_securities"
+[0m05:20:11.827573 [debug] [Thread-4 (]: On model.my_dbt_project.fct_bs_trading_securities: COMMIT
+[0m05:20:11.846777 [debug] [Thread-4 (]: SQL status: COMMIT in 0.0 seconds
+[0m05:20:11.885606 [debug] [Thread-4 (]: Applying DROP to: "etl_project"."dw_dw"."fct_bs_trading_securities__dbt_backup"
+[0m05:20:11.902389 [debug] [Thread-4 (]: Using postgres connection "model.my_dbt_project.fct_bs_trading_securities"
+[0m05:20:11.909684 [debug] [Thread-4 (]: On model.my_dbt_project.fct_bs_trading_securities: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "node_id": "model.my_dbt_project.fct_bs_trading_securities"} */
+drop table if exists "etl_project"."dw_dw"."fct_bs_trading_securities__dbt_backup" cascade
+[0m05:20:11.923872 [debug] [Thread-4 (]: SQL status: DROP TABLE in 0.0 seconds
+[0m05:20:11.940641 [debug] [Thread-4 (]: Timing info for model.my_dbt_project.fct_bs_trading_securities (execute): 05:20:09.369297 => 05:20:11.939807
+[0m05:20:11.953711 [debug] [Thread-4 (]: On model.my_dbt_project.fct_bs_trading_securities: Close
+[0m05:20:11.964654 [debug] [Thread-4 (]: Sending event: {'category': 'dbt', 'action': 'run_model', 'label': '47b28e98-efb3-44a6-930c-5d2cc20faf50', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7b129cf95b50>]}
+[0m05:20:11.982601 [info ] [Thread-4 (]: 19 of 21 OK created sql table model dw_dw.fct_bs_trading_securities ............ [[32mSELECT 14342[0m in 3.14s]
+[0m05:20:11.998583 [debug] [Thread-4 (]: Finished running node model.my_dbt_project.fct_bs_trading_securities
+[0m05:20:55.676694 [debug] [Thread-1 (]: SQL status: SELECT 600 in 44.0 seconds
+[0m05:20:55.698326 [debug] [Thread-1 (]: Using postgres connection "model.my_dbt_project.fct_bs_other_assets"
+[0m05:20:55.700450 [debug] [Thread-1 (]: On model.my_dbt_project.fct_bs_other_assets: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "node_id": "model.my_dbt_project.fct_bs_other_assets"} */
+alter table "etl_project"."dw_dw"."fct_bs_other_assets__dbt_tmp" rename to "fct_bs_other_assets"
+[0m05:20:55.709733 [debug] [Thread-1 (]: SQL status: ALTER TABLE in 0.0 seconds
+[0m05:20:55.717681 [debug] [Thread-1 (]: On model.my_dbt_project.fct_bs_other_assets: COMMIT
+[0m05:20:55.724743 [debug] [Thread-1 (]: Using postgres connection "model.my_dbt_project.fct_bs_other_assets"
+[0m05:20:55.726861 [debug] [Thread-1 (]: On model.my_dbt_project.fct_bs_other_assets: COMMIT
+[0m05:20:55.735014 [debug] [Thread-1 (]: SQL status: COMMIT in 0.0 seconds
+[0m05:20:55.748819 [debug] [Thread-1 (]: Applying DROP to: "etl_project"."dw_dw"."fct_bs_other_assets__dbt_backup"
+[0m05:20:55.753128 [debug] [Thread-1 (]: Using postgres connection "model.my_dbt_project.fct_bs_other_assets"
+[0m05:20:55.759517 [debug] [Thread-1 (]: On model.my_dbt_project.fct_bs_other_assets: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "node_id": "model.my_dbt_project.fct_bs_other_assets"} */
+drop table if exists "etl_project"."dw_dw"."fct_bs_other_assets__dbt_backup" cascade
+[0m05:20:55.771907 [debug] [Thread-1 (]: SQL status: DROP TABLE in 0.0 seconds
+[0m05:20:55.777023 [debug] [Thread-1 (]: Timing info for model.my_dbt_project.fct_bs_other_assets (execute): 05:20:10.780849 => 05:20:55.776682
+[0m05:20:55.779041 [debug] [Thread-1 (]: On model.my_dbt_project.fct_bs_other_assets: Close
+[0m05:20:55.783672 [debug] [Thread-1 (]: Sending event: {'category': 'dbt', 'action': 'run_model', 'label': '47b28e98-efb3-44a6-930c-5d2cc20faf50', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7b129e051ad0>]}
+[0m05:20:55.786377 [info ] [Thread-1 (]: 21 of 21 OK created sql table model dw_dw.fct_bs_other_assets .................. [[32mSELECT 600[0m in 45.33s]
+[0m05:20:55.790408 [debug] [Thread-1 (]: Finished running node model.my_dbt_project.fct_bs_other_assets
+[0m05:21:11.390069 [debug] [Thread-2 (]: SQL status: SELECT 600 in 61.0 seconds
+[0m05:21:11.400785 [debug] [Thread-2 (]: Using postgres connection "model.my_dbt_project.fct_bs_liabilities"
+[0m05:21:11.403997 [debug] [Thread-2 (]: On model.my_dbt_project.fct_bs_liabilities: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "node_id": "model.my_dbt_project.fct_bs_liabilities"} */
+alter table "etl_project"."dw_dw"."fct_bs_liabilities__dbt_tmp" rename to "fct_bs_liabilities"
+[0m05:21:11.408391 [debug] [Thread-2 (]: SQL status: ALTER TABLE in 0.0 seconds
+[0m05:21:11.416304 [debug] [Thread-2 (]: On model.my_dbt_project.fct_bs_liabilities: COMMIT
+[0m05:21:11.419268 [debug] [Thread-2 (]: Using postgres connection "model.my_dbt_project.fct_bs_liabilities"
+[0m05:21:11.422930 [debug] [Thread-2 (]: On model.my_dbt_project.fct_bs_liabilities: COMMIT
+[0m05:21:11.432738 [debug] [Thread-2 (]: SQL status: COMMIT in 0.0 seconds
+[0m05:21:11.440962 [debug] [Thread-2 (]: Applying DROP to: "etl_project"."dw_dw"."fct_bs_liabilities__dbt_backup"
+[0m05:21:11.447221 [debug] [Thread-2 (]: Using postgres connection "model.my_dbt_project.fct_bs_liabilities"
+[0m05:21:11.450418 [debug] [Thread-2 (]: On model.my_dbt_project.fct_bs_liabilities: /* {"app": "dbt", "dbt_version": "1.7.15", "profile_name": "my_dbt_project", "target_name": "dev", "node_id": "model.my_dbt_project.fct_bs_liabilities"} */
+drop table if exists "etl_project"."dw_dw"."fct_bs_liabilities__dbt_backup" cascade
+[0m05:21:11.455950 [debug] [Thread-2 (]: SQL status: DROP TABLE in 0.0 seconds
+[0m05:21:11.462500 [debug] [Thread-2 (]: Timing info for model.my_dbt_project.fct_bs_liabilities (execute): 05:20:09.504681 => 05:21:11.461741
+[0m05:21:11.465544 [debug] [Thread-2 (]: On model.my_dbt_project.fct_bs_liabilities: Close
+[0m05:21:11.470214 [debug] [Thread-2 (]: Sending event: {'category': 'dbt', 'action': 'run_model', 'label': '47b28e98-efb3-44a6-930c-5d2cc20faf50', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7b129bf88190>]}
+[0m05:21:11.474774 [info ] [Thread-2 (]: 20 of 21 OK created sql table model dw_dw.fct_bs_liabilities ................... [[32mSELECT 600[0m in 62.33s]
+[0m05:21:11.479979 [debug] [Thread-2 (]: Finished running node model.my_dbt_project.fct_bs_liabilities
+[0m05:21:11.495659 [debug] [MainThread]: Using postgres connection "master"
+[0m05:21:11.499392 [debug] [MainThread]: On master: BEGIN
+[0m05:21:11.502576 [debug] [MainThread]: Opening a new connection, currently in state closed
+[0m05:21:11.583154 [debug] [MainThread]: SQL status: BEGIN in 0.0 seconds
+[0m05:21:11.611577 [debug] [MainThread]: On master: COMMIT
+[0m05:21:11.615402 [debug] [MainThread]: Using postgres connection "master"
+[0m05:21:11.618729 [debug] [MainThread]: On master: COMMIT
+[0m05:21:11.623110 [debug] [MainThread]: SQL status: COMMIT in 0.0 seconds
+[0m05:21:11.626593 [debug] [MainThread]: On master: Close
+[0m05:21:11.633688 [debug] [MainThread]: Connection 'master' was properly closed.
+[0m05:21:11.641159 [debug] [MainThread]: Connection 'model.my_dbt_project.fct_bs_other_assets' was properly closed.
+[0m05:21:11.643921 [debug] [MainThread]: Connection 'model.my_dbt_project.fct_bs_liabilities' was properly closed.
+[0m05:21:11.646841 [debug] [MainThread]: Connection 'model.my_dbt_project.fct_bs_total_equity' was properly closed.
+[0m05:21:11.649291 [debug] [MainThread]: Connection 'model.my_dbt_project.fct_bs_trading_securities' was properly closed.
+[0m05:21:11.652049 [info ] [MainThread]: 
+[0m05:21:11.658180 [info ] [MainThread]: Finished running 6 view models, 15 table models in 0 hours 1 minutes and 18.10 seconds (78.10s).
+[0m05:21:11.677678 [debug] [MainThread]: Command end result
+[0m05:21:11.850759 [info ] [MainThread]: 
+[0m05:21:11.855043 [info ] [MainThread]: [32mCompleted successfully[0m
+[0m05:21:11.858826 [info ] [MainThread]: 
+[0m05:21:11.863177 [info ] [MainThread]: Done. PASS=21 WARN=0 ERROR=0 SKIP=0 TOTAL=21
+[0m05:21:11.874248 [debug] [MainThread]: Resource report: {"command_name": "build", "command_success": true, "command_wall_clock_time": 85.67482, "process_user_time": 14.927844, "process_kernel_time": 4.106017, "process_mem_max_rss": "128756", "process_in_blocks": "65400", "process_out_blocks": "1968"}
+[0m05:21:11.878090 [debug] [MainThread]: Command `dbt build` succeeded at 05:21:11.877394 after 85.68 seconds
+[0m05:21:11.882624 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7b12a2dd2310>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7b12a2dd17d0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7b12a2dd2350>]}
+[0m05:21:11.885790 [debug] [MainThread]: Flushing usage events
