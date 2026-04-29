@@ -1,7 +1,6 @@
 # version: "3.9"
 
 services:
-
   # ============================
   # Prefect Server (UI + API)
   # ============================
@@ -48,6 +47,18 @@ services:
       - etl-net
     restart: always
 
+  kafka:
+      image: bitnami/kafka:latest
+      container_name: stock_kafka
+      ports:
+        - "9092:9092"
+      environment:
+        - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
+        - ALLOW_PLAINTEXT_LISTENER=yes
+        - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092
+        - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092
+      depends_on:
+        - zookeeper
   # ============================
   # MongoDB
   # ============================
@@ -70,7 +81,24 @@ services:
       start_period: 40s
     networks:
       - etl-net
-
+#===============================
+  minio:
+    image: minio/minio:latest
+    container_name: minio-lakehouse
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    command: server /data --console-address ":9001"
+    volumes:
+      - minio_data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
   # ============================
   # PostgreSQL
   # ============================
@@ -113,7 +141,52 @@ services:
     networks:
       - etl-net
 
+  spark-master:
+    image: apache/spark:3.5.0
+    container_name: spark-master
+    ports:
+      - "8080:8080"
+      - "7077:7077"
+    environment:
+      SPARK_MODE: master
+      SPARK_MASTER_HOST: spark-master
+      SPARK_RPC_AUTHENTICATION_ENABLED: "no"
+      SPARK_RPC_ENCRYPTION_ENABLED: "no"
+    volumes:
+      - ./jars:/opt/spark/jars
+      - ./data:/opt/spark/data
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "7077"]
+      interval: 30s
 
+  spark-worker:
+    image: apache/spark:3.5.0
+    container_name: spark-worker
+    depends_on:
+      spark-master:
+        condition: service_healthy
+    environment:
+      SPARK_MODE: worker
+      SPARK_MASTER_URL: spark://spark-master:7077
+      SPARK_WORKER_CORES: 2
+      SPARK_WORKER_MEMORY: 4g
+    volumes:
+      - ./jars:/opt/spark/jars
+      - ./data:/opt/spark/data
+
+  trino:
+    image: trinodb/trino:458
+    container_name: trino-query
+    ports:
+      - "8082:8080"
+    volumes:
+      - ./trino-catalog:/etc/trino/catalog
+    depends_on:
+      minio:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/v1/info"]
+      interval: 30s
 # ============================
 # VOLUMES & NETWORKS
 # ============================
@@ -125,3 +198,8 @@ volumes:
 networks:
   etl-net:
     driver: bridge
+
+volumes:
+  minio_data:
+  postgres_data:
+  prefect_data:

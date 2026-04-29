@@ -1,0 +1,64 @@
+# Khởi tạo dự án SQLMesh với DuckDB engine
+#sqlmesh init duckdb
+
+#config.yaml
+# config.yaml
+# gateways:
+#   local:
+#     connection:
+#       type: duckdb
+#       database: ./stock_lakehouse.db
+#       # Chạy script này mỗi khi DuckDB khởi động để nhận diện MinIO
+#       pre_statements:
+#         - "INSTALL httpfs;"
+#         - "LOAD httpfs;"
+#         - "SET s3_endpoint='localhost:9000';"
+#         - "SET s3_access_key_id='minioadmin';"
+#         - "SET s3_secret_access_key='minioadmin';"
+#         - "SET s3_use_ssl=false;"
+#         - "SET s3_url_style='path';"
+
+
+# -- models/silver/stock_prices_clean.sql
+# MODEL (
+#   name silver.stock_prices_clean,
+#   kind INCREMENTAL_BY_TIME (
+#     time_column ingest_date
+#   ),
+#   cron '@daily',
+#   owner 'data_team',
+#   audits (
+#     NOT_NULL(columns = (symbol, close_price, ingest_date)),
+#     > assert_positive_price(column = close_price)
+#   )
+# );
+
+# -- Subsystem 8: Deduplication (Loại bỏ trùng lặp trong ngày)
+# WITH raw_data AS (
+#   SELECT
+#     symbol,
+#     CAST(close_price AS DOUBLE) AS close_price,
+#     CAST(volume AS BIGINT) AS volume,
+#     CAST(foreign_buy AS BIGINT) AS foreign_buy,
+#     CAST(ingest_date AS DATE) AS ingest_date,
+#     CAST(ingest_timestamp AS TIMESTAMP) AS ingest_timestamp,
+#     -- Giữ lại bản ghi mới nhất nếu có nhiều bản ghi của 1 mã trong cùng 1 ngày
+#     ROW_NUMBER() OVER (
+#       PARTITION BY symbol, ingest_date 
+#       ORDER BY ingest_timestamp DESC
+#     ) as rn
+#   FROM read_parquet('s3://lakehouse/bronze/stock_prices/date=' || @ds || '/*.parquet')
+#   -- Biến @ds của SQLMesh tự động render ra chuỗi ngày YYYY-MM-DD
+# )
+
+# -- Subsystem 5: Data Cleansing (Làm sạch)
+# SELECT
+#   symbol,
+#   close_price,
+#   volume,
+#   foreign_buy,
+#   ingest_date,
+#   ingest_timestamp
+# FROM raw_data
+# WHERE rn = 1
+#   AND close_price > 0; -- Loại bỏ rác
