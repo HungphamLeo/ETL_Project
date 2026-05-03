@@ -1,0 +1,249 @@
+# Event Log Schema
+# ==================
+# Defines the structure of events logged via ErrorEventLog and events tracked
+# across ETL pipeline execution. Maps to Delta Lake silver/meta tables.
+
+# Error/Event Event Schema (Subsystem 5)
+error_event_schema:
+  table: silver_meta_etl_error
+  version: "1.0"
+  description: "Error events generated during data validation, cleansing, and transformation"
+  fields:
+    err_id:
+      type: string
+      description: "Unique error ID (SHA256 hash of run_id|record_id|message)"
+      nullable: false
+    run_id:
+      type: string
+      description: "ETL pipeline run ID"
+      nullable: false
+    job_name:
+      type: string
+      description: "Job/process name generating the error"
+      nullable: false
+    error_level:
+      type: string
+      enum: [WARNING, ERROR, FATAL]
+      description: "Severity level: WARNING (recoverable), ERROR (validation fail), FATAL (stop pipeline)"
+      nullable: false
+    error_message:
+      type: string
+      description: "Human-readable error description"
+      nullable: false
+    record_id:
+      type: string
+      description: "Natural key of failed record (e.g., symbol|date for trading records)"
+      nullable: true
+    raw_json:
+      type: string
+      description: "Full serialized record that failed validation (for debugging)"
+      nullable: true
+    err_time:
+      type: datetime
+      description: "UTC timestamp when error occurred"
+      nullable: false
+      default: "datetime.now(timezone.utc)"
+    retry_count:
+      type: integer
+      description: "Number of retry attempts for this error"
+      nullable: false
+      default: 0
+
+# ETL Run Record Schema (Subsystem 22 + 27)
+etl_run_schema:
+  table: silver_meta_etl_run
+  version: "1.0"
+  description: "Track every ETL job execution with start/end times, row counts, and status"
+  fields:
+    run_id:
+      type: string
+      description: "Unique run identifier"
+      nullable: false
+      primary_key: true
+    job_name:
+      type: string
+      description: "Descriptive job/process name"
+      nullable: false
+    layer:
+      type: string
+      enum: [bronze, silver, gold]
+      description: "Target data lake layer"
+      nullable: false
+    table_name:
+      type: string
+      description: "Target table name"
+      nullable: false
+    start_time:
+      type: datetime
+      description: "Job start time (UTC)"
+      nullable: false
+    end_time:
+      type: datetime
+      description: "Job end time (UTC)"
+      nullable: true
+    status:
+      type: string
+      enum: [RUNNING, SUCCESS, FAILED, PARTIAL, SKIPPED]
+      description: "Final job status"
+      nullable: false
+      default: "RUNNING"
+    rows_read:
+      type: integer
+      description: "Number of records read from source"
+      nullable: true
+    rows_written:
+      type: integer
+      description: "Number of records written to target"
+      nullable: true
+    error_message:
+      type: string
+      description: "Error details if job failed"
+      nullable: true
+
+# Data Lineage Record Schema (Subsystem 29)
+lineage_schema:
+  table: silver_meta_data_lineage
+  version: "1.0"
+  description: "Track data flow and transformations across bronze/silver/gold layers"
+  fields:
+    lineage_id:
+      type: string
+      description: "Unique lineage event ID"
+      nullable: false
+      primary_key: true
+    run_id:
+      type: string
+      description: "ETL run ID (foreign key to silver_meta_etl_run)"
+      nullable: false
+    source_layer:
+      type: string
+      enum: [bronze, silver, gold, external]
+      description: "Source data layer"
+      nullable: false
+    source_table:
+      type: string
+      description: "Source table name"
+      nullable: false
+    target_layer:
+      type: string
+      enum: [bronze, silver, gold]
+      description: "Target data layer"
+      nullable: false
+    target_table:
+      type: string
+      description: "Target table name"
+      nullable: false
+    operation:
+      type: string
+      enum: [APPEND, MERGE, SCD2, OVERWRITE, BACKFILL, CDC, DELETE]
+      description: "Type of operation performed"
+      nullable: false
+    rows_affected:
+      type: integer
+      description: "Number of rows processed by this operation"
+      nullable: false
+      default: 0
+    recorded_at:
+      type: datetime
+      description: "When lineage event was recorded (UTC)"
+      nullable: false
+
+# Data Quality Check Schema (Subsystem 1)
+quality_check_schema:
+  table: silver_meta_data_quality
+  version: "1.0"
+  description: "Data quality check results (profiling, null checks, regex validation, etc.)"
+  fields:
+    quality_id:
+      type: string
+      description: "Unique quality check ID"
+      nullable: false
+      primary_key: true
+    run_id:
+      type: string
+      description: "ETL run ID"
+      nullable: false
+    table_name:
+      type: string
+      description: "Table being validated"
+      nullable: false
+    check_name:
+      type: string
+      description: "Check identifier (e.g., null_check:symbol, regex_check:email)"
+      nullable: false
+    status:
+      type: string
+      enum: [PASS, FAIL, WARN, SKIPPED]
+      description: "Check result status"
+      nullable: false
+    total_records:
+      type: integer
+      description: "Total records checked"
+      nullable: false
+    failed_records:
+      type: integer
+      description: "Records that failed the check"
+      nullable: false
+    pass_rate:
+      type: float
+      description: "Percentage of records that passed (0.0-1.0)"
+      nullable: false
+    checked_at:
+      type: datetime
+      description: "When check was performed (UTC)"
+      nullable: false
+
+# Event Escalation Schema (Subsystem 30 - Problem Escalation)
+escalation_schema:
+  table: silver_meta_problem_escalation
+  version: "1.0"
+  description: "Tracks FATAL errors and escalation actions (alerts, notifications)"
+  fields:
+    escalation_id:
+      type: string
+      description: "Unique escalation event ID"
+      nullable: false
+      primary_key: true
+    error_id:
+      type: string
+      description: "Reference to original error event"
+      nullable: false
+    run_id:
+      type: string
+      description: "ETL run ID"
+      nullable: false
+    severity:
+      type: string
+      enum: [CRITICAL, HIGH, MEDIUM]
+      description: "Escalation severity"
+      nullable: false
+    action_taken:
+      type: string
+      description: "Action taken (e.g., 'slack_notified', 'pagerduty_triggered', 'email_sent')"
+      nullable: false
+    target:
+      type: string
+      description: "Escalation target (Slack channel, email, PagerDuty service, etc.)"
+      nullable: true
+    escalated_at:
+      type: datetime
+      description: "When escalation action was triggered (UTC)"
+      nullable: false
+    response_status:
+      type: string
+      enum: [PENDING, ACKNOWLEDGED, RESOLVED]
+      description: "Status of escalation response"
+      nullable: false
+      default: "PENDING"
+
+# Logging Formatter Configuration
+logging_formatters:
+  default_json:
+    format: '{"time":"%(asctime)s", "level":"%(levelname)s", "message":"%(message)s", "caller":"%(pathname)s:%(lineno)d"}'
+    datefmt: "%Y-%m-%dT%H:%M:%S"
+  detailed_json:
+    format: '{"time":"%(asctime)s", "level":"%(levelname)s", "logger":"%(name)s", "module":"%(module)s", "function":"%(funcName)s", "line":"%(lineno)d", "message":"%(message)s", "exc_info":"%(exc_info)s"}'
+    datefmt: "%Y-%m-%dT%H:%M:%S"
+  structured_event:
+    format: '{"event_type":"%(event_type)s", "event_id":"%(event_id)s", "run_id":"%(run_id)s", "timestamp":"%(asctime)s", "level":"%(levelname)s", "data":"%(message)s"}'
+    datefmt: "%Y-%m-%dT%H:%M:%S"

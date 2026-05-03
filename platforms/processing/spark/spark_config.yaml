@@ -1,0 +1,25 @@
+spark:
+  app_name: "StockFinancialLakehouse"
+  configs:
+    spark.jars.packages: "io.delta:delta-spark_2.12:3.5.1,org.apache.hadoop:hadoop-aws:3.3.4"
+    spark.sql.extensions: "io.delta.sql.DeltaSparkSessionExtension"
+    spark.sql.catalog.spark_catalog: "org.apache.spark.sql.delta.catalog.DeltaCatalog"
+    spark.hadoop.fs.s3a.path.style.access: "true"
+    spark.hadoop.fs.s3a.impl: "org.apache.hadoop.fs.s3a.S3AFileSystem"
+    spark.hadoop.fs.s3a.connection.ssl.enabled: "false"
+    spark.sql.adaptive.enabled: "true"
+    spark.sql.adaptive.coalescePartitions.enabled: "true"
+    spark.serializer: "org.apache.spark.serializer.KryoSerializer"
+    spark.sql.execution.arrow.pyspark.enabled: "true"
+    spark.sql.shuffle.partitions: "8"
+    spark.databricks.delta.schema.autoMerge.enabled: "true"
+  s3_credentials:
+    endpoint_env: "S3_ENDPOINT"
+    default_endpoint: "http://localhost:9000"
+    access_key_env: "AWS_ACCESS_KEY_ID"
+    default_access_key: "minioadmin"
+    secret_key_env: "AWS_SECRET_ACCESS_KEY"
+    default_secret_key: "minioadmin"
+  extra:
+    spark.sql.repl.eagerEval.enabled: "true"
+    spark.sql.repl.eagerEval.maxNumRows: "20"

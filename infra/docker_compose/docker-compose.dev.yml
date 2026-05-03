@@ -48,17 +48,36 @@ services:
     restart: always
 
   kafka:
-      image: bitnami/kafka:latest
-      container_name: stock_kafka
-      ports:
-        - "9092:9092"
-      environment:
-        - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
-        - ALLOW_PLAINTEXT_LISTENER=yes
-        - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092
-        - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092
-      depends_on:
-        - zookeeper
+    image: bitnami/kafka:latest
+    container_name: stock_kafka
+    ports:
+      - "9092:9092"
+    environment:
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
+      - ALLOW_PLAINTEXT_LISTENER=yes
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
+    depends_on:
+      - zookeeper
+    healthcheck:
+      test: ["CMD", "kafka-broker-api-versions.sh", "--bootstrap-server", "localhost:9092"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+    networks:
+      - lakehouse_network
+
+  zookeeper:
+    image: bitnami/zookeeper:latest
+    container_name: stock_zookeeper
+    ports:
+      - "2181:2181"
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+    restart: unless-stopped
+    networks:
+      - lakehouse_network
   # ============================
   # MongoDB
   # ============================
@@ -81,6 +100,27 @@ services:
       start_period: 40s
     networks:
       - etl-net
+  
+  flink:
+    jobmanager:
+      image: flink:1.20.0-scala_2.12
+      container_name: jobmanager
+      ports:
+        - "8081:8081"
+      environment:
+        - JOB_MANAGER_RPC_ADDRESS=jobmanager
+      command: jobmanager
+
+    taskmanager:
+      image: flink:1.20.0-scala_2.12
+      container_name: taskmanager
+      depends_on:
+        - jobmanager
+      environment:
+        - JOB_MANAGER_RPC_ADDRESS=jobmanager
+        - TASK_MANAGER_NUMBER_OF_TASK_SLOTS=2
+      command: taskmanager
+
 #===============================
   minio:
     image: minio/minio:latest
@@ -90,7 +130,7 @@ services:
       - "9001:9001"
     environment:
       MINIO_ROOT_USER: minioadmin
-      MINIO_ROOT_PASSWORD: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin_secure_123@#
     command: server /data --console-address ":9001"
     volumes:
       - minio_data:/data
@@ -99,6 +139,9 @@ services:
       interval: 30s
       timeout: 20s
       retries: 3
+    restart: unless-stopped
+    networks:
+      - lakehouse_network
   # ============================
   # PostgreSQL
   # ============================
@@ -192,14 +235,13 @@ services:
 # ============================
 
 volumes:
-  mongo_data:
-  pg_data:
+  minio_data:
+    driver: local
+  postgres_data:
+    driver: local
+  prefect_data:
+    driver: local
 
 networks:
-  etl-net:
+  lakehouse_network:
     driver: bridge
-
-volumes:
-  minio_data:
-  postgres_data:
-  prefect_data:

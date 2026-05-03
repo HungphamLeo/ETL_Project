@@ -26,17 +26,16 @@ import logging
 import os
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional, Sequence
-
 import pandas as pd
 
 from platforms.storage.base_storage import StorageBackend, to_primitive
-from platforms.storage.deltalake.delta_schema_registry import (
-    DeltaTableDef,
-    get_table_def,
-    ALL_BRONZE_TABLES,
-    ALL_SILVER_TABLES,
-    ALL_GOLD_TABLES,
-)
+# from platform.schema_models_manage.vietnam_stock/delta_schema_registry.py import (
+#     DeltaTableDef,
+#     get_table_def,
+#     ALL_BRONZE_TABLES,
+#     ALL_SILVER_TABLES,
+#     ALL_GOLD_TABLES,
+# )
 
 
 # ---------------------------------------------------------------------------
@@ -49,20 +48,8 @@ def _get_spark(app_name: str = "ETL_Lakehouse"):
     Falls back gracefully if PySpark is not installed.
     """
     try:
-        from pyspark.sql import SparkSession
-        from delta import configure_spark_with_delta_pip  # type: ignore
-
-        builder = (
-            SparkSession.builder.appName(app_name)
-            .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension")
-            .config(
-                "spark.sql.catalog.spark_catalog",
-                "org.apache.spark.sql.delta.catalog.DeltaCatalog",
-            )
-            .config("spark.sql.shuffle.partitions", "8")
-            .config("spark.databricks.delta.schema.autoMerge.enabled", "true")
-        )
-        return configure_spark_with_delta_pip(builder).getOrCreate()
+        from platforms.processing.spark.spark_session import get_lakehouse_spark_session
+        return get_lakehouse_spark_session(app_name=app_name)
     except ImportError as exc:
         raise RuntimeError(
             "PySpark + delta-spark are required for DeltaLakeStorageBackend. "

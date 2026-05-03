@@ -3,7 +3,7 @@ from typing import Dict, Any, Optional, Protocol
 from datetime import timedelta
 
 from scripts.cli.load_config import func_load_config
-from shared.logger.python_main_logger import FastLogger
+from shared.logger.python_main_logger import logger_manager
 
 
 class ConfigLoader(Protocol):
@@ -24,13 +24,11 @@ class FileConfigLoader:
             return {}
 
 
-class LoggerFactory(Protocol):
-    def get_logger(self, config: Dict[str, Any], logger_type: str) -> logging.Logger:
-        ...
-        return FastLogger(config, logger_type).get_logger()
 
+class LoggerFactory(Protocol):
+    def get_logger(self, module_name: str) -> logging.Logger:
+        ...
 
 class DefaultLoggerFactory:
-    def get_logger(self, config: Dict[str, Any], logger_type: str) -> logging.Logger:
-        ...
-        return FastLogger(config, logger_type).get_logger()
+    def get_logger(self, module_name: str) -> logging.Logger:
+        return logger_manager.get_logger(module_name)

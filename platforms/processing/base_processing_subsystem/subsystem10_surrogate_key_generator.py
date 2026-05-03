@@ -1,3 +1,4 @@
+
 """
 Surrogate Key Generator
 ========================
@@ -31,8 +32,8 @@ import logging
 import uuid
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
-
 import pandas as pd
+
 
 
 class SurrogateKeyGenerator:
@@ -162,82 +163,86 @@ class SurrogateKeyGenerator:
 # Pre-built generators for each dimension/fact table
 # ---------------------------------------------------------------------------
 
-COMPANY_KEY_GEN = SurrogateKeyGenerator(prefix="", key_length=32)
-INDUSTRY_KEY_GEN = SurrogateKeyGenerator(prefix="", key_length=32)
-TRADE_KEY_GEN = SurrogateKeyGenerator(prefix="", key_length=32)
-INCOME_KEY_GEN = SurrogateKeyGenerator(prefix="", key_length=32)
-BALANCE_KEY_GEN = SurrogateKeyGenerator(prefix="", key_length=32)
-PLAN_KEY_GEN = SurrogateKeyGenerator(prefix="", key_length=32)
-FINANCIAL_RATIO_KEY_GEN = SurrogateKeyGenerator(prefix="", key_length=32)
-INDUSTRY_SUMMARY_KEY_GEN = SurrogateKeyGenerator(prefix="", key_length=32)
+# COMPANY_KEY_GEN = SurrogateKeyGenerator(prefix="", key_length=32)
+# INDUSTRY_KEY_GEN = SurrogateKeyGenerator(prefix="", key_length=32)
+# TRADE_KEY_GEN = SurrogateKeyGenerator(prefix="", key_length=32)
+# INCOME_KEY_GEN = SurrogateKeyGenerator(prefix="", key_length=32)
+# BALANCE_KEY_GEN = SurrogateKeyGenerator(prefix="", key_length=32)
+# PLAN_KEY_GEN = SurrogateKeyGenerator(prefix="", key_length=32)
+# FINANCIAL_RATIO_KEY_GEN = SurrogateKeyGenerator(prefix="", key_length=32)
+# INDUSTRY_SUMMARY_KEY_GEN = SurrogateKeyGenerator(prefix="", key_length=32)
 
 
-def enrich_with_surrogate_keys(records: List[Dict[str, Any]], table_name: str) -> List[Dict[str, Any]]:
-    """
-    Convenience function: add the correct surrogate key to records based on table_name.
-    Maps table names to their key fields and generator.
+# def enrich_with_surrogate_keys(records: List[Dict[str, Any]], table_name: str) -> List[Dict[str, Any]]:
+#     """
+#     Convenience function: add the correct surrogate key to records based on table_name.
+#     Maps table names to their key fields and generator.
 
-    Args:
-        records: List of record dicts
-        table_name: Target table name (e.g. "fact_trading_history", "dim_company")
-    Returns:
-        Records with surrogate key field injected
-    """
-    KEY_CONFIG: Dict[str, Dict] = {
-        "dim_company": {
-            "key_field": "company_key",
-            "key_parts": ["symbol"],
-            "gen": COMPANY_KEY_GEN,
-        },
-        "dim_industry": {
-            "key_field": "industry_sk",
-            "key_parts": ["industry_code", "industry_metric"],
-            "gen": INDUSTRY_KEY_GEN,
-        },
-        "fact_trading_history": {
-            "key_field": "trade_key",
-            "key_parts": ["symbol", "date"],
-            "gen": TRADE_KEY_GEN,
-        },
-        "fact_income_statement": {
-            "key_field": "income_key",
-            "key_parts": ["symbol", "report_type", "year", "period", "metric_code"],
-            "gen": INCOME_KEY_GEN,
-        },
-        "fact_balance_sheet": {
-            "key_field": "balance_key",
-            "key_parts": ["symbol", "report_type", "year", "period", "metric_code"],
-            "gen": BALANCE_KEY_GEN,
-        },
-        "fact_business_plan": {
-            "key_field": "plan_key",
-            "key_parts": ["symbol", "year"],
-            "gen": PLAN_KEY_GEN,
-        },
-        "fact_financial_metrics": {
-            "key_field": "financial_ratio_key",
-            "key_parts": ["symbol"],
-            "gen": FINANCIAL_RATIO_KEY_GEN,
-        },
-        "fact_industry_summary": {
-            "key_field": "industry_summary_key",
-            "key_parts": ["industry_code", "industry_metric_type"],
-            "gen": INDUSTRY_SUMMARY_KEY_GEN,
-        },
-    }
+#     Args:
+#         records: List of record dicts
+#         table_name: Target table name (e.g. "fact_trading_history", "dim_company")
+#     Returns:
+#         Records with surrogate key field injected
+#     """
+#     KEY_CONFIG: Dict[str, Dict] = {
+#         "dim_company": {
+#             "key_field": "company_key",
+#             "key_parts": ["symbol"],
+#             "gen": COMPANY_KEY_GEN,
+#         },
+#         "dim_industry": {
+#             "key_field": "industry_sk",
+#             "key_parts": ["industry_code", "industry_metric"],
+#             "gen": INDUSTRY_KEY_GEN,
+#         },
+#         "fact_trading_history": {
+#             "key_field": "trade_key",
+#             "key_parts": ["symbol", "date"],
+#             "gen": TRADE_KEY_GEN,
+#         },
+#         "fact_income_statement": {
+#             "key_field": "income_key",
+#             "key_parts": ["symbol", "report_type", "year", "period", "metric_code"],
+#             "gen": INCOME_KEY_GEN,
+#         },
+#         "fact_balance_sheet": {
+#             "key_field": "balance_key",
+#             "key_parts": ["symbol", "report_type", "year", "period", "metric_code"],
+#             "gen": BALANCE_KEY_GEN,
+#         },
+#         "fact_business_plan": {
+#             "key_field": "plan_key",
+#             "key_parts": ["symbol", "year"],
+#             "gen": PLAN_KEY_GEN,
+#         },
+#         "fact_financial_metrics": {
+#             "key_field": "financial_ratio_key",
+#             "key_parts": ["symbol"],
+#             "gen": FINANCIAL_RATIO_KEY_GEN,
+#         },
+#         "fact_industry_summary": {
+#             "key_field": "industry_summary_key",
+#             "key_parts": ["industry_code", "industry_metric_type"],
+#             "gen": INDUSTRY_SUMMARY_KEY_GEN,
+#         },
+#     }
 
-    cfg = KEY_CONFIG.get(table_name)
-    if not cfg:
-        return records
+#     cfg = KEY_CONFIG.get(table_name)
+#     if not cfg:
+#         return records
 
-    key_field = cfg["key_field"]
-    key_parts = cfg["key_parts"]
-    gen: SurrogateKeyGenerator = cfg["gen"]
+#     key_field = cfg["key_field"]
+#     key_parts = cfg["key_parts"]
+#     gen: SurrogateKeyGenerator = cfg["gen"]
 
-    enriched = []
-    for record in records:
-        record = dict(record)
-        record[key_field] = gen.hash_key_from_record(record, key_parts)
-        enriched.append(record)
+#     enriched = []
+#     for record in records:
+#         record = dict(record)
+#         record[key_field] = gen.hash_key_from_record(record, key_parts)
+#         enriched.append(record)
 
-    return enriched
+#     return enriched
+
+
+# ==============================
+

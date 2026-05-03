@@ -1,65 +1,92 @@
 import logging
+import logging.config
 from pathlib import Path
-from logging.handlers import RotatingFileHandler
+from typing import Dict, Any, Optional
+import yaml
 
-class FastLogger:
-    def __init__(self, config: dict, logger_type: str = "etl_logger.extract_log"):
+class LoggerManager:
+    _instance: Optional['LoggerManager'] = None
+    _loggers: Dict[str, logging.Logger] = {}
+
+    def __new__(cls, config_path: Optional[str] = None):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+            cls._instance._initialized = False
+        return cls._instance
+
+    def __init__(self, config_path: Optional[str] = None):
+        if self._initialized:
+            return
+        self.config_path = config_path or Path(__file__).parent / "config" / "logger_config.yaml"
+        self.config = self._load_config()
+        self._configure_logging()
+        self._initialized = True
+
+    def _load_config(self) -> Dict[str, Any]:
+        """Load logger config từ YAML, với fallback mặc định."""
+        try:
+            with open(self.config_path, 'r', encoding='utf-8') as f:
+                return yaml.safe_load(f)
+        except FileNotFoundError:
+            # Fallback config mặc định
+            return {
+                "version": 1,
+                "disable_existing_loggers": False,
+                "formatters": {
+                    "default": {
+                        "format": '{"time":"%(asctime)s", "level":"%(levelname)s", "message":"%(message)s", "caller":"%(pathname)s:%(lineno)d"}',
+                        "datefmt": "%Y-%m-%dT%H:%M:%S"
+                    }
+                },
+                "handlers": {
+                    "console": {
+                        "class": "logging.StreamHandler",
+                        "formatter": "default",
+                        "level": "INFO"
+                    },
+                    "file_debug": {
+                        "class": "logging.handlers.RotatingFileHandler",
+                        "filename": Path(__file__).parent / "logs" / "debug.log",
+                        "maxBytes": 10 * 1024 * 1024,
+                        "backupCount": 3,
+                        "formatter": "default",
+                        "level": "DEBUG"
+                    },
+                    # Thêm handlers cho info, warning, error tương tự
+                },
+                "loggers": {
+                    "root": {
+                        "level": "INFO",
+                        "handlers": ["console", "file_debug"]
+                    }
+                }
+            }
+
+    def _configure_logging(self):
+        """Cấu hình logging từ dict."""
+        logging.config.dictConfig(self.config)
+
+    def get_logger(self, module_name: str) -> logging.Logger:
         """
-        Custom logger with rotating file handlers and console output.
-        :param config: dict loaded from YAML
-        :param logger_type: path tới loại logger, ví dụ:
-                            "etl_logger.extract_log",
-                            "etl_logger.transform_log",
-                            "etl_logger.load_log"
+        Lấy logger cho module cụ thể.
+        :param module_name: Tên module (sử dụng __name__), ví dụ: 'platforms.ingestion.cophieu68.extract'
+        :return: Logger instance
         """
-        # Tách nhánh config theo logger_type
-        logger_config = config
-        for key in logger_type.split("."):
-            logger_config = logger_config.get(key, {})
-        if not logger_config:
-            raise ValueError(f"Logger type '{logger_type}' không tồn tại trong config")
+        if module_name in self._loggers:
+            return self._loggers[module_name]
+        
+        # Tạo logger với tên dựa trên module (ánh xạ với cấu trúc thư mục)
+        logger_name = f"etl.{module_name.replace('.', '_')}"
+        logger = logging.getLogger(logger_name)
+        
+        # Nếu config có logger cụ thể cho module, sử dụng; ngược lại dùng root
+        if logger_name in self.config.get("loggers", {}):
+            pass  # Đã cấu hình trong dictConfig
+        else:
+            logger.setLevel(logging.INFO)  # Fallback
+        
+        self._loggers[module_name] = logger
+        return logger
 
-        # Lấy level (ưu tiên trong nhánh logger, fallback sang root)
-        level = logger_config.get("level") or config.get("level") or "INFO"
-
-        # Tạo logger
-        self.logger = logging.getLogger(f"AppLogger.{logger_type}")
-        self.logger.setLevel(getattr(logging, level.upper(), logging.INFO))
-        self.logger.propagate = False
-
-        log_path = Path(logger_config["storage_path"])
-        log_path.mkdir(parents=True, exist_ok=True)
-
-        log_files = {
-            logging.DEBUG: logger_config["files"]["debug"],
-            logging.INFO: logger_config["files"]["info"],
-            logging.WARNING: logger_config["files"]["warning"],
-            logging.ERROR: logger_config["files"]["error"],
-        }
-
-        max_bytes = logger_config.get("max_size_mb", 10) * 1024 * 1024
-        backup_count = logger_config.get("backup_count", 3)
-
-        formatter = logging.Formatter(
-            fmt='{"time":"%(asctime)s", "level":"%(levelname)s", "message":"%(message)s", "caller":"%(pathname)s:%(lineno)d"}',
-            datefmt="%Y-%m-%dT%H:%M:%S"
-        )
-
-        # File handlers
-        for level, filename in log_files.items():
-            handler = RotatingFileHandler(
-                filename=log_path / filename,
-                maxBytes=max_bytes,
-                backupCount=backup_count
-            )
-            handler.setLevel(level)
-            handler.setFormatter(formatter)
-            self.logger.addHandler(handler)
-
-        # Console handler
-        console_handler = logging.StreamHandler()
-        console_handler.setFormatter(formatter)
-        self.logger.addHandler(console_handler)
-
-    def get_logger(self):
-        return self.logger
+# Singleton instance
+logger_manager = LoggerManager()

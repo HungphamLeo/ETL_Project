@@ -1,3 +1,4 @@
+
 """
 Deduplication System
 ====================
@@ -357,31 +358,31 @@ class SparkDeduplicator:
 # Pre-built deduplication configs for cophieu68 tables
 # ---------------------------------------------------------------------------
 
-TRADING_DATA_DEDUPER = DeduplicationEngine(
-    keys=["symbol", "date"],
-    strategy=DeduplicationStrategy.KEEP_LAST,
-    tiebreaker_col="update_time",
-)
+# TRADING_DATA_DEDUPER = DeduplicationEngine(
+#     keys=["symbol", "date"],
+#     strategy=DeduplicationStrategy.KEEP_LAST,
+#     tiebreaker_col="update_time",
+# )
 
-COMPANY_INFO_DEDUPER = DeduplicationEngine(
-    keys=["symbol"],
-    strategy=DeduplicationStrategy.KEEP_LAST,
-    tiebreaker_col="update_time",
-)
+# COMPANY_INFO_DEDUPER = DeduplicationEngine(
+#     keys=["symbol"],
+#     strategy=DeduplicationStrategy.KEEP_LAST,
+#     tiebreaker_col="update_time",
+# )
 
-INCOME_STATEMENT_DEDUPER = DeduplicationEngine(
-    keys=["symbol", "report_type", "year", "period", "metric_code"],
-    strategy=DeduplicationStrategy.KEEP_LAST,
-    tiebreaker_col="update_time",
-)
+# INCOME_STATEMENT_DEDUPER = DeduplicationEngine(
+#     keys=["symbol", "report_type", "year", "period", "metric_code"],
+#     strategy=DeduplicationStrategy.KEEP_LAST,
+#     tiebreaker_col="update_time",
+# )
 
-BALANCE_SHEET_DEDUPER = DeduplicationEngine(
-    keys=["symbol", "report_type", "year", "period", "metric_code"],
-    strategy=DeduplicationStrategy.KEEP_LAST,
-    tiebreaker_col="update_time",
-)
+# BALANCE_SHEET_DEDUPER = DeduplicationEngine(
+#     keys=["symbol", "report_type", "year", "period", "metric_code"],
+#     strategy=DeduplicationStrategy.KEEP_LAST,
+#     tiebreaker_col="update_time",
+# )
 
-INDUSTRY_SECTORS_DEDUPER = DeduplicationEngine(
-    keys=["industry_code", "symbol"],
-    strategy=DeduplicationStrategy.KEEP_LAST,
-)
+# INDUSTRY_SECTORS_DEDUPER = DeduplicationEngine(
+#     keys=["industry_code", "symbol"],
+#     strategy=DeduplicationStrategy.KEEP_LAST,
+# )

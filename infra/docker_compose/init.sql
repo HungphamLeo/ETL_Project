@@ -6,3 +6,4 @@ GRANT ALL PRIVILEGES ON DATABASE etl_project TO hungpham;
 
 -- Tạo schema private và gán quyền cho hungpham
 CREATE SCHEMA IF NOT EXISTS private AUTHORIZATION hungpham;
+

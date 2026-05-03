@@ -336,13 +336,13 @@ class DeltaSCD2SQLBuilder:
         """Generate MERGE SQL to close changed records (Step 1 of SCD2)."""
         match_cond = " AND ".join(f"t.{k} = s.{k}" for k in natural_keys)
         return f"""
-MERGE INTO delta.`{target_path}` AS t
-USING {source_alias} AS s
-ON ({match_cond}) AND t.{is_current_col} = true AND t.{row_hash_col} <> s.{row_hash_col}
-WHEN MATCHED THEN UPDATE SET
-    t.{is_current_col} = false,
-    t.{end_date_col} = current_date()
-"""
+            MERGE INTO delta.`{target_path}` AS t
+            USING {source_alias} AS s
+            ON ({match_cond}) AND t.{is_current_col} = true AND t.{row_hash_col} <> s.{row_hash_col}
+            WHEN MATCHED THEN UPDATE SET
+                t.{is_current_col} = false,
+                t.{end_date_col} = current_date()
+            """
 
     @staticmethod
     def build_insert_new_sql(
@@ -356,35 +356,35 @@ WHEN MATCHED THEN UPDATE SET
         """Generate INSERT SQL for new/changed records (Step 2 of SCD2)."""
         match_cond = " AND ".join(f"t.{k} = s.{k}" for k in natural_keys)
         return f"""
-MERGE INTO delta.`{target_path}` AS t
-USING (
-    SELECT s.*, current_date() AS {effective_date_col}, NULL AS {end_date_col}, true AS {is_current_col}
-    FROM {source_alias} s
-    LEFT ANTI JOIN delta.`{target_path}` t
-    ON ({match_cond}) AND t.{is_current_col} = true AND t._row_hash = s._row_hash
-) AS new_records
-ON false
-WHEN NOT MATCHED THEN INSERT *
-"""
+                MERGE INTO delta.`{target_path}` AS t
+                USING (
+                    SELECT s.*, current_date() AS {effective_date_col}, NULL AS {end_date_col}, true AS {is_current_col}
+                    FROM {source_alias} s
+                    LEFT ANTI JOIN delta.`{target_path}` t
+                    ON ({match_cond}) AND t.{is_current_col} = true AND t._row_hash = s._row_hash
+                ) AS new_records
+                ON false
+                WHEN NOT MATCHED THEN INSERT *
+                """
 
 
 # ---------------------------------------------------------------------------
 # Pre-built SCD managers for cophieu68 dimensions
 # ---------------------------------------------------------------------------
 
-DIM_COMPANY_SCD_MANAGER = SCDManager(
-    natural_keys=["symbol"],
-    tracked_cols=[
-        "company_name", "full_name", "english_name", "short_name",
-        "address", "phone", "fax", "website", "email_address",
-        "established_date", "listed_date", "listed_volume",
-        "circulating_volume", "market_capitalization",
-    ],
-)
+# DIM_COMPANY_SCD_MANAGER = SCDManager(
+#     natural_keys=["symbol"],
+#     tracked_cols=[
+#         "company_name", "full_name", "english_name", "short_name",
+#         "address", "phone", "fax", "website", "email_address",
+#         "established_date", "listed_date", "listed_volume",
+#         "circulating_volume", "market_capitalization",
+#     ],
+# )
 
-DIM_INDUSTRY_SCD_MANAGER = SCDManager(
-    natural_keys=["industry_code", "industry_metric"],
-    tracked_cols=[
-        "industry_name", "industry_craw_url",
-    ],
-)
+# DIM_INDUSTRY_SCD_MANAGER = SCDManager(
+#     natural_keys=["industry_code", "industry_metric"],
+#     tracked_cols=[
+#         "industry_name", "industry_craw_url",
+#     ],
+# )
