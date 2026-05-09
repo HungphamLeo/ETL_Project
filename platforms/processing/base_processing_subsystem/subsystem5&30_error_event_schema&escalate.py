@@ -10,7 +10,6 @@ from datetime import datetime, timezone
 from enum import Enum
 from typing import Any, Callable, Dict, List, Optional, Tuple
 import pandas as pd
-
 from shared.logger.python_main_logger import logger_manager
 
 # ---------------------------------------------------------------------------

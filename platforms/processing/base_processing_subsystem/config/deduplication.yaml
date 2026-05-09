@@ -1,0 +1,20 @@
+deduplication:
+  msg_templates:
+    keys_not_found: "[DEDUP] Keys not found in DataFrame: {missing_keys} - skipping dedup"
+    tiebreaker_not_found: "[DEDUP] tiebreaker_col '{tiebreaker_col}' not found, falling back to KEEP_LAST"
+    removed_duplicates_dict: "[DEDUP] {source}: removed {removed} duplicates ({total_input} -> {total_output}) by keys={keys} strategy={strategy}"
+    removed_duplicates_df: "[DEDUP] {source}: removed {removed} duplicates ({total_input} -> {total_output})"
+    cross_batch_filtered: "[CROSS-BATCH DEDUP] Filtered {removed} already-seen records"
+  defaults:
+    strategy: "KEEP_LAST"
+    hash_length: 32
+  stats_schema:
+    source: "source"
+    run_id: "run_id"
+    total_input: "total_input"
+    total_output: "total_output"
+    duplicates_removed: "duplicates_removed"
+    duplicate_rate: "duplicate_rate"
+    strategy: "strategy"
+    keys: "keys"
+    deduped_at: "deduped_at"

@@ -3,7 +3,9 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
+import os
 import re
+import yaml
 from dataclasses import dataclass
 from datetime import datetime 
 from enum import Enum
@@ -17,6 +19,20 @@ from platforms.processing.base_processing_subsystem.subsystem1_data_profiling im
 # Subsystem 4: Data Cleansing Rules
 # ---------------------------------------------------------------------------
 
+def load_pre_eval_config() -> Dict[str, Any]:
+    config_path = os.path.join(os.path.dirname(__file__), "config", "data_quality_pre_evaluation.yaml")
+    if os.path.exists(config_path):
+        try:
+            with open(config_path, "r", encoding="utf-8") as f:
+                config = yaml.safe_load(f)
+                return config.get("data_quality_pre_evaluation", {}) if config else {}
+        except Exception:
+            pass
+    return {}
+
+PRE_EVAL_CONFIG = load_pre_eval_config()
+MSG_TEMPLATES = PRE_EVAL_CONFIG.get("msg_templates", {})
+
 # Rule type: a callable that takes a record dict and returns (is_valid, message)
 CleansingRule = Callable[[Dict[str, Any]], Tuple[bool, str]]
 class CleansingRuleSet:
@@ -25,7 +41,7 @@ class CleansingRuleSet:
                  rules: Optional[List[CleansingRule]] = None):
         
         self.table_name = table_name
-        self.rules = rules or List[CleansingRule] = []
+        self.rules = rules or []
         self.logger = logger or logger_manager.get_logger(f"{__name__}.{table_name}")
         
 
@@ -43,37 +59,44 @@ class CleansingRuleSet:
                 messages.append(msg)
         return is_valid, messages
     
+    @staticmethod
     def rule_not_null(*fields: str) -> CleansingRule:
         """Reject records where any of the specified fields is None/empty."""
+        template = MSG_TEMPLATES.get("rule_not_null", "Field '{field}' is null or empty")
         def check(record: Dict[str, Any]) -> Tuple[bool, str]:
             for f in fields:
                 val = record.get(f)
                 if val is None or (isinstance(val, str) and val.strip() == ""):
-                    return False, f"Field '{f}' is null or empty"
+                    return False, template.format(field=f)
             return True, ""
         return check
 
-
+    @staticmethod
     def rule_min_length(field: str, min_len: int) -> CleansingRule:
+        template = MSG_TEMPLATES.get("rule_min_length", "Field '{field}' too short (min={min_len})")
         def check(record: Dict[str, Any]) -> Tuple[bool, str]:
             val = record.get(field, "")
             if val and len(str(val)) < min_len:
-                return False, f"Field '{field}' too short (min={min_len})"
+                return False, template.format(field=field, min_len=min_len)
             return True, ""
         return check
 
-
+    @staticmethod
     def rule_regex(field: str, pattern: str) -> CleansingRule:
         compiled = re.compile(pattern)
+        template = MSG_TEMPLATES.get("rule_regex", "Field '{field}' does not match pattern '{pattern}'")
         def check(record: Dict[str, Any]) -> Tuple[bool, str]:
             val = str(record.get(field, ""))
             if val and not compiled.match(val):
-                return False, f"Field '{field}' does not match pattern '{pattern}'"
+                return False, template.format(field=field, pattern=pattern)
             return True, ""
         return check
 
-
+    @staticmethod
     def rule_numeric_range(field: str, min_val: float = None, max_val: float = None) -> CleansingRule:
+        template_below = MSG_TEMPLATES.get("rule_numeric_range_below", "Field '{field}' = {val} below min {min_val}")
+        template_above = MSG_TEMPLATES.get("rule_numeric_range_above", "Field '{field}' = {val} above max {max_val}")
+        template_invalid = MSG_TEMPLATES.get("rule_numeric_range_invalid", "Field '{field}' = '{val}' is not numeric")
         def check(record: Dict[str, Any]) -> Tuple[bool, str]:
             val = record.get(field)
             if val is None:
@@ -81,16 +104,17 @@ class CleansingRuleSet:
             try:
                 num = float(val)
                 if min_val is not None and num < min_val:
-                    return False, f"Field '{field}' = {num} below min {min_val}"
+                    return False, template_below.format(field=field, val=num, min_val=min_val)
                 if max_val is not None and num > max_val:
-                    return False, f"Field '{field}' = {num} above max {max_val}"
+                    return False, template_above.format(field=field, val=num, max_val=max_val)
             except (ValueError, TypeError):
-                return False, f"Field '{field}' = '{val}' is not numeric"
+                return False, template_invalid.format(field=field, val=val)
             return True, ""
         return check
 
-
+    @staticmethod
     def rule_date_format(field: str, fmt: str = "%d/%m/%Y") -> CleansingRule:
+        template = MSG_TEMPLATES.get("rule_date_format", "Field '{field}' = '{val}' does not match date format '{fmt}'")
         def check(record: Dict[str, Any]) -> Tuple[bool, str]:
             val = record.get(field)
             if not val:
@@ -98,17 +122,18 @@ class CleansingRuleSet:
             try:
                 datetime.strptime(str(val), fmt)
             except ValueError:
-                return False, f"Field '{field}' = '{val}' does not match date format '{fmt}'"
+                return False, template.format(field=field, val=val, fmt=fmt)
             return True, ""
         return check
 
-
+    @staticmethod
     def rule_allowed_values(field: str, allowed: List[Any]) -> CleansingRule:
         allowed_set = set(allowed)
+        template = MSG_TEMPLATES.get("rule_allowed_values", "Field '{field}' = '{val}' not in allowed values {allowed}")
         def check(record: Dict[str, Any]) -> Tuple[bool, str]:
             val = record.get(field)
             if val is not None and val not in allowed_set:
-                return False, f"Field '{field}' = '{val}' not in allowed values {allowed}"
+                return False, template.format(field=field, val=val, allowed=allowed)
             return True, ""
         return check
 
@@ -239,10 +264,6 @@ class DataCleansingEngine:
         result = self.cleanse(records, source=source, run_id=run_id, record_id_fields=record_id_fields)
         cleaned_df = pd.DataFrame(result.cleaned) if result.cleaned else pd.DataFrame(columns=df.columns)
         return cleaned_df, result
-
-
-
-
 
 # ---------------------------------------------------------------------------
 # Pre-built rule sets for cophieu68 data

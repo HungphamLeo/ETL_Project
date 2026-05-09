@@ -27,13 +27,30 @@ from __future__ import annotations
 
 import hashlib
 import logging
-from dataclasses import dataclass, field
+import os
+import yaml
+from dataclasses import dataclass, field, asdict
 from datetime import datetime, timezone
 from enum import Enum
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
 import pandas as pd
 
+
+def load_dedup_config() -> Dict[str, Any]:
+    config_path = os.path.join(os.path.dirname(__file__), "config", "deduplication.yaml")
+    if os.path.exists(config_path):
+        try:
+            with open(config_path, "r", encoding="utf-8") as f:
+                config = yaml.safe_load(f)
+                return config.get("deduplication", {}) if config else {}
+        except Exception:
+            pass
+    return {}
+
+DEDUP_CONFIG = load_dedup_config()
+MSG_TEMPLATES = DEDUP_CONFIG.get("msg_templates", {})
+DEFAULTS = DEDUP_CONFIG.get("defaults", {})
 
 # ---------------------------------------------------------------------------
 # Strategy enum
@@ -66,17 +83,26 @@ class DeduplicationStats:
         return round(self.duplicates_removed / self.total_input, 4) if self.total_input else 0.0
 
     def to_dict(self) -> Dict[str, Any]:
-        return {
-            "source":             self.source,
-            "run_id":             self.run_id,
-            "total_input":        self.total_input,
-            "total_output":       self.total_output,
-            "duplicates_removed": self.duplicates_removed,
-            "duplicate_rate":     self.duplicate_rate,
-            "strategy":           self.strategy,
-            "keys":               self.keys,
-            "deduped_at":         self.deduped_at.isoformat(),
-        }
+        context = asdict(self)
+        context["duplicate_rate"] = self.duplicate_rate
+        context["deduped_at"] = self.deduped_at.isoformat()
+        
+        schema = DEDUP_CONFIG.get("stats_schema")
+        if not schema:
+            return context
+            
+        record = {}
+        for field_name, template in schema.items():
+            if isinstance(template, str):
+                if "{" in template and "}" in template:
+                    record[field_name] = template.format(**context)
+                elif template in context:
+                    record[field_name] = context[template]
+                else:
+                    record[field_name] = template
+            else:
+                record[field_name] = template
+        return record
 
 
 # ---------------------------------------------------------------------------
@@ -95,7 +121,7 @@ class DeduplicationEngine:
     def __init__(
         self,
         keys: List[str],
-        strategy: DeduplicationStrategy = DeduplicationStrategy.KEEP_LAST,
+        strategy: Optional[DeduplicationStrategy] = None,
         tiebreaker_col: Optional[str] = None,
         logger: Optional[logging.Logger] = None,
     ):
@@ -106,7 +132,7 @@ class DeduplicationEngine:
             tiebreaker_col: Column used for KEEP_MAX_COL / KEEP_MIN_COL strategies
         """
         self.keys = keys
-        self.strategy = strategy
+        self.strategy = strategy if strategy is not None else DeduplicationStrategy(DEFAULTS.get("strategy", "KEEP_LAST"))
         self.tiebreaker_col = tiebreaker_col
         self.logger = logger or logging.getLogger(__name__)
         self._last_stats: Optional[DeduplicationStats] = None
@@ -150,10 +176,12 @@ class DeduplicationEngine:
         )
 
         if removed > 0:
-            self.logger.info(
-                "[DEDUP] %s: removed %d duplicates (%d → %d) by keys=%s strategy=%s",
-                source, removed, len(records), len(result), self.keys, self.strategy.value,
-            )
+            template = MSG_TEMPLATES.get("removed_duplicates_dict", "[DEDUP] {source}: removed {removed} duplicates ({total_input} -> {total_output}) by keys={keys} strategy={strategy}")
+            self.logger.info(template.format(
+                source=source, removed=removed, 
+                total_input=len(records), total_output=len(result), 
+                keys=self.keys, strategy=self.strategy.value
+            ))
 
         return result
 
@@ -180,10 +208,11 @@ class DeduplicationEngine:
         self._last_stats = stats
 
         if removed > 0:
-            self.logger.info(
-                "[DEDUP] %s: removed %d duplicates (%d → %d)",
-                source, removed, total_input, len(deduped),
-            )
+            template = MSG_TEMPLATES.get("removed_duplicates_df", "[DEDUP] {source}: removed {removed} duplicates ({total_input} -> {total_output})")
+            self.logger.info(template.format(
+                source=source, removed=removed, 
+                total_input=total_input, total_output=len(deduped)
+            ))
 
         return deduped, stats
 
@@ -196,7 +225,8 @@ class DeduplicationEngine:
         # Validate keys exist
         missing_keys = [k for k in self.keys if k not in df.columns]
         if missing_keys:
-            self.logger.warning("[DEDUP] Keys not found in DataFrame: %s – skipping dedup", missing_keys)
+            template = MSG_TEMPLATES.get("keys_not_found", "[DEDUP] Keys not found in DataFrame: {missing_keys} - skipping dedup")
+            self.logger.warning(template.format(missing_keys=missing_keys))
             return df
 
         if self.strategy == DeduplicationStrategy.KEEP_FIRST:
@@ -207,10 +237,8 @@ class DeduplicationEngine:
 
         elif self.strategy in (DeduplicationStrategy.KEEP_MAX_COL, DeduplicationStrategy.KEEP_MIN_COL):
             if not self.tiebreaker_col or self.tiebreaker_col not in df.columns:
-                self.logger.warning(
-                    "[DEDUP] tiebreaker_col '%s' not found, falling back to KEEP_LAST",
-                    self.tiebreaker_col,
-                )
+                template = MSG_TEMPLATES.get("tiebreaker_not_found", "[DEDUP] tiebreaker_col '{tiebreaker_col}' not found, falling back to KEEP_LAST")
+                self.logger.warning(template.format(tiebreaker_col=self.tiebreaker_col))
                 return df.drop_duplicates(subset=self.keys, keep="last").reset_index(drop=True)
 
             ascending = self.strategy == DeduplicationStrategy.KEEP_MIN_COL
@@ -242,8 +270,9 @@ class SurrogateKeyDeduplicator:
 
     def compute_key(self, record: Dict[str, Any], key_fields: List[str]) -> str:
         """Compute a deterministic surrogate key from key_fields."""
+        hash_length = DEFAULTS.get("hash_length", 32)
         raw = "|".join(str(record.get(f, "")) for f in key_fields)
-        return hashlib.sha256(raw.encode("utf-8")).hexdigest()[:32]
+        return hashlib.sha256(raw.encode("utf-8")).hexdigest()[:hash_length]
 
     def filter_new(
         self,
@@ -271,7 +300,8 @@ class SurrogateKeyDeduplicator:
 
         removed = len(records) - len(new_records)
         if removed > 0:
-            self.logger.info("[CROSS-BATCH DEDUP] Filtered %d already-seen records", removed)
+            template = MSG_TEMPLATES.get("cross_batch_filtered", "[CROSS-BATCH DEDUP] Filtered {removed} already-seen records")
+            self.logger.info(template.format(removed=removed))
 
         return new_records
 

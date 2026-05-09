@@ -1,0 +1,10 @@
+data_quality_pre_evaluation:
+  msg_templates:
+    rule_not_null: "Field '{field}' is null or empty"
+    rule_min_length: "Field '{field}' too short (min={min_len})"
+    rule_regex: "Field '{field}' does not match pattern '{pattern}'"
+    rule_numeric_range_below: "Field '{field}' = {val} below min {min_val}"
+    rule_numeric_range_above: "Field '{field}' = {val} above max {max_val}"
+    rule_numeric_range_invalid: "Field '{field}' = '{val}' is not numeric"
+    rule_date_format: "Field '{field}' = '{val}' does not match date format '{fmt}'"
+    rule_allowed_values: "Field '{field}' = '{val}' not in allowed values {allowed}"
