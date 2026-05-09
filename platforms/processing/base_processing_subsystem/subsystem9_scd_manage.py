@@ -12,6 +12,8 @@ from __future__ import annotations
 
 import hashlib
 import logging
+import os
+import yaml
 from dataclasses import dataclass, field
 from datetime import date, datetime, timezone
 from typing import Any, Dict, List, Optional, Tuple
@@ -29,12 +31,39 @@ class SCD2Result:
     def has_changes(self) -> bool:
         return len(self.to_close) > 0 or len(self.to_insert) > 0
 
+    def __post_init__(self):
+        if not self.stats:
+            schema = SCD_CONFIG.get("stats_schema", {}).get("scd2", {"new": "inserted", "closed": "closed", "unchanged": "unchanged"})
+            context = {
+                "inserted": len(self.to_insert),
+                "closed": len(self.to_close),
+                "changed": len(self.to_close),
+                "unchanged": len(self.unchanged)
+            }
+            self.stats = {k: context.get(v, 0) for k, v in schema.items()}
+
     def summary(self) -> str:
-        return (
-            f"SCD2 result: close={len(self.to_close)}, "
-            f"insert={len(self.to_insert)}, unchanged={len(self.unchanged)}"
+        template = MSG_TEMPLATES.get("scd2_result_summary", "SCD2 result: close={closed}, insert={inserted}, unchanged={unchanged}")
+        return template.format(
+            closed=len(self.to_close),
+            inserted=len(self.to_insert),
+            unchanged=len(self.unchanged)
         )
 
+
+def load_scd_config() -> Dict[str, Any]:
+    config_path = os.path.join(os.path.dirname(__file__), "config", "scd_manager.yaml")
+    if os.path.exists(config_path):
+        try:
+            with open(config_path, "r", encoding="utf-8") as f:
+                config = yaml.safe_load(f)
+                return config.get("scd_manager", {}) if config else {}
+        except Exception:
+            pass
+    return {}
+
+SCD_CONFIG = load_scd_config()
+MSG_TEMPLATES = SCD_CONFIG.get("msg_templates", {})
 
 @dataclass
 class SCD1Result:
@@ -42,6 +71,24 @@ class SCD1Result:
     to_insert:  pd.DataFrame
     unchanged:  pd.DataFrame
     stats:      Dict[str, int] = field(default_factory=dict)
+
+    def __post_init__(self):
+        if not self.stats:
+            schema = SCD_CONFIG.get("stats_schema", {}).get("scd1", {"new": "inserted", "updated": "updated", "unchanged": "unchanged"})
+            context = {
+                "inserted": len(self.to_insert),
+                "updated": len(self.to_update),
+                "unchanged": len(self.unchanged)
+            }
+            self.stats = {k: context.get(v, 0) for k, v in schema.items()}
+
+    def summary(self) -> str:
+        template = MSG_TEMPLATES.get("scd1_result_summary", "SCD1 result: insert={inserted}, update={updated}, unchanged={unchanged}")
+        return template.format(
+            inserted=len(self.to_insert),
+            updated=len(self.to_update),
+            unchanged=len(self.unchanged)
+        )
 
 
 class SCDManager:
@@ -106,7 +153,6 @@ class SCDManager:
                 to_update=pd.DataFrame(),
                 to_insert=incoming_df,
                 unchanged=pd.DataFrame(),
-                stats={"new": len(incoming_df), "updated": 0, "unchanged": 0},
             )
 
         existing_hashed = self.add_row_hash_column(existing_df)
@@ -151,16 +197,15 @@ class SCDManager:
         )
         unchanged = incoming_df[unchanged_mask].copy()
 
-        self.logger.info(
-            "[SCD1] new=%d, updated=%d, unchanged=%d",
-            len(to_insert), len(to_update), len(unchanged),
-        )
+        template = MSG_TEMPLATES.get("scd1_summary", "[SCD1] new={new}, updated={updated}, unchanged={unchanged}")
+        self.logger.info(template.format(
+            new=len(to_insert), updated=len(to_update), unchanged=len(unchanged)
+        ))
 
         return SCD1Result(
             to_update=to_update,
             to_insert=to_insert,
             unchanged=unchanged,
-            stats={"new": len(to_insert), "updated": len(to_update), "unchanged": len(unchanged)},
         )
 
     # ------------------------------------------------------------------
@@ -189,12 +234,12 @@ class SCDManager:
             new_rows[self.effective_date_col] = as_of
             new_rows[self.end_date_col] = None
             new_rows[self.is_current_col] = True
-            self.logger.info("[SCD2] Initial load: inserting %d rows", len(new_rows))
+            template_initial = MSG_TEMPLATES.get("scd2_initial", "[SCD2] Initial load: inserting {new} rows")
+            self.logger.info(template_initial.format(new=len(new_rows)))
             return SCD2Result(
                 to_close=pd.DataFrame(),
                 to_insert=new_rows,
                 unchanged=pd.DataFrame(),
-                stats={"new": len(new_rows), "changed": 0, "unchanged": 0},
             )
 
         # Filter only current records from existing
@@ -253,24 +298,15 @@ class SCDManager:
         to_insert = pd.DataFrame(to_insert_rows) if to_insert_rows else pd.DataFrame()
         unchanged = pd.DataFrame(unchanged_rows) if unchanged_rows else pd.DataFrame()
 
-        changed_count = len([r for r in to_insert_rows if r.get(self.effective_date_col) == as_of]) - len(
-            [r for r in to_insert_rows if r not in unchanged_rows]
-        ) if to_insert_rows else 0
-
-        self.logger.info(
-            "[SCD2] to_close=%d, to_insert=%d, unchanged=%d",
-            len(to_close), len(to_insert), len(unchanged),
-        )
+        template_summary = MSG_TEMPLATES.get("scd2_summary", "[SCD2] to_close={closed}, to_insert={inserted}, unchanged={unchanged}")
+        self.logger.info(template_summary.format(
+            closed=len(to_close), inserted=len(to_insert), unchanged=len(unchanged)
+        ))
 
         return SCD2Result(
             to_close=to_close,
             to_insert=to_insert,
             unchanged=unchanged,
-            stats={
-                "new": len([r for r in to_insert_rows]),
-                "closed": len(to_close),
-                "unchanged": len(unchanged),
-            },
         )
 
     # ------------------------------------------------------------------

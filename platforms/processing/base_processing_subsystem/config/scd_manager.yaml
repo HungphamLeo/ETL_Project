@@ -1,0 +1,17 @@
+scd_manager:
+  msg_templates:
+    scd1_summary: "[SCD1] new={new}, updated={updated}, unchanged={unchanged}"
+    scd1_result_summary: "SCD1 result: insert={inserted}, update={updated}, unchanged={unchanged}"
+    scd2_initial: "[SCD2] Initial load: inserting {new} rows"
+    scd2_summary: "[SCD2] to_close={closed}, to_insert={inserted}, unchanged={unchanged}"
+    scd2_result_summary: "SCD2 result: close={closed}, insert={inserted}, unchanged={unchanged}"
+  stats_schema:
+    scd1:
+      new: "inserted"
+      updated: "updated"
+      unchanged: "unchanged"
+    scd2:
+      new: "inserted"
+      changed: "changed"
+      closed: "closed"
+      unchanged: "unchanged"
