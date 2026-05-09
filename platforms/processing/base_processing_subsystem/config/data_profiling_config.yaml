@@ -1,0 +1,21 @@
+data_profiling:
+  null_pct_fail_threshold: 0.5
+  null_pct_warn_threshold: 0.1
+  hash_id_length: 16
+  sample_size: 3
+  null_pct_precision: 4
+  constant_column_unique_count: 1
+  constant_column_min_total_rows: 10
+  hash_check_id: true
+  high_null_msg_template: "HIGH NULL RATE: {column_name} = {null_pct:.1%}"
+  const_col_msg_template: "CONSTANT COLUMN: {column_name}"
+  quality_record_schema:
+    check_id: "{run_id}|{table_name}|{column_name}|null_check"
+    run_id: "{run_id}"
+    table_name: "{table_name}"
+    check_name: "null_check:{column_name}"
+    status: "{status}"
+    failed_rows: "null_count"
+    total_rows: "total_rows"
+    checked_at: "{checked_at}"
+    details: "null_pct={null_pct:.2%}, unique={unique_count}"

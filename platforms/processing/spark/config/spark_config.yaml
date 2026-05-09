@@ -1,5 +1,5 @@
 spark:
-  app_name: "StockFinancialLakehouse"
+  app_name: "base_spark_config"
   configs:
     spark.jars.packages: "io.delta:delta-spark_2.12:3.5.1,org.apache.hadoop:hadoop-aws:3.3.4"
     spark.sql.extensions: "io.delta.sql.DeltaSparkSessionExtension"

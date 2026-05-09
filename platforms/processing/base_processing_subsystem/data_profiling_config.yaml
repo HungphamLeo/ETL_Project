@@ -1,8 +1,0 @@
-data_profiling:
-  null_pct_fail_threshold: 0.5
-  null_pct_warn_threshold: 0.1
-  hash_id_length: 16
-  sample_size: 3
-  null_pct_precision: 4
-  constant_column_unique_count: 1
-  constant_column_min_total_rows: 10
