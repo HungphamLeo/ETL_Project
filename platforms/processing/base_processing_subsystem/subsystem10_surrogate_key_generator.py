@@ -34,8 +34,6 @@ from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 import pandas as pd
 
-
-
 class SurrogateKeyGenerator:
     """
     Subsystem 10: Surrogate Key Generator.

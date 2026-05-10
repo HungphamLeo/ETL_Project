@@ -1,0 +1,20 @@
+data_lineage:
+  msg_templates:
+    lineage_logged: "[META LINEAGE] {source_layer}.{source_table} -> {target_layer}.{target_table} | op={operation} | rows={rows_affected}"
+    run_not_found: "Run {run_id} not found"
+    summary_header: "\n============================================================\n  ETL Run Summary: {run_id}\n============================================================"
+    summary_body: "  Job:        {job_name}\n  Layer:      {layer} -> {table_name}\n  Status:     {status}\n  Start:      {start_time}\n  End:        {end_time}\n  Duration:   {duration}\n  Rows Read:  {rows_read}\n  Rows Written: {rows_written}"
+    summary_errors_header: "\n  Errors ({error_count}):"
+    summary_error_item: "    [{error_level}] {error_message}"
+    summary_quality: "\n  Quality Checks: {total_checks} total, {fail_checks} FAIL/WARN"
+    summary_footer: "============================================================\n"
+  lineage_schema:
+    lineage_id: "lineage_id"
+    run_id: "run_id"
+    source_layer: "source_layer"
+    source_table: "source_table"
+    target_layer: "target_layer"
+    target_table: "target_table"
+    operation: "operation"
+    rows_affected: "rows_affected"
+    recorded_at: "recorded_at"

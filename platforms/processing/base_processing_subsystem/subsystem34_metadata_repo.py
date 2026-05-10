@@ -22,6 +22,8 @@ from __future__ import annotations
 
 import json
 import logging
+import os
+import yaml
 from contextlib import contextmanager
 from datetime import datetime, timezone
 from typing import Any, Dict, Generator, List, Optional
@@ -30,8 +32,40 @@ from shared.logger.python_main_logger import logger_manager
 from platforms.processing.base_processing_subsystem.subsystem22_job_schedule import generate_run_id, _now_utc
 from platforms.processing.base_processing_subsystem.subsystem1_data_profiling import DataQualityRecord
 from platforms.processing.base_processing_subsystem.subsystem27_workflow_monitoring import ETLRunRecord
-from platforms.processing.base_processing_subsystem.subsystem5_error_event_schema import ErrorEvent, ErrorEventLog, ErrorLevel
+from platforms.processing.base_processing_subsystem.subsystem5_and_30_error_event_schema_and_escalate import ErrorEvent, ErrorEventLog, ErrorLevel
 
+def load_metadata_config() -> Dict[str, Any]:
+    config_path = os.path.join(os.path.dirname(__file__), "config", "metadata_repo.yaml")
+    if os.path.exists(config_path):
+        try:
+            with open(config_path, "r", encoding="utf-8") as f:
+                config = yaml.safe_load(f)
+                return config.get("metadata_repo", {}) if config else {}
+        except Exception:
+            pass
+    return {}
+
+META_CONFIG = load_metadata_config()
+MSG_TEMPLATES = META_CONFIG.get("msg_templates", {})
+SUMMARY_TEMPLATES = META_CONFIG.get("summary_templates", {})
+SCHEMAS = META_CONFIG.get("schemas", {})
+
+def _map_schema(context: Dict[str, Any], schema_name: str) -> Dict[str, Any]:
+    schema = SCHEMAS.get(schema_name)
+    if not schema:
+        return context
+    record = {}
+    for k, v in schema.items():
+        if isinstance(v, str):
+            if "{" in v and "}" in v:
+                record[k] = v.format(**context)
+            elif v in context:
+                record[k] = context[v]
+            else:
+                record[k] = v
+        else:
+            record[k] = v
+    return record
 
 class MetadataRepository:
     """
@@ -100,10 +134,10 @@ class MetadataRepository:
         )
         self._runs[run_id] = record
 
-        self.logger.info(
-            "[RUN START] run_id=%s | job=%s | layer=%s | table=%s",
-            run_id, job_name, layer, table_name,
-        )
+        template = MSG_TEMPLATES.get("run_start", "[RUN START] run_id={run_id} | job={job_name} | layer={layer} | table={table_name}")
+        self.logger.info(template.format(
+            run_id=run_id, job_name=job_name, layer=layer, table_name=table_name
+        ))
 
         if not self.in_memory and self.backend:
             self.backend.write_to_delta(
@@ -133,7 +167,8 @@ class MetadataRepository:
             error_message: Error details if status=FAILED
         """
         if run_id not in self._runs:
-            self.logger.error(f"[RUN END] Run {run_id} not found")
+            template = MSG_TEMPLATES.get("run_not_found", "[RUN END] Run {run_id} not found")
+            self.logger.error(template.format(run_id=run_id))
             return
 
         record = self._runs[run_id]
@@ -144,10 +179,11 @@ class MetadataRepository:
         record.error_message = error_message
 
         duration = record.duration_seconds
-        self.logger.info(
-            "[RUN END] run_id=%s | status=%s | duration=%.1fs | rows_read=%s | rows_written=%s",
-            run_id, status, duration or 0, rows_read, rows_written,
-        )
+        template = MSG_TEMPLATES.get("run_end", "[RUN END] run_id={run_id} | status={status} | duration={duration:.1f}s | rows_read={rows_read} | rows_written={rows_written}")
+        self.logger.info(template.format(
+            run_id=run_id, status=status, duration=duration or 0, 
+            rows_read=rows_read, rows_written=rows_written
+        ))
 
         if not self.in_memory and self.backend:
             self.backend.write_to_delta(
@@ -198,10 +234,11 @@ class MetadataRepository:
             ErrorLevel.FATAL: self.logger.critical,
         }.get(level, self.logger.error)
 
-        log_fn(
-            "[ERROR] %s | run_id=%s | job=%s | record_id=%s",
-            message, run_id, job_name, error_event.record_id,
-        )
+        template = MSG_TEMPLATES.get("error_logged", "[ERROR] {message} | run_id={run_id} | job={job_name} | record_id={record_id}")
+        log_fn(template.format(
+            message=message, run_id=run_id, 
+            job_name=job_name, record_id=error_event.record_id
+        ))
 
         # Handle FATAL escalation
         if level == ErrorLevel.FATAL:
@@ -218,7 +255,7 @@ class MetadataRepository:
 
     def _escalate_fatal(self, error_event: ErrorEvent) -> None:
         """Subsystem 30: Problem Escalation for FATAL errors."""
-        escalation = {
+        context = {
             "escalation_id": error_event.err_id[:16] + "_esc",
             "error_id": error_event.err_id,
             "run_id": error_event.run_id,
@@ -227,12 +264,14 @@ class MetadataRepository:
             "escalated_at": _now_utc().isoformat(),
             "response_status": "PENDING",
         }
+        escalation = _map_schema(context, "escalation")
         self._escalations.append(escalation)
 
-        self.logger.critical(
-            "FATAL ERROR ESCALATION | run_id=%s | job=%s | %s",
-            error_event.run_id, error_event.job_name, error_event.error_message,
-        )
+        template = MSG_TEMPLATES.get("fatal_escalation", "FATAL ERROR ESCALATION | run_id={run_id} | job={job_name} | {message}")
+        self.logger.critical(template.format(
+            run_id=error_event.run_id, job_name=error_event.job_name, 
+            message=error_event.error_message
+        ))
 
         # TODO: integrate with alerting system (Slack, PagerDuty, email)
 
@@ -261,7 +300,7 @@ class MetadataRepository:
             total_count: Total records checked
         """
         pass_rate = 1.0 - (failed_count / total_count) if total_count > 0 else 1.0
-        quality_record = {
+        context = {
             "quality_id": f"{run_id}_{check_name}".replace(":", "_"),
             "run_id": run_id,
             "table_name": table_name,
@@ -272,12 +311,13 @@ class MetadataRepository:
             "pass_rate": round(pass_rate, 4),
             "checked_at": _now_utc().isoformat(),
         }
+        quality_record = _map_schema(context, "quality")
         self._quality.append(quality_record)
 
-        self.logger.info(
-            "[QUALITY] %s.%s: %s (%.1f%% pass rate)",
-            table_name, check_name, status, pass_rate * 100,
-        )
+        template = MSG_TEMPLATES.get("quality_logged", "[QUALITY] {table_name}.{check_name}: {status} ({pass_rate_pct:.1f}% pass rate)")
+        self.logger.info(template.format(
+            table_name=table_name, check_name=check_name, status=status, pass_rate_pct=pass_rate * 100
+        ))
 
         if not self.in_memory and self.backend:
             self.backend.write_to_delta(
@@ -314,7 +354,7 @@ class MetadataRepository:
         Returns: lineage event ID
         """
         lineage_id = f"{run_id}_{source_table}_{target_table}_{operation}".replace(".", "_")
-        lineage_record = {
+        context = {
             "lineage_id": lineage_id,
             "run_id": run_id,
             "source_layer": source_layer,
@@ -325,12 +365,15 @@ class MetadataRepository:
             "rows_affected": rows_affected,
             "recorded_at": _now_utc().isoformat(),
         }
+        lineage_record = _map_schema(context, "lineage")
         self._lineage.append(lineage_record)
 
-        self.logger.info(
-            "[LINEAGE] %s.%s → %s.%s | op=%s | rows=%d",
-            source_layer, source_table, target_layer, target_table, operation, rows_affected,
-        )
+        template = MSG_TEMPLATES.get("lineage_logged", "[LINEAGE] {source_layer}.{source_table} -> {target_layer}.{target_table} | op={operation} | rows={rows_affected}")
+        self.logger.info(template.format(
+            source_layer=source_layer, source_table=source_table,
+            target_layer=target_layer, target_table=target_table,
+            operation=operation, rows_affected=rows_affected
+        ))
 
         if not self.in_memory and self.backend:
             self.backend.write_to_delta(
@@ -369,45 +412,52 @@ class MetadataRepository:
         """Log a human-readable summary of a pipeline run."""
         run = self.get_run(run_id)
         if not run:
-            self.logger.warning(f"Run {run_id} not found")
+            template = MSG_TEMPLATES.get("run_not_found", "[RUN END] Run {run_id} not found")
+            self.logger.warning(template.format(run_id=run_id))
             return
 
         errors = self.get_errors_for_run(run_id)
         quality = self.get_quality_for_run(run_id)
         lineage = self.get_lineage_for_run(run_id)
 
+        hdr = SUMMARY_TEMPLATES.get("header", "\n" + "="*70 + "\n  ETL Run Summary: {run_id}\n" + "="*70)
+        body = SUMMARY_TEMPLATES.get("body", "  Job:           {job_name}\n  Layer:         {layer} -> {table_name}\n  Status:        {status}\n  Start:         {start_time}\n  End:           {end_time}\n  Duration:      {duration}\n  Rows Read:     {rows_read}\n  Rows Written:  {rows_written}")
+        duration_str = f"{run.duration_seconds:.1f}s" if run.duration_seconds else "N/A"
+
         summary_lines = [
-            f"\n{'='*70}",
-            f"  ETL Run Summary: {run_id}",
-            f"{'='*70}",
-            f"  Job:           {run.job_name}",
-            f"  Layer:         {run.layer} → {run.table_name}",
-            f"  Status:        {run.status}",
-            f"  Start:         {run.start_time}",
-            f"  End:           {run.end_time}",
-            f"  Duration:      {run.duration_seconds:.1f}s" if run.duration_seconds else "  Duration:      N/A",
-            f"  Rows Read:     {run.rows_read or 0}",
-            f"  Rows Written:  {run.rows_written or 0}",
+            hdr.format(run_id=run_id),
+            body.format(
+                job_name=run.job_name, layer=run.layer, table_name=run.table_name,
+                status=run.status, start_time=run.start_time, end_time=run.end_time,
+                duration=duration_str, rows_read=run.rows_read or 0, rows_written=run.rows_written or 0
+            )
         ]
 
         if errors:
             critical_errors = [e for e in errors if e.get("error_level") == "FATAL"]
-            summary_lines.append(f"\n  Errors ({len(errors)} total, {len(critical_errors)} FATAL):")
+            err_hdr = SUMMARY_TEMPLATES.get("errors_header", "\n  Errors ({total_errors} total, {fatal_errors} FATAL):")
+            summary_lines.append(err_hdr.format(total_errors=len(errors), fatal_errors=len(critical_errors)))
+            err_item = SUMMARY_TEMPLATES.get("error_item", "    [{level}] {message} (record_id={record_id})")
             for e in errors:
-                summary_lines.append(f"    [{e.get('error_level')}] {e.get('error_message')} (record_id={e.get('record_id')})")
+                summary_lines.append(err_item.format(level=e.get('error_level'), message=e.get('error_message'), record_id=e.get('record_id')))
 
         if quality:
             failed_checks = [q for q in quality if q.get("status") in ("FAIL", "WARN")]
-            summary_lines.append(f"\n  Quality Checks ({len(quality)} total, {len(failed_checks)} FAIL/WARN):")
+            q_hdr = SUMMARY_TEMPLATES.get("quality_header", "\n  Quality Checks ({total_checks} total, {failed_checks} FAIL/WARN):")
+            summary_lines.append(q_hdr.format(total_checks=len(quality), failed_checks=len(failed_checks)))
+            q_item = SUMMARY_TEMPLATES.get("quality_item", "    [{status}] {check_name} on {table_name} ({pass_rate_pct:.1f}% pass)")
             for q in quality:
-                summary_lines.append(f"    [{q.get('status')}] {q.get('check_name')} on {q.get('table_name')} ({q.get('pass_rate')*100:.1f}% pass)")
+                summary_lines.append(q_item.format(status=q.get('status'), check_name=q.get('check_name'), table_name=q.get('table_name'), pass_rate_pct=q.get('pass_rate')*100))
 
         if lineage:
-            summary_lines.append(f"\n  Data Lineage ({len(lineage)} transformations):")
+            lin_hdr = SUMMARY_TEMPLATES.get("lineage_header", "\n  Data Lineage ({total_lineage} transformations):")
+            summary_lines.append(lin_hdr.format(total_lineage=len(lineage)))
+            lin_item = SUMMARY_TEMPLATES.get("lineage_item", "    {source_layer}.{source_table} --[{operation}]--> {target_layer}.{target_table} ({rows_affected} rows)")
             for l in lineage:
-                summary_lines.append(f"    {l.get('source_layer')}.{l.get('source_table')} --[{l.get('operation')}]--> {l.get('target_layer')}.{l.get('target_table')} ({l.get('rows_affected')} rows)")
+                summary_lines.append(lin_item.format(source_layer=l.get('source_layer'), source_table=l.get('source_table'), operation=l.get('operation'), target_layer=l.get('target_layer'), target_table=l.get('target_table'), rows_affected=l.get('rows_affected')))
 
-        summary_lines.append(f"{'='*70}\n")
+        ftr = SUMMARY_TEMPLATES.get("footer", "="*70 + "\n")
+        summary_lines.append(ftr)
         summary_msg = "\n".join(summary_lines)
         self.logger.info(summary_msg)
 
@@ -443,10 +493,11 @@ class MetadataRepository:
     def persist_to_delta(self) -> None:
         """Write all in-memory metadata to Delta Lake."""
         if self.in_memory or not self.backend:
-            self.logger.warning("Cannot persist: in_memory mode or no backend configured")
+            msg = MSG_TEMPLATES.get("persist_skip", "Cannot persist: in_memory mode or no backend configured")
+            self.logger.warning(msg)
             return
 
-        self.logger.info("[PERSIST] Writing metadata to Delta Lake...")
+        self.logger.info(MSG_TEMPLATES.get("persist_start", "[PERSIST] Writing metadata to Delta Lake..."))
 
         if self._runs:
             self.backend.write_to_delta(
@@ -484,6 +535,6 @@ class MetadataRepository:
                 mode="append",
             )
 
-        self.logger.info("[PERSIST] Metadata persisted successfully")
+        self.logger.info(MSG_TEMPLATES.get("persist_end", "[PERSIST] Metadata persisted successfully"))
 
     

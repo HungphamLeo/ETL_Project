@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import logging
+import os
+import yaml
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from typing import Any, Dict, List, Optional
@@ -10,6 +12,19 @@ from platforms.processing.base_processing_subsystem.subsystem22_job_schedule imp
 from platforms.processing.base_processing_subsystem.subsystem27_workflow_monitoring import ETLRunRecord
 import pandas as pd
 
+def load_lineage_config() -> Dict[str, Any]:
+    config_path = os.path.join(os.path.dirname(__file__), "config", "data_lineage.yaml")
+    if os.path.exists(config_path):
+        try:
+            with open(config_path, "r", encoding="utf-8") as f:
+                config = yaml.safe_load(f)
+                return config.get("data_lineage", {}) if config else {}
+        except Exception:
+            pass
+    return {}
+
+LINEAGE_CONFIG = load_lineage_config()
+MSG_TEMPLATES = LINEAGE_CONFIG.get("msg_templates", {})
 
 
 @dataclass
@@ -26,9 +41,25 @@ class LineageRecord:
     recorded_at:  datetime = field(default_factory=_now_utc)
 
     def to_dict(self) -> Dict[str, Any]:
-        d = asdict(self)
-        d["recorded_at"] = self.recorded_at.isoformat()
-        return d
+        context = asdict(self)
+        context["recorded_at"] = self.recorded_at.isoformat()
+        
+        schema = LINEAGE_CONFIG.get("lineage_schema")
+        if not schema:
+            return context
+            
+        record = {}
+        for field_name, template in schema.items():
+            if isinstance(template, str):
+                if "{" in template and "}" in template:
+                    record[field_name] = template.format(**context)
+                elif template in context:
+                    record[field_name] = context[template]
+                else:
+                    record[field_name] = template
+            else:
+                record[field_name] = template
+        return record
 
 
 class LineageTracker:
@@ -71,10 +102,16 @@ class LineageTracker:
             rows_affected=rows_affected,
         )
         self._lineage.append(record)
-        self.logger.info(
-            "[META LINEAGE] %s.%s → %s.%s | op=%s | rows=%d",
-            source_layer, source_table, target_layer, target_table, operation, rows_affected,
-        )
+        
+        template = MSG_TEMPLATES.get("lineage_logged", "[META LINEAGE] {source_layer}.{source_table} -> {target_layer}.{target_table} | op={operation} | rows={rows_affected}")
+        self.logger.info(template.format(
+            source_layer=source_layer,
+            source_table=source_table,
+            target_layer=target_layer,
+            target_table=target_table,
+            operation=operation,
+            rows_affected=rows_affected
+        ))
         return lineage_id
 
     def get_all_runs(self) -> pd.DataFrame:
@@ -100,34 +137,48 @@ class LineageTracker:
         """Log a human-readable summary of a pipeline run to logger."""
         run = self._runs.get(run_id)
         if not run:
-            self.logger.warning(f"Run {run_id} not found")
+            template = MSG_TEMPLATES.get("run_not_found", "Run {run_id} not found")
+            self.logger.warning(template.format(run_id=run_id))
             return
 
+        header_tmpl = MSG_TEMPLATES.get("summary_header", "\n" + "="*60 + "\n  ETL Run Summary: {run_id}\n" + "="*60)
+        body_tmpl = MSG_TEMPLATES.get("summary_body", "  Job:        {job_name}\n  Layer:      {layer} -> {table_name}\n  Status:     {status}\n  Start:      {start_time}\n  End:        {end_time}\n  Duration:   {duration}\n  Rows Read:  {rows_read}\n  Rows Written: {rows_written}")
+        duration_str = f"{run.duration_seconds:.1f}s" if run.duration_seconds else "N/A"
+
         summary_lines = [
-            f"\n{'='*60}",
-            f"  ETL Run Summary: {run_id}",
-            f"{'='*60}",
-            f"  Job:        {run.job_name}",
-            f"  Layer:      {run.layer} → {run.table_name}",
-            f"  Status:     {run.status}",
-            f"  Start:      {run.start_time}",
-            f"  End:        {run.end_time}",
-            f"  Duration:   {run.duration_seconds:.1f}s" if run.duration_seconds else "  Duration:   N/A",
-            f"  Rows Read:  {run.rows_read}",
-            f"  Rows Written: {run.rows_written}",
+            header_tmpl.format(run_id=run_id),
+            body_tmpl.format(
+                job_name=run.job_name,
+                layer=run.layer,
+                table_name=run.table_name,
+                status=run.status,
+                start_time=run.start_time,
+                end_time=run.end_time,
+                duration=duration_str,
+                rows_read=run.rows_read,
+                rows_written=run.rows_written
+            )
         ]
 
         error_items = [e for e in self._errors if e.get("run_id") == run_id]
         if error_items:
-            summary_lines.append(f"\n  Errors ({len(error_items)}):")
+            err_hdr = MSG_TEMPLATES.get("summary_errors_header", "\n  Errors ({error_count}):")
+            summary_lines.append(err_hdr.format(error_count=len(error_items)))
+            
+            err_item_tmpl = MSG_TEMPLATES.get("summary_error_item", "    [{error_level}] {error_message}")
             for e in error_items:
-                summary_lines.append(f"    [{e.get('error_level','?')}] {e.get('error_message','')}")
+                summary_lines.append(err_item_tmpl.format(
+                    error_level=e.get('error_level', '?'),
+                    error_message=e.get('error_message', '')
+                ))
 
         quality_items = [q for q in self._quality if q.get("run_id") == run_id]
         if quality_items:
             fails = [q for q in quality_items if q.get("status") in ("FAIL", "WARN")]
-            summary_lines.append(f"\n  Quality Checks: {len(quality_items)} total, {len(fails)} FAIL/WARN")
+            qual_tmpl = MSG_TEMPLATES.get("summary_quality", "\n  Quality Checks: {total_checks} total, {fail_checks} FAIL/WARN")
+            summary_lines.append(qual_tmpl.format(total_checks=len(quality_items), fail_checks=len(fails)))
 
-        summary_lines.append(f"{'='*60}\n")
+        footer_tmpl = MSG_TEMPLATES.get("summary_footer", "="*60 + "\n")
+        summary_lines.append(footer_tmpl)
         summary_msg = "\n".join(summary_lines)
         self.logger.info(summary_msg)
