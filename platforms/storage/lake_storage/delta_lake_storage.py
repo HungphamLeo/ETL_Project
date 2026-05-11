@@ -42,6 +42,24 @@ from platforms.storage.base_storage import StorageBackend, to_primitive
 # Lazy Spark session factory (avoids import errors when PySpark not installed)
 # ---------------------------------------------------------------------------
 
+ALL_TABLES: Dict[str, DeltaTableDef] = {
+    **{f"bronze.{k}": v for k, v in ALL_BRONZE_TABLES.items()},
+    **{f"silver.{k}": v for k, v in ALL_SILVER_TABLES.items()},
+    **{f"gold.{k}": v for k, v in ALL_GOLD_TABLES.items()},
+}
+
+
+def get_table_def(layer: str, table_name: str) -> Optional[DeltaTableDef]:
+    """Lookup a table definition by layer and name."""
+    return ALL_TABLES.get(f"{layer}.{table_name}")
+
+
+def get_all_tables_for_layer(layer: str) -> Dict[str, DeltaTableDef]:
+    """Return all table definitions for a given layer."""
+    mapping = {"bronze": ALL_BRONZE_TABLES, "silver": ALL_SILVER_TABLES, "gold": ALL_GOLD_TABLES}
+    return mapping.get(layer, {})
+
+
 def _get_spark(app_name: str = "ETL_Lakehouse"):
     """
     Build or retrieve a SparkSession with Delta Lake extensions.
