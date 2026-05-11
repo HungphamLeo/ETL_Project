@@ -101,25 +101,24 @@ services:
     networks:
       - etl-net
   
-  flink:
-    jobmanager:
-      image: flink:1.20.0-scala_2.12
-      container_name: jobmanager
-      ports:
-        - "8081:8081"
-      environment:
-        - JOB_MANAGER_RPC_ADDRESS=jobmanager
-      command: jobmanager
+  jobmanager:
+    image: flink:1.20.0-scala_2.12
+    container_name: jobmanager
+    ports:
+      - "8081:8081"
+    environment:
+      - JOB_MANAGER_RPC_ADDRESS=jobmanager
+    command: jobmanager
 
-    taskmanager:
-      image: flink:1.20.0-scala_2.12
-      container_name: taskmanager
-      depends_on:
-        - jobmanager
-      environment:
-        - JOB_MANAGER_RPC_ADDRESS=jobmanager
-        - TASK_MANAGER_NUMBER_OF_TASK_SLOTS=2
-      command: taskmanager
+  taskmanager:
+    image: flink:1.20.0-scala_2.12
+    container_name: taskmanager
+    depends_on:
+      - jobmanager
+    environment:
+      - JOB_MANAGER_RPC_ADDRESS=jobmanager
+      - TASK_MANAGER_NUMBER_OF_TASK_SLOTS=2
+    command: taskmanager
 
 #===============================
   minio:
@@ -244,4 +243,6 @@ volumes:
 
 networks:
   lakehouse_network:
+    driver: bridge
+  etl-net:
     driver: bridge

@@ -4,7 +4,7 @@
 PROJECT_ROOT := $(shell pwd)
 COMPOSE_FILE := infra/docker_compose/docker-compose.dev.yml
 DOCKER_COMPOSE := docker-compose -f $(COMPOSE_FILE)
-PROJECT_NAME=cophieu68
+PROJECT_NAME=lakehouse-dev
 
 # ============================
 # Targets
