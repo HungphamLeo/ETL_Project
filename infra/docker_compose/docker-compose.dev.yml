@@ -27,7 +27,7 @@ services:
   prefect-worker:
     build:
       context: ../..
-      dockerfile: infra/docker/processing/prefect/Dockerfile
+      dockerfile: infra/docker/orchestration/prefect/Dockerfile
 
     container_name: prefect-worker
     depends_on:
@@ -40,7 +40,7 @@ services:
       - ../../scripts:/app/scripts
       - ../../platforms:/app/platforms
       - ../../shared:/app/shared
-      - ../../platforms/processing/prefect/flows:/app/flows
+      - ../../platforms/orchestration/prefect/flows:/app/flows
 
     command: ["/entrypoint.sh"]
     networks:
