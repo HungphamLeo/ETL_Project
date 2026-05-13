@@ -1,7 +1,7 @@
 from datetime import timedelta
 from typing import Dict, Any, Optional
 import logging
-from platforms.processing.base_processing import ConfigLoader, FileConfigLoader, LoggerFactory, DefaultLoggerFactory
+from platforms.processing.base_processing_subsystem.base_processing import ConfigLoader, FileConfigLoader, LoggerFactory, DefaultLoggerFactory
 class PrefectETLPipelineConfig:
     """
     Centralized configuration manager cho ETL pipeline.

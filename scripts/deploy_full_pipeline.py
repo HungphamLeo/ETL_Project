@@ -54,8 +54,7 @@ from dotenv import load_dotenv
 
 # Prefect
 try:
-    from prefect import flow, task
-    from prefect.logging import get_run_logger
+    from platforms.orchestration.prefect.flows import prefect_orchestra_etl
     HAS_PREFECT = True
 except ImportError:
     HAS_PREFECT = False
@@ -69,7 +68,7 @@ os.chdir(PROJECT_ROOT)
 from shared.logger.python_main_logger import logger_manager
 
 # Subsystems
-from platforms.processing.base_processing.subsystem5_error_event_schema import (
+from platforms.processing.base_processing_subsystem.subsystem5_error_event_schema import (
     ErrorEventLog, ErrorEvent, ErrorLevel
 )
 from platforms.processing.base_processing.subsystem34_metadata_repo import MetadataRepository
@@ -99,7 +98,7 @@ PG_PASSWORD = os.getenv("POSTGRES_PASSWORD", "")
 SQLMESH_PATH = str(PROJECT_ROOT / "platforms" / "processing" / "sqlmesh")
 SQLMESH_GATEWAY = os.getenv("SQLMESH_GATEWAY", "local_duckdb")
 
-DEFAULT_SYMBOLS = ["FPT", "VNM", "HPG", "MBB", "SSI"]
+# DEFAULT_SYMBOLS = ["FPT", "VNM", "HPG", "MBB", "SSI"]
 DEFAULT_CONFIG_PATH = (
     PROJECT_ROOT / "platforms" / "orchestration" / "prefect" / "config" / "cophieu68_config.yaml"
 )
@@ -109,7 +108,22 @@ STORAGE_OPTIONS = {
     "aws_access_key_id": S3_KEY,
     "aws_secret_access_key": S3_SECRET,
 }
+# ===========================================================================
+# HELPER: run_id & batch_id generators  (Subsystem 22 – Job Scheduler)
+# ===========================================================================
 
+def _make_batch_id(symbol: str) -> str:
+    """Tạo batch_id dạng: batch_<SYMBOL>_<YYYYMMDDHHMMSS>_<uuid4[:8]>"""
+    ts   = datetime.now(timezone.utc).strftime("%Y%m%d%H%M%S")
+    uid  = uuid.uuid4().hex[:8]
+    return f"batch_{symbol.upper()}_{ts}_{uid}"
+
+
+def _make_run_id() -> str:
+    """Tạo pipeline run_id duy nhất (Subsystem 22)."""
+    ts  = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
+    uid = uuid.uuid4().hex[:6]
+    return f"run_{ts}_{uid}"
 
 # ===========================================================================
 # ENUMS & TYPES
