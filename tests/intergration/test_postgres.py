@@ -3,7 +3,7 @@ import pandas as pd
 # from prefect import task, flow
 from typing import List
 import time
-from platforms.processing.prefect.flows.prefect_orchestra_etl import PrefectETLPipelineConfig
+from platforms.orchestrator.prefect.flows.prefect_orchestra_etl import PrefectETLPipelineConfig
 from shared.logger.python_main_logger import FastLogger
 from platforms.processing.base_processing import FileConfigLoader, DefaultLoggerFactory
 from platforms.ingestion.cophieu68.load.load_datawarehouse_cophieu68 import (
