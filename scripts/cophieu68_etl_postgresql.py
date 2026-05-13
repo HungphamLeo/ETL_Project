@@ -1,6 +1,6 @@
 # run_dw_load.py
 import pandas as pd
-# from prefect import task, flow
+from prefect import task, flow
 from typing import List
 import time
 from platforms.processing.prefect.flows.prefect_orchestra_etl import PrefectETLPipelineConfig
@@ -9,8 +9,7 @@ from platforms.processing.base_processing import FileConfigLoader, DefaultLogger
 from platforms.ingestion.cophieu68.load.load_datawarehouse_cophieu68 import (
     DimMarketTypeLoader, DimIndustryLoader, DimCompanyLoader, DimReportTypeLoader,
     FactTradeLoader, FactMatchDetailLoader, FactIncomeStatementLoader, 
-    FactBalanceSheetLoader, FactBusinessPlanLoader, FactFinancialMetricsLoader, FactIndustryLoader,
-    FactCompanyIndustrySectors, FactCompanyMarketTypeSectors
+    FactBalanceSheetLoader, FactBusinessPlanLoader, FactFinancialMetricsLoader, FactIndustryLoader
 )
 from platforms.ingestion.cophieu68.dto.extract_models import (
     CRAWL_MARKET_LIST_CONFIG,
@@ -130,7 +129,7 @@ def build_backend_postgre(config:PrefectETLPipelineConfig, logger):
         logger.error(f"Error building backend: {e}")
         raise
 
-# @task
+@task(retries=postgresql_config_etl_arg.get("retries", 3), retry_delay_seconds=postgresql_config_etl_arg.get("backoff_seconds", 5))
 def load_dim_market_type(datalake_config, mongo_reader, logger, pg_client):
     loader = DimMarketTypeLoader(datalake_config, mongo_reader, logger, pg_client)
     df, sql = loader.load()
@@ -141,7 +140,7 @@ def load_dim_market_type(datalake_config, mongo_reader, logger, pg_client):
     return True
 
 
-# @task
+@task(retries=postgresql_config_etl_arg.get("retries", 3), retry_delay_seconds=postgresql_config_etl_arg.get("backoff_seconds", 5))
 def load_dim_industry(datalake_config,  mongo_reader, logger, pg_client):
     loader = DimIndustryLoader(datalake_config, mongo_reader, logger, pg_client)
     df, sql = loader.load()
@@ -152,7 +151,7 @@ def load_dim_industry(datalake_config,  mongo_reader, logger, pg_client):
     return True
 
 
-# @task
+@task(retries=postgresql_config_etl_arg.get("retries", 3), retry_delay_seconds=postgresql_config_etl_arg.get("backoff_seconds", 5))
 def load_dim_company(datalake_config, mongo_reader, logger, pg_client):
     loader = DimCompanyLoader(datalake_config, mongo_reader, logger, pg_client)
     df, sql = loader.load()
@@ -162,7 +161,7 @@ def load_dim_company(datalake_config, mongo_reader, logger, pg_client):
     time.sleep(3)
     return True
 
-# @task
+@task(retries=postgresql_config_etl_arg.get("retries", 3), retry_delay_seconds=postgresql_config_etl_arg.get("backoff_seconds", 5))
 def load_dim_report_type(datalake_config, mongo_reader, logger, pg_client):
     loader = DimReportTypeLoader(datalake_config, mongo_reader, logger, pg_client)
     df, sql = loader.load()
@@ -175,7 +174,7 @@ def load_dim_report_type(datalake_config, mongo_reader, logger, pg_client):
 # =========================
 # FACT LOADING
 # =========================
-# @task
+@task(retries=postgresql_config_etl_arg.get("retries", 3), retry_delay_seconds=postgresql_config_etl_arg.get("backoff_seconds", 5))
 def load_fact_trade(datalake_config, mongo_reader, logger, pg_client, dim_repo):
     loader = FactTradeLoader(datalake_config = datalake_config, 
                                 mongo_reader=mongo_reader, 
@@ -190,7 +189,7 @@ def load_fact_trade(datalake_config, mongo_reader, logger, pg_client, dim_repo):
     return True
 
 
-# @task
+@task(retries=postgresql_config_etl_arg.get("retries", 3), retry_delay_seconds=postgresql_config_etl_arg.get("backoff_seconds", 5))
 def load_fact_match(datalake_config, mongo_reader, logger, pg_client, dim_repo):
     loader = FactMatchDetailLoader(datalake_config = datalake_config, 
                                 mongo_reader=mongo_reader, 
@@ -205,7 +204,7 @@ def load_fact_match(datalake_config, mongo_reader, logger, pg_client, dim_repo):
     return True
 
 
-# @task
+@task(retries=postgresql_config_etl_arg.get("retries", 3), retry_delay_seconds=postgresql_config_etl_arg.get("backoff_seconds", 5))
 def load_fact_income(datalake_config, mongo_reader, logger, pg_client, dim_repo):
     loader = FactIncomeStatementLoader(datalake_config = datalake_config, 
                                 mongo_reader=mongo_reader, 
@@ -226,7 +225,7 @@ def load_fact_income(datalake_config, mongo_reader, logger, pg_client, dim_repo)
     return True
 
 
-# @task
+@task(retries=postgresql_config_etl_arg.get("retries", 3), retry_delay_seconds=postgresql_config_etl_arg.get("backoff_seconds", 5))
 def load_fact_balance(datalake_config, mongo_reader, logger, pg_client, dim_repo):
     loader = FactBalanceSheetLoader(datalake_config = datalake_config, 
                                 mongo_reader=mongo_reader, 
@@ -247,7 +246,7 @@ def load_fact_balance(datalake_config, mongo_reader, logger, pg_client, dim_repo
     return True
 
 
-# @task
+@task(retries=postgresql_config_etl_arg.get("retries", 3), retry_delay_seconds=postgresql_config_etl_arg.get("backoff_seconds", 5))
 def load_fact_business_plan(datalake_config, mongo_reader, logger, pg_client, dim_repo):
     loader = FactBusinessPlanLoader(datalake_config = datalake_config, 
                                 mongo_reader=mongo_reader, 
@@ -262,7 +261,7 @@ def load_fact_business_plan(datalake_config, mongo_reader, logger, pg_client, di
     return True
 
 
-# @task
+@task(retries=postgresql_config_etl_arg.get("retries", 3), retry_delay_seconds=postgresql_config_etl_arg.get("backoff_seconds", 5))
 def load_fact_financial_metrics(datalake_config, mongo_reader, logger, pg_client, dim_repo):
     loader = FactFinancialMetricsLoader(datalake_config = datalake_config, 
                                 mongo_reader=mongo_reader, 
@@ -279,7 +278,7 @@ def load_fact_financial_metrics(datalake_config, mongo_reader, logger, pg_client
     time.sleep(3)
     return True
 
-
+@task(retries=postgresql_config_etl_arg.get("retries", 3), retry_delay_seconds=postgresql_config_etl_arg.get("backoff_seconds", 5))
 def load_fact_industry(datalake_config, mongo_reader, logger, pg_client, dim_repo):
     loader = FactIndustryLoader(datalake_config = datalake_config, 
                                 mongo_reader=mongo_reader, 
@@ -293,35 +292,11 @@ def load_fact_industry(datalake_config, mongo_reader, logger, pg_client, dim_rep
     time.sleep(3)
     return True
 #
-def load_fact_comapny_belong_to_industry_sector(datalake_config, mongo_reader, logger, pg_client, dim_repo):
-    loader = FactCompanyIndustrySectors(datalake_config = datalake_config, 
-                                mongo_reader=mongo_reader, 
-                                dim_repo=dim_repo, 
-                                datawarehouse_logger=logger, 
-                                postgres_client=pg_client)
-    df, sql = loader.load()
-    pg_client.execute(sql)
-    pg_client.bulk_insert(f"{loader.schema_name}.{loader.fact_name.upper()}", df)
-    logger.info(f"[{loader.fact_name}] Loaded {len(df)} rows")
-    time.sleep(3)
-    return True
 
-def load_fact_comapny_belong_to_market_type_sector(datalake_config, mongo_reader, logger, pg_client, dim_repo):
-    loader = FactCompanyMarketTypeSectors(datalake_config = datalake_config, 
-                                mongo_reader=mongo_reader, 
-                                dim_repo=dim_repo, 
-                                datawarehouse_logger=logger, 
-                                postgres_client=pg_client)
-    df, sql = loader.load()
-    pg_client.execute(sql)
-    pg_client.bulk_insert(f"{loader.schema_name}.{loader.fact_name.upper()}", df)
-    logger.info(f"[{loader.fact_name}] Loaded {len(df)} rows")
-    time.sleep(3)
-    return True
 # =========================
 # MAIN PREFECT FLOW
 # =========================
-# @flow(name="DW-Full-Load")
+@flow(name=postgresql_config_etl_arg.get("etl_name", "cophieu68_etl_flow"))
 def dw_full_load():
     pipeline_config = PrefectETLPipelineConfig(config_path=config_path, config_loader=FileConfigLoader(), logger_factory=DefaultLoggerFactory())
     mongodb_logger = pipeline_config.storage_mongodb
@@ -339,7 +314,7 @@ def dw_full_load():
     load_dim_report_type(datalake_config=mongo_config,  mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres)
     
 
-    # load_fact_trade(datalake_config=mongo_config,  mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres, dim_repo=dim_repo)
+    load_fact_trade(datalake_config=mongo_config,  mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres, dim_repo=dim_repo)
     load_fact_match(datalake_config=mongo_config, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres,dim_repo=dim_repo)
     load_fact_income(datalake_config=mongo_config, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres,dim_repo=dim_repo)
     load_fact_balance(datalake_config=mongo_config, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres,dim_repo=dim_repo)
@@ -347,9 +322,6 @@ def dw_full_load():
     load_fact_financial_metrics(datalake_config=mongo_config, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres, dim_repo=dim_repo)
     load_fact_industry(datalake_config=mongo_config, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres, dim_repo=dim_repo)
     load_fact_business_plan(datalake_config=mongo_config, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres, dim_repo=dim_repo)
-
-    load_fact_comapny_belong_to_industry_sector(datalake_config=mongo_config, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres, dim_repo=dim_repo)
-    load_fact_comapny_belong_to_market_type_sector(datalake_config=mongo_config, mongo_reader=backend_mongo, logger=postgre_logger, pg_client=backend_postgres, dim_repo=dim_repo)
     print("done")
 
 
