@@ -12,7 +12,7 @@ from enum import Enum
 from typing import Any, Callable, Dict, List, Optional, Tuple
 import pandas as pd
 from shared.logger.python_main_logger import logger_manager
-from platforms.processing.base_processing_subsystem.subsystem5_error_event_schema import ErrorEvent, ErrorLevel, ErrorEventLog
+from platforms.processing.base_processing_subsystem.subsystem5_and_30_error_event_schema_and_escalate import ErrorEvent, ErrorLevel, ErrorEventLog
 from platforms.processing.base_processing_subsystem.subsystem1_data_profiling import DataProfile, DataProfiler
 
 # ---------------------------------------------------------------------------

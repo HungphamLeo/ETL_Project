@@ -1,3 +1,0 @@
-{"time":"2026-01-12T16:47:54", "level":"ERROR", "message":"Error crawling balance sheet for VCB: name 'url' is not defined", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:292"}
-{"time":"2026-01-12T16:47:56", "level":"ERROR", "message":"Error crawling balance sheet for VCB: name 'url' is not defined", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:292"}
-{"time":"2026-01-12T16:47:59", "level":"ERROR", "message":"Error crawling balance sheet for VIC: name 'url' is not defined", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:292"}
