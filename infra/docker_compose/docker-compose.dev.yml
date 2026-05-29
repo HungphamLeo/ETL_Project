@@ -11,7 +11,7 @@ services:
       - "4200:4200"
     command: prefect server start --host 0.0.0.0
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:4200/api/health || exit 1"]
+      test: ["CMD-SHELL", "python -c 'import urllib.request; urllib.request.urlopen(\"http://127.0.0.1:4200/api/health\")' || exit 1"]
       interval: 15s
       timeout: 10s
       retries: 10
@@ -48,33 +48,25 @@ services:
     restart: always
 
   kafka:
-    image: bitnami/kafka:latest
-    container_name: stock_kafka
+    image: apache/kafka:3.8.0
+    container_name: streaming_kafka
     ports:
       - "9092:9092"
     environment:
-      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
-      - ALLOW_PLAINTEXT_LISTENER=yes
-      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092
-      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
+      - KAFKA_BROKER_ID=1
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_LISTENERS=PLAINTEXT://0.0.0.0:9092
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
     depends_on:
       - zookeeper
-    healthcheck:
-      test: ["CMD", "kafka-broker-api-versions.sh", "--bootstrap-server", "localhost:9092"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-    restart: unless-stopped
     networks:
       - lakehouse_network
 
   zookeeper:
-    image: bitnami/zookeeper:latest
-    container_name: stock_zookeeper
+    image: zookeeper:3.9
+    container_name: streaming_zookeeper
     ports:
       - "2181:2181"
-    environment:
-      - ALLOW_ANONYMOUS_LOGIN=yes
     restart: unless-stopped
     networks:
       - lakehouse_network
@@ -87,7 +79,7 @@ services:
     restart: always
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: root123
+      MONGO_INITDB_ROOT_PASSWORD: root123@#
     ports:
       - "27017:27017"
     volumes:
@@ -153,7 +145,7 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: etl_project
       HUNGPHAM_USER: hungpham
-      HUNGPHAM_PASSWORD: hungpham@123
+      HUNGPHAM_PASSWORD: hungpham@123!#
     ports:
       - "5432:5432"
     volumes:
@@ -190,16 +182,27 @@ services:
       - "8080:8080"
       - "7077:7077"
     environment:
-      SPARK_MODE: master
       SPARK_MASTER_HOST: spark-master
       SPARK_RPC_AUTHENTICATION_ENABLED: "no"
       SPARK_RPC_ENCRYPTION_ENABLED: "no"
+    command:
+      - "/opt/spark/bin/spark-class"
+      - "org.apache.spark.deploy.master.Master"
+      - "--host"
+      - "spark-master"
+      - "--port"
+      - "7077"
+      - "--webui-port"
+      - "8080"
     volumes:
-      - ./jars:/opt/spark/jars
+      - ./jars:/opt/spark/custom_jars
       - ./data:/opt/spark/data
     healthcheck:
-      test: ["CMD", "nc", "-z", "localhost", "7077"]
-      interval: 30s
+      test: ["CMD-SHELL", "python3 -c 'import socket; s=socket.socket(); s.settimeout(2); s.connect((\"spark-master\", 7077)); s.close()' || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
 
   spark-worker:
     image: apache/spark:3.5.0
@@ -208,12 +211,18 @@ services:
       spark-master:
         condition: service_healthy
     environment:
-      SPARK_MODE: worker
-      SPARK_MASTER_URL: spark://spark-master:7077
       SPARK_WORKER_CORES: 2
       SPARK_WORKER_MEMORY: 4g
+    command:
+      - "/opt/spark/bin/spark-class"
+      - "org.apache.spark.deploy.worker.Worker"
+      - "spark://spark-master:7077"
+      - "-c"
+      - "2"
+      - "-m"
+      - "4g"
     volumes:
-      - ./jars:/opt/spark/jars
+      - ./jars:/opt/spark/custom_jars
       - ./data:/opt/spark/data
 
   trino:
@@ -234,9 +243,11 @@ services:
 # ============================
 
 volumes:
+  mongo_data:
+    driver: local
   minio_data:
     driver: local
-  postgres_data:
+  pg_data:
     driver: local
   prefect_data:
     driver: local
