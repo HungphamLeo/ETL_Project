@@ -35,6 +35,10 @@ from __future__ import annotations
 import os
 import sys
 import uuid
+import logging
+import yaml
+from enum import Enum
+from pathlib import Path
 from contextlib import contextmanager
 from dataclasses import dataclass, field
 from datetime import date, datetime, timezone
@@ -102,10 +106,19 @@ load_dotenv()
 # ===========================================================================
 # CONSTANTS & ENV
 # ===========================================================================
+
+# Project setup
+PROJECT_ROOT = Path(__file__).resolve().parent
+sys.path.insert(0, str(PROJECT_ROOT))
+os.chdir(PROJECT_ROOT)
+
 _LAKEHOUSE_BASE   = os.getenv("LAKEHOUSE_BASE_PATH", "s3a://lakehouse")
+
+
 _S3_ENDPOINT      = os.getenv("S3_ENDPOINT", "http://localhost:9000")
 _S3_KEY           = os.getenv("MINIO_ROOT_USER", "minioadmin")
 _S3_SECRET        = os.getenv("MINIO_ROOT_PASSWORD", "minioadmin_secure_123")
+
 _PG_USER          = os.getenv("POSTGRES_USER", "")
 _PG_PASSWORD      = os.getenv("POSTGRES_PASSWORD", "")
 _PG_HOST          = os.getenv("POSTGRES_HOST", "localhost")
@@ -117,7 +130,9 @@ _SQLMESH_GATEWAY  = os.getenv("SQLMESH_GATEWAY", "local_duckdb")
 
 # Default symbols if none provided
 # DEFAULT_SYMBOLS = ["FPT", "VNM", "HPG", "MBB", "SSI"]
-
+DEFAULT_CONFIG_PATH = (
+    PROJECT_ROOT / "platforms" / "orchestration" / "prefect" / "config" / "cophieu68_config.yaml"
+)
 # ---------------------------------------------------------------------------
 # Storage options (shared across Polars / DuckDB)
 # ---------------------------------------------------------------------------
@@ -267,10 +282,56 @@ class ConfigurationManager:
                 errors.append(f"Missing required section: {section}")
 
         return len(errors) == 0, errors
-    
+
+# ===========================================================================
+# ENGINE FACTORIES
+# ===========================================================================
+
+def get_polars_engine(config: Dict[str, Any]) -> Any:
+    """Initialize Polars engine."""
+    try:
+        from platforms.processing.polars.polars_engine import PolarsEngine, PolarsConfig
+        
+        cfg = PolarsConfig(
+            thread_pool_size=config.get("polars", {}).get("thread_pool_size"),
+            enable_streaming=config.get("polars", {}).get("enable_streaming", True),
+            storage_options=_STORAGE_OPTIONS,
+        )
+        return PolarsEngine(config=cfg, logger=logger_manager.get_logger("polars_engine"))
+    except ImportError:
+        raise ImportError("Polars processing engine not available")
+
+
+def get_duckdb_engine(config: Dict[str, Any]) -> Any:
+    """Initialize DuckDB engine."""
+    try:
+        from platforms.processing.duckdb.duckdb_engine import DuckDBEngine, DuckDBConfig
+        
+        cfg = DuckDBConfig(
+            database_path=":memory:",
+            storage_options=_STORAGE_OPTIONS,
+        )
+        return DuckDBEngine(config=cfg, logger=logger_manager.get_logger("duckdb_engine"))
+    except ImportError:
+        raise ImportError("DuckDB processing engine not available")
+
+
+def get_sqlmesh_engine(config: Dict[str, Any]) -> Any:
+    """Initialize SQLMesh engine."""
+    try:
+        from platforms.processing.sqlmesh.sqlmesh_engine import SqlMeshEngine, SqlMeshConfig
+        
+        cfg = SqlMeshConfig(
+            project_path=SQLMESH_PATH,
+            gateway=SQLMESH_GATEWAY,
+        )
+        return SqlMeshEngine(config=cfg, logger=logger_manager.get_logger("sqlmesh_engine"))
+    except ImportError:
+        raise ImportError("SQLMesh processing engine not available")
 # ===========================================================================
 # POLARS BRONZE INGESTER  (BasePolarsProcessor use-case)
 # ===========================================================================
+
 
 class BronzePolarsIngester(BasePolarsProcessor):
     """
@@ -422,6 +483,8 @@ class BronzePolarsIngester(BasePolarsProcessor):
                 "rejects": len(reject_records),
             },
         }
+
+
 
 
 # ===========================================================================
