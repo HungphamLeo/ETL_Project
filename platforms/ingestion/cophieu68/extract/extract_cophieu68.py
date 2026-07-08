@@ -117,102 +117,111 @@ class ExtractCophieu68(Cophieu68BeautifulSoupCrawler):
             if not results:
                 self.logger.warning(f"Không tìm thấy bảng nào cho {symbol}")
                 return None
-                
+            self.logger.info(f"extract_succcessfull financial_report_summary {symbol}")
             return results
 
         except Exception as e:
-            self.logger.error(f"Error fetching report for {symbol.upper()}: {e}")
+            self.logger.error(f"Error fetching financial_report_summary report for {symbol.upper()}: {e}")
             return None
         
     def crawl_business_plan(self, symbol: str):
         """Crawl bảng KẾ HOẠCH KINH DOANH"""
-        url = f"{self.urls}{self.endpoint['summary_financial']}".format(symbol=symbol.lower())
-        soup = self.get_soup(url)
-        if not soup:
+        try:
+            url = f"{self.urls}{self.endpoint['summary_financial']}".format(symbol=symbol.lower())
+            soup = self.get_soup(url)
+            if not soup:
+                return None
+
+            heading = soup.find("h2", string=re.compile("KẾ HOẠCH KINH DOANH", re.I))
+            if not heading:
+                self.logger.info(f"Không tìm thấy phần KẾ HOẠCH KINH DOANH cho {symbol}")
+                return None
+
+            # Lấy bảng kế tiếp
+            table = heading.find_next("table")
+            if not table:
+                self.logger.info(f"Không tìm thấy bảng kế hoạch kinh doanh cho {symbol}")
+                return None
+
+            def clean_number(val: str) -> float:
+                """Chuẩn hóa chuỗi số — chỉ lấy phần trước dấu ( nếu có)"""
+                if not val:
+                    return 0.0
+                val = re.sub(r"\(.*?\)", "", val)  # bỏ phần trong ngoặc
+                val = val.replace(",", "").replace("%", "").strip()
+                try:
+                    return float(val)
+                except ValueError:
+                    return 0.0
+
+            rows = []
+            for tr in table.select("tr.border_bottom"):
+                tds = [td.get_text(strip=True) for td in tr.find_all("td")]
+                if len(tds) >= 5:
+                    rows.append(
+                        BusinessPlanRow(
+                            Year=tds[0],
+                            Plan_revenue=clean_number(tds[1]),
+                            Pass_revenue=clean_number(tds[2]),
+                            Plan_profit=clean_number(tds[3]),
+                            Pass_profit=clean_number(tds[4]),
+                        ).__dict__
+                    )
+
+            if not rows:
+                self.logger.info(f"Không có dữ liệu kế hoạch kinh doanh cho {symbol}")
+                return None
+            self.logger.info(f"extract_successfull business_plan {symbol}")
+            return {"symbol": symbol.upper(), "data": rows}
+        except Exception as e:
+            self.logger.error(f"Error fetching business_plan for {symbol.upper()}: {e}")
             return None
-
-        heading = soup.find("h2", string=re.compile("KẾ HOẠCH KINH DOANH", re.I))
-        if not heading:
-            self.logger.info(f"Không tìm thấy phần KẾ HOẠCH KINH DOANH cho {symbol}")
-            return None
-
-        # Lấy bảng kế tiếp
-        table = heading.find_next("table")
-        if not table:
-            self.logger.info(f"Không tìm thấy bảng kế hoạch kinh doanh cho {symbol}")
-            return None
-
-        def clean_number(val: str) -> float:
-            """Chuẩn hóa chuỗi số — chỉ lấy phần trước dấu ( nếu có)"""
-            if not val:
-                return 0.0
-            val = re.sub(r"\(.*?\)", "", val)  # bỏ phần trong ngoặc
-            val = val.replace(",", "").replace("%", "").strip()
-            try:
-                return float(val)
-            except ValueError:
-                return 0.0
-
-        rows = []
-        for tr in table.select("tr.border_bottom"):
-            tds = [td.get_text(strip=True) for td in tr.find_all("td")]
-            if len(tds) >= 5:
-                rows.append(
-                    BusinessPlanRow(
-                        Year=tds[0],
-                        Plan_revenue=clean_number(tds[1]),
-                        Pass_revenue=clean_number(tds[2]),
-                        Plan_profit=clean_number(tds[3]),
-                        Pass_profit=clean_number(tds[4]),
-                    ).__dict__
-                )
-
-        if not rows:
-            self.logger.info(f"Không có dữ liệu kế hoạch kinh doanh cho {symbol}")
-            return None
-
-        return {"symbol": symbol.upper(), "data": rows}
 
 
     def crawl_details_match(self, symbol: str) -> Optional[DetailsMatchReport]:
         """Trích xuất phần 'Chi tiết khớp lệnh'"""
-        url = f"{self.urls}{self.endpoint['summary_financial']}".format(symbol=symbol.lower())
-        soup = self.get_soup(url)
-        if not soup:
+        try:
+            url = f"{self.urls}{self.endpoint['summary_financial']}".format(symbol=symbol.lower())
+            soup = self.get_soup(url)
+            if not soup:
+                return None
+
+            heading = soup.find("h2", string=re.compile("Chi tiết khớp lệnh", re.I))
+            if not heading:
+                self.logger.info(f"Không tìm thấy phần Chi tiết khớp lệnh cho {symbol}")
+                return None
+
+            section = heading.find_next_sibling()
+            if not section:
+                return None
+
+            rows = []
+            for tr in section.select("tr"):
+                tds = [td.get_text(strip=True) for td in tr.find_all("td")]
+                if len(tds) == 5:
+                    try:
+                        rows.append(
+                            DetailsMatchRow(
+                                Time_match=tds[0],
+                                Price_match=float(tds[1].replace(",", "")),
+                                Increase_decrease=tds[2],
+                                Volume=int(tds[3].replace(",", "")),
+                                Accum_volume=int(tds[4].replace(",", "")),
+                            ).__dict__
+                        )
+                    except Exception:
+                        continue
+
+            if not rows:
+                self.logger.info(f"Không có dòng dữ liệu khớp lệnh cho {symbol}")
+                return None
+
+            self.logger.info("extract_successfull details_match {symbol}")
+
+            return DetailsMatchReport(symbol=symbol.upper(), data=rows).__dict__
+        except Exception as e:
+            self.logger.error(f"Error fetching details_match for {symbol.upper()}: {e}")
             return None
-
-        heading = soup.find("h2", string=re.compile("Chi tiết khớp lệnh", re.I))
-        if not heading:
-            self.logger.info(f"Không tìm thấy phần Chi tiết khớp lệnh cho {symbol}")
-            return None
-
-        section = heading.find_next_sibling()
-        if not section:
-            return None
-
-        rows = []
-        for tr in section.select("tr"):
-            tds = [td.get_text(strip=True) for td in tr.find_all("td")]
-            if len(tds) == 5:
-                try:
-                    rows.append(
-                        DetailsMatchRow(
-                            Time_match=tds[0],
-                            Price_match=float(tds[1].replace(",", "")),
-                            Increase_decrease=tds[2],
-                            Volume=int(tds[3].replace(",", "")),
-                            Accum_volume=int(tds[4].replace(",", "")),
-                        ).__dict__
-                    )
-                except Exception:
-                    continue
-
-        if not rows:
-            self.logger.info(f"Không có dòng dữ liệu khớp lệnh cho {symbol}")
-            return None
-
-
-        return DetailsMatchReport(symbol=symbol.upper(), data=rows).__dict__
         
 
     def crawl_detailed_financial_report(self, symbol: str, report_type: str = "quarter") -> Optional[Dict]:
@@ -246,7 +255,8 @@ class ExtractCophieu68(Cophieu68BeautifulSoupCrawler):
                     results[f"table_{idx}"] = df
                 except Exception as e:
                     continue
-                    
+
+            self.logger.info("Extract_successfull details_financial_report {symbol}")  
             return results
             
         except Exception as e:
@@ -266,6 +276,7 @@ class ExtractCophieu68(Cophieu68BeautifulSoupCrawler):
         try:
             reports = self.crawl_detailed_financial_report(symbol, report_type)
             income_report = reports["table_0"] if reports else None
+            self.logger.info(f"Extract_successfull details_income_statement {symbol}")
             return IncomeStatement(symbol=symbol.upper(), report_type=report_type, data=income_report).__dict__
         except Exception as e:
             self.logger.error(f"Error crawling income statement for {symbol}: {e}")
@@ -284,7 +295,7 @@ class ExtractCophieu68(Cophieu68BeautifulSoupCrawler):
         try:
             reports = self.crawl_detailed_financial_report(symbol, report_type)
             balance_report = reports["table_1"] if reports else None
-            
+            self.logger.info(f"Extract_successfull details_balance_sheet {symbol}")
             return BalanceSheet(symbol=symbol.upper(), report_type=report_type, data=balance_report).__dict__
         except Exception as e:
             self.logger.error(f"Error crawling balance sheet for {symbol}: {e}")
@@ -317,6 +328,7 @@ class ExtractCophieu68(Cophieu68BeautifulSoupCrawler):
                     )
                 except Exception:
                     continue
+        self.logger.info("Extract successfull company_info_belong_to_industry_sectors")
         return rows
 
     def crawl_company_info_belong_to_market_type(self):
@@ -345,6 +357,7 @@ class ExtractCophieu68(Cophieu68BeautifulSoupCrawler):
                     )
                 except Exception:
                     continue
+        self.logger.info("Extract successfull company_info_belong_to_market_type")
         return rows
 
     def crawl_industry_info(self, type_info: str) -> Optional[pd.DataFrame]:
@@ -425,7 +438,8 @@ class ExtractCophieu68(Cophieu68BeautifulSoupCrawler):
                 if row:
                     key_industry = f"_{industry_code}_{industry_name}_{industry_url}_"
                     rows[key_industry] = row.__dict__
-                    
+            
+            self.logger.info(f"Extract_successfull industry_info for type {type_info}")
             return rows
 
         except Exception as e:
@@ -511,7 +525,7 @@ class ExtractCophieu68(Cophieu68BeautifulSoupCrawler):
                             metrics.pb_power = value
                         elif idx == 4:
                             metrics.price_growth_power = value
-
+            self.logger.info(f"Extract_successfull financial_ratios for {symbol}")
             return metrics.__dict__
 
         except Exception as e:

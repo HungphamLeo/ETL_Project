@@ -29,3 +29,82 @@
 ======================================================================
 ", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/processing/base_processing_subsystem/subsystem34_metadata_repo.py:462"}
 {"time":"2026-07-07T16:14:14", "level":"INFO", "message":"Shutting down the event dispatcher", "caller":"/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/analytics/dispatcher.py:159"}
+{"time":"2026-07-07T16:28:24", "level":"INFO", "message":"[CONFIG] Loaded from platforms/orchestration/prefect/config/cophieu68_config.yaml", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:159"}
+{"time":"2026-07-07T16:28:24", "level":"INFO", "message":"[CONFIG] Prefect config loaded successfully", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:171"}
+{"time":"2026-07-07T16:28:24", "level":"INFO", "message":"[ORCHESTRATOR] Starting pipeline phase=bronze run_id=run_20260707_092824_16b933 target_date=2026-07-07 symbols=['HPG'] backend=polars", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:785"}
+{"time":"2026-07-07T16:28:24", "level":"INFO", "message":"[RUN START] run_id=run_20260707_092824_16b933 | job=master_etl_bronze | layer=bronze | table=all_tables", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/processing/base_processing_subsystem/subsystem34_metadata_repo.py:138"}
+{"time":"2026-07-07T16:28:24", "level":"INFO", "message":"[BronzeExecutor] Starting bronze phase for symbols=['HPG']", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:495"}
+{"time":"2026-07-07T16:28:24", "level":"INFO", "message":"[BronzeExecutor] Processing symbol=HPG batch_id=batch_HPG_20260707092824_627ecf72", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:510"}
+{"time":"2026-07-07T16:28:23", "level":"INFO", "message":"[BronzeIngester:HPG] Start processing 101 records.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:302"}
+{"time":"2026-07-07T16:28:24", "level":"INFO", "message":"💾 Ghi dữ liệu tới: s3a://lakehouse/bronze/stock_prices/ (Partition: ['ingest_date'])", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/processing/polars/polars_engine.py:53"}
+{"time":"2026-07-07T16:28:24", "level":"ERROR", "message":"[BronzeExecutor] Error for HPG: DataFrame.write_parquet() got an unexpected keyword argument 'storage_options'", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:556"}
+{"time":"2026-07-07T16:28:24", "level":"ERROR", "message":"[ERROR] Bronze ingestion failed for HPG: DataFrame.write_parquet() got an unexpected keyword argument 'storage_options' | record_id=None", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/processing/base_processing_subsystem/subsystem5_and_30_error_event_schema_and_escalate.py:114"}
+{"time":"2026-07-07T16:28:24", "level":"INFO", "message":"[BronzeExecutor] Completed bronze phase: rows_ingested=0", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:563"}
+{"time":"2026-07-07T16:28:24", "level":"INFO", "message":"[RUN END] run_id=run_20260707_092824_16b933 | status=SUCCESS | duration=-0.2s | rows_read=None | rows_written=None", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/processing/base_processing_subsystem/subsystem34_metadata_repo.py:183"}
+{"time":"2026-07-07T16:28:24", "level":"INFO", "message":"
+======================================================================
+  ETL Run Summary: run_20260707_092824_16b933
+======================================================================
+  Job:           master_etl_bronze
+  Layer:         bronze -> all_tables
+  Status:        SUCCESS
+  Start:         2026-07-07 09:28:24.350680+00:00
+  End:           2026-07-07 09:28:24.108091+00:00
+  Duration:      -0.2s
+  Rows Read:     0
+  Rows Written:  0
+======================================================================
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/processing/base_processing_subsystem/subsystem34_metadata_repo.py:462"}
+{"time":"2026-07-07T16:28:24", "level":"INFO", "message":"Shutting down the event dispatcher", "caller":"/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/analytics/dispatcher.py:159"}
+{"time":"2026-07-07T16:33:14", "level":"INFO", "message":"[CONFIG] Loaded from platforms/orchestration/prefect/config/cophieu68_config.yaml", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:159"}
+{"time":"2026-07-07T16:33:14", "level":"INFO", "message":"[CONFIG] Prefect config loaded successfully", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:171"}
+{"time":"2026-07-07T16:33:14", "level":"INFO", "message":"[ORCHESTRATOR] Starting pipeline phase=bronze run_id=run_20260707_093314_c42028 target_date=2026-07-07 symbols=['HPG'] backend=polars", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:791"}
+{"time":"2026-07-07T16:33:14", "level":"INFO", "message":"[RUN START] run_id=run_20260707_093314_c42028 | job=master_etl_bronze | layer=bronze | table=all_tables", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/processing/base_processing_subsystem/subsystem34_metadata_repo.py:138"}
+{"time":"2026-07-07T16:33:14", "level":"INFO", "message":"[BronzeExecutor] Starting bronze phase for symbols=['HPG']", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:501"}
+{"time":"2026-07-07T16:33:14", "level":"INFO", "message":"[BronzeExecutor] Processing symbol=HPG batch_id=batch_HPG_20260707093314_30b861b1", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:516"}
+{"time":"2026-07-07T16:33:15", "level":"INFO", "message":"[BronzeIngester:HPG] Start processing 101 records.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:302"}
+{"time":"2026-07-07T16:33:15", "level":"ERROR", "message":"[BronzeExecutor] Error for HPG: DataFrame.write_parquet() got an unexpected keyword argument 'storage_options'", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:562"}
+{"time":"2026-07-07T16:33:15", "level":"ERROR", "message":"[ERROR] Bronze ingestion failed for HPG: DataFrame.write_parquet() got an unexpected keyword argument 'storage_options' | record_id=None", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/processing/base_processing_subsystem/subsystem5_and_30_error_event_schema_and_escalate.py:114"}
+{"time":"2026-07-07T16:33:15", "level":"INFO", "message":"[BronzeExecutor] Completed bronze phase: rows_ingested=0", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:569"}
+{"time":"2026-07-07T16:33:15", "level":"INFO", "message":"[RUN END] run_id=run_20260707_093314_c42028 | status=SUCCESS | duration=0.9s | rows_read=None | rows_written=None", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/processing/base_processing_subsystem/subsystem34_metadata_repo.py:183"}
+{"time":"2026-07-07T16:33:15", "level":"INFO", "message":"
+======================================================================
+  ETL Run Summary: run_20260707_093314_c42028
+======================================================================
+  Job:           master_etl_bronze
+  Layer:         bronze -> all_tables
+  Status:        SUCCESS
+  Start:         2026-07-07 09:33:14.783146+00:00
+  End:           2026-07-07 09:33:15.680636+00:00
+  Duration:      0.9s
+  Rows Read:     0
+  Rows Written:  0
+======================================================================
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/processing/base_processing_subsystem/subsystem34_metadata_repo.py:462"}
+{"time":"2026-07-07T16:33:15", "level":"INFO", "message":"Shutting down the event dispatcher", "caller":"/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/analytics/dispatcher.py:159"}
+{"time":"2026-07-07T16:33:54", "level":"INFO", "message":"[CONFIG] Loaded from platforms/orchestration/prefect/config/cophieu68_config.yaml", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:159"}
+{"time":"2026-07-07T16:33:54", "level":"INFO", "message":"[CONFIG] Prefect config loaded successfully", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:171"}
+{"time":"2026-07-07T16:33:54", "level":"INFO", "message":"[ORCHESTRATOR] Starting pipeline phase=bronze run_id=run_20260707_093354_782b34 target_date=2026-07-07 symbols=['HPG'] backend=polars", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:791"}
+{"time":"2026-07-07T16:33:54", "level":"INFO", "message":"[RUN START] run_id=run_20260707_093354_782b34 | job=master_etl_bronze | layer=bronze | table=all_tables", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/processing/base_processing_subsystem/subsystem34_metadata_repo.py:138"}
+{"time":"2026-07-07T16:33:54", "level":"INFO", "message":"[BronzeExecutor] Starting bronze phase for symbols=['HPG']", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:501"}
+{"time":"2026-07-07T16:33:54", "level":"INFO", "message":"[BronzeExecutor] Processing symbol=HPG batch_id=batch_HPG_20260707093354_0e348414", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:516"}
+{"time":"2026-07-07T16:33:54", "level":"INFO", "message":"[BronzeIngester:HPG] Start processing 101 records.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:302"}
+{"time":"2026-07-07T16:33:54", "level":"ERROR", "message":"[BronzeExecutor] Error for HPG: DataFrame.write_parquet() got an unexpected keyword argument 'storage_options'", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:562"}
+{"time":"2026-07-07T16:33:54", "level":"ERROR", "message":"[ERROR] Bronze ingestion failed for HPG: DataFrame.write_parquet() got an unexpected keyword argument 'storage_options' | record_id=None", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/processing/base_processing_subsystem/subsystem5_and_30_error_event_schema_and_escalate.py:114"}
+{"time":"2026-07-07T16:33:54", "level":"INFO", "message":"[BronzeExecutor] Completed bronze phase: rows_ingested=0", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:569"}
+{"time":"2026-07-07T16:33:54", "level":"INFO", "message":"[RUN END] run_id=run_20260707_093354_782b34 | status=SUCCESS | duration=0.7s | rows_read=None | rows_written=None", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/processing/base_processing_subsystem/subsystem34_metadata_repo.py:183"}
+{"time":"2026-07-07T16:33:54", "level":"INFO", "message":"
+======================================================================
+  ETL Run Summary: run_20260707_093354_782b34
+======================================================================
+  Job:           master_etl_bronze
+  Layer:         bronze -> all_tables
+  Status:        SUCCESS
+  Start:         2026-07-07 09:33:54.077068+00:00
+  End:           2026-07-07 09:33:54.809548+00:00
+  Duration:      0.7s
+  Rows Read:     0
+  Rows Written:  0
+======================================================================
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/processing/base_processing_subsystem/subsystem34_metadata_repo.py:462"}
+{"time":"2026-07-07T16:33:54", "level":"INFO", "message":"Shutting down the event dispatcher", "caller":"/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/analytics/dispatcher.py:159"}

@@ -326,7 +326,13 @@ class BronzePolarsIngester:
         ])
 
         bronze_path = f"{self.base_path}/bronze/{self.table_name}/"
-        saved_path = self.engine.write_parquet(df=df, target_path=bronze_path, partition_by=["ingest_date"])
+        # [FIX] Sửa lỗi TypeError: unexpected keyword argument 'storage_options'.
+        # Polars write_parquet cần storage_options khi ghi vào S3.
+        # Chúng ta sẽ gọi trực tiếp hàm của DataFrame thay vì qua engine để đảm bảo tham số đúng.
+        df.write_parquet(
+            bronze_path, partition_by=["ingest_date"], storage_options=self.engine.config.storage_options
+        )
+        saved_path = bronze_path # Đường dẫn đã bao gồm partition
 
         reject_path = None
         if reject_records:
@@ -516,6 +522,11 @@ class BronzeExecutor:
                     continue
 
                 raw_records = trading_data["records"]
+                # [FIX] Thêm 'symbol' vào mỗi record TRƯỚC KHI kiểm tra chất lượng dữ liệu.
+                # Dữ liệu gốc từ extractor không chứa cột symbol trong mỗi record.
+                for record in raw_records:
+                    record['symbol'] = symbol.upper()
+
                 cleansing = _build_cleansing_rules(symbol)
                 ingestion_result = bronze_ingester.process(
                     raw_records=raw_records,
