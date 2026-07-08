@@ -1,0 +1,803 @@
+{"time":"2026-07-08T16:25:14", "level":"INFO", "name":"__main__", "message":"[CONFIG] Loaded from platforms/orchestration/prefect/config/cophieu68_config.yaml", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:159"}
+{"time":"2026-07-08T16:25:14", "level":"INFO", "name":"__main__", "message":"[CONFIG] Prefect config loaded successfully", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:171"}
+{"time":"2026-07-08T16:25:14", "level":"INFO", "name":"__main__", "message":"[ORCHESTRATOR] Starting pipeline phase=bronze run_id=run_20260708_092514_23fccc target_date=2026-07-08 symbols=['HPG'] backend=polars", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:901"}
+{"time":"2026-07-08T16:25:14", "level":"INFO", "name":"__main__", "message":"[RUN START] run_id=run_20260708_092514_23fccc | job=master_etl_bronze | layer=bronze | table=all_tables", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/processing/base_processing_subsystem/subsystem34_metadata_repo.py:138"}
+{"time":"2026-07-08T16:25:14", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Starting bronze phase for symbols=['HPG']", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:524"}
+{"time":"2026-07-08T16:25:14", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Executing non-symbol specific tasks.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:548"}
+{"time":"2026-07-08T16:25:14", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Crawling market lists for all market types.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:551"}
+{"time":"2026-07-08T16:25:14", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=market_list_vnindex for symbol=VNINDEX batch_id=batch_VNINDEX_20260708092514_9232ec99", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:611"}
+{"time":"2026-07-08T16:25:14", "level":"ERROR", "name":"__main__", "message":"[BronzeExecutor] Error for table=market_list_vnindex, symbol=VNINDEX: name 'bronze_ingester' is not defined", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:676"}
+Traceback (most recent call last):
+  File "/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py", line 654, in _process_and_ingest
+    ingestion_result = bronze_ingester.process(
+                       ^^^^^^^^^^^^^^^
+NameError: name 'bronze_ingester' is not defined
+{"time":"2026-07-08T16:25:15", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=market_list_hnx for symbol=HNX batch_id=batch_HNX_20260708092515_f7002602", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:611"}
+{"time":"2026-07-08T16:25:17", "level":"ERROR", "name":"__main__", "message":"[BronzeExecutor] Error for table=market_list_hnx, symbol=HNX: name 'bronze_ingester' is not defined", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:676"}
+Traceback (most recent call last):
+  File "/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py", line 654, in _process_and_ingest
+    ingestion_result = bronze_ingester.process(
+                       ^^^^^^^^^^^^^^^
+NameError: name 'bronze_ingester' is not defined
+{"time":"2026-07-08T16:25:17", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=market_list_upcom for symbol=UPCOM batch_id=batch_UPCOM_20260708092517_10118800", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:611"}
+{"time":"2026-07-08T16:25:18", "level":"ERROR", "name":"__main__", "message":"[BronzeExecutor] Error for table=market_list_upcom, symbol=UPCOM: name 'bronze_ingester' is not defined", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:676"}
+Traceback (most recent call last):
+  File "/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py", line 654, in _process_and_ingest
+    ingestion_result = bronze_ingester.process(
+                       ^^^^^^^^^^^^^^^
+NameError: name 'bronze_ingester' is not defined
+{"time":"2026-07-08T16:25:18", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=market_list_vn30 for symbol=VN30 batch_id=batch_VN30_20260708092518_b7817306", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:611"}
+{"time":"2026-07-08T16:25:19", "level":"ERROR", "name":"__main__", "message":"[BronzeExecutor] Error for table=market_list_vn30, symbol=VN30: name 'bronze_ingester' is not defined", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:676"}
+Traceback (most recent call last):
+  File "/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py", line 654, in _process_and_ingest
+    ingestion_result = bronze_ingester.process(
+                       ^^^^^^^^^^^^^^^
+NameError: name 'bronze_ingester' is not defined
+{"time":"2026-07-08T16:25:19", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Crawling industry information for all types.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:562"}
+{"time":"2026-07-08T16:25:19", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=industry_info_summary_info for symbol=SUMMARY_INFO batch_id=batch_SUMMARY_INFO_20260708092519_71db7c5c", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:611"}
+{"time":"2026-07-08T16:25:20", "level":"INFO", "name":"extractor", "message":"Extract_successfull industry_info for type summary_info", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:442"}
+{"time":"2026-07-08T16:25:20", "level":"ERROR", "name":"__main__", "message":"[BronzeExecutor] Error for table=industry_info_summary_info, symbol=SUMMARY_INFO: name 'bronze_ingester' is not defined", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:676"}
+Traceback (most recent call last):
+  File "/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py", line 654, in _process_and_ingest
+    ingestion_result = bronze_ingester.process(
+                       ^^^^^^^^^^^^^^^
+NameError: name 'bronze_ingester' is not defined
+{"time":"2026-07-08T16:25:20", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=industry_info_financial_info for symbol=FINANCIAL_INFO batch_id=batch_FINANCIAL_INFO_20260708092520_b5cecc1c", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:611"}
+{"time":"2026-07-08T16:25:20", "level":"INFO", "name":"extractor", "message":"Extract_successfull industry_info for type financial_info", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:442"}
+{"time":"2026-07-08T16:25:20", "level":"ERROR", "name":"__main__", "message":"[BronzeExecutor] Error for table=industry_info_financial_info, symbol=FINANCIAL_INFO: name 'bronze_ingester' is not defined", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:676"}
+Traceback (most recent call last):
+  File "/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py", line 654, in _process_and_ingest
+    ingestion_result = bronze_ingester.process(
+                       ^^^^^^^^^^^^^^^
+NameError: name 'bronze_ingester' is not defined
+{"time":"2026-07-08T16:25:20", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=industry_info_fund_info for symbol=FUND_INFO batch_id=batch_FUND_INFO_20260708092520_f36d906a", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:611"}
+{"time":"2026-07-08T16:25:21", "level":"INFO", "name":"extractor", "message":"Extract_successfull industry_info for type fund_info", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:442"}
+{"time":"2026-07-08T16:25:21", "level":"ERROR", "name":"__main__", "message":"[BronzeExecutor] Error for table=industry_info_fund_info, symbol=FUND_INFO: name 'bronze_ingester' is not defined", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:676"}
+Traceback (most recent call last):
+  File "/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py", line 654, in _process_and_ingest
+    ingestion_result = bronze_ingester.process(
+                       ^^^^^^^^^^^^^^^
+NameError: name 'bronze_ingester' is not defined
+{"time":"2026-07-08T16:25:21", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Crawling general company information.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:573"}
+{"time":"2026-07-08T16:25:21", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=company_by_industry for symbol=ALL batch_id=batch_ALL_20260708092521_11862282", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:611"}
+{"time":"2026-07-08T16:25:40", "level":"INFO", "name":"extractor", "message":"Extract successfull company_info_belong_to_industry_sectors", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:331"}
+{"time":"2026-07-08T16:25:40", "level":"ERROR", "name":"__main__", "message":"[BronzeExecutor] Error for table=company_by_industry, symbol=ALL: name 'bronze_ingester' is not defined", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:676"}
+Traceback (most recent call last):
+  File "/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py", line 654, in _process_and_ingest
+    ingestion_result = bronze_ingester.process(
+                       ^^^^^^^^^^^^^^^
+NameError: name 'bronze_ingester' is not defined
+{"time":"2026-07-08T16:25:40", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=company_by_market for symbol=ALL batch_id=batch_ALL_20260708092540_234074f0", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:611"}
+{"time":"2026-07-08T16:25:42", "level":"INFO", "name":"extractor", "message":"Extract successfull company_info_belong_to_market_type", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:360"}
+{"time":"2026-07-08T16:25:42", "level":"ERROR", "name":"__main__", "message":"[BronzeExecutor] Error for table=company_by_market, symbol=ALL: name 'bronze_ingester' is not defined", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:676"}
+Traceback (most recent call last):
+  File "/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py", line 654, in _process_and_ingest
+    ingestion_result = bronze_ingester.process(
+                       ^^^^^^^^^^^^^^^
+NameError: name 'bronze_ingester' is not defined
+{"time":"2026-07-08T16:25:42", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Executing tasks for symbol=HPG", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:589"}
+{"time":"2026-07-08T16:25:42", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=trading_data for symbol=HPG batch_id=batch_HPG_20260708092542_477673e0", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:611"}
+{"time":"2026-07-08T16:25:43", "level":"ERROR", "name":"__main__", "message":"[BronzeExecutor] Error for table=trading_data, symbol=HPG: name 'bronze_ingester' is not defined", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:676"}
+Traceback (most recent call last):
+  File "/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py", line 654, in _process_and_ingest
+    ingestion_result = bronze_ingester.process(
+                       ^^^^^^^^^^^^^^^
+NameError: name 'bronze_ingester' is not defined
+{"time":"2026-07-08T16:25:43", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=company_profile for symbol=HPG batch_id=batch_HPG_20260708092543_b402d220", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:611"}
+{"time":"2026-07-08T16:25:44", "level":"WARNING", "name":"__main__", "message":"[BronzeExecutor] Data for company_profile/HPG could not be normalized to records.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:643"}
+{"time":"2026-07-08T16:25:44", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=financial_ratios for symbol=HPG batch_id=batch_HPG_20260708092544_ddb90f20", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:611"}
+{"time":"2026-07-08T16:25:44", "level":"INFO", "name":"extractor", "message":"Extract_successfull financial_ratios for HPG", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:528"}
+{"time":"2026-07-08T16:25:44", "level":"ERROR", "name":"__main__", "message":"[BronzeExecutor] Error for table=financial_ratios, symbol=HPG: name 'bronze_ingester' is not defined", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:676"}
+Traceback (most recent call last):
+  File "/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py", line 654, in _process_and_ingest
+    ingestion_result = bronze_ingester.process(
+                       ^^^^^^^^^^^^^^^
+NameError: name 'bronze_ingester' is not defined
+{"time":"2026-07-08T16:25:44", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=financial_summary for symbol=HPG batch_id=batch_HPG_20260708092544_ea0ec1cc", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:611"}
+{"time":"2026-07-08T16:25:45", "level":"INFO", "name":"extractor", "message":"extract_succcessfull financial_report_summary HPG", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:120"}
+{"time":"2026-07-08T16:25:45", "level":"ERROR", "name":"__main__", "message":"[BronzeExecutor] Error for table=financial_summary, symbol=HPG: name 'bronze_ingester' is not defined", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:676"}
+Traceback (most recent call last):
+  File "/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py", line 654, in _process_and_ingest
+    ingestion_result = bronze_ingester.process(
+                       ^^^^^^^^^^^^^^^
+NameError: name 'bronze_ingester' is not defined
+{"time":"2026-07-08T16:25:45", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=business_plan for symbol=HPG batch_id=batch_HPG_20260708092545_a17b6596", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:611"}
+{"time":"2026-07-08T16:25:46", "level":"INFO", "name":"extractor", "message":"extract_successfull business_plan HPG", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:174"}
+{"time":"2026-07-08T16:25:46", "level":"ERROR", "name":"__main__", "message":"[BronzeExecutor] Error for table=business_plan, symbol=HPG: name 'bronze_ingester' is not defined", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:676"}
+Traceback (most recent call last):
+  File "/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py", line 654, in _process_and_ingest
+    ingestion_result = bronze_ingester.process(
+                       ^^^^^^^^^^^^^^^
+NameError: name 'bronze_ingester' is not defined
+{"time":"2026-07-08T16:25:46", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=income_statement_quarterly for symbol=HPG batch_id=batch_HPG_20260708092546_34a00aae", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:611"}
+{"time":"2026-07-08T16:25:46", "level":"INFO", "name":"extractor", "message":"Extract_successfull details_financial_report {symbol}", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:259"}
+{"time":"2026-07-08T16:25:46", "level":"INFO", "name":"extractor", "message":"Extract_successfull details_income_statement HPG", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:279"}
+{"time":"2026-07-08T16:25:46", "level":"ERROR", "name":"__main__", "message":"[BronzeExecutor] Error for table=income_statement_quarterly, symbol=HPG: name 'bronze_ingester' is not defined", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:676"}
+Traceback (most recent call last):
+  File "/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py", line 654, in _process_and_ingest
+    ingestion_result = bronze_ingester.process(
+                       ^^^^^^^^^^^^^^^
+NameError: name 'bronze_ingester' is not defined
+{"time":"2026-07-08T16:25:47", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=balance_sheet_quarterly for symbol=HPG batch_id=batch_HPG_20260708092547_2410d410", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:611"}
+{"time":"2026-07-08T16:25:47", "level":"INFO", "name":"extractor", "message":"Extract_successfull details_financial_report {symbol}", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:259"}
+{"time":"2026-07-08T16:25:47", "level":"INFO", "name":"extractor", "message":"Extract_successfull details_balance_sheet HPG", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:298"}
+{"time":"2026-07-08T16:25:47", "level":"ERROR", "name":"__main__", "message":"[BronzeExecutor] Error for table=balance_sheet_quarterly, symbol=HPG: name 'bronze_ingester' is not defined", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:676"}
+Traceback (most recent call last):
+  File "/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py", line 654, in _process_and_ingest
+    ingestion_result = bronze_ingester.process(
+                       ^^^^^^^^^^^^^^^
+NameError: name 'bronze_ingester' is not defined
+{"time":"2026-07-08T16:25:47", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=income_statement_annually for symbol=HPG batch_id=batch_HPG_20260708092547_516d101b", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:611"}
+{"time":"2026-07-08T16:25:48", "level":"INFO", "name":"extractor", "message":"Extract_successfull details_financial_report {symbol}", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:259"}
+{"time":"2026-07-08T16:25:48", "level":"INFO", "name":"extractor", "message":"Extract_successfull details_income_statement HPG", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:279"}
+{"time":"2026-07-08T16:25:48", "level":"ERROR", "name":"__main__", "message":"[BronzeExecutor] Error for table=income_statement_annually, symbol=HPG: name 'bronze_ingester' is not defined", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:676"}
+Traceback (most recent call last):
+  File "/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py", line 654, in _process_and_ingest
+    ingestion_result = bronze_ingester.process(
+                       ^^^^^^^^^^^^^^^
+NameError: name 'bronze_ingester' is not defined
+{"time":"2026-07-08T16:25:48", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=balance_sheet_annually for symbol=HPG batch_id=batch_HPG_20260708092548_bdbd4477", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:611"}
+{"time":"2026-07-08T16:25:49", "level":"INFO", "name":"extractor", "message":"Extract_successfull details_financial_report {symbol}", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:259"}
+{"time":"2026-07-08T16:25:49", "level":"INFO", "name":"extractor", "message":"Extract_successfull details_balance_sheet HPG", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:298"}
+{"time":"2026-07-08T16:25:49", "level":"ERROR", "name":"__main__", "message":"[BronzeExecutor] Error for table=balance_sheet_annually, symbol=HPG: name 'bronze_ingester' is not defined", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:676"}
+Traceback (most recent call last):
+  File "/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py", line 654, in _process_and_ingest
+    ingestion_result = bronze_ingester.process(
+                       ^^^^^^^^^^^^^^^
+NameError: name 'bronze_ingester' is not defined
+{"time":"2026-07-08T16:25:49", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=match_details for symbol=HPG batch_id=batch_HPG_20260708092549_25e4584b", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:611"}
+{"time":"2026-07-08T16:25:50", "level":"INFO", "name":"extractor", "message":"extract_successfull details_match {symbol}", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:219"}
+{"time":"2026-07-08T16:25:50", "level":"ERROR", "name":"__main__", "message":"[BronzeExecutor] Error for table=match_details, symbol=HPG: name 'bronze_ingester' is not defined", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:676"}
+Traceback (most recent call last):
+  File "/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py", line 654, in _process_and_ingest
+    ingestion_result = bronze_ingester.process(
+                       ^^^^^^^^^^^^^^^
+NameError: name 'bronze_ingester' is not defined
+{"time":"2026-07-08T16:25:50", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Completed bronze phase: rows_ingested=0", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:543"}
+{"time":"2026-07-08T16:25:50", "level":"INFO", "name":"__main__", "message":"[RUN END] run_id=run_20260708_092514_23fccc | status=SUCCESS | duration=36.2s | rows_read=None | rows_written=None", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/processing/base_processing_subsystem/subsystem34_metadata_repo.py:183"}
+{"time":"2026-07-08T16:25:50", "level":"INFO", "name":"__main__", "message":"
+======================================================================
+  ETL Run Summary: run_20260708_092514_23fccc
+======================================================================
+  Job:           master_etl_bronze
+  Layer:         bronze -> all_tables
+  Status:        SUCCESS
+  Start:         2026-07-08 09:25:14.238856+00:00
+  End:           2026-07-08 09:25:50.404017+00:00
+  Duration:      36.2s
+  Rows Read:     0
+  Rows Written:  0
+======================================================================
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/processing/base_processing_subsystem/subsystem34_metadata_repo.py:462"}
+{"time":"2026-07-08T16:25:50", "level":"INFO", "name":"root", "message":"Shutting down the event dispatcher", "caller":"/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/analytics/dispatcher.py:159"}
+{"time":"2026-07-08T16:29:08", "level":"INFO", "name":"__main__", "message":"[CONFIG] Loaded from platforms/orchestration/prefect/config/cophieu68_config.yaml", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:159"}
+{"time":"2026-07-08T16:29:08", "level":"INFO", "name":"__main__", "message":"[CONFIG] Prefect config loaded successfully", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:171"}
+{"time":"2026-07-08T16:29:08", "level":"INFO", "name":"__main__", "message":"[ORCHESTRATOR] Starting pipeline phase=bronze run_id=run_20260708_092908_c18040 target_date=2026-07-08 symbols=['HPG'] backend=polars", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:901"}
+{"time":"2026-07-08T16:29:08", "level":"INFO", "name":"__main__", "message":"[RUN START] run_id=run_20260708_092908_c18040 | job=master_etl_bronze | layer=bronze | table=all_tables", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/processing/base_processing_subsystem/subsystem34_metadata_repo.py:138"}
+{"time":"2026-07-08T16:29:08", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Starting bronze phase for symbols=['HPG']", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:524"}
+{"time":"2026-07-08T16:29:08", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Executing non-symbol specific tasks.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:548"}
+{"time":"2026-07-08T16:29:08", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Crawling market lists for all market types.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:551"}
+{"time":"2026-07-08T16:29:08", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=market_list_vnindex for symbol=VNINDEX batch_id=batch_VNINDEX_20260708092908_71a80c33", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:611"}
+{"time":"2026-07-08T16:29:09", "level":"ERROR", "name":"__main__", "message":"[BronzeExecutor] Error for table=market_list_vnindex, symbol=VNINDEX: name 'bronze_ingester' is not defined", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:676"}
+Traceback (most recent call last):
+  File "/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py", line 654, in _process_and_ingest
+    ingestion_result = bronze_ingester.process(
+                       ^^^^^^^^^^^^^^^
+NameError: name 'bronze_ingester' is not defined
+{"time":"2026-07-08T16:29:09", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=market_list_hnx for symbol=HNX batch_id=batch_HNX_20260708092909_fd02c143", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:611"}
+{"time":"2026-07-08T16:29:10", "level":"ERROR", "name":"__main__", "message":"[BronzeExecutor] Error for table=market_list_hnx, symbol=HNX: name 'bronze_ingester' is not defined", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:676"}
+Traceback (most recent call last):
+  File "/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py", line 654, in _process_and_ingest
+    ingestion_result = bronze_ingester.process(
+                       ^^^^^^^^^^^^^^^
+NameError: name 'bronze_ingester' is not defined
+{"time":"2026-07-08T16:29:10", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=market_list_upcom for symbol=UPCOM batch_id=batch_UPCOM_20260708092910_0b8ac78a", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:611"}
+{"time":"2026-07-08T16:29:11", "level":"ERROR", "name":"__main__", "message":"[BronzeExecutor] Error for table=market_list_upcom, symbol=UPCOM: name 'bronze_ingester' is not defined", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:676"}
+Traceback (most recent call last):
+  File "/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py", line 654, in _process_and_ingest
+    ingestion_result = bronze_ingester.process(
+                       ^^^^^^^^^^^^^^^
+NameError: name 'bronze_ingester' is not defined
+{"time":"2026-07-08T16:29:11", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=market_list_vn30 for symbol=VN30 batch_id=batch_VN30_20260708092911_a6105c70", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:611"}
+{"time":"2026-07-08T16:29:13", "level":"ERROR", "name":"__main__", "message":"[BronzeExecutor] Error for table=market_list_vn30, symbol=VN30: name 'bronze_ingester' is not defined", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:676"}
+Traceback (most recent call last):
+  File "/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py", line 654, in _process_and_ingest
+    ingestion_result = bronze_ingester.process(
+                       ^^^^^^^^^^^^^^^
+NameError: name 'bronze_ingester' is not defined
+{"time":"2026-07-08T16:29:13", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Crawling industry information for all types.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:562"}
+{"time":"2026-07-08T16:29:13", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=industry_info_summary_info for symbol=SUMMARY_INFO batch_id=batch_SUMMARY_INFO_20260708092913_4c7fd162", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:611"}
+{"time":"2026-07-08T16:29:13", "level":"INFO", "name":"extractor", "message":"Extract_successfull industry_info for type summary_info", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:442"}
+{"time":"2026-07-08T16:29:13", "level":"ERROR", "name":"__main__", "message":"[BronzeExecutor] Error for table=industry_info_summary_info, symbol=SUMMARY_INFO: name 'bronze_ingester' is not defined", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:676"}
+Traceback (most recent call last):
+  File "/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py", line 654, in _process_and_ingest
+    ingestion_result = bronze_ingester.process(
+                       ^^^^^^^^^^^^^^^
+NameError: name 'bronze_ingester' is not defined
+{"time":"2026-07-08T16:29:14", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=industry_info_financial_info for symbol=FINANCIAL_INFO batch_id=batch_FINANCIAL_INFO_20260708092914_b46277c0", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:611"}
+{"time":"2026-07-08T16:29:14", "level":"INFO", "name":"extractor", "message":"Extract_successfull industry_info for type financial_info", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:442"}
+{"time":"2026-07-08T16:29:14", "level":"ERROR", "name":"__main__", "message":"[BronzeExecutor] Error for table=industry_info_financial_info, symbol=FINANCIAL_INFO: name 'bronze_ingester' is not defined", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:676"}
+Traceback (most recent call last):
+  File "/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py", line 654, in _process_and_ingest
+    ingestion_result = bronze_ingester.process(
+                       ^^^^^^^^^^^^^^^
+NameError: name 'bronze_ingester' is not defined
+{"time":"2026-07-08T16:29:14", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=industry_info_fund_info for symbol=FUND_INFO batch_id=batch_FUND_INFO_20260708092914_725d721e", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:611"}
+{"time":"2026-07-08T16:29:15", "level":"INFO", "name":"extractor", "message":"Extract_successfull industry_info for type fund_info", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:442"}
+{"time":"2026-07-08T16:29:15", "level":"ERROR", "name":"__main__", "message":"[BronzeExecutor] Error for table=industry_info_fund_info, symbol=FUND_INFO: name 'bronze_ingester' is not defined", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:676"}
+Traceback (most recent call last):
+  File "/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py", line 654, in _process_and_ingest
+    ingestion_result = bronze_ingester.process(
+                       ^^^^^^^^^^^^^^^
+NameError: name 'bronze_ingester' is not defined
+{"time":"2026-07-08T16:29:15", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Crawling general company information.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:573"}
+{"time":"2026-07-08T16:29:15", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=company_by_industry for symbol=ALL batch_id=batch_ALL_20260708092915_6f019fe9", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:611"}
+{"time":"2026-07-08T16:29:34", "level":"INFO", "name":"extractor", "message":"Extract successfull company_info_belong_to_industry_sectors", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:331"}
+{"time":"2026-07-08T16:29:34", "level":"ERROR", "name":"__main__", "message":"[BronzeExecutor] Error for table=company_by_industry, symbol=ALL: name 'bronze_ingester' is not defined", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:676"}
+Traceback (most recent call last):
+  File "/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py", line 654, in _process_and_ingest
+    ingestion_result = bronze_ingester.process(
+                       ^^^^^^^^^^^^^^^
+NameError: name 'bronze_ingester' is not defined
+{"time":"2026-07-08T16:29:34", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=company_by_market for symbol=ALL batch_id=batch_ALL_20260708092934_67ad2c44", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:611"}
+{"time":"2026-07-08T16:29:38", "level":"INFO", "name":"extractor", "message":"Extract successfull company_info_belong_to_market_type", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:360"}
+{"time":"2026-07-08T16:29:38", "level":"ERROR", "name":"__main__", "message":"[BronzeExecutor] Error for table=company_by_market, symbol=ALL: name 'bronze_ingester' is not defined", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:676"}
+Traceback (most recent call last):
+  File "/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py", line 654, in _process_and_ingest
+    ingestion_result = bronze_ingester.process(
+                       ^^^^^^^^^^^^^^^
+NameError: name 'bronze_ingester' is not defined
+{"time":"2026-07-08T16:29:38", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Executing tasks for symbol=HPG", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:589"}
+{"time":"2026-07-08T16:29:38", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=trading_data for symbol=HPG batch_id=batch_HPG_20260708092938_1262a49f", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:611"}
+{"time":"2026-07-08T16:29:39", "level":"ERROR", "name":"__main__", "message":"[BronzeExecutor] Error for table=trading_data, symbol=HPG: name 'bronze_ingester' is not defined", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:676"}
+Traceback (most recent call last):
+  File "/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py", line 654, in _process_and_ingest
+    ingestion_result = bronze_ingester.process(
+                       ^^^^^^^^^^^^^^^
+NameError: name 'bronze_ingester' is not defined
+{"time":"2026-07-08T16:29:39", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=company_profile for symbol=HPG batch_id=batch_HPG_20260708092939_34723743", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:611"}
+{"time":"2026-07-08T16:29:39", "level":"WARNING", "name":"__main__", "message":"[BronzeExecutor] Data for company_profile/HPG could not be normalized to records.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:643"}
+{"time":"2026-07-08T16:29:39", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=financial_ratios for symbol=HPG batch_id=batch_HPG_20260708092939_e97637e7", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:611"}
+{"time":"2026-07-08T16:29:40", "level":"INFO", "name":"extractor", "message":"Extract_successfull financial_ratios for HPG", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:528"}
+{"time":"2026-07-08T16:29:40", "level":"ERROR", "name":"__main__", "message":"[BronzeExecutor] Error for table=financial_ratios, symbol=HPG: name 'bronze_ingester' is not defined", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:676"}
+Traceback (most recent call last):
+  File "/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py", line 654, in _process_and_ingest
+    ingestion_result = bronze_ingester.process(
+                       ^^^^^^^^^^^^^^^
+NameError: name 'bronze_ingester' is not defined
+{"time":"2026-07-08T16:29:40", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=financial_summary for symbol=HPG batch_id=batch_HPG_20260708092940_1f545aac", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:611"}
+{"time":"2026-07-08T16:29:41", "level":"INFO", "name":"extractor", "message":"extract_succcessfull financial_report_summary HPG", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:120"}
+{"time":"2026-07-08T16:29:41", "level":"ERROR", "name":"__main__", "message":"[BronzeExecutor] Error for table=financial_summary, symbol=HPG: name 'bronze_ingester' is not defined", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:676"}
+Traceback (most recent call last):
+  File "/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py", line 654, in _process_and_ingest
+    ingestion_result = bronze_ingester.process(
+                       ^^^^^^^^^^^^^^^
+NameError: name 'bronze_ingester' is not defined
+{"time":"2026-07-08T16:29:41", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=business_plan for symbol=HPG batch_id=batch_HPG_20260708092941_a8b73220", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:611"}
+{"time":"2026-07-08T16:29:42", "level":"INFO", "name":"extractor", "message":"extract_successfull business_plan HPG", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:174"}
+{"time":"2026-07-08T16:29:42", "level":"ERROR", "name":"__main__", "message":"[BronzeExecutor] Error for table=business_plan, symbol=HPG: name 'bronze_ingester' is not defined", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:676"}
+Traceback (most recent call last):
+  File "/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py", line 654, in _process_and_ingest
+    ingestion_result = bronze_ingester.process(
+                       ^^^^^^^^^^^^^^^
+NameError: name 'bronze_ingester' is not defined
+{"time":"2026-07-08T16:29:42", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=income_statement_quarterly for symbol=HPG batch_id=batch_HPG_20260708092942_ec3094c1", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:611"}
+{"time":"2026-07-08T16:29:42", "level":"INFO", "name":"extractor", "message":"Extract_successfull details_financial_report {symbol}", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:259"}
+{"time":"2026-07-08T16:29:42", "level":"INFO", "name":"extractor", "message":"Extract_successfull details_income_statement HPG", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:279"}
+{"time":"2026-07-08T16:29:42", "level":"ERROR", "name":"__main__", "message":"[BronzeExecutor] Error for table=income_statement_quarterly, symbol=HPG: name 'bronze_ingester' is not defined", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:676"}
+Traceback (most recent call last):
+  File "/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py", line 654, in _process_and_ingest
+    ingestion_result = bronze_ingester.process(
+                       ^^^^^^^^^^^^^^^
+NameError: name 'bronze_ingester' is not defined
+{"time":"2026-07-08T16:29:43", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=balance_sheet_quarterly for symbol=HPG batch_id=batch_HPG_20260708092943_6ab211bb", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:611"}
+{"time":"2026-07-08T16:29:44", "level":"INFO", "name":"extractor", "message":"Extract_successfull details_financial_report {symbol}", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:259"}
+{"time":"2026-07-08T16:29:44", "level":"INFO", "name":"extractor", "message":"Extract_successfull details_balance_sheet HPG", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:298"}
+{"time":"2026-07-08T16:29:44", "level":"ERROR", "name":"__main__", "message":"[BronzeExecutor] Error for table=balance_sheet_quarterly, symbol=HPG: name 'bronze_ingester' is not defined", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:676"}
+Traceback (most recent call last):
+  File "/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py", line 654, in _process_and_ingest
+    ingestion_result = bronze_ingester.process(
+                       ^^^^^^^^^^^^^^^
+NameError: name 'bronze_ingester' is not defined
+{"time":"2026-07-08T16:29:44", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=income_statement_annually for symbol=HPG batch_id=batch_HPG_20260708092944_5a8a2e83", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:611"}
+{"time":"2026-07-08T16:29:45", "level":"INFO", "name":"extractor", "message":"Extract_successfull details_financial_report {symbol}", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:259"}
+{"time":"2026-07-08T16:29:45", "level":"INFO", "name":"extractor", "message":"Extract_successfull details_income_statement HPG", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:279"}
+{"time":"2026-07-08T16:29:45", "level":"ERROR", "name":"__main__", "message":"[BronzeExecutor] Error for table=income_statement_annually, symbol=HPG: name 'bronze_ingester' is not defined", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:676"}
+Traceback (most recent call last):
+  File "/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py", line 654, in _process_and_ingest
+    ingestion_result = bronze_ingester.process(
+                       ^^^^^^^^^^^^^^^
+NameError: name 'bronze_ingester' is not defined
+{"time":"2026-07-08T16:29:45", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=balance_sheet_annually for symbol=HPG batch_id=batch_HPG_20260708092945_6f14e65e", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:611"}
+{"time":"2026-07-08T16:29:46", "level":"INFO", "name":"extractor", "message":"Extract_successfull details_financial_report {symbol}", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:259"}
+{"time":"2026-07-08T16:29:46", "level":"INFO", "name":"extractor", "message":"Extract_successfull details_balance_sheet HPG", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:298"}
+{"time":"2026-07-08T16:29:46", "level":"ERROR", "name":"__main__", "message":"[BronzeExecutor] Error for table=balance_sheet_annually, symbol=HPG: name 'bronze_ingester' is not defined", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:676"}
+Traceback (most recent call last):
+  File "/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py", line 654, in _process_and_ingest
+    ingestion_result = bronze_ingester.process(
+                       ^^^^^^^^^^^^^^^
+NameError: name 'bronze_ingester' is not defined
+{"time":"2026-07-08T16:29:46", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=match_details for symbol=HPG batch_id=batch_HPG_20260708092946_94d155f1", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:611"}
+{"time":"2026-07-08T16:29:47", "level":"INFO", "name":"extractor", "message":"extract_successfull details_match {symbol}", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:219"}
+{"time":"2026-07-08T16:29:47", "level":"ERROR", "name":"__main__", "message":"[BronzeExecutor] Error for table=match_details, symbol=HPG: name 'bronze_ingester' is not defined", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:676"}
+Traceback (most recent call last):
+  File "/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py", line 654, in _process_and_ingest
+    ingestion_result = bronze_ingester.process(
+                       ^^^^^^^^^^^^^^^
+NameError: name 'bronze_ingester' is not defined
+{"time":"2026-07-08T16:29:47", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Completed bronze phase: rows_ingested=0", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:543"}
+{"time":"2026-07-08T16:29:47", "level":"INFO", "name":"__main__", "message":"[RUN END] run_id=run_20260708_092908_c18040 | status=SUCCESS | duration=39.4s | rows_read=None | rows_written=None", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/processing/base_processing_subsystem/subsystem34_metadata_repo.py:183"}
+{"time":"2026-07-08T16:29:47", "level":"INFO", "name":"__main__", "message":"
+======================================================================
+  ETL Run Summary: run_20260708_092908_c18040
+======================================================================
+  Job:           master_etl_bronze
+  Layer:         bronze -> all_tables
+  Status:        SUCCESS
+  Start:         2026-07-08 09:29:08.103757+00:00
+  End:           2026-07-08 09:29:47.466183+00:00
+  Duration:      39.4s
+  Rows Read:     0
+  Rows Written:  0
+======================================================================
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/processing/base_processing_subsystem/subsystem34_metadata_repo.py:462"}
+{"time":"2026-07-08T16:29:47", "level":"INFO", "name":"root", "message":"Shutting down the event dispatcher", "caller":"/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/analytics/dispatcher.py:159"}
+{"time":"2026-07-08T16:33:44", "level":"INFO", "name":"__main__", "message":"[CONFIG] Loaded from platforms/orchestration/prefect/config/cophieu68_config.yaml", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:159"}
+{"time":"2026-07-08T16:33:44", "level":"INFO", "name":"__main__", "message":"[CONFIG] Prefect config loaded successfully", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:171"}
+{"time":"2026-07-08T16:33:44", "level":"INFO", "name":"__main__", "message":"[ORCHESTRATOR] Starting pipeline phase=bronze run_id=run_20260708_093344_3eb421 target_date=2026-07-08 symbols=['HPG'] backend=polars", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:902"}
+{"time":"2026-07-08T16:33:44", "level":"INFO", "name":"__main__", "message":"[RUN START] run_id=run_20260708_093344_3eb421 | job=master_etl_bronze | layer=bronze | table=all_tables", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/processing/base_processing_subsystem/subsystem34_metadata_repo.py:138"}
+{"time":"2026-07-08T16:33:44", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Starting bronze phase for symbols=['HPG']", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:524"}
+{"time":"2026-07-08T16:33:44", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Executing non-symbol specific tasks.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:549"}
+{"time":"2026-07-08T16:33:44", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Crawling market lists for all market types.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:552"}
+{"time":"2026-07-08T16:33:44", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=market_list_vnindex for symbol=VNINDEX batch_id=batch_VNINDEX_20260708093344_9863c68f", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:612"}
+{"time":"2026-07-08T16:33:45", "level":"ERROR", "name":"__main__", "message":"[BronzeExecutor] Error for table=market_list_vnindex, symbol=VNINDEX: BronzePolarsIngester.process() got an unexpected keyword argument 'sla_threshold'", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:677"}
+Traceback (most recent call last):
+  File "/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py", line 655, in _process_and_ingest
+    ingestion_result = self.bronze_ingester.process(
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: BronzePolarsIngester.process() got an unexpected keyword argument 'sla_threshold'
+{"time":"2026-07-08T16:33:45", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=market_list_hnx for symbol=HNX batch_id=batch_HNX_20260708093345_0adf3642", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:612"}
+{"time":"2026-07-08T16:33:47", "level":"ERROR", "name":"__main__", "message":"[BronzeExecutor] Error for table=market_list_hnx, symbol=HNX: BronzePolarsIngester.process() got an unexpected keyword argument 'sla_threshold'", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:677"}
+Traceback (most recent call last):
+  File "/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py", line 655, in _process_and_ingest
+    ingestion_result = self.bronze_ingester.process(
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: BronzePolarsIngester.process() got an unexpected keyword argument 'sla_threshold'
+{"time":"2026-07-08T16:33:47", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=market_list_upcom for symbol=UPCOM batch_id=batch_UPCOM_20260708093347_c3939346", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:612"}
+{"time":"2026-07-08T16:33:48", "level":"ERROR", "name":"__main__", "message":"[BronzeExecutor] Error for table=market_list_upcom, symbol=UPCOM: BronzePolarsIngester.process() got an unexpected keyword argument 'sla_threshold'", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:677"}
+Traceback (most recent call last):
+  File "/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py", line 655, in _process_and_ingest
+    ingestion_result = self.bronze_ingester.process(
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: BronzePolarsIngester.process() got an unexpected keyword argument 'sla_threshold'
+{"time":"2026-07-08T16:33:48", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=market_list_vn30 for symbol=VN30 batch_id=batch_VN30_20260708093348_59c21592", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:612"}
+{"time":"2026-07-08T16:33:49", "level":"ERROR", "name":"__main__", "message":"[BronzeExecutor] Error for table=market_list_vn30, symbol=VN30: BronzePolarsIngester.process() got an unexpected keyword argument 'sla_threshold'", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:677"}
+Traceback (most recent call last):
+  File "/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py", line 655, in _process_and_ingest
+    ingestion_result = self.bronze_ingester.process(
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: BronzePolarsIngester.process() got an unexpected keyword argument 'sla_threshold'
+{"time":"2026-07-08T16:33:49", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Crawling industry information for all types.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:563"}
+{"time":"2026-07-08T16:33:49", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=industry_info_summary_info for symbol=SUMMARY_INFO batch_id=batch_SUMMARY_INFO_20260708093349_3a85cfaa", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:612"}
+{"time":"2026-07-08T16:33:50", "level":"INFO", "name":"extractor", "message":"Extract_successfull industry_info for type summary_info", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:442"}
+{"time":"2026-07-08T16:33:50", "level":"ERROR", "name":"__main__", "message":"[BronzeExecutor] Error for table=industry_info_summary_info, symbol=SUMMARY_INFO: BronzePolarsIngester.process() got an unexpected keyword argument 'sla_threshold'", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:677"}
+Traceback (most recent call last):
+  File "/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py", line 655, in _process_and_ingest
+    ingestion_result = self.bronze_ingester.process(
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: BronzePolarsIngester.process() got an unexpected keyword argument 'sla_threshold'
+{"time":"2026-07-08T16:33:50", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=industry_info_financial_info for symbol=FINANCIAL_INFO batch_id=batch_FINANCIAL_INFO_20260708093350_22cd79cf", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:612"}
+{"time":"2026-07-08T16:33:50", "level":"INFO", "name":"extractor", "message":"Extract_successfull industry_info for type financial_info", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:442"}
+{"time":"2026-07-08T16:33:50", "level":"ERROR", "name":"__main__", "message":"[BronzeExecutor] Error for table=industry_info_financial_info, symbol=FINANCIAL_INFO: BronzePolarsIngester.process() got an unexpected keyword argument 'sla_threshold'", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:677"}
+Traceback (most recent call last):
+  File "/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py", line 655, in _process_and_ingest
+    ingestion_result = self.bronze_ingester.process(
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: BronzePolarsIngester.process() got an unexpected keyword argument 'sla_threshold'
+{"time":"2026-07-08T16:33:50", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=industry_info_fund_info for symbol=FUND_INFO batch_id=batch_FUND_INFO_20260708093350_0df30e7f", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:612"}
+{"time":"2026-07-08T16:33:51", "level":"INFO", "name":"extractor", "message":"Extract_successfull industry_info for type fund_info", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:442"}
+{"time":"2026-07-08T16:33:51", "level":"ERROR", "name":"__main__", "message":"[BronzeExecutor] Error for table=industry_info_fund_info, symbol=FUND_INFO: BronzePolarsIngester.process() got an unexpected keyword argument 'sla_threshold'", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:677"}
+Traceback (most recent call last):
+  File "/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py", line 655, in _process_and_ingest
+    ingestion_result = self.bronze_ingester.process(
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: BronzePolarsIngester.process() got an unexpected keyword argument 'sla_threshold'
+{"time":"2026-07-08T16:33:51", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Crawling general company information.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:574"}
+{"time":"2026-07-08T16:33:51", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=company_by_industry for symbol=ALL batch_id=batch_ALL_20260708093351_c27bd482", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:612"}
+{"time":"2026-07-08T16:34:08", "level":"INFO", "name":"extractor", "message":"Extract successfull company_info_belong_to_industry_sectors", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:331"}
+{"time":"2026-07-08T16:34:08", "level":"ERROR", "name":"__main__", "message":"[BronzeExecutor] Error for table=company_by_industry, symbol=ALL: BronzePolarsIngester.process() got an unexpected keyword argument 'sla_threshold'", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:677"}
+Traceback (most recent call last):
+  File "/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py", line 655, in _process_and_ingest
+    ingestion_result = self.bronze_ingester.process(
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: BronzePolarsIngester.process() got an unexpected keyword argument 'sla_threshold'
+{"time":"2026-07-08T16:34:08", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=company_by_market for symbol=ALL batch_id=batch_ALL_20260708093408_c62704cd", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:612"}
+{"time":"2026-07-08T16:34:12", "level":"INFO", "name":"extractor", "message":"Extract successfull company_info_belong_to_market_type", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:360"}
+{"time":"2026-07-08T16:34:12", "level":"ERROR", "name":"__main__", "message":"[BronzeExecutor] Error for table=company_by_market, symbol=ALL: BronzePolarsIngester.process() got an unexpected keyword argument 'sla_threshold'", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:677"}
+Traceback (most recent call last):
+  File "/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py", line 655, in _process_and_ingest
+    ingestion_result = self.bronze_ingester.process(
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: BronzePolarsIngester.process() got an unexpected keyword argument 'sla_threshold'
+{"time":"2026-07-08T16:34:12", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Executing tasks for symbol=HPG", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:590"}
+{"time":"2026-07-08T16:34:12", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=trading_data for symbol=HPG batch_id=batch_HPG_20260708093412_c4339438", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:612"}
+{"time":"2026-07-08T16:34:13", "level":"ERROR", "name":"__main__", "message":"[BronzeExecutor] Error for table=trading_data, symbol=HPG: BronzePolarsIngester.process() got an unexpected keyword argument 'sla_threshold'", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:677"}
+Traceback (most recent call last):
+  File "/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py", line 655, in _process_and_ingest
+    ingestion_result = self.bronze_ingester.process(
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: BronzePolarsIngester.process() got an unexpected keyword argument 'sla_threshold'
+{"time":"2026-07-08T16:34:13", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=company_profile for symbol=HPG batch_id=batch_HPG_20260708093413_0840a999", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:612"}
+{"time":"2026-07-08T16:34:13", "level":"WARNING", "name":"__main__", "message":"[BronzeExecutor] Data for company_profile/HPG could not be normalized to records.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:644"}
+{"time":"2026-07-08T16:34:13", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=financial_ratios for symbol=HPG batch_id=batch_HPG_20260708093413_0510087f", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:612"}
+{"time":"2026-07-08T16:34:15", "level":"INFO", "name":"extractor", "message":"Extract_successfull financial_ratios for HPG", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:528"}
+{"time":"2026-07-08T16:34:15", "level":"ERROR", "name":"__main__", "message":"[BronzeExecutor] Error for table=financial_ratios, symbol=HPG: BronzePolarsIngester.process() got an unexpected keyword argument 'sla_threshold'", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:677"}
+Traceback (most recent call last):
+  File "/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py", line 655, in _process_and_ingest
+    ingestion_result = self.bronze_ingester.process(
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: BronzePolarsIngester.process() got an unexpected keyword argument 'sla_threshold'
+{"time":"2026-07-08T16:34:15", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=financial_summary for symbol=HPG batch_id=batch_HPG_20260708093415_cde8a91f", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:612"}
+{"time":"2026-07-08T16:34:16", "level":"INFO", "name":"extractor", "message":"extract_succcessfull financial_report_summary HPG", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:120"}
+{"time":"2026-07-08T16:34:16", "level":"ERROR", "name":"__main__", "message":"[BronzeExecutor] Error for table=financial_summary, symbol=HPG: BronzePolarsIngester.process() got an unexpected keyword argument 'sla_threshold'", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:677"}
+Traceback (most recent call last):
+  File "/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py", line 655, in _process_and_ingest
+    ingestion_result = self.bronze_ingester.process(
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: BronzePolarsIngester.process() got an unexpected keyword argument 'sla_threshold'
+{"time":"2026-07-08T16:34:16", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=business_plan for symbol=HPG batch_id=batch_HPG_20260708093416_7f17a42f", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:612"}
+{"time":"2026-07-08T16:34:18", "level":"INFO", "name":"extractor", "message":"extract_successfull business_plan HPG", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:174"}
+{"time":"2026-07-08T16:34:18", "level":"ERROR", "name":"__main__", "message":"[BronzeExecutor] Error for table=business_plan, symbol=HPG: BronzePolarsIngester.process() got an unexpected keyword argument 'sla_threshold'", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:677"}
+Traceback (most recent call last):
+  File "/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py", line 655, in _process_and_ingest
+    ingestion_result = self.bronze_ingester.process(
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: BronzePolarsIngester.process() got an unexpected keyword argument 'sla_threshold'
+{"time":"2026-07-08T16:34:18", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=income_statement_quarterly for symbol=HPG batch_id=batch_HPG_20260708093418_39ba8713", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:612"}
+{"time":"2026-07-08T16:34:20", "level":"INFO", "name":"extractor", "message":"Extract_successfull details_financial_report {symbol}", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:259"}
+{"time":"2026-07-08T16:34:20", "level":"INFO", "name":"extractor", "message":"Extract_successfull details_income_statement HPG", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:279"}
+{"time":"2026-07-08T16:34:20", "level":"ERROR", "name":"__main__", "message":"[BronzeExecutor] Error for table=income_statement_quarterly, symbol=HPG: BronzePolarsIngester.process() got an unexpected keyword argument 'sla_threshold'", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:677"}
+Traceback (most recent call last):
+  File "/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py", line 655, in _process_and_ingest
+    ingestion_result = self.bronze_ingester.process(
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: BronzePolarsIngester.process() got an unexpected keyword argument 'sla_threshold'
+{"time":"2026-07-08T16:34:20", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=balance_sheet_quarterly for symbol=HPG batch_id=batch_HPG_20260708093420_5c98d6ee", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:612"}
+{"time":"2026-07-08T16:34:21", "level":"INFO", "name":"extractor", "message":"Extract_successfull details_financial_report {symbol}", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:259"}
+{"time":"2026-07-08T16:34:21", "level":"INFO", "name":"extractor", "message":"Extract_successfull details_balance_sheet HPG", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:298"}
+{"time":"2026-07-08T16:34:21", "level":"ERROR", "name":"__main__", "message":"[BronzeExecutor] Error for table=balance_sheet_quarterly, symbol=HPG: BronzePolarsIngester.process() got an unexpected keyword argument 'sla_threshold'", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:677"}
+Traceback (most recent call last):
+  File "/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py", line 655, in _process_and_ingest
+    ingestion_result = self.bronze_ingester.process(
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: BronzePolarsIngester.process() got an unexpected keyword argument 'sla_threshold'
+{"time":"2026-07-08T16:34:21", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=income_statement_annually for symbol=HPG batch_id=batch_HPG_20260708093421_163895d6", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:612"}
+{"time":"2026-07-08T16:34:23", "level":"INFO", "name":"extractor", "message":"Extract_successfull details_financial_report {symbol}", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:259"}
+{"time":"2026-07-08T16:34:23", "level":"INFO", "name":"extractor", "message":"Extract_successfull details_income_statement HPG", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:279"}
+{"time":"2026-07-08T16:34:23", "level":"ERROR", "name":"__main__", "message":"[BronzeExecutor] Error for table=income_statement_annually, symbol=HPG: BronzePolarsIngester.process() got an unexpected keyword argument 'sla_threshold'", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:677"}
+Traceback (most recent call last):
+  File "/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py", line 655, in _process_and_ingest
+    ingestion_result = self.bronze_ingester.process(
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: BronzePolarsIngester.process() got an unexpected keyword argument 'sla_threshold'
+{"time":"2026-07-08T16:34:23", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=balance_sheet_annually for symbol=HPG batch_id=batch_HPG_20260708093423_0170fc00", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:612"}
+{"time":"2026-07-08T16:34:23", "level":"INFO", "name":"extractor", "message":"Extract_successfull details_financial_report {symbol}", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:259"}
+{"time":"2026-07-08T16:34:23", "level":"INFO", "name":"extractor", "message":"Extract_successfull details_balance_sheet HPG", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:298"}
+{"time":"2026-07-08T16:34:23", "level":"ERROR", "name":"__main__", "message":"[BronzeExecutor] Error for table=balance_sheet_annually, symbol=HPG: BronzePolarsIngester.process() got an unexpected keyword argument 'sla_threshold'", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:677"}
+Traceback (most recent call last):
+  File "/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py", line 655, in _process_and_ingest
+    ingestion_result = self.bronze_ingester.process(
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: BronzePolarsIngester.process() got an unexpected keyword argument 'sla_threshold'
+{"time":"2026-07-08T16:34:23", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=match_details for symbol=HPG batch_id=batch_HPG_20260708093423_ff0a9d4c", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:612"}
+{"time":"2026-07-08T16:34:24", "level":"INFO", "name":"extractor", "message":"extract_successfull details_match {symbol}", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:219"}
+{"time":"2026-07-08T16:34:24", "level":"ERROR", "name":"__main__", "message":"[BronzeExecutor] Error for table=match_details, symbol=HPG: BronzePolarsIngester.process() got an unexpected keyword argument 'sla_threshold'", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:677"}
+Traceback (most recent call last):
+  File "/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py", line 655, in _process_and_ingest
+    ingestion_result = self.bronze_ingester.process(
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: BronzePolarsIngester.process() got an unexpected keyword argument 'sla_threshold'
+{"time":"2026-07-08T16:34:24", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Completed bronze phase: rows_ingested=0", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:544"}
+{"time":"2026-07-08T16:34:24", "level":"INFO", "name":"__main__", "message":"[RUN END] run_id=run_20260708_093344_3eb421 | status=SUCCESS | duration=40.0s | rows_read=None | rows_written=None", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/processing/base_processing_subsystem/subsystem34_metadata_repo.py:183"}
+{"time":"2026-07-08T16:34:24", "level":"INFO", "name":"__main__", "message":"
+======================================================================
+  ETL Run Summary: run_20260708_093344_3eb421
+======================================================================
+  Job:           master_etl_bronze
+  Layer:         bronze -> all_tables
+  Status:        SUCCESS
+  Start:         2026-07-08 09:33:44.524667+00:00
+  End:           2026-07-08 09:34:24.512097+00:00
+  Duration:      40.0s
+  Rows Read:     0
+  Rows Written:  0
+======================================================================
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/processing/base_processing_subsystem/subsystem34_metadata_repo.py:462"}
+{"time":"2026-07-08T16:34:24", "level":"INFO", "name":"root", "message":"Shutting down the event dispatcher", "caller":"/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/analytics/dispatcher.py:159"}
+{"time":"2026-07-08T16:34:44", "level":"INFO", "name":"__main__", "message":"[CONFIG] Loaded from platforms/orchestration/prefect/config/cophieu68_config.yaml", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:159"}
+{"time":"2026-07-08T16:34:44", "level":"INFO", "name":"__main__", "message":"[CONFIG] Prefect config loaded successfully", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:171"}
+{"time":"2026-07-08T16:34:44", "level":"INFO", "name":"__main__", "message":"[ORCHESTRATOR] Starting pipeline phase=bronze run_id=run_20260708_093444_e66724 target_date=2026-07-08 symbols=['HPG'] backend=polars", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:901"}
+{"time":"2026-07-08T16:34:44", "level":"INFO", "name":"__main__", "message":"[RUN START] run_id=run_20260708_093444_e66724 | job=master_etl_bronze | layer=bronze | table=all_tables", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/processing/base_processing_subsystem/subsystem34_metadata_repo.py:138"}
+{"time":"2026-07-08T16:34:44", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Starting bronze phase for symbols=['HPG']", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:524"}
+{"time":"2026-07-08T16:34:44", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Executing non-symbol specific tasks.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:549"}
+{"time":"2026-07-08T16:34:44", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Crawling market lists for all market types.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:552"}
+{"time":"2026-07-08T16:34:44", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=market_list_vnindex for symbol=VNINDEX batch_id=batch_VNINDEX_20260708093444_34972174", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:612"}
+{"time":"2026-07-08T16:34:46", "level":"INFO", "name":"polars_engine", "message":"[BronzeIngester:VNINDEX:stock_prices] Start processing 1 records.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:314"}
+{"time":"2026-07-08T16:34:46", "level":"WARNING", "name":"polars_engine", "message":"[BronzeIngester:VNINDEX:stock_prices] No records passed DQ checks.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:331"}
+{"time":"2026-07-08T16:34:46", "level":"INFO", "name":"__main__", "message":"[LINEAGE] external.cophieu68_market_list_vnindex_VNINDEX -> bronze.bronze_market_list_vnindex | op=APPEND | rows=1", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/processing/base_processing_subsystem/subsystem34_metadata_repo.py:372"}
+{"time":"2026-07-08T16:34:46", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=market_list_hnx for symbol=HNX batch_id=batch_HNX_20260708093446_802c9215", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:612"}
+{"time":"2026-07-08T16:34:48", "level":"INFO", "name":"polars_engine", "message":"[BronzeIngester:HNX:stock_prices] Start processing 1 records.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:314"}
+{"time":"2026-07-08T16:34:48", "level":"WARNING", "name":"polars_engine", "message":"[BronzeIngester:HNX:stock_prices] No records passed DQ checks.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:331"}
+{"time":"2026-07-08T16:34:48", "level":"INFO", "name":"__main__", "message":"[LINEAGE] external.cophieu68_market_list_hnx_HNX -> bronze.bronze_market_list_hnx | op=APPEND | rows=1", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/processing/base_processing_subsystem/subsystem34_metadata_repo.py:372"}
+{"time":"2026-07-08T16:34:48", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=market_list_upcom for symbol=UPCOM batch_id=batch_UPCOM_20260708093448_3e13f24a", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:612"}
+{"time":"2026-07-08T16:34:49", "level":"INFO", "name":"polars_engine", "message":"[BronzeIngester:UPCOM:stock_prices] Start processing 1 records.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:314"}
+{"time":"2026-07-08T16:34:49", "level":"WARNING", "name":"polars_engine", "message":"[BronzeIngester:UPCOM:stock_prices] No records passed DQ checks.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:331"}
+{"time":"2026-07-08T16:34:49", "level":"INFO", "name":"__main__", "message":"[LINEAGE] external.cophieu68_market_list_upcom_UPCOM -> bronze.bronze_market_list_upcom | op=APPEND | rows=1", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/processing/base_processing_subsystem/subsystem34_metadata_repo.py:372"}
+{"time":"2026-07-08T16:34:49", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=market_list_vn30 for symbol=VN30 batch_id=batch_VN30_20260708093449_d7ab7d84", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:612"}
+{"time":"2026-07-08T16:34:50", "level":"INFO", "name":"polars_engine", "message":"[BronzeIngester:VN30:stock_prices] Start processing 1 records.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:314"}
+{"time":"2026-07-08T16:34:50", "level":"WARNING", "name":"polars_engine", "message":"[BronzeIngester:VN30:stock_prices] No records passed DQ checks.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:331"}
+{"time":"2026-07-08T16:34:50", "level":"INFO", "name":"__main__", "message":"[LINEAGE] external.cophieu68_market_list_vn30_VN30 -> bronze.bronze_market_list_vn30 | op=APPEND | rows=1", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/processing/base_processing_subsystem/subsystem34_metadata_repo.py:372"}
+{"time":"2026-07-08T16:34:50", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Crawling industry information for all types.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:563"}
+{"time":"2026-07-08T16:34:50", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=industry_info_summary_info for symbol=SUMMARY_INFO batch_id=batch_SUMMARY_INFO_20260708093450_0b85370e", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:612"}
+{"time":"2026-07-08T16:34:50", "level":"INFO", "name":"extractor", "message":"Extract_successfull industry_info for type summary_info", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:442"}
+{"time":"2026-07-08T16:34:50", "level":"INFO", "name":"polars_engine", "message":"[BronzeIngester:SUMMARY_INFO:stock_prices] Start processing 1 records.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:314"}
+{"time":"2026-07-08T16:34:50", "level":"WARNING", "name":"polars_engine", "message":"[BronzeIngester:SUMMARY_INFO:stock_prices] No records passed DQ checks.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:331"}
+{"time":"2026-07-08T16:34:51", "level":"INFO", "name":"__main__", "message":"[LINEAGE] external.cophieu68_industry_info_summary_info_SUMMARY_INFO -> bronze.bronze_industry_info_summary_info | op=APPEND | rows=1", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/processing/base_processing_subsystem/subsystem34_metadata_repo.py:372"}
+{"time":"2026-07-08T16:34:51", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=industry_info_financial_info for symbol=FINANCIAL_INFO batch_id=batch_FINANCIAL_INFO_20260708093451_7d43d07c", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:612"}
+{"time":"2026-07-08T16:34:51", "level":"INFO", "name":"extractor", "message":"Extract_successfull industry_info for type financial_info", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:442"}
+{"time":"2026-07-08T16:34:51", "level":"INFO", "name":"polars_engine", "message":"[BronzeIngester:FINANCIAL_INFO:stock_prices] Start processing 1 records.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:314"}
+{"time":"2026-07-08T16:34:51", "level":"WARNING", "name":"polars_engine", "message":"[BronzeIngester:FINANCIAL_INFO:stock_prices] No records passed DQ checks.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:331"}
+{"time":"2026-07-08T16:34:51", "level":"INFO", "name":"__main__", "message":"[LINEAGE] external.cophieu68_industry_info_financial_info_FINANCIAL_INFO -> bronze.bronze_industry_info_financial_info | op=APPEND | rows=1", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/processing/base_processing_subsystem/subsystem34_metadata_repo.py:372"}
+{"time":"2026-07-08T16:34:51", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=industry_info_fund_info for symbol=FUND_INFO batch_id=batch_FUND_INFO_20260708093451_c7ea99ab", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:612"}
+{"time":"2026-07-08T16:34:51", "level":"INFO", "name":"extractor", "message":"Extract_successfull industry_info for type fund_info", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:442"}
+{"time":"2026-07-08T16:34:51", "level":"INFO", "name":"polars_engine", "message":"[BronzeIngester:FUND_INFO:stock_prices] Start processing 1 records.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:314"}
+{"time":"2026-07-08T16:34:51", "level":"WARNING", "name":"polars_engine", "message":"[BronzeIngester:FUND_INFO:stock_prices] No records passed DQ checks.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:331"}
+{"time":"2026-07-08T16:34:51", "level":"INFO", "name":"__main__", "message":"[LINEAGE] external.cophieu68_industry_info_fund_info_FUND_INFO -> bronze.bronze_industry_info_fund_info | op=APPEND | rows=1", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/processing/base_processing_subsystem/subsystem34_metadata_repo.py:372"}
+{"time":"2026-07-08T16:34:51", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Crawling general company information.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:574"}
+{"time":"2026-07-08T16:34:51", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=company_by_industry for symbol=ALL batch_id=batch_ALL_20260708093451_eb1bede7", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:612"}
+{"time":"2026-07-08T16:35:11", "level":"INFO", "name":"extractor", "message":"Extract successfull company_info_belong_to_industry_sectors", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:331"}
+{"time":"2026-07-08T16:35:11", "level":"INFO", "name":"polars_engine", "message":"[BronzeIngester:ALL:stock_prices] Start processing 916 records.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:314"}
+{"time":"2026-07-08T16:35:11", "level":"WARNING", "name":"polars_engine", "message":"[BronzeIngester:ALL:stock_prices] No records passed DQ checks.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:331"}
+{"time":"2026-07-08T16:35:11", "level":"INFO", "name":"__main__", "message":"[LINEAGE] external.cophieu68_company_by_industry_ALL -> bronze.bronze_company_by_industry | op=APPEND | rows=916", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/processing/base_processing_subsystem/subsystem34_metadata_repo.py:372"}
+{"time":"2026-07-08T16:35:11", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=company_by_market for symbol=ALL batch_id=batch_ALL_20260708093511_adb6c860", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:612"}
+{"time":"2026-07-08T16:35:14", "level":"INFO", "name":"extractor", "message":"Extract successfull company_info_belong_to_market_type", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:360"}
+{"time":"2026-07-08T16:35:14", "level":"INFO", "name":"polars_engine", "message":"[BronzeIngester:ALL:stock_prices] Start processing 1496 records.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:314"}
+{"time":"2026-07-08T16:35:14", "level":"WARNING", "name":"polars_engine", "message":"[BronzeIngester:ALL:stock_prices] No records passed DQ checks.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:331"}
+{"time":"2026-07-08T16:35:14", "level":"INFO", "name":"__main__", "message":"[LINEAGE] external.cophieu68_company_by_market_ALL -> bronze.bronze_company_by_market | op=APPEND | rows=1496", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/processing/base_processing_subsystem/subsystem34_metadata_repo.py:372"}
+{"time":"2026-07-08T16:35:14", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Executing tasks for symbol=HPG", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:590"}
+{"time":"2026-07-08T16:35:14", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=trading_data for symbol=HPG batch_id=batch_HPG_20260708093514_5545cb3f", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:612"}
+{"time":"2026-07-08T16:35:15", "level":"INFO", "name":"polars_engine", "message":"[BronzeIngester:HPG:stock_prices] Start processing 101 records.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:314"}
+{"time":"2026-07-08T16:35:15", "level":"INFO", "name":"polars_engine", "message":"💾 Ghi dữ liệu tới: s3a://lakehouse/bronze/stock_prices/ (Partition: ['ingest_date'])", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/processing/polars/polars_engine.py:53"}
+{"time":"2026-07-08T16:35:15", "level":"ERROR", "name":"__main__", "message":"[BronzeExecutor] Error for table=trading_data, symbol=HPG: "ingest_date" not found", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:676"}
+Traceback (most recent call last):
+  File "/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py", line 655, in _process_and_ingest
+    ingestion_result = self.bronze_ingester.process(
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py", line 352, in process
+    saved_path = self.engine.write_parquet(
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/processing/polars/polars_engine.py", line 59, in write_parquet
+    df.write_parquet(
+  File "/home/hungpham/ds_env/lib/python3.11/site-packages/polars/dataframe/frame.py", line 3662, in write_parquet
+    self._df.write_parquet(
+polars.exceptions.ColumnNotFoundError: "ingest_date" not found
+{"time":"2026-07-08T16:35:15", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=company_profile for symbol=HPG batch_id=batch_HPG_20260708093515_1ec90674", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:612"}
+{"time":"2026-07-08T16:35:15", "level":"WARNING", "name":"__main__", "message":"[BronzeExecutor] Data for company_profile/HPG could not be normalized to records.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:644"}
+{"time":"2026-07-08T16:35:15", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=financial_ratios for symbol=HPG batch_id=batch_HPG_20260708093515_67b8d2c5", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:612"}
+{"time":"2026-07-08T16:35:16", "level":"INFO", "name":"extractor", "message":"Extract_successfull financial_ratios for HPG", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:528"}
+{"time":"2026-07-08T16:35:16", "level":"INFO", "name":"polars_engine", "message":"[BronzeIngester:HPG:stock_prices] Start processing 1 records.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:314"}
+{"time":"2026-07-08T16:35:16", "level":"WARNING", "name":"polars_engine", "message":"[BronzeIngester:HPG:stock_prices] No records passed DQ checks.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:331"}
+{"time":"2026-07-08T16:35:16", "level":"INFO", "name":"__main__", "message":"[LINEAGE] external.cophieu68_financial_ratios_HPG -> bronze.bronze_financial_ratios | op=APPEND | rows=1", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/processing/base_processing_subsystem/subsystem34_metadata_repo.py:372"}
+{"time":"2026-07-08T16:35:16", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=financial_summary for symbol=HPG batch_id=batch_HPG_20260708093516_dc7816d6", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:612"}
+{"time":"2026-07-08T16:35:17", "level":"INFO", "name":"extractor", "message":"extract_succcessfull financial_report_summary HPG", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:120"}
+{"time":"2026-07-08T16:35:17", "level":"INFO", "name":"polars_engine", "message":"[BronzeIngester:HPG:stock_prices] Start processing 1 records.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:314"}
+{"time":"2026-07-08T16:35:17", "level":"WARNING", "name":"polars_engine", "message":"[BronzeIngester:HPG:stock_prices] No records passed DQ checks.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:331"}
+{"time":"2026-07-08T16:35:17", "level":"INFO", "name":"__main__", "message":"[LINEAGE] external.cophieu68_financial_summary_HPG -> bronze.bronze_financial_summary | op=APPEND | rows=1", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/processing/base_processing_subsystem/subsystem34_metadata_repo.py:372"}
+{"time":"2026-07-08T16:35:17", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=business_plan for symbol=HPG batch_id=batch_HPG_20260708093517_9c505a64", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:612"}
+{"time":"2026-07-08T16:35:18", "level":"INFO", "name":"extractor", "message":"extract_successfull business_plan HPG", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:174"}
+{"time":"2026-07-08T16:35:18", "level":"INFO", "name":"polars_engine", "message":"[BronzeIngester:HPG:stock_prices] Start processing 1 records.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:314"}
+{"time":"2026-07-08T16:35:18", "level":"WARNING", "name":"polars_engine", "message":"[BronzeIngester:HPG:stock_prices] No records passed DQ checks.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:331"}
+{"time":"2026-07-08T16:35:18", "level":"INFO", "name":"__main__", "message":"[LINEAGE] external.cophieu68_business_plan_HPG -> bronze.bronze_business_plan | op=APPEND | rows=1", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/processing/base_processing_subsystem/subsystem34_metadata_repo.py:372"}
+{"time":"2026-07-08T16:35:18", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=income_statement_quarterly for symbol=HPG batch_id=batch_HPG_20260708093518_5656d694", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:612"}
+{"time":"2026-07-08T16:35:18", "level":"INFO", "name":"extractor", "message":"Extract_successfull details_financial_report {symbol}", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:259"}
+{"time":"2026-07-08T16:35:18", "level":"INFO", "name":"extractor", "message":"Extract_successfull details_income_statement HPG", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:279"}
+{"time":"2026-07-08T16:35:18", "level":"INFO", "name":"polars_engine", "message":"[BronzeIngester:HPG:stock_prices] Start processing 1 records.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:314"}
+{"time":"2026-07-08T16:35:18", "level":"WARNING", "name":"polars_engine", "message":"[BronzeIngester:HPG:stock_prices] No records passed DQ checks.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:331"}
+{"time":"2026-07-08T16:35:18", "level":"INFO", "name":"__main__", "message":"[LINEAGE] external.cophieu68_income_statement_quarterly_HPG -> bronze.bronze_income_statement_quarterly | op=APPEND | rows=1", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/processing/base_processing_subsystem/subsystem34_metadata_repo.py:372"}
+{"time":"2026-07-08T16:35:18", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=balance_sheet_quarterly for symbol=HPG batch_id=batch_HPG_20260708093518_6fe49bea", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:612"}
+{"time":"2026-07-08T16:35:18", "level":"INFO", "name":"extractor", "message":"Extract_successfull details_financial_report {symbol}", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:259"}
+{"time":"2026-07-08T16:35:18", "level":"INFO", "name":"extractor", "message":"Extract_successfull details_balance_sheet HPG", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:298"}
+{"time":"2026-07-08T16:35:18", "level":"INFO", "name":"polars_engine", "message":"[BronzeIngester:HPG:stock_prices] Start processing 1 records.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:314"}
+{"time":"2026-07-08T16:35:18", "level":"WARNING", "name":"polars_engine", "message":"[BronzeIngester:HPG:stock_prices] No records passed DQ checks.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:331"}
+{"time":"2026-07-08T16:35:19", "level":"INFO", "name":"__main__", "message":"[LINEAGE] external.cophieu68_balance_sheet_quarterly_HPG -> bronze.bronze_balance_sheet_quarterly | op=APPEND | rows=1", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/processing/base_processing_subsystem/subsystem34_metadata_repo.py:372"}
+{"time":"2026-07-08T16:35:19", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=income_statement_annually for symbol=HPG batch_id=batch_HPG_20260708093519_1f7cd2d7", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:612"}
+{"time":"2026-07-08T16:35:20", "level":"INFO", "name":"extractor", "message":"Extract_successfull details_financial_report {symbol}", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:259"}
+{"time":"2026-07-08T16:35:20", "level":"INFO", "name":"extractor", "message":"Extract_successfull details_income_statement HPG", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:279"}
+{"time":"2026-07-08T16:35:20", "level":"INFO", "name":"polars_engine", "message":"[BronzeIngester:HPG:stock_prices] Start processing 1 records.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:314"}
+{"time":"2026-07-08T16:35:20", "level":"WARNING", "name":"polars_engine", "message":"[BronzeIngester:HPG:stock_prices] No records passed DQ checks.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:331"}
+{"time":"2026-07-08T16:35:20", "level":"INFO", "name":"__main__", "message":"[LINEAGE] external.cophieu68_income_statement_annually_HPG -> bronze.bronze_income_statement_annually | op=APPEND | rows=1", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/processing/base_processing_subsystem/subsystem34_metadata_repo.py:372"}
+{"time":"2026-07-08T16:35:20", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=balance_sheet_annually for symbol=HPG batch_id=batch_HPG_20260708093520_6fe8d89d", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:612"}
+{"time":"2026-07-08T16:35:21", "level":"INFO", "name":"extractor", "message":"Extract_successfull details_financial_report {symbol}", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:259"}
+{"time":"2026-07-08T16:35:21", "level":"INFO", "name":"extractor", "message":"Extract_successfull details_balance_sheet HPG", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:298"}
+{"time":"2026-07-08T16:35:21", "level":"INFO", "name":"polars_engine", "message":"[BronzeIngester:HPG:stock_prices] Start processing 1 records.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:314"}
+{"time":"2026-07-08T16:35:21", "level":"WARNING", "name":"polars_engine", "message":"[BronzeIngester:HPG:stock_prices] No records passed DQ checks.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:331"}
+{"time":"2026-07-08T16:35:21", "level":"INFO", "name":"__main__", "message":"[LINEAGE] external.cophieu68_balance_sheet_annually_HPG -> bronze.bronze_balance_sheet_annually | op=APPEND | rows=1", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/processing/base_processing_subsystem/subsystem34_metadata_repo.py:372"}
+{"time":"2026-07-08T16:35:21", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=match_details for symbol=HPG batch_id=batch_HPG_20260708093521_236b5312", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:612"}
+{"time":"2026-07-08T16:35:21", "level":"INFO", "name":"extractor", "message":"extract_successfull details_match {symbol}", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:219"}
+{"time":"2026-07-08T16:35:21", "level":"INFO", "name":"polars_engine", "message":"[BronzeIngester:HPG:stock_prices] Start processing 1 records.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:314"}
+{"time":"2026-07-08T16:35:21", "level":"WARNING", "name":"polars_engine", "message":"[BronzeIngester:HPG:stock_prices] No records passed DQ checks.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:331"}
+{"time":"2026-07-08T16:35:21", "level":"INFO", "name":"__main__", "message":"[LINEAGE] external.cophieu68_match_details_HPG -> bronze.bronze_match_details | op=APPEND | rows=1", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/processing/base_processing_subsystem/subsystem34_metadata_repo.py:372"}
+{"time":"2026-07-08T16:35:21", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Completed bronze phase: rows_ingested=0", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:544"}
+{"time":"2026-07-08T16:35:21", "level":"INFO", "name":"__main__", "message":"[RUN END] run_id=run_20260708_093444_e66724 | status=SUCCESS | duration=37.4s | rows_read=None | rows_written=None", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/processing/base_processing_subsystem/subsystem34_metadata_repo.py:183"}
+{"time":"2026-07-08T16:35:21", "level":"INFO", "name":"__main__", "message":"
+======================================================================
+  ETL Run Summary: run_20260708_093444_e66724
+======================================================================
+  Job:           master_etl_bronze
+  Layer:         bronze -> all_tables
+  Status:        SUCCESS
+  Start:         2026-07-08 09:34:44.575440+00:00
+  End:           2026-07-08 09:35:21.951311+00:00
+  Duration:      37.4s
+  Rows Read:     0
+  Rows Written:  0
+
+  Data Lineage (17 transformations):
+    external.cophieu68_market_list_vnindex_VNINDEX --[APPEND]--> bronze.bronze_market_list_vnindex (1 rows)
+    external.cophieu68_market_list_hnx_HNX --[APPEND]--> bronze.bronze_market_list_hnx (1 rows)
+    external.cophieu68_market_list_upcom_UPCOM --[APPEND]--> bronze.bronze_market_list_upcom (1 rows)
+    external.cophieu68_market_list_vn30_VN30 --[APPEND]--> bronze.bronze_market_list_vn30 (1 rows)
+    external.cophieu68_industry_info_summary_info_SUMMARY_INFO --[APPEND]--> bronze.bronze_industry_info_summary_info (1 rows)
+    external.cophieu68_industry_info_financial_info_FINANCIAL_INFO --[APPEND]--> bronze.bronze_industry_info_financial_info (1 rows)
+    external.cophieu68_industry_info_fund_info_FUND_INFO --[APPEND]--> bronze.bronze_industry_info_fund_info (1 rows)
+    external.cophieu68_company_by_industry_ALL --[APPEND]--> bronze.bronze_company_by_industry (916 rows)
+    external.cophieu68_company_by_market_ALL --[APPEND]--> bronze.bronze_company_by_market (1496 rows)
+    external.cophieu68_financial_ratios_HPG --[APPEND]--> bronze.bronze_financial_ratios (1 rows)
+    external.cophieu68_financial_summary_HPG --[APPEND]--> bronze.bronze_financial_summary (1 rows)
+    external.cophieu68_business_plan_HPG --[APPEND]--> bronze.bronze_business_plan (1 rows)
+    external.cophieu68_income_statement_quarterly_HPG --[APPEND]--> bronze.bronze_income_statement_quarterly (1 rows)
+    external.cophieu68_balance_sheet_quarterly_HPG --[APPEND]--> bronze.bronze_balance_sheet_quarterly (1 rows)
+    external.cophieu68_income_statement_annually_HPG --[APPEND]--> bronze.bronze_income_statement_annually (1 rows)
+    external.cophieu68_balance_sheet_annually_HPG --[APPEND]--> bronze.bronze_balance_sheet_annually (1 rows)
+    external.cophieu68_match_details_HPG --[APPEND]--> bronze.bronze_match_details (1 rows)
+======================================================================
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/processing/base_processing_subsystem/subsystem34_metadata_repo.py:462"}
+{"time":"2026-07-08T16:35:21", "level":"INFO", "name":"root", "message":"Shutting down the event dispatcher", "caller":"/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/analytics/dispatcher.py:159"}
+{"time":"2026-07-08T16:39:18", "level":"INFO", "name":"__main__", "message":"[CONFIG] Loaded from platforms/orchestration/prefect/config/cophieu68_config.yaml", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:159"}
+{"time":"2026-07-08T16:39:18", "level":"INFO", "name":"__main__", "message":"[CONFIG] Prefect config loaded successfully", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:171"}
+{"time":"2026-07-08T16:39:19", "level":"INFO", "name":"__main__", "message":"[ORCHESTRATOR] Starting pipeline phase=bronze run_id=run_20260708_093919_2836bf target_date=2026-07-08 symbols=['HPG'] backend=polars", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:903"}
+{"time":"2026-07-08T16:39:19", "level":"INFO", "name":"__main__", "message":"[RUN START] run_id=run_20260708_093919_2836bf | job=master_etl_bronze | layer=bronze | table=all_tables", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/processing/base_processing_subsystem/subsystem34_metadata_repo.py:138"}
+{"time":"2026-07-08T16:39:19", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Starting bronze phase for symbols=['HPG']", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:526"}
+{"time":"2026-07-08T16:39:19", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Executing non-symbol specific tasks.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:551"}
+{"time":"2026-07-08T16:39:19", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Crawling market lists for all market types.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:554"}
+{"time":"2026-07-08T16:39:19", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=market_list_vnindex for symbol=VNINDEX batch_id=batch_VNINDEX_20260708093919_4c498407", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:614"}
+{"time":"2026-07-08T16:39:21", "level":"INFO", "name":"polars_engine", "message":"[BronzeIngester:VNINDEX:stock_prices] Start processing 1 records.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:314"}
+{"time":"2026-07-08T16:39:21", "level":"WARNING", "name":"polars_engine", "message":"[BronzeIngester:VNINDEX:stock_prices] No records passed DQ checks.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:331"}
+{"time":"2026-07-08T16:39:21", "level":"INFO", "name":"__main__", "message":"[LINEAGE] external.cophieu68_market_list_vnindex_VNINDEX -> bronze.bronze_market_list_vnindex | op=APPEND | rows=1", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/processing/base_processing_subsystem/subsystem34_metadata_repo.py:372"}
+{"time":"2026-07-08T16:39:21", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=market_list_hnx for symbol=HNX batch_id=batch_HNX_20260708093921_1effef15", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:614"}
+{"time":"2026-07-08T16:39:22", "level":"INFO", "name":"polars_engine", "message":"[BronzeIngester:HNX:stock_prices] Start processing 1 records.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:314"}
+{"time":"2026-07-08T16:39:22", "level":"WARNING", "name":"polars_engine", "message":"[BronzeIngester:HNX:stock_prices] No records passed DQ checks.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:331"}
+{"time":"2026-07-08T16:39:23", "level":"INFO", "name":"__main__", "message":"[LINEAGE] external.cophieu68_market_list_hnx_HNX -> bronze.bronze_market_list_hnx | op=APPEND | rows=1", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/processing/base_processing_subsystem/subsystem34_metadata_repo.py:372"}
+{"time":"2026-07-08T16:39:23", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=market_list_upcom for symbol=UPCOM batch_id=batch_UPCOM_20260708093923_b5d61829", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:614"}
+{"time":"2026-07-08T16:39:24", "level":"INFO", "name":"polars_engine", "message":"[BronzeIngester:UPCOM:stock_prices] Start processing 1 records.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:314"}
+{"time":"2026-07-08T16:39:24", "level":"WARNING", "name":"polars_engine", "message":"[BronzeIngester:UPCOM:stock_prices] No records passed DQ checks.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:331"}
+{"time":"2026-07-08T16:39:24", "level":"INFO", "name":"__main__", "message":"[LINEAGE] external.cophieu68_market_list_upcom_UPCOM -> bronze.bronze_market_list_upcom | op=APPEND | rows=1", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/processing/base_processing_subsystem/subsystem34_metadata_repo.py:372"}
+{"time":"2026-07-08T16:39:24", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=market_list_vn30 for symbol=VN30 batch_id=batch_VN30_20260708093924_5ac4a22f", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:614"}
+{"time":"2026-07-08T16:39:27", "level":"INFO", "name":"polars_engine", "message":"[BronzeIngester:VN30:stock_prices] Start processing 1 records.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:314"}
+{"time":"2026-07-08T16:39:27", "level":"WARNING", "name":"polars_engine", "message":"[BronzeIngester:VN30:stock_prices] No records passed DQ checks.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:331"}
+{"time":"2026-07-08T16:39:27", "level":"INFO", "name":"__main__", "message":"[LINEAGE] external.cophieu68_market_list_vn30_VN30 -> bronze.bronze_market_list_vn30 | op=APPEND | rows=1", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/processing/base_processing_subsystem/subsystem34_metadata_repo.py:372"}
+{"time":"2026-07-08T16:39:27", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Crawling industry information for all types.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:565"}
+{"time":"2026-07-08T16:39:27", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=industry_info_summary_info for symbol=SUMMARY_INFO batch_id=batch_SUMMARY_INFO_20260708093927_4d694063", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:614"}
+{"time":"2026-07-08T16:39:27", "level":"INFO", "name":"extractor", "message":"Extract_successfull industry_info for type summary_info", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:442"}
+{"time":"2026-07-08T16:39:27", "level":"INFO", "name":"polars_engine", "message":"[BronzeIngester:SUMMARY_INFO:stock_prices] Start processing 1 records.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:314"}
+{"time":"2026-07-08T16:39:27", "level":"WARNING", "name":"polars_engine", "message":"[BronzeIngester:SUMMARY_INFO:stock_prices] No records passed DQ checks.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:331"}
+{"time":"2026-07-08T16:39:27", "level":"INFO", "name":"__main__", "message":"[LINEAGE] external.cophieu68_industry_info_summary_info_SUMMARY_INFO -> bronze.bronze_industry_info_summary_info | op=APPEND | rows=1", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/processing/base_processing_subsystem/subsystem34_metadata_repo.py:372"}
+{"time":"2026-07-08T16:39:27", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=industry_info_financial_info for symbol=FINANCIAL_INFO batch_id=batch_FINANCIAL_INFO_20260708093927_dda05db8", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:614"}
+{"time":"2026-07-08T16:39:28", "level":"INFO", "name":"extractor", "message":"Extract_successfull industry_info for type financial_info", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:442"}
+{"time":"2026-07-08T16:39:28", "level":"INFO", "name":"polars_engine", "message":"[BronzeIngester:FINANCIAL_INFO:stock_prices] Start processing 1 records.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:314"}
+{"time":"2026-07-08T16:39:28", "level":"WARNING", "name":"polars_engine", "message":"[BronzeIngester:FINANCIAL_INFO:stock_prices] No records passed DQ checks.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:331"}
+{"time":"2026-07-08T16:39:28", "level":"INFO", "name":"__main__", "message":"[LINEAGE] external.cophieu68_industry_info_financial_info_FINANCIAL_INFO -> bronze.bronze_industry_info_financial_info | op=APPEND | rows=1", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/processing/base_processing_subsystem/subsystem34_metadata_repo.py:372"}
+{"time":"2026-07-08T16:39:28", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=industry_info_fund_info for symbol=FUND_INFO batch_id=batch_FUND_INFO_20260708093928_32e8b98f", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:614"}
+{"time":"2026-07-08T16:39:29", "level":"INFO", "name":"extractor", "message":"Extract_successfull industry_info for type fund_info", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:442"}
+{"time":"2026-07-08T16:39:29", "level":"INFO", "name":"polars_engine", "message":"[BronzeIngester:FUND_INFO:stock_prices] Start processing 1 records.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:314"}
+{"time":"2026-07-08T16:39:29", "level":"WARNING", "name":"polars_engine", "message":"[BronzeIngester:FUND_INFO:stock_prices] No records passed DQ checks.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:331"}
+{"time":"2026-07-08T16:39:29", "level":"INFO", "name":"__main__", "message":"[LINEAGE] external.cophieu68_industry_info_fund_info_FUND_INFO -> bronze.bronze_industry_info_fund_info | op=APPEND | rows=1", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/processing/base_processing_subsystem/subsystem34_metadata_repo.py:372"}
+{"time":"2026-07-08T16:39:29", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Crawling general company information.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:576"}
+{"time":"2026-07-08T16:39:29", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=company_by_industry for symbol=ALL batch_id=batch_ALL_20260708093929_a188fc39", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:614"}
+{"time":"2026-07-08T16:39:50", "level":"INFO", "name":"extractor", "message":"Extract successfull company_info_belong_to_industry_sectors", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:331"}
+{"time":"2026-07-08T16:39:50", "level":"INFO", "name":"polars_engine", "message":"[BronzeIngester:ALL:stock_prices] Start processing 916 records.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:314"}
+{"time":"2026-07-08T16:39:50", "level":"WARNING", "name":"polars_engine", "message":"[BronzeIngester:ALL:stock_prices] No records passed DQ checks.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:331"}
+{"time":"2026-07-08T16:39:50", "level":"INFO", "name":"__main__", "message":"[LINEAGE] external.cophieu68_company_by_industry_ALL -> bronze.bronze_company_by_industry | op=APPEND | rows=916", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/processing/base_processing_subsystem/subsystem34_metadata_repo.py:372"}
+{"time":"2026-07-08T16:39:50", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=company_by_market for symbol=ALL batch_id=batch_ALL_20260708093950_29f7cc21", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:614"}
+{"time":"2026-07-08T16:39:55", "level":"INFO", "name":"extractor", "message":"Extract successfull company_info_belong_to_market_type", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:360"}
+{"time":"2026-07-08T16:39:55", "level":"INFO", "name":"polars_engine", "message":"[BronzeIngester:ALL:stock_prices] Start processing 1496 records.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:314"}
+{"time":"2026-07-08T16:39:55", "level":"WARNING", "name":"polars_engine", "message":"[BronzeIngester:ALL:stock_prices] No records passed DQ checks.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:331"}
+{"time":"2026-07-08T16:39:55", "level":"INFO", "name":"__main__", "message":"[LINEAGE] external.cophieu68_company_by_market_ALL -> bronze.bronze_company_by_market | op=APPEND | rows=1496", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/processing/base_processing_subsystem/subsystem34_metadata_repo.py:372"}
+{"time":"2026-07-08T16:39:55", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Executing tasks for symbol=HPG", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:592"}
+{"time":"2026-07-08T16:39:55", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=trading_data for symbol=HPG batch_id=batch_HPG_20260708093955_59e5dfae", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:614"}
+{"time":"2026-07-08T16:39:56", "level":"INFO", "name":"polars_engine", "message":"[BronzeIngester:HPG:stock_prices] Start processing 101 records.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:314"}
+{"time":"2026-07-08T16:39:56", "level":"INFO", "name":"polars_engine", "message":"💾 Ghi dữ liệu tới: s3a://lakehouse/bronze/stock_prices/ (Partition: ['ingest_date'])", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/processing/polars/polars_engine.py:53"}
+{"time":"2026-07-08T16:39:57", "level":"INFO", "name":"__main__", "message":"[LINEAGE] external.cophieu68_trading_data_HPG -> bronze.bronze_trading_data | op=APPEND | rows=101", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/processing/base_processing_subsystem/subsystem34_metadata_repo.py:372"}
+{"time":"2026-07-08T16:39:57", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=company_profile for symbol=HPG batch_id=batch_HPG_20260708093957_d179a142", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:614"}
+{"time":"2026-07-08T16:39:58", "level":"WARNING", "name":"__main__", "message":"[BronzeExecutor] Data for company_profile/HPG could not be normalized to records.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:646"}
+{"time":"2026-07-08T16:39:58", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=financial_ratios for symbol=HPG batch_id=batch_HPG_20260708093958_93e84445", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:614"}
+{"time":"2026-07-08T16:40:00", "level":"INFO", "name":"extractor", "message":"Extract_successfull financial_ratios for HPG", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:528"}
+{"time":"2026-07-08T16:40:00", "level":"INFO", "name":"polars_engine", "message":"[BronzeIngester:HPG:stock_prices] Start processing 1 records.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:314"}
+{"time":"2026-07-08T16:40:00", "level":"WARNING", "name":"polars_engine", "message":"[BronzeIngester:HPG:stock_prices] No records passed DQ checks.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:331"}
+{"time":"2026-07-08T16:40:00", "level":"INFO", "name":"__main__", "message":"[LINEAGE] external.cophieu68_financial_ratios_HPG -> bronze.bronze_financial_ratios | op=APPEND | rows=1", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/processing/base_processing_subsystem/subsystem34_metadata_repo.py:372"}
+{"time":"2026-07-08T16:40:00", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=financial_summary for symbol=HPG batch_id=batch_HPG_20260708094000_490be8b5", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:614"}
+{"time":"2026-07-08T16:40:01", "level":"INFO", "name":"extractor", "message":"extract_succcessfull financial_report_summary HPG", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:120"}
+{"time":"2026-07-08T16:40:01", "level":"INFO", "name":"polars_engine", "message":"[BronzeIngester:HPG:stock_prices] Start processing 1 records.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:314"}
+{"time":"2026-07-08T16:40:01", "level":"WARNING", "name":"polars_engine", "message":"[BronzeIngester:HPG:stock_prices] No records passed DQ checks.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:331"}
+{"time":"2026-07-08T16:40:01", "level":"INFO", "name":"__main__", "message":"[LINEAGE] external.cophieu68_financial_summary_HPG -> bronze.bronze_financial_summary | op=APPEND | rows=1", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/processing/base_processing_subsystem/subsystem34_metadata_repo.py:372"}
+{"time":"2026-07-08T16:40:01", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=business_plan for symbol=HPG batch_id=batch_HPG_20260708094001_1030f92e", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:614"}
+{"time":"2026-07-08T16:40:02", "level":"INFO", "name":"extractor", "message":"extract_successfull business_plan HPG", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:174"}
+{"time":"2026-07-08T16:40:02", "level":"INFO", "name":"polars_engine", "message":"[BronzeIngester:HPG:stock_prices] Start processing 1 records.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:314"}
+{"time":"2026-07-08T16:40:02", "level":"WARNING", "name":"polars_engine", "message":"[BronzeIngester:HPG:stock_prices] No records passed DQ checks.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:331"}
+{"time":"2026-07-08T16:40:02", "level":"INFO", "name":"__main__", "message":"[LINEAGE] external.cophieu68_business_plan_HPG -> bronze.bronze_business_plan | op=APPEND | rows=1", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/processing/base_processing_subsystem/subsystem34_metadata_repo.py:372"}
+{"time":"2026-07-08T16:40:02", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=income_statement_quarterly for symbol=HPG batch_id=batch_HPG_20260708094002_03db366c", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:614"}
+{"time":"2026-07-08T16:40:03", "level":"INFO", "name":"extractor", "message":"Extract_successfull details_financial_report {symbol}", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:259"}
+{"time":"2026-07-08T16:40:03", "level":"INFO", "name":"extractor", "message":"Extract_successfull details_income_statement HPG", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:279"}
+{"time":"2026-07-08T16:40:03", "level":"INFO", "name":"polars_engine", "message":"[BronzeIngester:HPG:stock_prices] Start processing 1 records.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:314"}
+{"time":"2026-07-08T16:40:03", "level":"WARNING", "name":"polars_engine", "message":"[BronzeIngester:HPG:stock_prices] No records passed DQ checks.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:331"}
+{"time":"2026-07-08T16:40:03", "level":"INFO", "name":"__main__", "message":"[LINEAGE] external.cophieu68_income_statement_quarterly_HPG -> bronze.bronze_income_statement_quarterly | op=APPEND | rows=1", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/processing/base_processing_subsystem/subsystem34_metadata_repo.py:372"}
+{"time":"2026-07-08T16:40:03", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=balance_sheet_quarterly for symbol=HPG batch_id=batch_HPG_20260708094003_30337a6e", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:614"}
+{"time":"2026-07-08T16:40:04", "level":"INFO", "name":"extractor", "message":"Extract_successfull details_financial_report {symbol}", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:259"}
+{"time":"2026-07-08T16:40:04", "level":"INFO", "name":"extractor", "message":"Extract_successfull details_balance_sheet HPG", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:298"}
+{"time":"2026-07-08T16:40:04", "level":"INFO", "name":"polars_engine", "message":"[BronzeIngester:HPG:stock_prices] Start processing 1 records.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:314"}
+{"time":"2026-07-08T16:40:04", "level":"WARNING", "name":"polars_engine", "message":"[BronzeIngester:HPG:stock_prices] No records passed DQ checks.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:331"}
+{"time":"2026-07-08T16:40:04", "level":"INFO", "name":"__main__", "message":"[LINEAGE] external.cophieu68_balance_sheet_quarterly_HPG -> bronze.bronze_balance_sheet_quarterly | op=APPEND | rows=1", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/processing/base_processing_subsystem/subsystem34_metadata_repo.py:372"}
+{"time":"2026-07-08T16:40:04", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=income_statement_annually for symbol=HPG batch_id=batch_HPG_20260708094004_03d1d1b5", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:614"}
+{"time":"2026-07-08T16:40:06", "level":"INFO", "name":"extractor", "message":"Extract_successfull details_financial_report {symbol}", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:259"}
+{"time":"2026-07-08T16:40:06", "level":"INFO", "name":"extractor", "message":"Extract_successfull details_income_statement HPG", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:279"}
+{"time":"2026-07-08T16:40:06", "level":"INFO", "name":"polars_engine", "message":"[BronzeIngester:HPG:stock_prices] Start processing 1 records.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:314"}
+{"time":"2026-07-08T16:40:06", "level":"WARNING", "name":"polars_engine", "message":"[BronzeIngester:HPG:stock_prices] No records passed DQ checks.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:331"}
+{"time":"2026-07-08T16:40:06", "level":"INFO", "name":"__main__", "message":"[LINEAGE] external.cophieu68_income_statement_annually_HPG -> bronze.bronze_income_statement_annually | op=APPEND | rows=1", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/processing/base_processing_subsystem/subsystem34_metadata_repo.py:372"}
+{"time":"2026-07-08T16:40:06", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=balance_sheet_annually for symbol=HPG batch_id=batch_HPG_20260708094006_16a29082", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:614"}
+{"time":"2026-07-08T16:40:08", "level":"INFO", "name":"extractor", "message":"Extract_successfull details_financial_report {symbol}", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:259"}
+{"time":"2026-07-08T16:40:08", "level":"INFO", "name":"extractor", "message":"Extract_successfull details_balance_sheet HPG", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:298"}
+{"time":"2026-07-08T16:40:08", "level":"INFO", "name":"polars_engine", "message":"[BronzeIngester:HPG:stock_prices] Start processing 1 records.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:314"}
+{"time":"2026-07-08T16:40:08", "level":"WARNING", "name":"polars_engine", "message":"[BronzeIngester:HPG:stock_prices] No records passed DQ checks.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:331"}
+{"time":"2026-07-08T16:40:08", "level":"INFO", "name":"__main__", "message":"[LINEAGE] external.cophieu68_balance_sheet_annually_HPG -> bronze.bronze_balance_sheet_annually | op=APPEND | rows=1", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/processing/base_processing_subsystem/subsystem34_metadata_repo.py:372"}
+{"time":"2026-07-08T16:40:08", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Processing table=match_details for symbol=HPG batch_id=batch_HPG_20260708094008_2ed7209f", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:614"}
+{"time":"2026-07-08T16:40:09", "level":"INFO", "name":"extractor", "message":"extract_successfull details_match {symbol}", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/ingestion/cophieu68/extract/extract_cophieu68.py:219"}
+{"time":"2026-07-08T16:40:09", "level":"INFO", "name":"polars_engine", "message":"[BronzeIngester:HPG:stock_prices] Start processing 1 records.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:314"}
+{"time":"2026-07-08T16:40:09", "level":"WARNING", "name":"polars_engine", "message":"[BronzeIngester:HPG:stock_prices] No records passed DQ checks.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:331"}
+{"time":"2026-07-08T16:40:09", "level":"INFO", "name":"__main__", "message":"[LINEAGE] external.cophieu68_match_details_HPG -> bronze.bronze_match_details | op=APPEND | rows=1", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/processing/base_processing_subsystem/subsystem34_metadata_repo.py:372"}
+{"time":"2026-07-08T16:40:09", "level":"INFO", "name":"__main__", "message":"[BronzeExecutor] Completed bronze phase: rows_ingested=101", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:546"}
+{"time":"2026-07-08T16:40:09", "level":"INFO", "name":"__main__", "message":"[RUN END] run_id=run_20260708_093919_2836bf | status=SUCCESS | duration=50.1s | rows_read=None | rows_written=None", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/processing/base_processing_subsystem/subsystem34_metadata_repo.py:183"}
+{"time":"2026-07-08T16:40:09", "level":"INFO", "name":"__main__", "message":"
+======================================================================
+  ETL Run Summary: run_20260708_093919_2836bf
+======================================================================
+  Job:           master_etl_bronze
+  Layer:         bronze -> all_tables
+  Status:        SUCCESS
+  Start:         2026-07-08 09:39:19.060894+00:00
+  End:           2026-07-08 09:40:09.132300+00:00
+  Duration:      50.1s
+  Rows Read:     0
+  Rows Written:  0
+
+  Data Lineage (18 transformations):
+    external.cophieu68_market_list_vnindex_VNINDEX --[APPEND]--> bronze.bronze_market_list_vnindex (1 rows)
+    external.cophieu68_market_list_hnx_HNX --[APPEND]--> bronze.bronze_market_list_hnx (1 rows)
+    external.cophieu68_market_list_upcom_UPCOM --[APPEND]--> bronze.bronze_market_list_upcom (1 rows)
+    external.cophieu68_market_list_vn30_VN30 --[APPEND]--> bronze.bronze_market_list_vn30 (1 rows)
+    external.cophieu68_industry_info_summary_info_SUMMARY_INFO --[APPEND]--> bronze.bronze_industry_info_summary_info (1 rows)
+    external.cophieu68_industry_info_financial_info_FINANCIAL_INFO --[APPEND]--> bronze.bronze_industry_info_financial_info (1 rows)
+    external.cophieu68_industry_info_fund_info_FUND_INFO --[APPEND]--> bronze.bronze_industry_info_fund_info (1 rows)
+    external.cophieu68_company_by_industry_ALL --[APPEND]--> bronze.bronze_company_by_industry (916 rows)
+    external.cophieu68_company_by_market_ALL --[APPEND]--> bronze.bronze_company_by_market (1496 rows)
+    external.cophieu68_trading_data_HPG --[APPEND]--> bronze.bronze_trading_data (101 rows)
+    external.cophieu68_financial_ratios_HPG --[APPEND]--> bronze.bronze_financial_ratios (1 rows)
+    external.cophieu68_financial_summary_HPG --[APPEND]--> bronze.bronze_financial_summary (1 rows)
+    external.cophieu68_business_plan_HPG --[APPEND]--> bronze.bronze_business_plan (1 rows)
+    external.cophieu68_income_statement_quarterly_HPG --[APPEND]--> bronze.bronze_income_statement_quarterly (1 rows)
+    external.cophieu68_balance_sheet_quarterly_HPG --[APPEND]--> bronze.bronze_balance_sheet_quarterly (1 rows)
+    external.cophieu68_income_statement_annually_HPG --[APPEND]--> bronze.bronze_income_statement_annually (1 rows)
+    external.cophieu68_balance_sheet_annually_HPG --[APPEND]--> bronze.bronze_balance_sheet_annually (1 rows)
+    external.cophieu68_match_details_HPG --[APPEND]--> bronze.bronze_match_details (1 rows)
+======================================================================
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/processing/base_processing_subsystem/subsystem34_metadata_repo.py:462"}
+{"time":"2026-07-08T16:40:09", "level":"INFO", "name":"root", "message":"Shutting down the event dispatcher", "caller":"/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/analytics/dispatcher.py:159"}

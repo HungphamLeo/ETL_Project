@@ -58,8 +58,6 @@ class PolarsEngine:
             
         df.write_parquet(
             target_path,
-            use_pyarrow=True,
-            partition_by=partition_by,
-            storage_options=self.config.storage_options
+            partition_by=partition_by
         )
         return target_path

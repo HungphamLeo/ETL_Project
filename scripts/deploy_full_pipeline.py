@@ -56,7 +56,7 @@ from platforms.processing.base_processing_subsystem.subsystem7_deduplication imp
 from platforms.processing.base_processing_subsystem.subsystem10_surrogate_key_generator import SurrogateKeyGenerator
 
 from platforms.orchestration.prefect.flows.prefect_orchestra_etl import PrefectETLPipelineConfig
-from platforms.ingestion.cophieu68.dto.extract_models import CRAWL_MARKET_LIST_CONFIG
+from platforms.ingestion.cophieu68.dto.extract_models import CRAWL_MARKET_LIST_CONFIG, INDUSTRIAL_INFO_TYPE
 from platforms.ingestion.cophieu68.extract.extract_cophieu68 import ExtractCophieu68
 from platforms.processing.polars.polars_engine import PolarsConfig, PolarsEngine
 from platforms.processing.duckdb.duckdb_engine import DuckDBConfig, DuckDBEngine
@@ -262,10 +262,10 @@ class BronzePolarsIngester:
         self.logger = engine.logger
 
     def _profile(self, records: List[Dict[str, Any]]) -> Dict[str, Any]:
-        if not records:
+        if not records or not isinstance(records, list):
             return {"total_rows": 0, "columns": []}
         sample = records[0]
-        cols = list(sample.keys())
+        cols = list(sample.keys()) if isinstance(sample, dict) else []
         total = len(records)
         null_counts = {col: sum(1 for r in records if r.get(col) is None) for col in cols}
         return {"total_rows": total, "columns": cols, "null_counts": null_counts}
@@ -275,19 +275,31 @@ class BronzePolarsIngester:
         records: List[Dict[str, Any]],
         cleansing: CleansingRuleSet,
         run_id: str,
-    ) -> tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
+    ) -> tuple[List[Dict[str, Any]], List[Dict[str, Any]], Dict[str, Any]]:
         clean: List[Dict[str, Any]] = []
         rejects: List[Dict[str, Any]] = []
+        reject_reason_counts: Dict[str, int] = {}
         for rec in records:
+            if not isinstance(rec, dict): # Bỏ qua các item không phải dict
+                continue
             valid, messages = cleansing.apply(rec)
             if valid:
                 clean.append(rec)
             else:
+                reason = "; ".join(messages)
+                reject_reason_counts[reason] = reject_reason_counts.get(reason, 0) + 1
                 rec["_dq_status"] = "REJECT"
-                rec["_dq_errors"] = "; ".join(messages)
+                rec["_dq_errors"] = reason
                 rec["_run_id"] = run_id
                 rejects.append(rec)
-        return clean, rejects
+        data_quality_summary = {
+            "total_records": len(records),
+            "clean_records": len(clean),
+            "rejected_records": len(rejects),
+            "reject_ratio": round(len(rejects) / len(records), 4) if records else 0.0,
+            "reject_reasons": reject_reason_counts,
+        }
+        return clean, rejects, data_quality_summary
 
     def process(
         self,
@@ -299,40 +311,51 @@ class BronzePolarsIngester:
     ) -> Dict[str, Any]:
         import polars as pl
 
-        self.logger.info(f"[BronzeIngester:{symbol}] Start processing {len(raw_records)} records.")
+        self.logger.info(f"[BronzeIngester:{symbol}:{self.table_name}] Start processing {len(raw_records)} records.")
         profile = self._profile(raw_records)
+        dq_summary: Dict[str, Any] = {}
         if cleansing:
-            clean_records, reject_records = self._pre_evaluate(raw_records, cleansing, run_id)
+            clean_records, reject_records, dq_summary = self._pre_evaluate(raw_records, cleansing, run_id)
         else:
             clean_records = raw_records
             reject_records = []
+            dq_summary = {
+                "total_records": len(raw_records),
+                "clean_records": len(raw_records),
+                "rejected_records": 0,
+                "reject_ratio": 0.0,
+                "reject_reasons": {},
+            }
 
         if not clean_records:
-            self.logger.warning(f"[BronzeIngester:{symbol}] No records passed DQ checks.")
+            self.logger.warning(f"[BronzeIngester:{symbol}:{self.table_name}] No records passed DQ checks.")
             return {
                 "saved_path": None,
                 "reject_path": None,
                 "stats": {**profile, "clean": 0, "rejects": len(reject_records)},
+                "dq_summary": dq_summary,
             }
 
         df = pl.DataFrame(clean_records)
         if "symbol" not in df.columns:
             df = df.with_columns(pl.lit(symbol.upper()).alias("symbol"))
 
+        ingest_timestamp = datetime.now(timezone.utc)
         df = df.with_columns([
             pl.lit(batch_id).alias("_batch_id"),
             pl.lit(run_id).alias("_run_id"),
-            pl.lit(datetime.now(timezone.utc).isoformat()).alias("_ingest_timestamp"),
+            pl.lit(ingest_timestamp.isoformat()).alias("_ingest_timestamp"),
+            pl.lit(ingest_timestamp.date().isoformat()).alias("ingest_date"),
         ])
 
         bronze_path = f"{self.base_path}/bronze/{self.table_name}/"
-        # [FIX] Sửa lỗi TypeError: unexpected keyword argument 'storage_options'.
-        # Polars write_parquet cần storage_options khi ghi vào S3.
-        # Chúng ta sẽ gọi trực tiếp hàm của DataFrame thay vì qua engine để đảm bảo tham số đúng.
-        df.write_parquet(
-            bronze_path, partition_by=["ingest_date"], storage_options=self.engine.config.storage_options
+        
+        # Sử dụng engine để ghi, engine đã có storage_options
+        saved_path = self.engine.write_parquet(
+            df=df, 
+            target_path=bronze_path, 
+            partition_by=["ingest_date"]
         )
-        saved_path = bronze_path # Đường dẫn đã bao gồm partition
 
         reject_path = None
         if reject_records:
@@ -344,6 +367,7 @@ class BronzePolarsIngester:
             "saved_path": saved_path,
             "reject_path": reject_path,
             "stats": {**profile, "clean": len(clean_records), "rejects": len(reject_records)},
+            "dq_summary": dq_summary,
         }
 
 
@@ -368,7 +392,7 @@ class SilverProcessor:
     ) -> Dict[str, Any]:
         import polars as pl
 
-        bronze_glob = f"{self.base}/bronze/stock_prices/ingest_date={target_date}/*.parquet"
+        bronze_glob = f"{self.base}/bronze/trading_data/ingest_date={target_date}/*.parquet"
         self.logger.info(f"[SilverProcessor] Reading bronze data from {bronze_glob}")
 
         df_lf = self.duck.query_to_polars(f"SELECT * FROM read_parquet('{bronze_glob}')")
@@ -496,6 +520,7 @@ class BronzeExecutor:
         self.context = context
         self.config = config
         self.logger = context.logger
+        self.extractor = _build_extractor(self.config)
 
     def execute(self) -> Dict[str, Any]:
         self.logger.info(f"[BronzeExecutor] Starting bronze phase for symbols={self.context.symbols}")
@@ -508,66 +533,151 @@ class BronzeExecutor:
         }
 
         polars_engine = _build_polars_engine(self.config)
-        bronze_ingester = BronzePolarsIngester(engine=polars_engine, base_path=LAKEHOUSE_BASE)
-        extractor = _build_extractor(self.config)
+        self.bronze_ingester = BronzePolarsIngester(engine=polars_engine, table_name="stock_prices", base_path=LAKEHOUSE_BASE)
 
+        # --- Task 1: Dữ liệu không phụ thuộc vào symbol (chạy một lần) ---
+        self._execute_non_symbol_tasks(polars_engine, result)
+
+        # --- Task 2: Dữ liệu phụ thuộc vào symbol (chạy lặp) ---
         for symbol in self.context.symbols:
-            batch_id = make_batch_id(symbol)
-            self.logger.info(f"[BronzeExecutor] Processing symbol={symbol} batch_id={batch_id}")
-
-            try:
-                trading_data = extractor.crawl_trading_data(symbol=symbol, page=1)
-                if not trading_data or not trading_data.get("records"):
-                    self.logger.warning(f"[BronzeExecutor] No trading records for {symbol}")
-                    continue
-
-                raw_records = trading_data["records"]
-                # [FIX] Thêm 'symbol' vào mỗi record TRƯỚC KHI kiểm tra chất lượng dữ liệu.
-                # Dữ liệu gốc từ extractor không chứa cột symbol trong mỗi record.
-                for record in raw_records:
-                    record['symbol'] = symbol.upper()
-
-                cleansing = _build_cleansing_rules(symbol)
-                ingestion_result = bronze_ingester.process(
-                    raw_records=raw_records,
-                    batch_id=batch_id,
-                    run_id=self.context.run_id,
-                    symbol=symbol,
-                    cleansing=cleansing,
-                )
-
-                clean_count = ingestion_result["stats"]["clean"]
-                reject_count = ingestion_result["stats"]["rejects"]
-                result["symbols_processed"] += 1
-                result["rows_ingested"] += clean_count
-                result["rows_rejected"] += reject_count
-
-                if reject_count > 0:
-                    self.context.error_log.add(
-                        ErrorLevel.WARNING,
-                        f"{reject_count} rejected records in bronze ingestion for {symbol}",
-                    )
-
-                self.context.metadata_repo.log_lineage(
-                    run_id=self.context.run_id,
-                    source_layer="external",
-                    source_table=f"cophieu68_{symbol}",
-                    target_layer="bronze",
-                    target_table="bronze_stock_prices",
-                    operation="APPEND",
-                    rows_affected=clean_count,
-                )
-
-            except Exception as exc:
-                self.logger.error(f"[BronzeExecutor] Error for {symbol}: {exc}")
-                self.context.error_log.add(
-                    ErrorLevel.ERROR,
-                    f"Bronze ingestion failed for {symbol}: {exc}",
-                )
-                result["errors"] += 1
+            self._execute_symbol_based_tasks(symbol, polars_engine, result)
+            result["symbols_processed"] += 1
 
         self.logger.info(f"[BronzeExecutor] Completed bronze phase: rows_ingested={result['rows_ingested']}")
         return result
+
+    def _execute_non_symbol_tasks(self, polars_engine: PolarsEngine, result: Dict[str, Any]):
+        """Trích xuất dữ liệu không phụ thuộc vào mã cổ phiếu."""
+        self.logger.info("[BronzeExecutor] Executing non-symbol specific tasks.")
+
+        # --- Task 1: Crawl market list (danh sách mã theo sàn) ---
+        self.logger.info("[BronzeExecutor] Crawling market lists for all market types.")
+        for market_type in CRAWL_MARKET_LIST_CONFIG.keys():
+            self._process_and_ingest(
+                polars_engine=polars_engine,
+                result=result,
+                table_name=f"market_list_{market_type.lower()}",
+                crawl_func=lambda mt=market_type: self.extractor.crawl_market_list(market_type=mt),
+                symbol=market_type.upper() # Sử dụng market_type làm "symbol" cho batch_id
+            )
+
+        # --- Task 2: Crawl industry info (thông tin các ngành) ---
+        self.logger.info("[BronzeExecutor] Crawling industry information for all types.")
+        for info_type in INDUSTRIAL_INFO_TYPE.keys():
+             self._process_and_ingest(
+                polars_engine=polars_engine,
+                result=result,
+                table_name=f"industry_info_{info_type.lower()}",
+                crawl_func=lambda it=info_type: self.extractor.crawl_industry_info(type_info=it),
+                symbol=info_type.upper() # Sử dụng info_type làm "symbol" cho batch_id
+            )
+
+        # --- Task 3: Dữ liệu không cần lặp (giữ nguyên) ---
+        self.logger.info("[BronzeExecutor] Crawling general company information.")
+        general_tasks = {
+            "company_by_industry": self.extractor.crawl_company_info_belong_to_industry_sectors,
+            "company_by_market": self.extractor.crawl_company_info_belong_to_market_type
+        }
+        for table_name, crawl_func in general_tasks.items():
+            self._process_and_ingest(
+                polars_engine=polars_engine,
+                result=result,
+                table_name=table_name,
+                crawl_func=crawl_func,
+                symbol="ALL"
+            )
+
+    def _execute_symbol_based_tasks(self, symbol: str, polars_engine: PolarsEngine, result: Dict[str, Any]):
+        """Trích xuất dữ liệu cho một mã cổ phiếu cụ thể."""
+        self.logger.info(f"[BronzeExecutor] Executing tasks for symbol={symbol}")
+
+        # Ánh xạ tên bảng với hàm crawler tương ứng
+        tasks = {
+            "trading_data": lambda: self.extractor.crawl_trading_data(symbol=symbol, page=1),
+            "company_profile": lambda: self.extractor.crawl_company_profile(symbol),
+            "financial_ratios": lambda: self.extractor.crawl_financial_ratios(symbol),
+            "financial_summary": lambda: self.extractor.crawl_financial_report_summary(symbol),
+            "business_plan": lambda: self.extractor.crawl_business_plan(symbol),
+            "income_statement_quarterly": lambda: self.extractor.crawl_details_income_statement(symbol, "quarter"),
+            "balance_sheet_quarterly": lambda: self.extractor.crawl_details_balance_sheet(symbol, "quarter"),
+            "income_statement_annually": lambda: self.extractor.crawl_details_income_statement(symbol, "year"),
+            "balance_sheet_annually": lambda: self.extractor.crawl_details_balance_sheet(symbol, "year"),
+            "match_details": lambda: self.extractor.crawl_details_match(symbol),
+        }
+
+        for table_name, crawl_func in tasks.items():
+            self._process_and_ingest(polars_engine, result, table_name, crawl_func, symbol)
+
+    def _process_and_ingest(self, polars_engine: PolarsEngine, result: Dict[str, Any], table_name: str, crawl_func, symbol: str):
+        """Hàm chung để crawl, xử lý và ingest dữ liệu vào bronze layer."""
+        batch_id = make_batch_id(symbol)
+        self.logger.info(f"[BronzeExecutor] Processing table={table_name} for symbol={symbol} batch_id={batch_id}")
+
+        try:
+            data = crawl_func()
+            if not data:
+                self.logger.warning(f"[BronzeExecutor] No data for table={table_name}, symbol={symbol}")
+                return
+            
+            # Chuẩn hóa dữ liệu về list of dicts
+            raw_records: List[Dict[str, Any]] = []
+            # Xử lý cho các hàm trả về cấu trúc đặc biệt
+            if table_name == "market_list":
+                # crawl_market_list trả về {"market_type": ..., "symbols": [...]}
+                # Chúng ta cần biến nó thành list of dicts
+                if isinstance(data, dict) and "symbols" in data:
+                     raw_records = [{"symbol": s, "market_type": data.get("market_type")} for s in data.get("symbols", [])]
+            elif table_name == "industry_info":
+                 # crawl_industry_info trả về dict of dicts
+                 if isinstance(data, dict):
+                     raw_records = [{"industry_key": k, **v} for k, v in data.items()]
+            else: # Xử lý các trường hợp còn lại
+                if isinstance(data, dict):
+                    # Trường hợp phổ biến nhất là dict có key "records"
+                    if "records" in data and isinstance(data.get("records"), list):
+                        raw_records = data.get("records", [])
+                    # Các trường hợp khác trả về dict đơn lẻ
+                    elif data:
+                        raw_records = [data]
+                elif isinstance(data, list):
+                    raw_records = data
+
+            if not raw_records:
+                self.logger.warning(f"[BronzeExecutor] Data for {table_name}/{symbol} could not be normalized to records.")
+                return
+
+            # Thêm symbol vào record nếu chưa có
+            for record in raw_records:
+                if isinstance(record, dict) and 'symbol' not in record:
+                    record['symbol'] = symbol.upper()
+
+            cleansing = _build_cleansing_rules(symbol) # Có thể tùy chỉnh rules cho từng table
+            sla_threshold = self.config.get("project_params", {}).get("logger", {}).get("governance_log", {}).get("data_quality", {}).get("sla_threshold", 0.95)
+
+            ingestion_result = self.bronze_ingester.process(
+                raw_records=raw_records, 
+                batch_id=batch_id, 
+                run_id=self.context.run_id, 
+                symbol=symbol, 
+                cleansing=cleansing
+            )
+
+            clean_count = ingestion_result["stats"]["clean"]
+            reject_count = ingestion_result["stats"]["rejects"]
+            result["rows_ingested"] += clean_count
+            result["rows_rejected"] += reject_count
+
+            if reject_count > 0:
+                self.context.error_log.add(ErrorLevel.WARNING, f"{reject_count} rejected records for {table_name}/{symbol} (see governance log for details)")
+
+            self.context.metadata_repo.log_lineage(
+                run_id=self.context.run_id, source_layer="external", source_table=f"cophieu68_{table_name}_{symbol}",
+                target_layer="bronze", target_table=f"bronze_{table_name}", operation="APPEND", rows_affected=len(raw_records)
+            )
+        except Exception as exc:
+            self.logger.error(f"[BronzeExecutor] Error for table={table_name}, symbol={symbol}: {exc}", exc_info=True)
+            self.context.error_log.add(ErrorLevel.ERROR, f"Bronze ingestion failed for {table_name}/{symbol}: {exc}")
+            result["errors"] += 1
 
 
 class SilverExecutor:
@@ -594,6 +704,8 @@ class SilverExecutor:
         )
 
         try:
+            # Hiện tại chỉ transform `trading_data` (đã đổi tên từ stock_prices)
+            # Các bảng khác sẽ được thêm vào đây khi có nhu cầu
             silver_result = processor.transform_stock_prices(
                 target_date=self.context.target_date,
                 run_id=self.context.run_id,
@@ -605,7 +717,7 @@ class SilverExecutor:
                 self.context.metadata_repo.log_lineage(
                     run_id=self.context.run_id,
                     source_layer="bronze",
-                    source_table="bronze_stock_prices",
+                    source_table="bronze_trading_data",
                     target_layer="silver",
                     target_table="silver_fact_stock_price",
                     operation="MERGE",
@@ -613,7 +725,7 @@ class SilverExecutor:
                 )
 
         except Exception as exc:
-            self.logger.error(f"[SilverExecutor] Error: {exc}")
+            self.logger.error(f"[SilverExecutor] Error: {exc}", exc_info=True)
             self.context.error_log.add(
                 ErrorLevel.ERROR,
                 f"Silver transformation failed: {exc}",
@@ -667,7 +779,7 @@ class GoldExecutor:
                 )
 
         except Exception as exc:
-            self.logger.error(f"[GoldExecutor] Error: {exc}")
+            self.logger.error(f"[GoldExecutor] Error: {exc}", exc_info=True)
             self.context.error_log.add(
                 ErrorLevel.ERROR,
                 f"Gold modeling failed: {exc}",
@@ -710,11 +822,11 @@ class ServingExecutor:
                 if sync_result.get("status") == "SUCCESS":
                     result["tables_synced"] += 1
         except Exception as exc:
-            self.logger.error(f"[ServingExecutor] Error: {exc}")
+            self.logger.error(f"[ServingExecutor] Error: {exc}", exc_info=True)
             self.context.error_log.add(
-                ErrorLevel.ERROR,
-                f"Serving sync failed: {exc}",
-            )
+                    ErrorLevel.ERROR,
+                    f"Serving sync failed: {exc}",
+                )
             result["errors"] += 1
         finally:
             duck_engine.close()
@@ -807,7 +919,7 @@ class MasterPipelineOrchestrator:
 
             self.metadata_repo.end_run(run_id, status="SUCCESS", rows_written=None)
             context.status = "SUCCESS"
-        except Exception as exc:
+        except Exception as exc: # pragma: no cover
             self.logger.error(f"[ORCHESTRATOR] Pipeline failed: {exc}")
             self.metadata_repo.end_run(run_id, status="FAILED", error_message=str(exc))
             context.error_log.add(ErrorLevel.FATAL, f"Pipeline execution failed: {exc}")
@@ -956,6 +1068,42 @@ def format_result(result: Dict[str, Any], format_type: str = "summary") -> str:
         lines.append("=" * 72)
         return "\n".join(lines)
     return f"{result.get('status', 'UNKNOWN')} | {result.get('phase', 'N/A')} | {result.get('duration_seconds', 0):.1f}s"
+
+
+# def main() -> None:
+#     args = parse_arguments()
+#     logger_manager.configure_from_project_config(args.config)
+#     orchestrator = MasterPipelineOrchestrator(config_path=args.config)
+#     result = orchestrator.execute(
+#         phase=ExecutionPhase(args.phase),
+#         symbols=args.symbols,
+#         backend=args.backend,
+#         target_date=args.date,
+#         environment=args.env,
+#         dry_run=args.dry_run,
+#         mart_tables=args.marts,
+#     )
+#     print(format_result(result, args.output))
+#     if result.get("status") not in ("SUCCESS", "COMPLETED", "VALIDATION_PASSED"):
+#         sys.exit(1)
+
+
+# if __name__ == "__main__":
+#     main()
+# t('status', 'UNKNOWN')}")
+#         lines.append(f"Phase: {result.get('phase', 'N/A')}")
+#         lines.append(f"Duration: {result.get('duration_seconds', 0):.1f}s")
+#         if result.get('phases_executed'):
+#             lines.append(f"Phases executed: {', '.join(result['phases_executed'])}")
+#         if result.get('error_events'):
+#             lines.append("Errors:")
+#             for err in result['error_events'][:5]:
+#                 lines.append(f"  - [{err.get('error_level')}] {err.get('error_message')}")
+#         if result.get('error'):
+#             lines.append(f"Error: {result['error']}")
+#         lines.append("=" * 72)
+#         return "\n".join(lines)
+#     return f"{result.get('status', 'UNKNOWN')} | {result.get('phase', 'N/A')} | {result.get('duration_seconds', 0):.1f}s"
 
 
 def main() -> None:
