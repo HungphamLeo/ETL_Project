@@ -56,6 +56,7 @@ from platforms.processing.base_processing_subsystem.subsystem7_deduplication imp
 from platforms.processing.base_processing_subsystem.subsystem10_surrogate_key_generator import SurrogateKeyGenerator
 
 from platforms.orchestration.prefect.flows.prefect_orchestra_etl import PrefectETLPipelineConfig
+from platforms.ingestion.cophieu68.dto.extract_models import CRAWL_MARKET_LIST_CONFIG
 from platforms.ingestion.cophieu68.extract.extract_cophieu68 import ExtractCophieu68
 from platforms.processing.polars.polars_engine import PolarsConfig, PolarsEngine
 from platforms.processing.duckdb.duckdb_engine import DuckDBConfig, DuckDBEngine
@@ -177,9 +178,10 @@ class ConfigurationManager:
         errors = []
         if not self.config:
             errors.append("Configuration is empty")
+        proj_params = self.config.get("project_params", self.config)
         required_sections = ["sources"]
         for section in required_sections:
-            if section not in self.config:
+            if section not in proj_params:
                 errors.append(f"Missing required section: {section}")
         return {"is_valid": not errors, "errors": errors}
 
@@ -210,10 +212,11 @@ def _build_sqlmesh_engine(config: Optional[Dict[str, Any]] = None) -> SqlMeshEng
 
 
 def _build_extractor(config: Dict[str, Any]) -> ExtractCophieu68:
-    cophieu_cfg = config.get("sources", {}).get("cophieu68", {})
+    proj_params = config.get("project_params", config)
+    cophieu_cfg = proj_params.get("sources", {}).get("cophieu68", {})
     pipeline_cfg = {
         "sources": {"cophieu68": cophieu_cfg},
-        "http": config.get("http", {"delay_seconds": 0.5, "timeout_seconds": 30}),
+        "http": proj_params.get("http", {"delay_seconds": 0.5, "timeout_seconds": 30}),
     }
     return ExtractCophieu68(pipeline_config=pipeline_cfg, pipeline_logger=logger_manager.get_logger("extractor"))
 
@@ -718,6 +721,35 @@ class MasterPipelineOrchestrator:
         self.prefect_config = self.config_manager.load_prefect_config()
         self.metadata_repo = MetadataRepository(delta_backend=None, logger=self.logger, in_memory=True)
 
+    def _resolve_symbols(self, phase: ExecutionPhase, symbols: Optional[List[str]]) -> List[str]:
+        # Ưu tiên 1: Sử dụng symbols được cung cấp qua CLI, nếu chúng khác với danh sách mặc định.
+        # Điều này cho phép người dùng ghi đè danh sách mặc định.
+        if symbols and symbols != DEFAULT_SYMBOLS:
+            return [symbol.strip().upper() for symbol in symbols if symbol and symbol.strip()]
+
+        # Ưu tiên 2: Tự động lấy danh sách symbols từ extractor.
+        self.logger.info("[ORCHESTRATOR] Discovering all symbols from Cophieu68 extractor...")
+        extractor = _build_extractor(self.config)
+        discovered_symbols: List[str] = []
+
+        for market_type in CRAWL_MARKET_LIST_CONFIG.keys():
+            try:
+                result = extractor.crawl_market_list(market_type)
+                if isinstance(result, dict) and result.get("symbols"):
+                    discovered_symbols.extend(result["symbols"])
+                    self.logger.info(f"Discovered {len(result['symbols'])} symbols from market {market_type}")
+            except Exception as exc:
+                self.logger.warning(f"[ORCHESTRATOR] Failed to discover symbols for market {market_type}: {exc}")
+
+        normalized_symbols = sorted({symbol.strip().upper() for symbol in discovered_symbols if isinstance(symbol, str) and symbol.strip()})
+        if normalized_symbols:
+            self.logger.info(f"[ORCHESTRATOR] Total discovered unique symbols: {len(normalized_symbols)}")
+            return normalized_symbols
+
+        # Ưu tiên 3: Nếu không thể lấy tự động, sử dụng danh sách mặc định làm phương án dự phòng.
+        self.logger.warning("[ORCHESTRATOR] Could not discover symbols. Falling back to DEFAULT_SYMBOLS.")
+        return [symbol.strip().upper() for symbol in DEFAULT_SYMBOLS if symbol and symbol.strip()]
+
     def execute(
         self,
         phase: ExecutionPhase,
@@ -728,7 +760,7 @@ class MasterPipelineOrchestrator:
         dry_run: bool = False,
         mart_tables: Optional[List[str]] = None,
     ) -> Dict[str, Any]:
-        symbols = symbols or DEFAULT_SYMBOLS
+        symbols = self._resolve_symbols(phase, symbols)
         backend_enum = ProcessingBackend(backend)
         target_date = target_date or date.today().isoformat()
         run_id = make_run_id()
@@ -849,7 +881,7 @@ def parse_arguments() -> argparse.Namespace:
         "--symbols",
         nargs="+",
         default=DEFAULT_SYMBOLS,
-        help=f"Stock symbols to process (default: {' '.join(DEFAULT_SYMBOLS)})",
+        help="Stock symbols to process. If omitted, the pipeline will attempt to discover and process all symbols from all markets.",
     )
     parser.add_argument(
         "--date",
@@ -917,6 +949,7 @@ def format_result(result: Dict[str, Any], format_type: str = "summary") -> str:
 
 def main() -> None:
     args = parse_arguments()
+    logger_manager.configure_from_project_config(args.config)
     orchestrator = MasterPipelineOrchestrator(config_path=args.config)
     result = orchestrator.execute(
         phase=ExecutionPhase(args.phase),

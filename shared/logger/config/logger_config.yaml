@@ -35,4 +35,5 @@ loggers:
     propagate: false
   root:
     level: INFO
-    handlers: [console]
+    handlers: [console, file_debug, file_info]
+    propagate: false

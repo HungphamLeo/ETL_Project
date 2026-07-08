@@ -1,0 +1,31 @@
+{"time":"2026-07-07T16:13:41", "level":"INFO", "message":"Logger bootstrap test", "caller":"<stdin>:6"}
+{"time":"2026-07-07T16:14:13", "level":"INFO", "message":"[CONFIG] Loaded from platforms/orchestration/prefect/config/cophieu68_config.yaml", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:159"}
+{"time":"2026-07-07T16:14:13", "level":"INFO", "message":"[CONFIG] Prefect config loaded successfully", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:171"}
+{"time":"2026-07-07T16:14:13", "level":"INFO", "message":"[ORCHESTRATOR] Starting pipeline phase=bronze run_id=run_20260707_091413_99da02 target_date=2026-07-07 symbols=['HPG'] backend=polars", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:780"}
+{"time":"2026-07-07T16:14:13", "level":"INFO", "message":"[RUN START] run_id=run_20260707_091413_99da02 | job=master_etl_bronze | layer=bronze | table=all_tables", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/processing/base_processing_subsystem/subsystem34_metadata_repo.py:138"}
+{"time":"2026-07-07T16:14:13", "level":"INFO", "message":"[BronzeExecutor] Starting bronze phase for symbols=['HPG']", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:495"}
+{"time":"2026-07-07T16:14:13", "level":"INFO", "message":"[BronzeExecutor] Processing symbol=HPG batch_id=batch_HPG_20260707091413_dd4d5c3f", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:510"}
+{"time":"2026-07-07T16:14:14", "level":"INFO", "message":"[BronzeIngester:HPG] Start processing 101 records.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:302"}
+{"time":"2026-07-07T16:14:14", "level":"WARNING", "message":"[BronzeIngester:HPG] No records passed DQ checks.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:311"}
+{"time":"2026-07-07T16:14:14", "level":"WARNING", "message":"[WARNING] 101 rejected records in bronze ingestion for HPG | record_id=None", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/processing/base_processing_subsystem/subsystem5_and_30_error_event_schema_and_escalate.py:114"}
+{"time":"2026-07-07T16:14:14", "level":"INFO", "message":"[LINEAGE] external.cophieu68_HPG -> bronze.bronze_stock_prices | op=APPEND | rows=0", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/processing/base_processing_subsystem/subsystem34_metadata_repo.py:372"}
+{"time":"2026-07-07T16:14:14", "level":"INFO", "message":"[BronzeExecutor] Completed bronze phase: rows_ingested=0", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:558"}
+{"time":"2026-07-07T16:14:14", "level":"INFO", "message":"[RUN END] run_id=run_20260707_091413_99da02 | status=SUCCESS | duration=0.8s | rows_read=None | rows_written=None", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/processing/base_processing_subsystem/subsystem34_metadata_repo.py:183"}
+{"time":"2026-07-07T16:14:14", "level":"INFO", "message":"
+======================================================================
+  ETL Run Summary: run_20260707_091413_99da02
+======================================================================
+  Job:           master_etl_bronze
+  Layer:         bronze -> all_tables
+  Status:        SUCCESS
+  Start:         2026-07-07 09:14:13.270590+00:00
+  End:           2026-07-07 09:14:14.062227+00:00
+  Duration:      0.8s
+  Rows Read:     0
+  Rows Written:  0
+
+  Data Lineage (1 transformations):
+    external.cophieu68_HPG --[APPEND]--> bronze.bronze_stock_prices (0 rows)
+======================================================================
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/processing/base_processing_subsystem/subsystem34_metadata_repo.py:462"}
+{"time":"2026-07-07T16:14:14", "level":"INFO", "message":"Shutting down the event dispatcher", "caller":"/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/analytics/dispatcher.py:159"}

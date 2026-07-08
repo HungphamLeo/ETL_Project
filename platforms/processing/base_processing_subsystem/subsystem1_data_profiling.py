@@ -182,6 +182,6 @@ def load_profiling_config() -> Dict[str, Any]:
     return {}
 
 
-if __name__ == "__main__":
-    PROFILING_CONFIG = load_profiling_config()
+# if __name__ == "__main__":
+#     PROFILING_CONFIG = load_profiling_config()
     # Example usage

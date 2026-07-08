@@ -31,4 +31,6 @@ class LoggerFactory(Protocol):
 
 class DefaultLoggerFactory:
     def get_logger(self, module_name: str) -> logging.Logger:
+        if module_name.startswith("logger."):
+            return logger_manager.get_logger(module_name, logger_name=module_name)
         return logger_manager.get_logger(module_name)
