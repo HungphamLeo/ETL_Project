@@ -70,7 +70,7 @@ load_dotenv()
 LAKEHOUSE_BASE = os.getenv("LAKEHOUSE_BASE_PATH", "s3a://lakehouse")
 S3_ENDPOINT = os.getenv("S3_ENDPOINT", "http://localhost:9000")
 S3_KEY = os.getenv("MINIO_ROOT_USER", "minioadmin")
-S3_SECRET = os.getenv("MINIO_ROOT_PASSWORD", "minioadmin_secure_123")
+S3_SECRET = os.getenv("MINIO_ROOT_PASSWORD", "minioadmin_secure_123@#")
 
 PG_HOST = os.getenv("POSTGRES_HOST", "localhost")
 PG_PORT = os.getenv("POSTGRES_PORT", "5432")

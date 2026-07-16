@@ -46,7 +46,7 @@ if __name__ == "__main__":
         "storage_options": {
             "endpoint_url": os.getenv("S3_ENDPOINT", "http://localhost:9000"),
             "aws_access_key_id": os.getenv("MINIO_ROOT_USER", "minioadmin"),
-            "aws_secret_access_key": os.getenv("MINIO_ROOT_PASSWORD", "minioadmin_secure_123")
+            "aws_secret_access_key": os.getenv("MINIO_ROOT_PASSWORD", "minioadmin_secure_123@#")
         }
     }
     
