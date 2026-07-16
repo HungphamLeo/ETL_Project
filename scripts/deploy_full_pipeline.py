@@ -130,6 +130,7 @@ class ExecutionContext:
     symbols: List[str]
     backend: ProcessingBackend
     target_date: str
+    environment: str = "dev"
     dry_run: bool = False
     start_time: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     end_time: Optional[datetime] = None
@@ -177,17 +178,27 @@ class ConfigurationManager:
         errors = []
         if not self.config:
             errors.append("Configuration is empty")
-        required_sections = ["sources"]
+        # Config is raw YAML: required sections live under project_params
+        params = self.config.get("project_params", self.config)
+        required_sections = ["sources", "http"]
         for section in required_sections:
-            if section not in self.config:
-                errors.append(f"Missing required section: {section}")
+            if section not in params:
+                errors.append(f"Missing required section in project_params: {section}")
+        if not params.get("sources", {}).get("cophieu68", {}).get("base_url"):
+            errors.append("Missing project_params.sources.cophieu68.base_url")
         return {"is_valid": not errors, "errors": errors}
 
 
+def _params(config: Dict[str, Any]) -> Dict[str, Any]:
+    """Unwrap project_params wrapper if present (raw YAML vs pre-unwrapped dict)."""
+    return config.get("project_params", config)
+
+
 def _build_polars_engine(config: Dict[str, Any]) -> PolarsEngine:
+    params = _params(config)
     cfg = PolarsConfig(
-        thread_pool_size=config.get("polars", {}).get("thread_pool_size"),
-        enable_streaming=config.get("polars", {}).get("enable_streaming", True),
+        thread_pool_size=params.get("polars", {}).get("thread_pool_size"),
+        enable_streaming=params.get("polars", {}).get("enable_streaming", True),
         storage_options=STORAGE_OPTIONS,
     )
     return PolarsEngine(config=cfg, logger=logger_manager.get_logger("polars_engine"))
@@ -210,10 +221,11 @@ def _build_sqlmesh_engine(config: Optional[Dict[str, Any]] = None) -> SqlMeshEng
 
 
 def _build_extractor(config: Dict[str, Any]) -> ExtractCophieu68:
-    cophieu_cfg = config.get("sources", {}).get("cophieu68", {})
+    params = _params(config)
+    cophieu_cfg = params.get("sources", {}).get("cophieu68", {})
     pipeline_cfg = {
         "sources": {"cophieu68": cophieu_cfg},
-        "http": config.get("http", {"delay_seconds": 0.5, "timeout_seconds": 30}),
+        "http": params.get("http", {"delay_seconds": 0.5, "timeout_seconds": 30}),
     }
     return ExtractCophieu68(pipeline_config=pipeline_cfg, pipeline_logger=logger_manager.get_logger("extractor"))
 
@@ -257,6 +269,7 @@ class BronzePolarsIngester:
         self.table_name = table_name
         self.base_path = base_path
         self.logger = engine.logger
+        self.governance_logger = logger_manager.get_logger("logger.governance.data_quality")
 
     def _profile(self, records: List[Dict[str, Any]]) -> Dict[str, Any]:
         if not records:
@@ -267,24 +280,23 @@ class BronzePolarsIngester:
         null_counts = {col: sum(1 for r in records if r.get(col) is None) for col in cols}
         return {"total_rows": total, "columns": cols, "null_counts": null_counts}
 
-    def _pre_evaluate(
+    def _evaluate_dq(
         self,
         records: List[Dict[str, Any]],
         cleansing: CleansingRuleSet,
         run_id: str,
     ) -> tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
-        clean: List[Dict[str, Any]] = []
-        rejects: List[Dict[str, Any]] = []
+        processed: List[Dict[str, Any]] = []
+        dq_violations: List[Dict[str, Any]] = []
         for rec in records:
             valid, messages = cleansing.apply(rec)
-            if valid:
-                clean.append(rec)
-            else:
-                rec["_dq_status"] = "REJECT"
-                rec["_dq_errors"] = "; ".join(messages)
-                rec["_run_id"] = run_id
-                rejects.append(rec)
-        return clean, rejects
+            rec["_dq_status"] = "PASS" if valid else "WARN"
+            rec["_dq_errors"] = "; ".join(messages) if messages else ""
+            rec["_run_id"] = run_id
+            if not valid:
+                dq_violations.append({"record": rec, "messages": messages})
+            processed.append(rec)
+        return processed, dq_violations
 
     def process(
         self,
@@ -298,21 +310,30 @@ class BronzePolarsIngester:
 
         self.logger.info(f"[BronzeIngester:{symbol}] Start processing {len(raw_records)} records.")
         profile = self._profile(raw_records)
-        if cleansing:
-            clean_records, reject_records = self._pre_evaluate(raw_records, cleansing, run_id)
-        else:
-            clean_records = raw_records
-            reject_records = []
 
-        if not clean_records:
-            self.logger.warning(f"[BronzeIngester:{symbol}] No records passed DQ checks.")
+        if cleansing:
+            enriched_records, dq_violations = self._evaluate_dq(raw_records, cleansing, run_id)
+        else:
+            enriched_records = raw_records
+            dq_violations = []
+
+        if dq_violations:
+            self.logger.warning(f"[BronzeIngester:{symbol}] {len(dq_violations)} data quality issues detected, records will still be ingested.")
+            for idx, violation in enumerate(dq_violations, start=1):
+                detail = violation["record"]
+                message = violation["messages"]
+                log_msg = f"[DQ][{symbol}] violation {idx}/{len(dq_violations)}: {'; '.join(message)} | record={detail}"
+                self.governance_logger.warning(log_msg)
+
+        if not enriched_records:
+            self.logger.warning(f"[BronzeIngester:{symbol}] No records to write after evaluation.")
             return {
                 "saved_path": None,
                 "reject_path": None,
-                "stats": {**profile, "clean": 0, "rejects": len(reject_records)},
+                "stats": {**profile, "clean": 0, "dq_violations": len(dq_violations)},
             }
 
-        df = pl.DataFrame(clean_records)
+        df = pl.DataFrame(enriched_records)
         if "symbol" not in df.columns:
             df = df.with_columns(pl.lit(symbol.upper()).alias("symbol"))
 
@@ -320,21 +341,22 @@ class BronzePolarsIngester:
             pl.lit(batch_id).alias("_batch_id"),
             pl.lit(run_id).alias("_run_id"),
             pl.lit(datetime.now(timezone.utc).isoformat()).alias("_ingest_timestamp"),
+            pl.lit(datetime.now(timezone.utc).date().isoformat()).alias("ingest_date"),
         ])
 
         bronze_path = f"{self.base_path}/bronze/{self.table_name}/"
         saved_path = self.engine.write_parquet(df=df, target_path=bronze_path, partition_by=["ingest_date"])
 
         reject_path = None
-        if reject_records:
-            reject_df = pl.DataFrame(reject_records)
-            reject_path = f"{self.base_path}/bronze/_rejects/{self.table_name}/"
+        if dq_violations:
+            reject_path = f"{self.base_path}/bronze/_dq_violations/{self.table_name}/"
+            reject_df = pl.DataFrame([violation["record"] for violation in dq_violations])
             self.engine.write_parquet(df=reject_df, target_path=reject_path)
 
         return {
             "saved_path": saved_path,
             "reject_path": reject_path,
-            "stats": {**profile, "clean": len(clean_records), "rejects": len(reject_records)},
+            "stats": {**profile, "clean": len(enriched_records), "dq_violations": len(dq_violations)},
         }
 
 
@@ -494,7 +516,7 @@ class BronzeExecutor:
             "phase": "bronze",
             "symbols_processed": 0,
             "rows_ingested": 0,
-            "rows_rejected": 0,
+            "dq_issues": 0,
             "errors": 0,
         }
 
@@ -523,15 +545,15 @@ class BronzeExecutor:
                 )
 
                 clean_count = ingestion_result["stats"]["clean"]
-                reject_count = ingestion_result["stats"]["rejects"]
+                dq_count = ingestion_result["stats"].get("dq_violations", 0)
                 result["symbols_processed"] += 1
                 result["rows_ingested"] += clean_count
-                result["rows_rejected"] += reject_count
+                result["dq_issues"] += dq_count
 
-                if reject_count > 0:
+                if dq_count > 0:
                     self.context.error_log.add(
                         ErrorLevel.WARNING,
-                        f"{reject_count} rejected records in bronze ingestion for {symbol}",
+                        f"{dq_count} data quality issues detected in bronze ingestion for {symbol}",
                     )
 
                 self.context.metadata_repo.log_lineage(
@@ -634,7 +656,7 @@ class GoldExecutor:
 
         try:
             gold_result = processor.run_gold_models(
-                environment=self.config.get("environment", "prod"),
+                environment=self.context.environment,
                 start_date=self.context.target_date,
                 end_date=self.context.target_date,
                 run_audits=True,
@@ -716,6 +738,7 @@ class MasterPipelineOrchestrator:
         self.config_manager = ConfigurationManager(config_path, self.logger)
         self.config = self.config_manager.load()
         self.prefect_config = self.config_manager.load_prefect_config()
+        logger_manager.configure_from_project_config(str(self.config_manager.config_path))
         self.metadata_repo = MetadataRepository(delta_backend=None, logger=self.logger, in_memory=True)
 
     def execute(
@@ -739,6 +762,7 @@ class MasterPipelineOrchestrator:
             symbols=symbols,
             backend=backend_enum,
             target_date=target_date,
+            environment=environment,
             dry_run=dry_run,
             metadata_repo=self.metadata_repo,
             error_log=ErrorEventLog(run_id=run_id, job_name=f"etl_{phase.value}"),

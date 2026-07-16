@@ -38,7 +38,7 @@ class PrefectETLPipelineConfig:
     # --- Logger helpers (lazy) ---
     def _get_logger(self, key: str) -> logging.Logger:
         if key not in self._loggers:
-            self._loggers[key] = self._logger_factory.get_logger(self._config, key)
+            self._loggers[key] = self._logger_factory.get_logger(key)
         return self._loggers[key]
 
     @property

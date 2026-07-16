@@ -19,3 +19,23 @@ data_profiling:
     total_rows: "total_rows"
     checked_at: "{checked_at}"
     details: "null_pct={null_pct:.2%}, unique={unique_count}"
+
+  # ── Great Expectations configuration ──────────────────────────────────────
+  # Results are logged only (never block the pipeline).
+  # Failures surface as WARNING logs and are stored in DataProfile.ge_results
+  # for future Grafana / reporting integration.
+  great_expectations:
+    # Minimum proportion of non-null values required per column
+    # (maps to ExpectColumnProportionOfNonNullValuesToBeBetween)
+    mostly_not_null: 0.5          # 1 - null_pct_fail_threshold
+
+    # Columns that must be fully unique (ExpectColumnValuesToBeUnique)
+    check_unique_columns: []      # e.g. ["symbol", "trade_date"]
+
+    # Per-column numeric range checks (ExpectColumnValuesToBeBetween)
+    # Add entries per dataset as needed, e.g.:
+    # numeric_ranges:
+    #   close_price:  { min: 0,    max: 1000000, mostly: 1.0 }
+    #   volume:       { min: 0,    mostly: 1.0 }
+    #   open_price:   { min: 0,    mostly: 1.0 }
+    numeric_ranges: {}

@@ -3,6 +3,7 @@ import logging
 from dataclasses import dataclass, field
 from typing import Dict, Any, Optional, List, Union
 import polars as pl
+import pyarrow.parquet as pq
 
 @dataclass
 class PolarsConfig:
@@ -44,22 +45,69 @@ class PolarsEngine:
         )
 
     def write_parquet(
-        self, 
-        df: Union[pl.DataFrame, pl.LazyFrame], 
-        target_path: str, 
+        self,
+        df: Union[pl.DataFrame, pl.LazyFrame],
+        target_path: str,
         partition_by: Optional[List[str]] = None
     ) -> str:
-        """Ghi dữ liệu Data/Lazy Frame ra S3/MinIO dạng Parquet (hỗ trợ phân vùng)"""
+        """Ghi dữ liệu Data/Lazy Frame ra S3/MinIO dạng Parquet (hỗ trợ phân vùng).
+
+        Polars 1.x write_parquet() không nhận storage_options — cần dùng pyarrow
+        kết hợp s3fs/PyArrowFileSystem khi ghi lên S3/MinIO.
+        """
         self.logger.info(f"💾 Ghi dữ liệu tới: {target_path} (Partition: {partition_by})")
-        
+
         # Nếu là LazyFrame, thực thi (collect) theo streaming mode
         if isinstance(df, pl.LazyFrame):
             df = df.collect(streaming=self.config.enable_streaming)
-            
-        df.write_parquet(
-            target_path,
-            use_pyarrow=True,
-            partition_by=partition_by,
-            storage_options=self.config.storage_options
-        )
+
+        storage_options = self.config.storage_options
+
+        if storage_options and target_path.startswith(("s3://", "s3a://")):
+            self._write_parquet_s3(df, target_path, partition_by, storage_options)
+        else:
+            # Local filesystem — write_parquet đủ dùng
+            if partition_by:
+                df.write_parquet(target_path, use_pyarrow=True, partition_by=partition_by)
+            else:
+                df.write_parquet(target_path, use_pyarrow=True)
+
         return target_path
+
+    def _write_parquet_s3(
+        self,
+        df: pl.DataFrame,
+        target_path: str,
+        partition_by: Optional[List[str]],
+        storage_options: Dict[str, Any],
+    ) -> None:
+        """Ghi Parquet lên S3/MinIO bằng PyArrow FileSystem (bypass Polars storage_options limit)."""
+        import s3fs
+
+        # Chuẩn hoá s3a:// → s3:// (s3fs chỉ hiểu s3://)
+        s3_path = target_path.replace("s3a://", "s3://")
+
+        endpoint = storage_options.get("endpoint_url", "")
+        key      = storage_options.get("aws_access_key_id", "")
+        secret   = storage_options.get("aws_secret_access_key", "")
+
+        fs = s3fs.S3FileSystem(
+            key=key,
+            secret=secret,
+            endpoint_url=endpoint,
+            use_ssl=False,
+        )
+
+        arrow_table = df.to_arrow()
+
+        if partition_by:
+            pq.write_to_dataset(
+                arrow_table,
+                root_path=s3_path,
+                partition_cols=partition_by,
+                filesystem=fs,
+                use_legacy_dataset=False,
+            )
+        else:
+            with fs.open(s3_path, "wb") as f:
+                pq.write_table(arrow_table, f)

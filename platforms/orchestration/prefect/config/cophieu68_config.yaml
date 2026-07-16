@@ -68,6 +68,28 @@ project_params:
           info: postgresql_info.log
           warning: postgresql_warning.log
           error: postgresql_error.log
+    processing_log:
+      polars:
+        level: INFO
+        storage_path: logger_storage/processing/polars
+        max_size_mb: 50
+        backup_count: 7
+        files:
+          debug: polars_debug.log
+          info: polars_info.log
+          warning: polars_warning.log
+          error: polars_error.log
+    governance_log:
+      data_quality:
+        level: INFO
+        storage_path: logger_storage/governance/data_quality
+        max_size_mb: 50
+        backup_count: 7
+        files:
+          debug: data_quality_debug.log
+          info: data_quality_info.log
+          warning: data_quality_warning.log
+          error: data_quality_error.log
 
   security:
     encryption_key_path: internal/config/encryption.key

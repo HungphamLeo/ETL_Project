@@ -241,7 +241,8 @@ class DeduplicationEngine:
                 self.logger.warning(template.format(tiebreaker_col=self.tiebreaker_col))
                 return df.drop_duplicates(subset=self.keys, keep="last").reset_index(drop=True)
 
-            ascending = self.strategy == DeduplicationStrategy.KEEP_MIN_COL
+            # KEEP_MAX_COL: sort ascending → last = max; KEEP_MIN_COL: sort descending → last = min
+            ascending = self.strategy == DeduplicationStrategy.KEEP_MAX_COL
             return (
                 df.sort_values(self.tiebreaker_col, ascending=ascending)
                   .drop_duplicates(subset=self.keys, keep="last")

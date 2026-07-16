@@ -5,18 +5,28 @@ import json
 import logging
 import os
 import re
+import warnings
 import yaml
 from dataclasses import dataclass
-from datetime import datetime 
-from enum import Enum
+from datetime import datetime, timezone
 from typing import Any, Callable, Dict, List, Optional, Tuple
 import pandas as pd
+
 from shared.logger.python_main_logger import logger_manager
-from platforms.processing.base_processing_subsystem.subsystem5_error_event_schema import ErrorEvent, ErrorLevel, ErrorEventLog
+from platforms.processing.base_processing_subsystem.subsystem5_and_30_error_event_schema_and_escalate import ErrorEvent, ErrorLevel, ErrorEventLog
 from platforms.processing.base_processing_subsystem.subsystem1_data_profiling import DataProfile, DataProfiler
 
+# Suppress GE noise
+warnings.filterwarnings("ignore", category=UserWarning, module="great_expectations")
+
 # ---------------------------------------------------------------------------
-# Subsystem 4: Data Cleansing Rules
+# Subsystem 4: Data Quality Pre-Evaluation
+#
+# Strategy (non-blocking DQ):
+#   • All rules are evaluated and their results are LOGGED via Great Expectations.
+#   • Records are NEVER rejected — the pipeline always continues regardless of
+#     DQ failures.  This allows the full ETL flow to run and data to land in the
+#     database first; DQ reports are built separately (e.g. Grafana dashboards).
 # ---------------------------------------------------------------------------
 
 def load_pre_eval_config() -> Dict[str, Any]:
@@ -35,21 +45,30 @@ MSG_TEMPLATES = PRE_EVAL_CONFIG.get("msg_templates", {})
 
 # Rule type: a callable that takes a record dict and returns (is_valid, message)
 CleansingRule = Callable[[Dict[str, Any]], Tuple[bool, str]]
+
+
 class CleansingRuleSet:
-    """Defines a set of cleansing rules for a specific table."""
-    def __init__(self, table_name: str, logger: Optional[logging.Logger] = None, 
+    """
+    Defines a set of cleansing rules for a specific table.
+
+    Rules are evaluated and their outcomes are LOGGED.
+    They are no longer used as hard gates — records always pass through.
+    """
+    def __init__(self, table_name: str, logger: Optional[logging.Logger] = None,
                  rules: Optional[List[CleansingRule]] = None):
-        
         self.table_name = table_name
         self.rules = rules or []
         self.logger = logger or logger_manager.get_logger(f"{__name__}.{table_name}")
-        
 
     def add_rule(self, rule: CleansingRule):
         self.rules.append(rule)
 
     def apply(self, record: Dict[str, Any]) -> Tuple[bool, List[str]]:
-        """Apply all rules to the record. Returns (is_valid, list_of_messages)."""
+        """
+        Apply all rules to the record. Returns (is_valid, list_of_messages).
+        NOTE: Even if is_valid=False, callers should NOT reject the record.
+        The result is used for observation / logging only.
+        """
         is_valid = True
         messages = []
         for rule in self.rules:
@@ -58,10 +77,10 @@ class CleansingRuleSet:
                 is_valid = False
                 messages.append(msg)
         return is_valid, messages
-    
+
     @staticmethod
     def rule_not_null(*fields: str) -> CleansingRule:
-        """Reject records where any of the specified fields is None/empty."""
+        """Observe records where any of the specified fields is None/empty."""
         template = MSG_TEMPLATES.get("rule_not_null", "Field '{field}' is null or empty")
         def check(record: Dict[str, Any]) -> Tuple[bool, str]:
             for f in fields:
@@ -94,8 +113,8 @@ class CleansingRuleSet:
 
     @staticmethod
     def rule_numeric_range(field: str, min_val: float = None, max_val: float = None) -> CleansingRule:
-        template_below = MSG_TEMPLATES.get("rule_numeric_range_below", "Field '{field}' = {val} below min {min_val}")
-        template_above = MSG_TEMPLATES.get("rule_numeric_range_above", "Field '{field}' = {val} above max {max_val}")
+        template_below   = MSG_TEMPLATES.get("rule_numeric_range_below",   "Field '{field}' = {val} below min {min_val}")
+        template_above   = MSG_TEMPLATES.get("rule_numeric_range_above",   "Field '{field}' = {val} above max {max_val}")
         template_invalid = MSG_TEMPLATES.get("rule_numeric_range_invalid", "Field '{field}' = '{val}' is not numeric")
         def check(record: Dict[str, Any]) -> Tuple[bool, str]:
             val = record.get(field)
@@ -140,32 +159,223 @@ class CleansingRuleSet:
 
 @dataclass
 class CleansingResult:
-    cleaned:       List[Dict[str, Any]]
-    rejected:      List[Dict[str, Any]]
-    error_events:  List[ErrorEvent]
-    total_input:   int
-    total_cleaned: int
+    cleaned:        List[Dict[str, Any]]
+    rejected:       List[Dict[str, Any]]
+    error_events:   List[ErrorEvent]
+    total_input:    int
+    total_cleaned:  int
     total_rejected: int
-    profile:       Optional[DataProfile] = None
+    profile:        Optional[DataProfile] = None
+    # GE-level DQ observations (rule violations that were logged but not rejected)
+    dq_observations: List[Dict[str, Any]] = None
+
+    def __post_init__(self):
+        if self.dq_observations is None:
+            self.dq_observations = []
 
     def summary(self) -> Dict[str, Any]:
         return {
-            "total_input":    self.total_input,
-            "total_cleaned":  self.total_cleaned,
-            "total_rejected": self.total_rejected,
-            "rejection_rate": round(self.total_rejected / self.total_input, 4) if self.total_input else 0,
-            "error_counts":   {
+            "total_input":       self.total_input,
+            "total_cleaned":     self.total_cleaned,
+            "total_rejected":    self.total_rejected,
+            "rejection_rate":    round(self.total_rejected / self.total_input, 4) if self.total_input else 0,
+            "dq_observations":   len(self.dq_observations),
+            "dq_failures":       sum(1 for o in self.dq_observations if not o.get("passed", True)),
+            "error_counts":      {
                 level.value: sum(1 for e in self.error_events if e.error_level == level)
                 for level in ErrorLevel
             },
         }
 
 
+# ---------------------------------------------------------------------------
+# GE helper – evaluate CleansingRules as GE expectations for logging
+# ---------------------------------------------------------------------------
+
+def _run_ge_rule_checks(
+    df: pd.DataFrame,
+    rules: List[CleansingRule],
+    source: str,
+    run_id: str,
+    logger: logging.Logger,
+) -> List[Dict[str, Any]]:
+    """
+    Translates CleansingRules to Great Expectations checks on *df*, runs them,
+    and returns structured observation records for reporting.
+    Never raises; never modifies the dataframe.
+    """
+    observations: List[Dict[str, Any]] = []
+    checked_at = datetime.now(timezone.utc).isoformat()
+
+    try:
+        import great_expectations as gx
+        import logging as _logging
+        _logging.getLogger("great_expectations").setLevel(_logging.ERROR)
+
+        context = gx.get_context(mode="ephemeral")
+        ds = context.data_sources.add_pandas(name=f"ds_{source}_{run_id}")
+        da = ds.add_dataframe_asset(name="asset")
+        batch_def = da.add_batch_definition_whole_dataframe("batch")
+        batch = batch_def.get_batch(batch_parameters={"dataframe": df})
+
+        # Inspect each rule's closure to derive the right GE expectation
+        for rule in rules:
+            try:
+                obs = _rule_to_ge_observation(rule, batch, df, source, run_id, checked_at, logger)
+                if obs:
+                    observations.append(obs)
+            except Exception as exc:  # noqa: BLE001
+                logger.debug("[GE|%s] rule inspection failed: %s", source, exc)
+
+        pass_count = sum(1 for o in observations if o.get("passed"))
+        fail_count = len(observations) - pass_count
+        logger.info(
+            "[GE|%s] Rule checks complete — %d rules, %d PASS, %d FAIL (pipeline continues)",
+            source, len(observations), pass_count, fail_count,
+        )
+
+    except Exception as exc:  # noqa: BLE001
+        logger.warning("[GE] Rule checks skipped for %s: %s", source, exc)
+
+    return observations
+
+
+def _rule_to_ge_observation(
+    rule: CleansingRule,
+    batch: Any,
+    df: pd.DataFrame,
+    source: str,
+    run_id: str,
+    checked_at: str,
+    logger: logging.Logger,
+) -> Optional[Dict[str, Any]]:
+    """
+    Introspects the rule's closure to map it to a GE expectation.
+    Falls back to running the rule record-by-record if introspection fails.
+    """
+    import great_expectations as gx
+
+    closure = getattr(rule, "__closure__", None) or []
+    cell_contents = [c.cell_contents for c in closure if c.cell_contents is not None]
+
+    def _try_validate(exp) -> Optional[Dict]:
+        try:
+            vr = batch.validate(exp)
+            result = vr.result or {}
+            passed = bool(vr.success)
+            uc = result.get("unexpected_count", 0)
+            ec = result.get("element_count", len(df))
+            return {
+                "source": source, "run_id": run_id,
+                "expectation": type(exp).__name__,
+                "column": exp.column if hasattr(exp, "column") else None,
+                "passed": passed,
+                "unexpected_count": uc,
+                "element_count": ec,
+                "checked_at": checked_at,
+            }
+        except Exception:
+            return None
+
+    # ── Map rule_not_null ────────────────────────────────────────────────────
+    func_name = getattr(rule, "__name__", "") or getattr(getattr(rule, "__func__", None), "__name__", "")
+    # Check by inspecting cell contents for known patterns
+    # cell_contents for rule_not_null: (*fields,)
+    # cell_contents for rule_regex:    (compiled, template)
+    # cell_contents for rule_numeric_range: (min_val, max_val, ...)
+
+    # Try rule_not_null: fields are strings
+    field_strings = [c for c in cell_contents if isinstance(c, str) and not c.startswith("Field")]
+    regex_objects = [c for c in cell_contents if hasattr(c, "pattern")]
+    numeric_vals  = [c for c in cell_contents if isinstance(c, (int, float)) and not isinstance(c, bool)]
+
+    if regex_objects and field_strings:
+        # rule_regex
+        col = field_strings[0]
+        if col in df.columns:
+            obs = _try_validate(gx.expectations.ExpectColumnValuesToMatchRegex(
+                column=col, regex=regex_objects[0].pattern))
+            if obs:
+                obs["rule_type"] = "rule_regex"
+                if not obs["passed"]:
+                    logger.warning("[GE|%s] FAIL rule_regex(%s) unexpected=%s/%s",
+                                   source, col, obs["unexpected_count"], obs["element_count"])
+                return obs
+
+    elif field_strings and numeric_vals:
+        # rule_numeric_range or rule_min_length
+        col = field_strings[0]
+        if col in df.columns:
+            if len(numeric_vals) >= 2:
+                # numeric_range: min_val, max_val in closure
+                min_v = min(numeric_vals)
+                max_v = max(numeric_vals)
+                obs = _try_validate(gx.expectations.ExpectColumnValuesToBeBetween(
+                    column=col, min_value=min_v, max_value=max_v))
+                if obs:
+                    obs["rule_type"] = "rule_numeric_range"
+                    if not obs["passed"]:
+                        logger.warning("[GE|%s] FAIL rule_numeric_range(%s) min=%s max=%s unexpected=%s/%s",
+                                       source, col, min_v, max_v, obs["unexpected_count"], obs["element_count"])
+                    return obs
+            elif len(numeric_vals) == 1:
+                # min_length: check string length
+                obs = _try_validate(gx.expectations.ExpectColumnValueLengthsToBeBetween(
+                    column=col, min_value=int(numeric_vals[0])))
+                if obs:
+                    obs["rule_type"] = "rule_min_length"
+                    if not obs["passed"]:
+                        logger.warning("[GE|%s] FAIL rule_min_length(%s) min_len=%s unexpected=%s/%s",
+                                       source, col, numeric_vals[0], obs["unexpected_count"], obs["element_count"])
+                    return obs
+
+    elif field_strings:
+        # rule_not_null: one or more fields
+        col = field_strings[0]
+        if col in df.columns:
+            obs = _try_validate(gx.expectations.ExpectColumnValuesToNotBeNull(column=col))
+            if obs:
+                obs["rule_type"] = "rule_not_null"
+                if not obs["passed"]:
+                    logger.warning("[GE|%s] FAIL rule_not_null(%s) unexpected=%s/%s",
+                                   source, col, obs["unexpected_count"], obs["element_count"])
+                return obs
+
+    # Fallback: run rule record-by-record and report aggregate
+    violations = 0
+    for rec in df.to_dict(orient="records"):
+        try:
+            valid, _ = rule(rec)
+            if not valid:
+                violations += 1
+        except Exception:
+            pass
+    total = len(df)
+    passed = violations == 0
+    obs = {
+        "source": source, "run_id": run_id,
+        "expectation": "custom_rule",
+        "column": None,
+        "passed": passed,
+        "unexpected_count": violations,
+        "element_count": total,
+        "checked_at": checked_at,
+        "rule_type": "custom",
+    }
+    if not passed:
+        logger.warning("[GE|%s] FAIL custom_rule unexpected=%s/%s", source, violations, total)
+    return obs
+
+
 class DataCleansingEngine:
     """
-    Subsystem 4: Data Cleansing System.
-    Applies a list of CleansingRules to each record.
-    Records failing any rule are rejected and logged as ErrorEvents.
+    Subsystem 4: Data Quality Engine (non-blocking mode).
+
+    Evaluates CleansingRules against records and logs all outcomes as
+    Great Expectations observations.  Records are NEVER rejected —
+    all input records are returned in `cleaned` regardless of DQ result.
+    This allows the full ETL pipeline to complete while DQ results are
+    persisted for later reporting (Grafana / delta meta tables).
     """
 
     def __init__(
@@ -192,64 +402,70 @@ class DataCleansingEngine:
         record_id_fields: Optional[List[str]] = None,
     ) -> CleansingResult:
         """
-        Apply all rules to each record.
-        Returns CleansingResult with cleaned records + error events.
+        Evaluate all rules against the records and log DQ observations.
+
+        ALL records are returned in `cleaned`; `rejected` is always empty.
+        DQ violations are observable via CleansingResult.dq_observations
+        and CleansingResult.error_events (logged at WARNING level only).
 
         Args:
-            records: Input records (list of dicts)
-            source: Source identifier for error events (e.g. "cophieu68.trading_data")
-            run_id: Pipeline run ID for lineage
+            records:          Input records (list of dicts)
+            source:           Source identifier (e.g. "cophieu68.trading_data")
+            run_id:           Pipeline run ID for lineage
             record_id_fields: Fields to use as record identifier in error events
         """
         error_log = ErrorEventLog(run_id=run_id, job_name=source, logger=self.logger)
-        cleaned: List[Dict[str, Any]] = []
-        rejected: List[Dict[str, Any]] = []
 
-        # Subsystem 1: Profile before cleansing
+        # ── Subsystem 1: Profile before evaluation ───────────────────────────
         profile = None
         if self.run_profiling and records:
-            profile = DataProfiler.profile(records, table_name=source, run_id=run_id)
+            profile = DataProfiler.profile({}, records, table_name=source, run_id=run_id,
+                                           logger=self.logger)
             if profile.issues:
                 for issue in profile.issues:
                     error_log.add(ErrorLevel.WARNING, f"[PROFILING] {issue}")
 
+        # ── Evaluate rules for observation (no rejection) ────────────────────
         for record in records:
-            record_valid = True
             for rule in self.rules:
                 try:
                     is_valid, message = rule(record)
                     if not is_valid:
+                        # Log as WARNING only — do not reject
                         error_log.add(
-                            self.rejection_level,
-                            message,
+                            ErrorLevel.WARNING,
+                            f"[DQ_OBS] {message}",
                             record=record,
                             record_id_fields=record_id_fields,
                         )
-                        record_valid = False
-                        break  # stop at first failing rule per record
                 except Exception as exc:
                     error_log.add(
-                        ErrorLevel.ERROR,
-                        f"Rule evaluation error: {exc}",
+                        ErrorLevel.WARNING,
+                        f"[DQ_OBS] Rule evaluation error: {exc}",
                         record=record,
                         record_id_fields=record_id_fields,
                     )
-                    record_valid = False
-                    break
 
-            if record_valid:
-                cleaned.append(record)
-            else:
-                rejected.append(record)
+        # ── GE-level batch observations ──────────────────────────────────────
+        dq_observations: List[Dict[str, Any]] = []
+        if self.rules and records:
+            try:
+                df = pd.DataFrame(records)
+                dq_observations = _run_ge_rule_checks(
+                    df, self.rules, source, run_id, self.logger)
+            except Exception as exc:  # noqa: BLE001
+                self.logger.warning("[GE] batch rule checks failed for %s: %s", source, exc)
 
+        # All records pass through — no rejection
         return CleansingResult(
-            cleaned=cleaned,
-            rejected=rejected,
-            error_events=error_log.events,
-            total_input=len(records),
-            total_cleaned=len(cleaned),
-            total_rejected=len(rejected),
-            profile=profile,
+            cleaned         = list(records),
+            rejected        = [],
+            error_events    = error_log.events,
+            total_input     = len(records),
+            total_cleaned   = len(records),
+            total_rejected  = 0,
+            profile         = profile,
+            dq_observations = dq_observations,
         )
 
     def cleanse_dataframe(
@@ -262,131 +478,5 @@ class DataCleansingEngine:
         """Convenience wrapper for pandas DataFrames."""
         records = df.where(pd.notnull(df), None).to_dict(orient="records")
         result = self.cleanse(records, source=source, run_id=run_id, record_id_fields=record_id_fields)
-        cleaned_df = pd.DataFrame(result.cleaned) if result.cleaned else pd.DataFrame(columns=df.columns)
-        return cleaned_df, result
-
-# ---------------------------------------------------------------------------
-# Pre-built rule sets for cophieu68 data
-# ---------------------------------------------------------------------------
-
-# COPHIEU68_TRADING_DATA_RULES: List[CleansingRule] = [
-#     rule_not_null("symbol"),
-#     rule_regex("symbol", r"^[A-Z0-9]{2,10}$"),
-#     rule_not_null("date"),
-#     rule_numeric_range("close_price", min_val=0.0, max_val=1_000_000.0),
-#     rule_numeric_range("volume", min_val=0),
-#     rule_numeric_range("open_price", min_val=0.0),
-#     rule_numeric_range("high_price", min_val=0.0),
-#     rule_numeric_range("low_price", min_val=0.0),
-# ]
-
-# COPHIEU68_COMPANY_INFO_RULES: List[CleansingRule] = [
-#     rule_not_null("symbol"),
-#     rule_regex("symbol", r"^[A-Z0-9]{2,10}$"),
-#     rule_min_length("company_name", 2),
-# ]
-
-# COPHIEU68_FINANCIAL_REPORT_RULES: List[CleansingRule] = [
-#     rule_not_null("symbol"),
-#     rule_not_null("report_type"),
-#     rule_allowed_values("report_type", ["quarter", "year", "QUARTERLY", "ANNUALLY"]),
-# ]
-
-# COPHIEU68_INDUSTRY_RULES: List[CleansingRule] = [
-#     rule_not_null("industry_code"),
-#     rule_not_null("symbol"),
-# ]
-
-
-
-
-# ---------------------------------------------------------------------------
-# Transformation helpers (field-level cleaning)
-# ---------------------------------------------------------------------------
-
-# class FieldTransformer:
-#     """
-#     Subsystem 4: Field-level transformations applied after validation.
-#     Converts raw crawled strings to typed values.
-#     """
-
-#     @staticmethod
-#     def clean_numeric(value: Any, default: Optional[float] = None) -> Optional[float]:
-#         """Remove commas/spaces, convert to float."""
-#         if value is None:
-#             return default
-#         try:
-#             cleaned = re.sub(r"[,\s]", "", str(value))
-#             return float(cleaned)
-#         except (ValueError, TypeError):
-#             return default
-
-#     @staticmethod
-#     def clean_symbol(value: Any) -> Optional[str]:
-#         """Uppercase and strip stock symbol."""
-#         if not value:
-#             return None
-#         return str(value).strip().upper()
-
-#     @staticmethod
-#     def clean_date_vn(value: Any) -> Optional[str]:
-#         """Convert dd/mm/yyyy → yyyy-mm-dd ISO format."""
-#         if not value:
-#             return None
-#         try:
-#             dt = datetime.strptime(str(value).strip(), "%d/%m/%Y")
-#             return dt.strftime("%Y-%m-%d")
-#         except ValueError:
-#             return str(value)
-
-#     @staticmethod
-#     def clean_percentage(value: Any) -> Optional[float]:
-#         """Convert '12.5%' → 0.125."""
-#         if value is None:
-#             return None
-#         try:
-#             cleaned = str(value).replace("%", "").strip()
-#             return float(cleaned) / 100.0
-#         except (ValueError, TypeError):
-#             return None
-
-#     @staticmethod
-#     def normalize_report_type(value: Any) -> Optional[str]:
-#         """Normalize report_type to ANNUALLY|QUARTERLY."""
-#         if not value:
-#             return None
-#         mapping = {
-#             "year": "ANNUALLY", "annual": "ANNUALLY", "annually": "ANNUALLY",
-#             "quarter": "QUARTERLY", "quarterly": "QUARTERLY", "q": "QUARTERLY",
-#         }
-#         return mapping.get(str(value).lower().strip(), str(value).upper())
-
-#     @staticmethod
-#     def transform_trading_record(record: Dict[str, Any]) -> Dict[str, Any]:
-#         """Apply all field transformations to a raw trading data record."""
-#         return {
-#             "symbol":        FieldTransformer.clean_symbol(record.get("symbol")),
-#             "date":          FieldTransformer.clean_date_vn(record.get("date") or record.get("trade_date")),
-#             "close_price":   FieldTransformer.clean_numeric(record.get("close_price") or record.get("close")),
-#             "open_price":    FieldTransformer.clean_numeric(record.get("open_price") or record.get("open")),
-#             "high_price":    FieldTransformer.clean_numeric(record.get("high_price") or record.get("high")),
-#             "low_price":     FieldTransformer.clean_numeric(record.get("low_price") or record.get("low")),
-#             "volume":        FieldTransformer.clean_numeric(record.get("volume")),
-#             "foreign_buy":   FieldTransformer.clean_numeric(record.get("foreign_buy")),
-#             "foreign_sell":  FieldTransformer.clean_numeric(record.get("foreign_sell")),
-#             "foreign_value": FieldTransformer.clean_numeric(record.get("foreign_value") or record.get("foreign_net_value")),
-#         }
-
-#     @staticmethod
-#     def transform_financial_record(record: Dict[str, Any]) -> Dict[str, Any]:
-#         """Apply field transformations to a raw financial report record."""
-#         return {
-#             "symbol":               FieldTransformer.clean_symbol(record.get("symbol")),
-#             "report_type":          FieldTransformer.normalize_report_type(record.get("report_type")),
-#             "year":                 str(record.get("year", "")).strip() or None,
-#             "period":               str(record.get("period", "")).strip() or None,
-#             "metric_code":          str(record.get("metric_code", "")).strip() or None,
-#             "metric_value":         FieldTransformer.clean_numeric(record.get("metric_value")),
-#             "metric_name_en":       record.get("metric_name_en"),
-#             "metric_group":         record.get("metric_group"),
-#         }
+        # Always return the full original dataframe (no records were dropped)
+        return df.copy(), result
