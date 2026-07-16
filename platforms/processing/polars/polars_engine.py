@@ -81,7 +81,14 @@ class PolarsEngine:
         partition_by: Optional[List[str]],
         storage_options: Dict[str, Any],
     ) -> None:
-        """Ghi Parquet lên S3/MinIO bằng PyArrow FileSystem (bypass Polars storage_options limit)."""
+        """Ghi Parquet lên S3/MinIO bằng PyArrow FileSystem (bypass Polars storage_options limit).
+
+        MinIO yêu cầu:
+          - client_kwargs[endpoint_url]  : endpoint đầy đủ (http://host:port)
+          - client_kwargs[region_name]   : bất kỳ string nào, thường 'us-east-1'
+          - config_kwargs[signature_version] = 's3v4'
+        Nếu thiếu một trong những giá trị này, boto3 / s3fs sẽ tính sai signature → 403.
+        """
         import s3fs
 
         # Chuẩn hoá s3a:// → s3:// (s3fs chỉ hiểu s3://)
@@ -94,8 +101,15 @@ class PolarsEngine:
         fs = s3fs.S3FileSystem(
             key=key,
             secret=secret,
-            endpoint_url=endpoint,
-            use_ssl=False,
+            # endpoint_url ở top-level bị ignore ở 1 số version s3fs,
+            # dùng client_kwargs để chắc chắn boto3 nhận đúng
+            client_kwargs={
+                "endpoint_url": endpoint,
+                "region_name": "us-east-1",
+            },
+            config_kwargs={
+                "signature_version": "s3v4",
+            },
         )
 
         arrow_table = df.to_arrow()

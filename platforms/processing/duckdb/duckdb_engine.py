@@ -51,6 +51,7 @@ class DuckDBEngine:
             con.execute(f"SET s3_secret_access_key='{s3_secret_key}';")
             con.execute("SET s3_use_ssl=false;")
             con.execute("SET s3_url_style='path';")
+            con.execute("SET s3_region='us-east-1';")
             self.logger.info("✅ Cấu hình S3/MinIO hoàn tất.")
 
         return con
