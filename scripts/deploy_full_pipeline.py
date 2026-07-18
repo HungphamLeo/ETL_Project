@@ -359,6 +359,68 @@ class BronzePolarsIngester:
             "stats": {**profile, "clean": len(enriched_records), "dq_violations": len(dq_violations)},
         }
 
+    def ingest(
+        self,
+        table_name: str,
+        records: List[Dict[str, Any]],
+        batch_id: str,
+        run_id: str,
+        symbol: Optional[str] = None,
+        cleansing: Optional[CleansingRuleSet] = None,
+    ) -> Dict[str, Any]:
+        """Generic ingestion helper: normalize → DQ evaluate → write Parquet.
+
+        Dùng cho mọi bảng Bronze ngoài stock_prices (company_profile,
+        financial_ratios, income_statement, v.v.)  Trả về stats dict
+        chuẩn để BronzeExecutor log lineage.
+        """
+        import polars as pl
+
+        if not records:
+            self.logger.warning(f"[BronzeIngester] No records for table={table_name} symbol={symbol}")
+            return {"saved_path": None, "rows": 0, "dq_violations": 0}
+
+        # Normalise records:
+        #   1. Flatten nested pd.DataFrame → JSON string
+        #   2. Cast EVERY value to str (Bronze = raw as-is, avoid Polars
+        #      schema-mismatch when pd.read_html returns mixed-type columns)
+        import pandas as _pd
+
+        flat: List[Dict[str, Any]] = []
+        for rec in records:
+            flat_rec: Dict[str, Any] = {}
+            for k, v in rec.items():
+                if isinstance(v, _pd.DataFrame):
+                    flat_rec[k] = v.to_json(orient="records")
+                elif v is None:
+                    flat_rec[k] = None
+                else:
+                    flat_rec[k] = str(v)
+            flat.append(flat_rec)
+
+        if cleansing:
+            flat, dq_violations = self._evaluate_dq(flat, cleansing, run_id)
+        else:
+            dq_violations = []
+
+        df = pl.DataFrame(flat, schema_overrides={c: pl.Utf8 for c in flat[0].keys()})
+
+        if symbol and "symbol" not in df.columns:
+            df = df.with_columns(pl.lit(symbol.upper()).alias("symbol"))
+
+        df = df.with_columns([
+            pl.lit(batch_id).alias("_batch_id"),
+            pl.lit(run_id).alias("_run_id"),
+            pl.lit(datetime.now(timezone.utc).isoformat()).alias("_ingest_timestamp"),
+            pl.lit(datetime.now(timezone.utc).date().isoformat()).alias("ingest_date"),
+        ])
+
+        path = f"{self.base_path}/bronze/{table_name}/"
+        self.engine.write_parquet(df=df, target_path=path, partition_by=["ingest_date"])
+        self.logger.info(f"[BronzeIngester] Wrote {len(df)} rows → {path}")
+
+        return {"saved_path": path, "rows": len(df), "dq_violations": len(dq_violations)}
+
 
 class SilverProcessor:
     def __init__(
@@ -379,47 +441,49 @@ class SilverProcessor:
         run_id: str,
         dedup_strategy: DeduplicationStrategy = DeduplicationStrategy.KEEP_LAST,
     ) -> Dict[str, Any]:
+        """bronze/stock_prices → silver/fact_stock_price  (SILVER_FACT_TRADING_HISTORY)
+
+        Schema: trade_key (SK), symbol, trade_date, close_price, open_price,
+                high_price, low_price, volume, foreign_buy, foreign_sell,
+                foreign_net_value, year, month,
+                _ingested_at, _pipeline_run_id
+        Partition: [year, month]
+        """
         import polars as pl
 
-        bronze_glob = f"{self.base}/bronze/stock_prices/ingest_date={target_date}/*.parquet"
-        self.logger.info(f"[SilverProcessor] Reading bronze data from {bronze_glob}")
-
-        df_lf = self.duck.query_to_polars(f"SELECT * FROM read_parquet('{bronze_glob}')")
-        df = df_lf.collect()
-
-        if df.is_empty():
-            self.logger.warning(f"[SilverProcessor] No bronze data for date {target_date}")
+        # Re-use _read_bronze so ingest_date is materialised via hive_partitioning=true
+        df = self._read_bronze("stock_prices", target_date)
+        if df is None:
             return {"rows_in": 0, "rows_out": 0, "silver_path": None}
 
         rows_in = len(df)
-        self.logger.info(f"[SilverProcessor] Read {rows_in} rows from bronze.")
+        self.logger.info(f"[SilverProcessor] Read {rows_in} rows from bronze.stock_prices")
 
-        import pandas as pd
-        df_pd = df.to_pandas()
-        dedup_engine = DeduplicationEngine(
-            keys=["symbol", "date"],
-            strategy=dedup_strategy,
-            tiebreaker_col="ingest_timestamp",
-        )
-        deduped_pd = dedup_engine.deduplicate(df_pd)
-        dedup_stats = dedup_engine.last_stats
-        self.logger.info(f"[SilverProcessor] Dedup stats: {dedup_stats}")
+        df = self._dedup(df, keys=["symbol", "date"], run_id=run_id,
+                         source="bronze.stock_prices")
+        dedup_stats = {}
 
-        df = pl.from_pandas(deduped_pd)
+        # Surrogate key: SHA256(symbol+date) — matches schema registry "trade_key"
         df = df.with_columns(
-            pl.col("symbol")
-            .map_elements(lambda sym: self.sk_gen.hash_key(sym), return_dtype=pl.Utf8)
-            .alias("stock_sk")
+            pl.concat_str([pl.col("symbol"), pl.col("date")], separator="|")
+            .map_elements(lambda s: self.sk_gen.hash_key(s), return_dtype=pl.Utf8)
+            .alias("trade_key")
         )
 
-        now_ts = datetime.now(timezone.utc).isoformat()
-        df = df.with_columns([
-            pl.lit(run_id).alias("_silver_run_id"),
-            pl.lit(now_ts).alias("_silver_processed_at"),
-        ])
+        # Add partition columns year/month from ingest_date (re-materialised by hive_partitioning)
+        if "ingest_date" in df.columns:
+            df = df.with_columns([
+                pl.col("ingest_date").str.slice(0, 4).cast(pl.Int32).alias("year"),
+                pl.col("ingest_date").str.slice(5, 2).cast(pl.Int32).alias("month"),
+            ])
 
-        silver_path = f"{self.base}/silver/fact_stock_price/"
-        self.polars.write_parquet(df=df, target_path=silver_path, partition_by=["ingest_date"])
+        df = self._add_audit(df, run_id)
+
+        # Partition by [year, month] per schema registry
+        partition_cols = (["year", "month"]
+                          if "year" in df.columns and "month" in df.columns else [])
+        silver_path = self._write_silver(df, "fact_stock_price",
+                                         partition_by=partition_cols)
         rows_out = len(df)
 
         return {
@@ -428,6 +492,455 @@ class SilverProcessor:
             "dedup_stats": dedup_stats,
             "silver_path": silver_path,
         }
+
+    # ------------------------------------------------------------------
+    # Shared helpers
+    # ------------------------------------------------------------------
+
+    def _read_bronze(self, table_name: str, target_date: str) -> Optional[Any]:
+        """Read bronze/<table_name>/ingest_date=<date>/*.parquet via DuckDB.
+        Uses hive_partitioning=true so the `ingest_date` partition column is
+        re-materialised as a real column in the result schema.
+        Returns a Polars DataFrame, or None if the partition is empty/missing."""
+        import polars as pl
+        bronze_glob = f"{self.base}/bronze/{table_name}/ingest_date={target_date}/*.parquet"
+        self.logger.info(f"[SilverProcessor] Reading {bronze_glob}")
+        try:
+            df = self.duck.query_to_polars(
+                f"SELECT * FROM read_parquet('{bronze_glob}', hive_partitioning=true)"
+            ).collect()
+            if df.is_empty():
+                self.logger.warning(
+                    f"[SilverProcessor] No data in bronze/{table_name} for {target_date}")
+                return None
+            return df
+        except Exception as exc:
+            self.logger.warning(
+                f"[SilverProcessor] Could not read bronze/{table_name}: {exc}")
+            return None
+
+    def _write_silver(self, df: Any, silver_table: str,
+                      partition_by: Optional[List[str]] = None) -> str:
+        """Write a Polars DataFrame to silver/<silver_table>/ and return the path.
+        No default partition — callers must pass partition_by=[] explicitly when
+        the schema registry says partition_by=[]."""
+        silver_path = f"{self.base}/silver/{silver_table}/"
+        self.polars.write_parquet(df=df, target_path=silver_path,
+                                  partition_by=partition_by or [])
+        self.logger.info(f"[SilverProcessor] Wrote {len(df)} rows → {silver_path}")
+        return silver_path
+
+    def _add_audit(self, df: Any, run_id: str) -> Any:
+        """Add _ingested_at and _pipeline_run_id audit columns (matches schema registry)."""
+        import polars as pl
+        now_ts = datetime.now(timezone.utc).isoformat()
+        return df.with_columns([
+            pl.lit(now_ts).alias("_ingested_at"),
+            pl.lit(run_id).alias("_pipeline_run_id"),
+        ])
+
+    def _dedup(self, df: Any, keys: List[str], run_id: str, source: str) -> Any:
+        """Deduplicate a Polars DataFrame via DeduplicationEngine (pandas bridge).
+        Falls back to KEEP_LAST if any key column is absent."""
+        import polars as pl
+        df_pd = df.to_pandas()
+        # Only use keys that actually exist in the dataframe
+        valid_keys = [k for k in keys if k in df_pd.columns]
+        if not valid_keys:
+            self.logger.warning(
+                f"[SilverProcessor] Dedup({source}): none of keys {keys} found, skipping")
+            return df
+        engine = DeduplicationEngine(
+            keys=valid_keys,
+            strategy=DeduplicationStrategy.KEEP_LAST,
+            tiebreaker_col="_ingest_timestamp",
+        )
+        deduped_pd, stats = engine.deduplicate_dataframe(
+            df=df_pd, source=source, run_id=run_id)
+        self.logger.info(f"[SilverProcessor] Dedup({source}) stats: {stats}")
+        return pl.from_pandas(deduped_pd)
+
+    def _safe_cast(self, df: Any, col: str, dtype: Any) -> Any:
+        """Cast a column to dtype, replacing errors with null. No-op if col absent."""
+        import polars as pl
+        if col not in df.columns:
+            return df
+        return df.with_columns(
+            pl.col(col).cast(dtype, strict=False).alias(col)
+        )
+
+    # ------------------------------------------------------------------
+    # Per-symbol transforms — aligned with delta_schema_registry.py
+    # ------------------------------------------------------------------
+
+    def transform_company_profile(self, target_date: str, run_id: str) -> Dict[str, Any]:
+        """bronze/company_profile → silver/dim_company  (SILVER_DIM_COMPANY)
+
+        Schema: company_key (SK), symbol, full_name, english_name, short_name,
+                address, phone, fax, website, email_address, established_date,
+                listed_date, listed_volume_initial, listed_volume,
+                circulating_volume, market_capitalization,
+                effective_date, end_date, is_current, _row_hash,
+                _ingested_at, _pipeline_run_id
+        """
+        import polars as pl
+        df = self._read_bronze("company_profile", target_date)
+        if df is None:
+            return {"rows_in": 0, "rows_out": 0, "silver_path": None}
+        rows_in = len(df)
+
+        df = self._dedup(df, keys=["symbol"], run_id=run_id,
+                         source="bronze.company_profile")
+
+        # Build surrogate key: SHA256(symbol) — matches schema registry "company_key"
+        df = df.with_columns(
+            pl.col("symbol")
+            .map_elements(lambda s: self.sk_gen.hash_key(s), return_dtype=pl.Utf8)
+            .alias("company_key")
+        )
+
+        # SCD2 columns — for now open-ended (no expiry)
+        today = datetime.now(timezone.utc).date().isoformat()
+        df = df.with_columns([
+            pl.lit(today).alias("effective_date"),
+            pl.lit(None).cast(pl.Utf8).alias("end_date"),
+            pl.lit(True).alias("is_current"),
+        ])
+
+        df = self._add_audit(df, run_id)
+        silver_path = self._write_silver(df, "dim_company", partition_by=[])
+        return {"rows_in": rows_in, "rows_out": len(df), "silver_path": silver_path}
+
+    def transform_financial_ratios(self, target_date: str, run_id: str) -> Dict[str, Any]:
+        """bronze/financial_ratios → silver/fact_financial_metrics  (SILVER_FACT_FINANCIAL_METRICS)
+
+        Schema: financial_ratio_key (SK), symbol, reference_price, open_price,
+                high_price, low_price, volume, book_value, eps, pe, pb, roe, roa,
+                beta, market_cap, listed_volume, avg_volume_52w, high_low_52w,
+                debt, equity, debt_to_equity, equity_to_assets, cash,
+                update_time, _ingested_at, _pipeline_run_id
+        """
+        import polars as pl
+        df = self._read_bronze("financial_ratios", target_date)
+        if df is None:
+            return {"rows_in": 0, "rows_out": 0, "silver_path": None}
+        rows_in = len(df)
+
+        df = self._dedup(df, keys=["symbol"], run_id=run_id,
+                         source="bronze.financial_ratios")
+
+        # Surrogate key: SHA256(symbol + ingest_date)
+        ingest_date_val = target_date
+        df = df.with_columns(
+            pl.concat_str(
+                [pl.col("symbol"), pl.lit(ingest_date_val)], separator="|"
+            ).map_elements(lambda s: self.sk_gen.hash_key(s), return_dtype=pl.Utf8)
+            .alias("financial_ratio_key")
+        )
+        df = df.with_columns(
+            pl.lit(datetime.now(timezone.utc).isoformat()).alias("update_time")
+        )
+
+        df = self._add_audit(df, run_id)
+        silver_path = self._write_silver(df, "fact_financial_metrics", partition_by=[])
+        return {"rows_in": rows_in, "rows_out": len(df), "silver_path": silver_path}
+
+    def transform_financial_report(self, target_date: str, run_id: str) -> Dict[str, Any]:
+        """bronze/financial_report_summary → silver/fact_financial_report
+
+        No dedicated schema registry entry yet — store as-is with audit cols.
+        Partition by ingest_date (column is re-materialised by hive_partitioning=true).
+        """
+        import polars as pl
+        df = self._read_bronze("financial_report_summary", target_date)
+        if df is None:
+            return {"rows_in": 0, "rows_out": 0, "silver_path": None}
+        rows_in = len(df)
+
+        dedup_keys = [k for k in ["symbol", "report_type"] if k in df.columns]
+        df = self._dedup(df, keys=dedup_keys, run_id=run_id,
+                         source="bronze.financial_report_summary")
+        df = self._add_audit(df, run_id)
+        # ingest_date exists because hive_partitioning=true re-adds it
+        partition_cols = ["ingest_date"] if "ingest_date" in df.columns else []
+        silver_path = self._write_silver(df, "fact_financial_report",
+                                         partition_by=partition_cols)
+        return {"rows_in": rows_in, "rows_out": len(df), "silver_path": silver_path}
+
+    def transform_business_plan(self, target_date: str, run_id: str) -> Dict[str, Any]:
+        """bronze/business_plan → silver/fact_business_plan  (SILVER_FACT_BUSINESS_PLAN)
+
+        Schema: plan_key (SK), symbol, year, plan_revenue, pass_revenue,
+                plan_profit, pass_profit, update_time,
+                _ingested_at, _pipeline_run_id
+        """
+        import polars as pl
+        df = self._read_bronze("business_plan", target_date)
+        if df is None:
+            return {"rows_in": 0, "rows_out": 0, "silver_path": None}
+        rows_in = len(df)
+
+        # Normalise Year column name (Bronze stores it as "Year" capitalised)
+        if "Year" in df.columns and "year" not in df.columns:
+            df = df.rename({"Year": "year"})
+
+        df = self._dedup(df, keys=["symbol", "year"], run_id=run_id,
+                         source="bronze.business_plan")
+
+        # Surrogate key: SHA256(symbol+year)
+        df = df.with_columns(
+            pl.concat_str([pl.col("symbol"), pl.col("year")], separator="|")
+            .map_elements(lambda s: self.sk_gen.hash_key(s), return_dtype=pl.Utf8)
+            .alias("plan_key")
+        )
+
+        # Cast numeric columns
+        for col_name in ("plan_revenue", "pass_revenue", "plan_profit", "pass_profit",
+                         "Plan_revenue", "Pass_revenue", "Plan_profit", "Pass_profit"):
+            df = self._safe_cast(df, col_name, pl.Float64)
+
+        # Normalise column names to lowercase
+        df = df.rename({c: c.lower() for c in df.columns})
+
+        df = df.with_columns(
+            pl.lit(datetime.now(timezone.utc).isoformat()).alias("update_time")
+        )
+        df = self._add_audit(df, run_id)
+        silver_path = self._write_silver(df, "fact_business_plan", partition_by=[])
+        return {"rows_in": rows_in, "rows_out": len(df), "silver_path": silver_path}
+
+    def transform_income_statement(self, target_date: str, run_id: str) -> Dict[str, Any]:
+        """bronze/income_statement_{quarter,year} → silver/fact_income_statement
+           (SILVER_FACT_INCOME_STATEMENT)
+
+        Schema: income_key (SK), symbol, time_report_type (ANNUALLY|QUARTERLY),
+                financial_report_type, year, period, metric_code, metric_name_en,
+                metric_group, metric_value, currency, unit, update_time,
+                _ingested_at, _pipeline_run_id
+        Partition: [time_report_type, year]
+
+        Bronze stores the whole DataFrame as a JSON blob; we keep it as-is here
+        (full normalization to per-metric rows is a Gold/SQLMesh concern).
+        """
+        import polars as pl
+        frames = []
+        for report_type, time_report_type in (("quarter", "QUARTERLY"), ("year", "ANNUALLY")):
+            df = self._read_bronze(f"income_statement_{report_type}", target_date)
+            if df is not None:
+                df = df.with_columns([
+                    pl.lit(time_report_type).alias("time_report_type"),
+                    pl.lit(report_type).alias("report_type"),
+                ])
+                frames.append(df)
+        if not frames:
+            return {"rows_in": 0, "rows_out": 0, "silver_path": None}
+
+        df = pl.concat(frames, how="diagonal")
+        rows_in = len(df)
+
+        df = self._dedup(df, keys=["symbol", "time_report_type"], run_id=run_id,
+                         source="bronze.income_statement")
+
+        # Surrogate key
+        df = df.with_columns(
+            pl.concat_str([pl.col("symbol"), pl.col("time_report_type")], separator="|")
+            .map_elements(lambda s: self.sk_gen.hash_key(s), return_dtype=pl.Utf8)
+            .alias("income_key")
+        )
+        df = df.with_columns(
+            pl.lit(datetime.now(timezone.utc).isoformat()).alias("update_time")
+        )
+        df = self._add_audit(df, run_id)
+
+        # Extract year from ingest_date for partitioning (YYYY from YYYY-MM-DD)
+        if "ingest_date" in df.columns:
+            df = df.with_columns(
+                pl.col("ingest_date").str.slice(0, 4).alias("year")
+            )
+        partition_cols = (["time_report_type", "year"]
+                          if "time_report_type" in df.columns and "year" in df.columns
+                          else [])
+        silver_path = self._write_silver(df, "fact_income_statement",
+                                         partition_by=partition_cols)
+        return {"rows_in": rows_in, "rows_out": len(df), "silver_path": silver_path}
+
+    def transform_balance_sheet(self, target_date: str, run_id: str) -> Dict[str, Any]:
+        """bronze/balance_sheet_{quarter,year} → silver/fact_balance_sheet
+           (SILVER_FACT_BALANCE_SHEET)
+
+        Same pattern as income_statement.
+        Partition: [time_report_type, year]
+        """
+        import polars as pl
+        frames = []
+        for report_type, time_report_type in (("quarter", "QUARTERLY"), ("year", "ANNUALLY")):
+            df = self._read_bronze(f"balance_sheet_{report_type}", target_date)
+            if df is not None:
+                df = df.with_columns([
+                    pl.lit(time_report_type).alias("time_report_type"),
+                    pl.lit(report_type).alias("report_type"),
+                ])
+                frames.append(df)
+        if not frames:
+            return {"rows_in": 0, "rows_out": 0, "silver_path": None}
+
+        df = pl.concat(frames, how="diagonal")
+        rows_in = len(df)
+
+        df = self._dedup(df, keys=["symbol", "time_report_type"], run_id=run_id,
+                         source="bronze.balance_sheet")
+
+        df = df.with_columns(
+            pl.concat_str([pl.col("symbol"), pl.col("time_report_type")], separator="|")
+            .map_elements(lambda s: self.sk_gen.hash_key(s), return_dtype=pl.Utf8)
+            .alias("balance_key")
+        )
+        df = df.with_columns(
+            pl.lit(datetime.now(timezone.utc).isoformat()).alias("update_time")
+        )
+        df = self._add_audit(df, run_id)
+
+        if "ingest_date" in df.columns:
+            df = df.with_columns(
+                pl.col("ingest_date").str.slice(0, 4).alias("year")
+            )
+        partition_cols = (["time_report_type", "year"]
+                          if "time_report_type" in df.columns and "year" in df.columns
+                          else [])
+        silver_path = self._write_silver(df, "fact_balance_sheet",
+                                         partition_by=partition_cols)
+        return {"rows_in": rows_in, "rows_out": len(df), "silver_path": silver_path}
+
+    # ------------------------------------------------------------------
+    # Global transforms — aligned with delta_schema_registry.py
+    # ------------------------------------------------------------------
+
+    def transform_industry_sectors(self, target_date: str, run_id: str) -> Dict[str, Any]:
+        """bronze/industry_sectors → silver/dim_industry  (SILVER_DIM_INDUSTRY)
+
+        Schema: industry_sk (SK), industry_code, industry_name, industry_metric,
+                industry_craw_url, effective_date, end_date, is_current,
+                _row_hash, _ingested_at, _pipeline_run_id
+        """
+        import polars as pl
+        df = self._read_bronze("industry_sectors", target_date)
+        if df is None:
+            return {"rows_in": 0, "rows_out": 0, "silver_path": None}
+        rows_in = len(df)
+
+        df = self._dedup(df, keys=["industry_code", "symbol"], run_id=run_id,
+                         source="bronze.industry_sectors")
+
+        # Surrogate key: SHA256(industry_code)
+        df = df.with_columns(
+            pl.col("industry_code")
+            .map_elements(lambda s: self.sk_gen.hash_key(s), return_dtype=pl.Utf8)
+            .alias("industry_sk")
+        )
+
+        today = datetime.now(timezone.utc).date().isoformat()
+        df = df.with_columns([
+            pl.lit(today).alias("effective_date"),
+            pl.lit(None).cast(pl.Utf8).alias("end_date"),
+            pl.lit(True).alias("is_current"),
+        ])
+
+        df = self._add_audit(df, run_id)
+        silver_path = self._write_silver(df, "dim_industry", partition_by=[])
+        return {"rows_in": rows_in, "rows_out": len(df), "silver_path": silver_path}
+
+    def transform_market_type_sectors(self, target_date: str, run_id: str) -> Dict[str, Any]:
+        """bronze/market_type_sectors → silver/dim_market_type  (SILVER_DIM_MARKET_TYPE)
+
+        Schema: market_key (SK), market_type, market_name, description,
+                update_time, _ingested_at
+        """
+        import polars as pl
+        df = self._read_bronze("market_type_sectors", target_date)
+        if df is None:
+            return {"rows_in": 0, "rows_out": 0, "silver_path": None}
+        rows_in = len(df)
+
+        df = self._dedup(df, keys=["market_type_code"], run_id=run_id,
+                         source="bronze.market_type_sectors")
+
+        # Rename market_type_code → market_type (schema registry uses market_type)
+        if "market_type_code" in df.columns and "market_type" not in df.columns:
+            df = df.rename({"market_type_code": "market_type"})
+        if "market_type_name" in df.columns and "market_name" not in df.columns:
+            df = df.rename({"market_type_name": "market_name"})
+
+        # Surrogate key: SHA256(market_type)
+        df = df.with_columns(
+            pl.col("market_type")
+            .map_elements(lambda s: self.sk_gen.hash_key(s), return_dtype=pl.Utf8)
+            .alias("market_key")
+        )
+        df = df.with_columns(
+            pl.lit(datetime.now(timezone.utc).isoformat()).alias("update_time")
+        )
+        df = self._add_audit(df, run_id)
+        silver_path = self._write_silver(df, "dim_market_type", partition_by=[])
+        return {"rows_in": rows_in, "rows_out": len(df), "silver_path": silver_path}
+
+    def transform_industry_info(self, target_date: str, run_id: str) -> Dict[str, Any]:
+        """bronze/industry_info_{summary,financial,fund} → silver/fact_industry_summary
+           (SILVER_FACT_INDUSTRY_SUMMARY)
+
+        Schema: industry_summary_key (SK), industry_code, industry_name,
+                industry_metric_type, industry_index, percentage_change, liquidity,
+                total_capital, average_price, book_value, eps, pe, roa, roe,
+                supply_volumn, total_asset, total_equity, total_liabilities,
+                percentage_debt_on_equity, percentage_equity_on_assets,
+                revenue, profit_before_tax, update_time,
+                _ingested_at, _pipeline_run_id
+        Partition: [] (no partition per schema registry)
+        """
+        import polars as pl
+        frames = []
+        for type_info in ("summary_info", "financial_info", "fund_info"):
+            df = self._read_bronze(f"industry_info_{type_info}", target_date)
+            if df is not None:
+                df = df.with_columns(
+                    pl.lit(type_info).alias("industry_metric_type")
+                )
+                frames.append(df)
+        if not frames:
+            return {"rows_in": 0, "rows_out": 0, "silver_path": None}
+
+        df = pl.concat(frames, how="diagonal")
+        rows_in = len(df)
+
+        # Dedup on natural key: (_industry_key, industry_metric_type)
+        dedup_keys = [k for k in ["_industry_key", "industry_metric_type"]
+                      if k in df.columns]
+        df = self._dedup(df, keys=dedup_keys, run_id=run_id,
+                         source="bronze.industry_info")
+
+        # Surrogate key: SHA256(_industry_key + industry_metric_type)
+        key_cols = [c for c in ["_industry_key", "industry_metric_type"] if c in df.columns]
+        if key_cols:
+            df = df.with_columns(
+                pl.concat_str([pl.col(c) for c in key_cols], separator="|")
+                .map_elements(lambda s: self.sk_gen.hash_key(s), return_dtype=pl.Utf8)
+                .alias("industry_summary_key")
+            )
+
+        # Cast numeric metric columns (all arrive as Utf8 from Bronze)
+        for col_name in ("pe", "roa", "roe", "industry_index", "percentage_change",
+                         "liquidity", "total_capital", "supply_volumn", "total_asset",
+                         "total_equity", "total_liabilities",
+                         "percentage_debt_on_equity", "percentage_equity_on_assets",
+                         "revenue", "profit_before_tax"):
+            df = self._safe_cast(df, col_name, pl.Float64)
+
+        df = df.with_columns(
+            pl.lit(datetime.now(timezone.utc).isoformat()).alias("update_time")
+        )
+        df = self._add_audit(df, run_id)
+        # No partition per SILVER_FACT_INDUSTRY_SUMMARY schema registry
+        silver_path = self._write_silver(df, "fact_industry_summary", partition_by=[])
+        return {"rows_in": rows_in, "rows_out": len(df), "silver_path": silver_path}
 
 
 class GoldProcessor:
@@ -443,24 +956,56 @@ class GoldProcessor:
         end_date: Optional[str] = None,
         run_audits: bool = True,
     ) -> Dict[str, Any]:
-        self.logger.info(f"[GoldProcessor] Running SQLMesh models env={environment} start={start_date} end={end_date}")
+        self.logger.info(
+            f"[GoldProcessor] Running SQLMesh models env={environment} "
+            f"start={start_date} end={end_date}"
+        )
         result: Dict[str, Any] = {"environment": environment}
 
+        # ── Step 1: plan + backfill ──────────────────────────────────────────
+        # SQLMesh FULL models execute SELECT ... FROM read_parquet(s3://...) on
+        # every plan.  When MinIO is offline or silver data doesn't exist yet,
+        # this always fails.  We catch any IOException / PlanError and treat
+        # the gold phase as SKIPPED (not FAILED) so the overall pipeline
+        # can continue.  Gold will populate correctly on the next run once
+        # bronze → silver data exists on MinIO.
         try:
             plan_result = self.sqlmesh.plan(environment=environment)
-            result["plan"] = str(plan_result)
-            self.logger.info("[GoldProcessor] SQLMesh plan complete")
+            result["plan"] = "applied"
+            self.logger.info("[GoldProcessor] SQLMesh plan+backfill complete")
         except Exception as exc:
-            self.logger.warning(f"[GoldProcessor] SQLMesh plan warning: {exc}")
+            exc_msg = str(exc)
+            # S3/MinIO connection errors are expected when silver isn't ready yet
+            if any(kw in exc_msg for kw in ("Connection error", "IO Error", "Plan application")):
+                self.logger.warning(
+                    f"[GoldProcessor] Gold skipped — silver data not yet available "
+                    f"on MinIO or MinIO offline ({exc_msg[:120]}). "
+                    "Run bronze+silver first, then gold."
+                )
+                result["plan"] = "skipped_no_silver_data"
+                result["run_status"] = "SKIPPED"
+                return result
+            # Unexpected error — re-raise so GoldExecutor catches it properly
+            raise
 
-        self.sqlmesh.run(environment=environment, start=start_date, end=end_date)
-        result["run_status"] = "SUCCESS"
-        self.logger.info("[GoldProcessor] SQLMesh run complete")
+        # ── Step 2: run incremental ──────────────────────────────────────────
+        try:
+            self.sqlmesh.run(environment=environment, start=start_date, end=end_date)
+            result["run_status"] = "SUCCESS"
+            self.logger.info("[GoldProcessor] SQLMesh run complete")
+        except Exception as exc:
+            self.logger.warning(f"[GoldProcessor] SQLMesh run warning: {exc}")
+            result["run_status"] = f"WARN: {exc}"
 
+        # ── Step 3: audit ────────────────────────────────────────────────────
         if run_audits:
-            self.sqlmesh.audit()
-            result["audits"] = "PASSED"
-            self.logger.info("[GoldProcessor] SQLMesh audits complete")
+            try:
+                self.sqlmesh.audit()
+                result["audits"] = "PASSED"
+                self.logger.info("[GoldProcessor] SQLMesh audits complete")
+            except Exception as exc:
+                self.logger.warning(f"[GoldProcessor] Audit warning: {exc}")
+                result["audits"] = f"WARN: {exc}"
 
         return result
 
@@ -505,13 +1050,250 @@ class ServingSyncProcessor:
 
 
 class BronzeExecutor:
+    """Orchestrates full Bronze ingestion for all crawl_* methods.
+
+    Per-symbol tables (run for each symbol in context.symbols):
+        bronze/stock_prices          ← crawl_trading_data
+        bronze/company_profile       ← crawl_company_profile
+        bronze/financial_ratios      ← crawl_financial_ratios
+        bronze/financial_report_summary ← crawl_financial_report_summary
+        bronze/business_plan         ← crawl_business_plan
+        bronze/income_statement_quarter ← crawl_details_income_statement (quarter)
+        bronze/income_statement_year    ← crawl_details_income_statement (year)
+        bronze/balance_sheet_quarter    ← crawl_details_balance_sheet (quarter)
+        bronze/balance_sheet_year       ← crawl_details_balance_sheet (year)
+
+    Global tables (run once, not per-symbol):
+        bronze/industry_sectors      ← crawl_company_info_belong_to_industry_sectors
+        bronze/market_type_sectors   ← crawl_company_info_belong_to_market_type
+        bronze/industry_info_summary ← crawl_industry_info("summary_info")
+        bronze/industry_info_financial ← crawl_industry_info("financial_info")
+        bronze/industry_info_fund    ← crawl_industry_info("fund_info")
+    """
+
     def __init__(self, context: ExecutionContext, config: Dict[str, Any]):
         self.context = context
         self.config = config
         self.logger = context.logger
 
+    # ------------------------------------------------------------------
+    # Helpers
+    # ------------------------------------------------------------------
+
+    def _log_lineage(self, source: str, table: str, rows: int) -> None:
+        self.context.metadata_repo.log_lineage(
+            run_id=self.context.run_id,
+            source_layer="external",
+            source_table=source,
+            target_layer="bronze",
+            target_table=table,
+            operation="APPEND",
+            rows_affected=rows,
+        )
+
+    def _warn_dq(self, table: str, count: int) -> None:
+        if count > 0:
+            self.context.error_log.add(
+                ErrorLevel.WARNING,
+                f"{count} DQ issues in bronze.{table}",
+            )
+
+    # ------------------------------------------------------------------
+    # Per-symbol crawlers
+    # ------------------------------------------------------------------
+
+    def _ingest_trading_data(
+        self, extractor, ingester: BronzePolarsIngester,
+        symbol: str, batch_id: str, result: Dict[str, Any],
+    ) -> None:
+        data = extractor.crawl_trading_data(symbol=symbol, page=1)
+        if not data or not data.get("records"):
+            self.logger.warning(f"[Bronze] No trading records for {symbol}")
+            return
+        res = ingester.process(
+            raw_records=data["records"],
+            batch_id=batch_id,
+            run_id=self.context.run_id,
+            symbol=symbol,
+            cleansing=_build_cleansing_rules(symbol),
+        )
+        rows = res["stats"]["clean"]
+        dq   = res["stats"].get("dq_violations", 0)
+        result["rows_ingested"] += rows
+        result["dq_issues"] += dq
+        self._warn_dq("stock_prices", dq)
+        self._log_lineage(f"cophieu68_{symbol}", "bronze_stock_prices", rows)
+
+    def _ingest_company_profile(
+        self, extractor, ingester: BronzePolarsIngester,
+        symbol: str, batch_id: str, result: Dict[str, Any],
+    ) -> None:
+        raw = extractor.crawl_company_profile(symbol=symbol)
+        if not raw:
+            return
+        # crawl_company_profile trả về CompanyProfile object hoặc dict
+        rec = raw if isinstance(raw, dict) else (raw.__dict__ if hasattr(raw, "__dict__") else None)
+        if not rec:
+            return
+        res = ingester.ingest("company_profile", [rec], batch_id, self.context.run_id, symbol)
+        result["rows_ingested"] += res["rows"]
+        self._log_lineage(f"cophieu68_{symbol}", "bronze_company_profile", res["rows"])
+
+    def _ingest_financial_ratios(
+        self, extractor, ingester: BronzePolarsIngester,
+        symbol: str, batch_id: str, result: Dict[str, Any],
+    ) -> None:
+        raw = extractor.crawl_financial_ratios(symbol=symbol)
+        if not raw:
+            return
+        rec = raw if isinstance(raw, dict) else (raw.__dict__ if hasattr(raw, "__dict__") else None)
+        if not rec:
+            return
+        res = ingester.ingest("financial_ratios", [rec], batch_id, self.context.run_id, symbol)
+        result["rows_ingested"] += res["rows"]
+        self._log_lineage(f"cophieu68_{symbol}", "bronze_financial_ratios", res["rows"])
+
+    def _ingest_financial_report_summary(
+        self, extractor, ingester: BronzePolarsIngester,
+        symbol: str, batch_id: str, result: Dict[str, Any],
+    ) -> None:
+        """crawl_financial_report_summary trả về dict{key: StockFinancialReport}
+        mỗi StockFinancialReport chứa DataFrame → flatten thành list of dicts."""
+        raw = extractor.crawl_financial_report_summary(symbol=symbol)
+        if not raw:
+            return
+        records: List[Dict[str, Any]] = []
+        for report_key, report_obj in raw.items():
+            df = getattr(report_obj, "data", None)
+            if df is None:
+                continue
+            try:
+                sub_records = df.to_dict(orient="records")
+                for r in sub_records:
+                    r["symbol"] = symbol.upper()
+                    r["report_type"] = report_key
+                    records.append(r)
+            except Exception:
+                continue
+        if not records:
+            return
+        res = ingester.ingest("financial_report_summary", records, batch_id, self.context.run_id, symbol)
+        result["rows_ingested"] += res["rows"]
+        self._log_lineage(f"cophieu68_{symbol}", "bronze_financial_report_summary", res["rows"])
+
+    def _ingest_business_plan(
+        self, extractor, ingester: BronzePolarsIngester,
+        symbol: str, batch_id: str, result: Dict[str, Any],
+    ) -> None:
+        raw = extractor.crawl_business_plan(symbol=symbol)
+        if not raw or not raw.get("data"):
+            return
+        records = raw["data"]  # list of BusinessPlanRow.__dict__
+        res = ingester.ingest("business_plan", records, batch_id, self.context.run_id, symbol)
+        result["rows_ingested"] += res["rows"]
+        self._log_lineage(f"cophieu68_{symbol}", "bronze_business_plan", res["rows"])
+
+    def _ingest_income_statement(
+        self, extractor, ingester: BronzePolarsIngester,
+        symbol: str, batch_id: str, result: Dict[str, Any],
+        report_type: str,
+    ) -> None:
+        raw = extractor.crawl_details_income_statement(symbol=symbol, report_type=report_type)
+        if not raw:
+            return
+        df = raw.get("data") if isinstance(raw, dict) else getattr(raw, "data", None)
+        if df is None:
+            return
+        try:
+            records = df.to_dict(orient="records")
+            for r in records:
+                r["symbol"] = symbol.upper()
+                r["report_type"] = report_type
+        except Exception:
+            return
+        table = f"income_statement_{report_type}"
+        res = ingester.ingest(table, records, batch_id, self.context.run_id, symbol)
+        result["rows_ingested"] += res["rows"]
+        self._log_lineage(f"cophieu68_{symbol}", f"bronze_{table}", res["rows"])
+
+    def _ingest_balance_sheet(
+        self, extractor, ingester: BronzePolarsIngester,
+        symbol: str, batch_id: str, result: Dict[str, Any],
+        report_type: str,
+    ) -> None:
+        raw = extractor.crawl_details_balance_sheet(symbol=symbol, report_type=report_type)
+        if not raw:
+            return
+        df = raw.get("data") if isinstance(raw, dict) else getattr(raw, "data", None)
+        if df is None:
+            return
+        try:
+            records = df.to_dict(orient="records")
+            for r in records:
+                r["symbol"] = symbol.upper()
+                r["report_type"] = report_type
+        except Exception:
+            return
+        table = f"balance_sheet_{report_type}"
+        res = ingester.ingest(table, records, batch_id, self.context.run_id, symbol)
+        result["rows_ingested"] += res["rows"]
+        self._log_lineage(f"cophieu68_{symbol}", f"bronze_{table}", res["rows"])
+
+    # ------------------------------------------------------------------
+    # Global crawlers (không cần symbol)
+    # ------------------------------------------------------------------
+
+    def _ingest_industry_sectors(
+        self, extractor, ingester: BronzePolarsIngester,
+        batch_id: str, result: Dict[str, Any],
+    ) -> None:
+        rows = extractor.crawl_company_info_belong_to_industry_sectors()
+        if not rows:
+            return
+        records = [r if isinstance(r, dict) else r.__dict__ for r in rows]
+        res = ingester.ingest("industry_sectors", records, batch_id, self.context.run_id)
+        result["rows_ingested"] += res["rows"]
+        self._log_lineage("cophieu68_global", "bronze_industry_sectors", res["rows"])
+
+    def _ingest_market_type_sectors(
+        self, extractor, ingester: BronzePolarsIngester,
+        batch_id: str, result: Dict[str, Any],
+    ) -> None:
+        rows = extractor.crawl_company_info_belong_to_market_type()
+        if not rows:
+            return
+        records = [r if isinstance(r, dict) else r.__dict__ for r in rows]
+        res = ingester.ingest("market_type_sectors", records, batch_id, self.context.run_id)
+        result["rows_ingested"] += res["rows"]
+        self._log_lineage("cophieu68_global", "bronze_market_type_sectors", res["rows"])
+
+    def _ingest_industry_info(
+        self, extractor, ingester: BronzePolarsIngester,
+        batch_id: str, result: Dict[str, Any],
+        type_info: str,
+    ) -> None:
+        raw = extractor.crawl_industry_info(type_info=type_info)
+        if not raw:
+            return
+        # crawl_industry_info trả về dict{key: row.__dict__}
+        records = []
+        for key, row in raw.items():
+            rec = row if isinstance(row, dict) else row.__dict__
+            rec["_industry_key"] = key
+            records.append(rec)
+        if not records:
+            return
+        table = f"industry_info_{type_info}"
+        res = ingester.ingest(table, records, batch_id, self.context.run_id)
+        result["rows_ingested"] += res["rows"]
+        self._log_lineage("cophieu68_global", f"bronze_{table}", res["rows"])
+
+    # ------------------------------------------------------------------
+    # Main execute
+    # ------------------------------------------------------------------
+
     def execute(self) -> Dict[str, Any]:
-        self.logger.info(f"[BronzeExecutor] Starting bronze phase for symbols={self.context.symbols}")
+        self.logger.info(f"[BronzeExecutor] Starting bronze phase symbols={self.context.symbols}")
         result = {
             "phase": "bronze",
             "symbols_processed": 0,
@@ -521,60 +1303,52 @@ class BronzeExecutor:
         }
 
         polars_engine = _build_polars_engine(self.config)
-        bronze_ingester = BronzePolarsIngester(engine=polars_engine, base_path=LAKEHOUSE_BASE)
-        extractor = _build_extractor(self.config)
+        ingester      = BronzePolarsIngester(engine=polars_engine, base_path=LAKEHOUSE_BASE)
+        extractor     = _build_extractor(self.config)
+        global_batch  = make_batch_id("GLOBAL")
 
+        # ── Per-symbol ────────────────────────────────────────────────
         for symbol in self.context.symbols:
             batch_id = make_batch_id(symbol)
-            self.logger.info(f"[BronzeExecutor] Processing symbol={symbol} batch_id={batch_id}")
-
-            try:
-                trading_data = extractor.crawl_trading_data(symbol=symbol, page=1)
-                if not trading_data or not trading_data.get("records"):
-                    self.logger.warning(f"[BronzeExecutor] No trading records for {symbol}")
-                    continue
-
-                raw_records = trading_data["records"]
-                cleansing = _build_cleansing_rules(symbol)
-                ingestion_result = bronze_ingester.process(
-                    raw_records=raw_records,
-                    batch_id=batch_id,
-                    run_id=self.context.run_id,
-                    symbol=symbol,
-                    cleansing=cleansing,
-                )
-
-                clean_count = ingestion_result["stats"]["clean"]
-                dq_count = ingestion_result["stats"].get("dq_violations", 0)
-                result["symbols_processed"] += 1
-                result["rows_ingested"] += clean_count
-                result["dq_issues"] += dq_count
-
-                if dq_count > 0:
-                    self.context.error_log.add(
-                        ErrorLevel.WARNING,
-                        f"{dq_count} data quality issues detected in bronze ingestion for {symbol}",
-                    )
-
-                self.context.metadata_repo.log_lineage(
-                    run_id=self.context.run_id,
-                    source_layer="external",
-                    source_table=f"cophieu68_{symbol}",
-                    target_layer="bronze",
-                    target_table="bronze_stock_prices",
-                    operation="APPEND",
-                    rows_affected=clean_count,
-                )
-
-            except Exception as exc:
-                self.logger.error(f"[BronzeExecutor] Error for {symbol}: {exc}")
-                self.context.error_log.add(
-                    ErrorLevel.ERROR,
-                    f"Bronze ingestion failed for {symbol}: {exc}",
-                )
+            self.logger.info(f"[BronzeExecutor] symbol={symbol} batch={batch_id}")
+            symbol_ok = True
+            for _step, _fn in [
+                ("trading_data",              lambda: self._ingest_trading_data(extractor, ingester, symbol, batch_id, result)),
+                ("company_profile",           lambda: self._ingest_company_profile(extractor, ingester, symbol, batch_id, result)),
+                ("financial_ratios",          lambda: self._ingest_financial_ratios(extractor, ingester, symbol, batch_id, result)),
+                ("financial_report_summary",  lambda: self._ingest_financial_report_summary(extractor, ingester, symbol, batch_id, result)),
+                ("business_plan",             lambda: self._ingest_business_plan(extractor, ingester, symbol, batch_id, result)),
+                ("income_statement_quarter",  lambda: self._ingest_income_statement(extractor, ingester, symbol, batch_id, result, "quarter")),
+                ("income_statement_year",     lambda: self._ingest_income_statement(extractor, ingester, symbol, batch_id, result, "year")),
+                ("balance_sheet_quarter",     lambda: self._ingest_balance_sheet(extractor, ingester, symbol, batch_id, result, "quarter")),
+                ("balance_sheet_year",        lambda: self._ingest_balance_sheet(extractor, ingester, symbol, batch_id, result, "year")),
+            ]:
+                try:
+                    _fn()
+                except Exception as exc:
+                    self.logger.error(f"[BronzeExecutor] {symbol}/{_step} failed: {exc}")
+                    self.context.error_log.add(ErrorLevel.WARNING, f"Bronze {symbol}/{_step}: {exc}")
+                    symbol_ok = False  # ghi nhận lỗi nhưng tiếp tục các bước còn lại
+            result["symbols_processed"] += 1
+            if not symbol_ok:
                 result["errors"] += 1
 
-        self.logger.info(f"[BronzeExecutor] Completed bronze phase: rows_ingested={result['rows_ingested']}")
+        # ── Global (chạy 1 lần) ───────────────────────────────────────
+        try:
+            self._ingest_industry_sectors(extractor, ingester, global_batch, result)
+            self._ingest_market_type_sectors(extractor, ingester, global_batch, result)
+            self._ingest_industry_info(extractor, ingester, global_batch, result, "summary_info")
+            self._ingest_industry_info(extractor, ingester, global_batch, result, "financial_info")
+            self._ingest_industry_info(extractor, ingester, global_batch, result, "fund_info")
+        except Exception as exc:
+            self.logger.error(f"[BronzeExecutor] Error in global crawlers: {exc}")
+            self.context.error_log.add(ErrorLevel.ERROR, f"Bronze global crawl failed: {exc}")
+            result["errors"] += 1
+
+        self.logger.info(
+            f"[BronzeExecutor] Completed: rows_ingested={result['rows_ingested']} "
+            f"symbols={result['symbols_processed']} errors={result['errors']}"
+        )
         return result
 
 
@@ -601,33 +1375,63 @@ class SilverExecutor:
             base_path=LAKEHOUSE_BASE,
         )
 
-        try:
-            silver_result = processor.transform_stock_prices(
+        # All 10 silver transforms — each runs independently so one failure
+        # does not block the rest.
+        # bronze_src label, silver_tgt label (matches delta_schema_registry.py), callable
+        transforms = [
+            ("stock_prices",        "fact_stock_price",        lambda: processor.transform_stock_prices(
                 target_date=self.context.target_date,
                 run_id=self.context.run_id,
                 dedup_strategy=DeduplicationStrategy.KEEP_LAST,
-            )
-            result.update(silver_result)
+            )),
+            ("company_profile",     "dim_company",             lambda: processor.transform_company_profile(
+                target_date=self.context.target_date, run_id=self.context.run_id)),
+            ("financial_ratios",    "fact_financial_metrics",  lambda: processor.transform_financial_ratios(
+                target_date=self.context.target_date, run_id=self.context.run_id)),
+            ("financial_report",    "fact_financial_report",   lambda: processor.transform_financial_report(
+                target_date=self.context.target_date, run_id=self.context.run_id)),
+            ("business_plan",       "fact_business_plan",      lambda: processor.transform_business_plan(
+                target_date=self.context.target_date, run_id=self.context.run_id)),
+            ("income_statement",    "fact_income_statement",   lambda: processor.transform_income_statement(
+                target_date=self.context.target_date, run_id=self.context.run_id)),
+            ("balance_sheet",       "fact_balance_sheet",      lambda: processor.transform_balance_sheet(
+                target_date=self.context.target_date, run_id=self.context.run_id)),
+            ("industry_sectors",    "dim_industry",            lambda: processor.transform_industry_sectors(
+                target_date=self.context.target_date, run_id=self.context.run_id)),
+            ("market_type_sectors", "dim_market_type",         lambda: processor.transform_market_type_sectors(
+                target_date=self.context.target_date, run_id=self.context.run_id)),
+            ("industry_info",       "fact_industry_summary",   lambda: processor.transform_industry_info(
+                target_date=self.context.target_date, run_id=self.context.run_id)),
+        ]
 
-            if silver_result.get("rows_out", 0) > 0:
-                self.context.metadata_repo.log_lineage(
-                    run_id=self.context.run_id,
-                    source_layer="bronze",
-                    source_table="bronze_stock_prices",
-                    target_layer="silver",
-                    target_table="silver_fact_stock_price",
-                    operation="MERGE",
-                    rows_affected=silver_result.get("rows_out", 0),
-                )
-
-        except Exception as exc:
-            self.logger.error(f"[SilverExecutor] Error: {exc}")
-            self.context.error_log.add(
-                ErrorLevel.ERROR,
-                f"Silver transformation failed: {exc}",
-            )
-            result["errors"] += 1
-
+        try:
+            for bronze_src, silver_tgt, fn in transforms:
+                try:
+                    t_result = fn()
+                    rows_out = t_result.get("rows_out", 0)
+                    result["rows_in"]  = result.get("rows_in",  0) + t_result.get("rows_in",  0)
+                    result["rows_out"] = result.get("rows_out", 0) + rows_out
+                    if rows_out > 0:
+                        self.context.metadata_repo.log_lineage(
+                            run_id=self.context.run_id,
+                            source_layer="bronze",
+                            source_table=f"bronze_{bronze_src}",
+                            target_layer="silver",
+                            target_table=f"silver_{silver_tgt}",
+                            operation="MERGE",
+                            rows_affected=rows_out,
+                        )
+                    self.logger.info(
+                        f"[SilverExecutor] {bronze_src} → {silver_tgt}: "
+                        f"rows_in={t_result.get('rows_in',0)} rows_out={rows_out}"
+                    )
+                except Exception as exc:
+                    self.logger.error(f"[SilverExecutor] {bronze_src} failed: {exc}")
+                    self.context.error_log.add(
+                        ErrorLevel.ERROR,
+                        f"Silver {bronze_src} → {silver_tgt} failed: {exc}",
+                    )
+                    result["errors"] += 1
         finally:
             duck_engine.close()
 

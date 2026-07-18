@@ -68,6 +68,16 @@ project_params:
           info: postgresql_info.log
           warning: postgresql_warning.log
           error: postgresql_error.log
+      duckdb:
+        level: DEBUG
+        storage_path: logger_storage/storage/duckdb
+        max_size_mb: 50
+        backup_count: 7
+        files:
+          debug: duckdb_debug.log
+          info: duckdb_info.log
+          warning: duckdb_warning.log
+          error: duckdb_error.log
     processing_log:
       polars:
         level: INFO
@@ -79,6 +89,16 @@ project_params:
           info: polars_info.log
           warning: polars_warning.log
           error: polars_error.log
+      sqlmesh:
+        level: DEBUG
+        storage_path: logger_storage/processing/sqlmesh
+        max_size_mb: 50
+        backup_count: 7
+        files:
+          debug: sqlmesh_debug.log
+          info: sqlmesh_info.log
+          warning: sqlmesh_warning.log
+          error: sqlmesh_error.log
     governance_log:
       data_quality:
         level: INFO
@@ -131,76 +151,3 @@ project_params:
         backoff_seconds: 30
       parser: html
       auth: {}
-
-  # storage:
-
-  #   postgreSQL:
-  #     host: "localhost"
-  #     port: 5432
-  #     database: "etl_project"
-  #     user: "hungpham"
-  #     password: "hungpham@123"
-  #     schema: "private"
-  #     connection_pool:
-  #       min_size: 1
-  #       max_size: 10
-  #     delay_call: 0.2
-  #     reties_etl_flows:
-  #       max_attempts: 3
-  #       backoff_seconds: 60
-    # mongodb:
-    #   enabled: true
-    #   url: "mongodb://root:root123@localhost:27017/?authSource=admin"
-    #   database: "cophieu68_datalake"
-    #   username: "root"
-    #   password: "root123"
-    #   authSource: "admin"
-    #   host: "localhost"
-    #   port: 27017
-    #   connectTimeoutMS: 5000
-    #   maxPoolSize: 50
-    #   retryWrites: true
-    #   writeConcern: "majority"
-    #   delay_call: 0.2
-    #   reties_etl_flows:
-    #     max_attempts: 3
-    #     backoff_seconds: 60
-    #   documentation:
-    #     market_list:
-    #       bsonType: object
-    #       additionalProperties: true
-    #     industry_info:
-    #       bsonType: object
-    #       additionalProperties: true
-    #     company_info:
-    #       bsonType: object
-    #       additionalProperties: true
-    #     match_details:
-    #       bsonType: object
-    #       additionalProperties: true
-    #     financial_summary:
-    #       bsonType: object
-    #       additionalProperties: true
-    #     business_plan:
-    #       bsonType: object
-    #       additionalProperties: true
-    #     income_statement:
-    #       bsonType: object
-    #       additionalProperties: true
-    #     balance_sheet:
-    #       bsonType: object
-    #       additionalProperties: true
-    #     financial_info:
-    #       bsonType: object
-    #       additionalProperties: true
-    #     trading_data:
-    #       bsonType: object
-    #       additionalProperties: true
-    #     industry_sectors:
-    #       bsonType: object
-    #       additionalProperties: true
-    #     market_types_sector:
-    #       bsonType: object
-    #       additionalProperties: true
-
-

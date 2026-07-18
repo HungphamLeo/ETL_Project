@@ -51,7 +51,67 @@ handlers:
     backupCount: 3
     formatter: default
     level: ERROR
-  # Thêm cho warning, error
+
+  # ── DuckDB storage logger ────────────────────────────────────────────────
+  duckdb_debug:
+    class: logging.handlers.RotatingFileHandler
+    filename: logger_storage/storage/duckdb/duckdb_debug.log
+    maxBytes: 52428800  # 50MB
+    backupCount: 7
+    formatter: default
+    level: DEBUG
+  duckdb_info:
+    class: logging.handlers.RotatingFileHandler
+    filename: logger_storage/storage/duckdb/duckdb_info.log
+    maxBytes: 52428800
+    backupCount: 7
+    formatter: default
+    level: INFO
+  duckdb_warning:
+    class: logging.handlers.RotatingFileHandler
+    filename: logger_storage/storage/duckdb/duckdb_warning.log
+    maxBytes: 52428800
+    backupCount: 7
+    formatter: default
+    level: WARNING
+  duckdb_error:
+    class: logging.handlers.RotatingFileHandler
+    filename: logger_storage/storage/duckdb/duckdb_error.log
+    maxBytes: 52428800
+    backupCount: 7
+    formatter: default
+    level: ERROR
+
+  # ── SQLMesh processing logger ────────────────────────────────────────────
+  sqlmesh_debug:
+    class: logging.handlers.RotatingFileHandler
+    filename: logger_storage/processing/sqlmesh/sqlmesh_debug.log
+    maxBytes: 52428800
+    backupCount: 7
+    formatter: default
+    level: DEBUG
+  sqlmesh_info:
+    class: logging.handlers.RotatingFileHandler
+    filename: logger_storage/processing/sqlmesh/sqlmesh_info.log
+    maxBytes: 52428800
+    backupCount: 7
+    formatter: default
+    level: INFO
+  sqlmesh_warning:
+    class: logging.handlers.RotatingFileHandler
+    filename: logger_storage/processing/sqlmesh/sqlmesh_warning.log
+    maxBytes: 52428800
+    backupCount: 7
+    formatter: default
+    level: WARNING
+  sqlmesh_error:
+    class: logging.handlers.RotatingFileHandler
+    filename: logger_storage/processing/sqlmesh/sqlmesh_error.log
+    maxBytes: 52428800
+    backupCount: 7
+    formatter: default
+    level: ERROR
+
 loggers:
   etl_platforms_ingestion_cophieu68_extract:
     level: DEBUG
@@ -65,6 +125,19 @@ loggers:
     level: INFO
     handlers: [console, file_info]
     propagate: false
+
+  # ── DuckDB: log SQL queries (DEBUG) + errors (WARNING+) to dedicated files
+  logger.storage_log.duckdb:
+    level: DEBUG
+    handlers: [console, duckdb_debug, duckdb_info, duckdb_warning, duckdb_error]
+    propagate: false
+
+  # ── SQLMesh: log plan/run events + errors to dedicated files
+  logger.processing_log.sqlmesh:
+    level: DEBUG
+    handlers: [console, sqlmesh_debug, sqlmesh_info, sqlmesh_warning, sqlmesh_error]
+    propagate: false
+
   root:
     level: INFO
     handlers: [console]

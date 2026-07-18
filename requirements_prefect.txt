@@ -2,3 +2,4 @@ prefect[spark]==2.14.0
 prefect-docker
 prefect-sqlalchemy
 prefect-kubernetes
+griffe

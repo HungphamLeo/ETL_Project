@@ -1776,7 +1776,7 @@ docker restart stock_minio
 # Make sure S3 settings correct in .env:
 S3_ENDPOINT=http://localhost:9000
 AWS_ACCESS_KEY_ID=minioadmin
-AWS_SECRET_ACCESS_KEY=minioadmin_secure_123
+AWS_SECRET_ACCESS_KEY=minioadmin_secure_123@#
 
 # Try writing again with verbose:
 python -u test_bronze_ingest.py
@@ -3108,7 +3108,7 @@ volumes:
 ```bash
 # MinIO
 MINIO_ROOT_USER=minioadmin
-MINIO_ROOT_PASSWORD=minioadmin_secure_123
+MINIO_ROOT_PASSWORD=minioadmin_secure_123@#
 
 # PostgreSQL
 POSTGRES_USER=dw_admin
@@ -3121,7 +3121,7 @@ PREFECT_API_URL=http://localhost:4200/api
 # S3 / Data Lake
 S3_ENDPOINT=http://localhost:9000
 AWS_ACCESS_KEY_ID=minioadmin
-AWS_SECRET_ACCESS_KEY=minioadmin_secure_123
+AWS_SECRET_ACCESS_KEY=minioadmin_secure_123@#
 ```
 **Action:** Create + commit (tất cả dev phải copy to .env)  
 **Deadline:** Day 1  

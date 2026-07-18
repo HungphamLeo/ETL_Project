@@ -27,10 +27,30 @@ class SqlMeshEngine:
         abs_path = os.path.abspath(self.config.project_path)
         return Context(paths=abs_path, gateway=self.config.gateway)
 
-    def plan(self, environment: str = "prod") -> Any:
-        """Lên kế hoạch (Plan) và kiểm tra sự thay đổi của các models"""
-        self.logger.info(f"📋 Tạo Execution Plan cho environment: '{environment}'")
-        return self.context.plan(environment=environment)
+    def plan(
+        self,
+        environment: str = "prod",
+        skip_backfill: bool = False,
+        empty_backfill: bool = False,
+    ) -> Any:
+        """Lên kế hoạch và apply ngay (non-interactive).
+        auto_apply=True + no_prompts=True đảm bảo plan được apply mà không cần
+        người dùng confirm — bắt buộc khi chạy programmatically trong pipeline.
+
+        skip_backfill=True  : bỏ qua backfill hoàn toàn (environment không được populate)
+        empty_backfill=True : tạo table trống thay vì query S3
+                              (dùng khi silver chưa có data hoặc S3 offline)"""
+        self.logger.info(
+            f"📋 Tạo và apply Execution Plan cho environment: '{environment}' "
+            f"skip_backfill={skip_backfill} empty_backfill={empty_backfill}"
+        )
+        return self.context.plan(
+            environment=environment,
+            auto_apply=True,
+            no_prompts=True,
+            skip_backfill=skip_backfill,
+            empty_backfill=empty_backfill,
+        )
 
     def run(self, environment: str = "prod", start: Optional[str] = None, end: Optional[str] = None):
         """Thực thi pipeline biến đổi dữ liệu (Transform)"""

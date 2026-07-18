@@ -5,6 +5,8 @@ from typing import Dict, Any, Optional
 import duckdb
 import polars as pl
 
+from shared.logger.python_main_logger import logger_manager
+
 @dataclass
 class DuckDBConfig:
     """Dataclass chứa cấu hình cho DuckDB Engine."""
@@ -27,7 +29,8 @@ class DuckDBEngine:
     """
     def __init__(self, config: DuckDBConfig, logger: Optional[logging.Logger] = None):
         self.config = config
-        self.logger = logger or logging.getLogger(__name__)
+        # Use dedicated DuckDB logger that routes to logger_storage/storage/duckdb/
+        self.logger = logger or logger_manager.get_logger("logger.storage_log.duckdb")
         self.connection = self._connect()
 
     def _connect(self) -> duckdb.DuckDBPyConnection:
@@ -59,12 +62,14 @@ class DuckDBEngine:
     def query_to_polars(self, sql_query: str) -> pl.LazyFrame:
         """Thực thi một câu lệnh SQL và trả về kết quả dưới dạng Polars LazyFrame."""
         self.logger.debug(f"Executing query: {sql_query}")
-        return self.connection.sql(sql_query).pl()
+        # duckdb .pl() returns an eager DataFrame; wrap in .lazy() to honour the LazyFrame contract
+        return self.connection.sql(sql_query).pl().lazy()
 
     def query_to_df(self, sql_query: str) -> pl.DataFrame:
         """Thực thi một câu lệnh SQL và trả về kết quả dưới dạng Polars DataFrame."""
         self.logger.debug(f"Executing query: {sql_query}")
-        return self.connection.sql(sql_query).pl().collect()
+        # duckdb .pl() already returns an eager DataFrame — no .collect() needed
+        return self.connection.sql(sql_query).pl()
 
     def close(self):
         """Đóng kết nối DuckDB."""

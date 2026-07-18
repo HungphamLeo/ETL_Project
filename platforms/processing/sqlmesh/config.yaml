@@ -1,0 +1,32 @@
+gateways:
+  local_duckdb:
+    connection:
+      type: duckdb
+      database: ./stock_lakehouse.db
+
+      # Load httpfs extension for S3/MinIO access
+      extensions:
+        - httpfs
+
+      # DuckDB secrets — generates: CREATE OR REPLACE SECRET (TYPE S3, ...)
+      # SQLMesh 0.234.x native secrets API (replaces deprecated pre_statements)
+      secrets:
+        - TYPE: S3
+          KEY_ID: "{{ env_var('AWS_ACCESS_KEY_ID', 'minioadmin') }}"
+          SECRET: "{{ env_var('AWS_SECRET_ACCESS_KEY', 'minioadmin_secure_123@#') }}"
+          ENDPOINT: "{{ env_var('S3_ENDPOINT', 'localhost:9000') }}"
+          USE_SSL: "false"
+          URL_STYLE: path
+          REGION: us-east-1
+
+      # Additional DuckDB SET params (not available via secrets)
+      connector_config:
+        s3_use_ssl: "false"
+        s3_url_style: path
+        s3_region: us-east-1
+
+default_gateway: local_duckdb
+
+model_defaults:
+  dialect: duckdb
+  owner: data_engineering_team

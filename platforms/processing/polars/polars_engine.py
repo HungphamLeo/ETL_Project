@@ -34,11 +34,11 @@ class PolarsEngine:
         """Cấu hình môi trường (VD: giới hạn số lượng thread)"""
         if self.config.thread_pool_size:
             os.environ["POLARS_MAX_THREADS"] = str(self.config.thread_pool_size)
-            self.logger.info(f"🚀 Set POLARS_MAX_THREADS = {self.config.thread_pool_size}")
+            self.logger.info(f"Set POLARS_MAX_THREADS = {self.config.thread_pool_size}")
 
     def read_parquet(self, source_path: str) -> pl.LazyFrame:
         """Đọc dữ liệu Parquet dưới dạng LazyFrame (tối ưu hóa bộ nhớ)"""
-        self.logger.info(f"📥 Đọc dữ liệu từ: {source_path}")
+        self.logger.info(f"Đọc dữ liệu từ: {source_path}")
         return pl.scan_parquet(
             source_path, 
             storage_options=self.config.storage_options
@@ -55,7 +55,7 @@ class PolarsEngine:
         Polars 1.x write_parquet() không nhận storage_options — cần dùng pyarrow
         kết hợp s3fs/PyArrowFileSystem khi ghi lên S3/MinIO.
         """
-        self.logger.info(f"💾 Ghi dữ liệu tới: {target_path} (Partition: {partition_by})")
+        self.logger.info(f" Ghi dữ liệu tới: {target_path} (Partition: {partition_by})")
 
         # Nếu là LazyFrame, thực thi (collect) theo streaming mode
         if isinstance(df, pl.LazyFrame):
