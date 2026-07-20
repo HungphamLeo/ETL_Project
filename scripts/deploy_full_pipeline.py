@@ -498,35 +498,62 @@ class SilverProcessor:
     # ------------------------------------------------------------------
 
     def _read_bronze(self, table_name: str, target_date: str) -> Optional[Any]:
-        """Read bronze/<table_name>/ingest_date=<date>/*.parquet via DuckDB.
-        Uses hive_partitioning=true so the `ingest_date` partition column is
-        re-materialised as a real column in the result schema.
-        Returns a Polars DataFrame, or None if the partition is empty/missing."""
+        """Read bronze/<table_name>/ via DuckDB.
+
+        Strategy (in order):
+          1. Try exact partition: ingest_date=<target_date>/*.parquet
+          2. Fallback: scan all partitions via /**/*.parquet (latest wins at dedup step)
+
+        Uses hive_partitioning=true so `ingest_date` is re-materialised as a column.
+        Returns a Polars DataFrame, or None if table is entirely empty/missing.
+        """
         import polars as pl
-        bronze_glob = f"{self.base}/bronze/{table_name}/ingest_date={target_date}/*.parquet"
-        self.logger.info(f"[SilverProcessor] Reading {bronze_glob}")
-        try:
-            df = self.duck.query_to_polars(
-                f"SELECT * FROM read_parquet('{bronze_glob}', hive_partitioning=true)"
-            ).collect()
-            if df.is_empty():
-                self.logger.warning(
-                    f"[SilverProcessor] No data in bronze/{table_name} for {target_date}")
+
+        def _query(glob: str) -> Optional[Any]:
+            try:
+                df = self.duck.query_to_polars(
+                    f"SELECT * FROM read_parquet('{glob}', hive_partitioning=true)"
+                ).collect()
+                return df if not df.is_empty() else None
+            except Exception as exc:
+                self.logger.debug(f"[SilverProcessor] read_parquet({glob}) failed: {exc}")
                 return None
+
+        # 1. Exact date partition
+        exact_glob = f"{self.base}/bronze/{table_name}/ingest_date={target_date}/*.parquet"
+        self.logger.info(f"[SilverProcessor] Reading bronze/{table_name} (exact: {target_date})")
+        df = _query(exact_glob)
+        if df is not None:
             return df
-        except Exception as exc:
-            self.logger.warning(
-                f"[SilverProcessor] Could not read bronze/{table_name}: {exc}")
-            return None
+
+        # 2. Fallback: scan all partitions — picks up data from any ingest date
+        all_glob = f"{self.base}/bronze/{table_name}/**/*.parquet"
+        self.logger.warning(
+            f"[SilverProcessor] No data for ingest_date={target_date} in "
+            f"bronze/{table_name} — falling back to full scan {all_glob}"
+        )
+        df = _query(all_glob)
+        if df is not None:
+            self.logger.info(
+                f"[SilverProcessor] Fallback scan found {len(df)} rows in bronze/{table_name}")
+            return df
+
+        self.logger.warning(f"[SilverProcessor] bronze/{table_name} is empty — skipping")
+        return None
 
     def _write_silver(self, df: Any, silver_table: str,
                       partition_by: Optional[List[str]] = None) -> str:
         """Write a Polars DataFrame to silver/<silver_table>/ and return the path.
-        No default partition — callers must pass partition_by=[] explicitly when
-        the schema registry says partition_by=[]."""
+
+        partition_by=[] → PyArrow raises ValueError("Must pass at least one partition column").
+        Convert empty list to None so _write_parquet_s3 / write_parquet takes the
+        non-partitioned code path (single data.parquet file).
+        """
         silver_path = f"{self.base}/silver/{silver_table}/"
+        # Normalise: [] và None đều → None (non-partitioned write)
+        _parts = partition_by if partition_by else None
         self.polars.write_parquet(df=df, target_path=silver_path,
-                                  partition_by=partition_by or [])
+                                  partition_by=_parts)
         self.logger.info(f"[SilverProcessor] Wrote {len(df)} rows → {silver_path}")
         return silver_path
 
