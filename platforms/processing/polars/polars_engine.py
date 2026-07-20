@@ -123,5 +123,9 @@ class PolarsEngine:
                 use_legacy_dataset=False,
             )
         else:
-            with fs.open(s3_path, "wb") as f:
+            # Ensure the path is a file, not a bare directory prefix.
+            # s3_path may end with "/" (e.g. "s3://lakehouse/silver/dim_company/")
+            # → write to "s3://lakehouse/silver/dim_company/data.parquet"
+            file_path = s3_path.rstrip("/") + "/data.parquet"
+            with fs.open(file_path, "wb") as f:
                 pq.write_table(arrow_table, f)

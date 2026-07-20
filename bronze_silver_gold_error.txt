@@ -1,0 +1,277 @@
+(ds_env) hungpham@DESKTOP-I46N00O:/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project$ python scripts/deploy_full_pipeline.py gold --symbols HPG --env dev --config platforms/orchestration/prefect/config/cophieu68_config.yaml
+{"time":"2026-07-20T12:03:15", "level":"INFO", "message":"[CONFIG] Loaded from platforms/orchestration/prefect/config/cophieu68_config.yaml", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:159"}
+Loading config from: platforms/orchestration/prefect/config/cophieu68_config.yaml
+{"time":"2026-07-20T12:03:15", "level":"INFO", "message":"[CONFIG] Prefect config loaded successfully", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:171"}
+{"time":"2026-07-20T12:03:15", "level":"INFO", "message":"[ORCHESTRATOR] Starting pipeline phase=gold run_id=run_20260720_050315_b6cb09 target_date=2026-07-20 symbols=['HPG'] backend=polars", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:1576"}
+{"time":"2026-07-20T12:03:15", "level":"INFO", "message":"[RUN START] run_id=run_20260720_050315_b6cb09 | job=master_etl_gold | layer=gold | table=all_tables", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/processing/base_processing_subsystem/subsystem34_metadata_repo.py:138"}
+{"time":"2026-07-20T12:03:15", "level":"INFO", "message":"[GoldExecutor] Starting gold phase for date=2026-07-20", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:1449"}
+{"time":"2026-07-20T12:03:15", "level":"INFO", "message":"🔄 Khởi tạo SQLMesh Context tại: /mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/processing/sqlmesh", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/processing/sqlmesh/sqlmesh_engine.py:25"}
+{"time":"2026-07-20T12:03:16", "level":"INFO", "message":"Creating new DuckDB adapter for data files: {'./stock_lakehouse.db'}", "caller":"/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/config/connection.py:497"}
+{"time":"2026-07-20T12:03:17", "level":"INFO", "message":"🦆 Khởi tạo kết nối DuckDB tới: ':memory:'", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/processing/duckdb/duckdb_engine.py:38"}
+{"time":"2026-07-20T12:03:17", "level":"INFO", "message":"🔧 Cấu hình S3/MinIO cho DuckDB...", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/processing/duckdb/duckdb_engine.py:46"}
+{"time":"2026-07-20T12:03:17", "level":"INFO", "message":"✅ Cấu hình S3/MinIO hoàn tất.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/processing/duckdb/duckdb_engine.py:58"}
+{"time":"2026-07-20T12:03:17", "level":"INFO", "message":"[GoldProcessor] Running SQLMesh models env=dev start=2026-07-20 end=2026-07-20", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:959"}
+{"time":"2026-07-20T12:03:17", "level":"INFO", "message":"📋 Tạo và apply Execution Plan cho environment: 'dev' skip_backfill=False empty_backfill=False", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/processing/sqlmesh/sqlmesh_engine.py:43"}
+{"time":"2026-07-20T12:03:20", "level":"INFO", "message":"Using existing DuckDB adapter due to overlapping data file: ./stock_lakehouse.db", "caller":"/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/config/connection.py:487"}
+{"time":"2026-07-20T12:03:23", "level":"INFO", "message":"Evaluating plan stage PhysicalLayerSchemaCreationStage", "caller":"/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/plan/evaluator.py:123"}
+{"time":"2026-07-20T12:03:23", "level":"INFO", "message":"Creating schema 'stock_lakehouse.sqlmesh__gold'", "caller":"/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/snapshot/evaluator.py:1449"}
+{"time":"2026-07-20T12:03:23", "level":"INFO", "message":"Executing SQL: /* SQLMESH_PLAN: 71d7f9c369b34897a97d8acab58dd12d */ CREATE SCHEMA IF NOT EXISTS "stock_lakehouse"."sqlmesh__gold"", "caller":"/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/engine_adapter/base.py:2624"}
+{"time":"2026-07-20T12:03:23", "level":"INFO", "message":"Evaluating plan stage BackfillStage", "caller":"/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/plan/evaluator.py:123"}
+{"time":"2026-07-20T12:03:23", "level":"INFO", "message":"Listing data objects in schema stock_lakehouse.sqlmesh__gold", "caller":"/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/snapshot/evaluator.py:1616"}
+{"time":"2026-07-20T12:03:23", "level":"INFO", "message":"Executing SQL: /* SQLMESH_PLAN: 71d7f9c369b34897a97d8acab58dd12d */ SELECT CURRENT_CATALOG", "caller":"/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/engine_adapter/base.py:2624"}
+{"time":"2026-07-20T12:03:23", "level":"INFO", "message":"Executing SQL: /* SQLMESH_PLAN: 71d7f9c369b34897a97d8acab58dd12d */ SELECT CURRENT_CATALOG", "caller":"/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/engine_adapter/base.py:2624"}
+{"time":"2026-07-20T12:03:23", "level":"INFO", "message":"Executing SQL: /* SQLMESH_PLAN: 71d7f9c369b34897a97d8acab58dd12d */ SELECT table_name AS name, table_schema AS schema, CASE table_type WHEN 'BASE TABLE' THEN 'table' WHEN 'VIEW' THEN 'view' WHEN 'LOCAL TEMPORARY' THEN 'table' END AS type FROM system.information_schema.tables WHERE (table_catalog = 'stock_lakehouse' AND table_schema = 'sqlmesh__gold') AND table_name IN ('gold__dim_company_current__1045829971', 'gold__fct_is_core_income__3021568476', 'gold__fct_bs_assets__1570245438', 'gold__fct_trading_ohlcv__2885115593')", "caller":"/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/engine_adapter/base.py:2624"}
+{"time":"2026-07-20T12:03:23", "level":"INFO", "message":"Evaluating snapshot SnapshotId<"stock_lakehouse"."gold"."dim_company_current": 4025092490>", "caller":"/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/snapshot/evaluator.py:711"}
+{"time":"2026-07-20T12:03:23", "level":"INFO", "message":"Inserting data for snapshot SnapshotId<"stock_lakehouse"."gold"."dim_company_current": 4025092490>", "caller":"/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/snapshot/evaluator.py:952"}
+{"time":"2026-07-20T12:03:23", "level":"INFO", "message":"Inserting batch (2026-07-19 00:00:00, 2026-07-20 00:00:00) into stock_lakehouse.sqlmesh__gold.gold__dim_company_current__1045829971'", "caller":"/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/snapshot/evaluator.py:984"}
+{"time":"2026-07-20T12:03:23", "level":"INFO", "message":"Executing SQL: /* SQLMESH_PLAN: 71d7f9c369b34897a97d8acab58dd12d */ DESCRIBE "stock_lakehouse"."sqlmesh__gold"."gold__dim_company_current__1045829971"", "caller":"/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/engine_adapter/base.py:2624"}
+{"time":"2026-07-20T12:03:23", "level":"INFO", "message":"Executing SQL: /* SQLMESH_PLAN: 71d7f9c369b34897a97d8acab58dd12d */ SELECT CURRENT_CATALOG", "caller":"/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/engine_adapter/base.py:2624"}
+{"time":"2026-07-20T12:03:23", "level":"INFO", "message":"Executing SQL: /* SQLMESH_PLAN: 71d7f9c369b34897a97d8acab58dd12d */ SELECT type FROM DUCKDB_DATABASES() WHERE database_name = 'stock_lakehouse'", "caller":"/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/engine_adapter/base.py:2624"}
+{"time":"2026-07-20T12:03:23", "level":"INFO", "message":"Executing SQL: /* SQLMESH_PLAN: 71d7f9c369b34897a97d8acab58dd12d */ CREATE OR REPLACE TABLE "stock_lakehouse"."sqlmesh__gold"."gold__dim_company_current__1045829971" AS SELECT "company_key" AS "company_key", "symbol" AS "symbol", COALESCE("full_name", "company_name") AS "company_name", "full_name" AS "full_name", "english_name" AS "english_name", "short_name" AS "short_name", "address" AS "address", "website" AS "website", "email_address" AS "email_address", "established_date" AS "established_date", "listed_date" AS "listed_date", "listed_volume" AS "listed_volume", "market_capitalization" AS "market_capitalization", "effective_date" AS "effective_date", CURRENT_TIMESTAMP AS "_updated_at" FROM READ_PARQUET('s3://lakehouse/silver/dim_company/**/*.parquet', "hive_partitioning" = TRUE) AS "_0" WHERE "is_current" = TRUE", "caller":"/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/engine_adapter/base.py:2624"}
+{"time":"2026-07-20T12:03:23", "level":"INFO", "message":"Evaluating snapshot SnapshotId<"stock_lakehouse"."gold"."fct_bs_assets": 4145922235>", "caller":"/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/snapshot/evaluator.py:711"}
+{"time":"2026-07-20T12:03:23", "level":"INFO", "message":"Inserting data for snapshot SnapshotId<"stock_lakehouse"."gold"."fct_bs_assets": 4145922235>", "caller":"/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/snapshot/evaluator.py:952"}
+{"time":"2026-07-20T12:03:23", "level":"INFO", "message":"Inserting batch (2026-07-19 00:00:00, 2026-07-20 00:00:00) into stock_lakehouse.sqlmesh__gold.gold__fct_bs_assets__1570245438'", "caller":"/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/snapshot/evaluator.py:984"}
+{"time":"2026-07-20T12:03:23", "level":"INFO", "message":"Executing SQL: /* SQLMESH_PLAN: 71d7f9c369b34897a97d8acab58dd12d */ DESCRIBE "stock_lakehouse"."sqlmesh__gold"."gold__fct_bs_assets__1570245438"", "caller":"/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/engine_adapter/base.py:2624"}
+{"time":"2026-07-20T12:03:23", "level":"INFO", "message":"Executing SQL: /* SQLMESH_PLAN: 71d7f9c369b34897a97d8acab58dd12d */ SELECT CURRENT_CATALOG", "caller":"/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/engine_adapter/base.py:2624"}
+{"time":"2026-07-20T12:03:23", "level":"INFO", "message":"Executing SQL: /* SQLMESH_PLAN: 71d7f9c369b34897a97d8acab58dd12d */ SELECT type FROM DUCKDB_DATABASES() WHERE database_name = 'stock_lakehouse'", "caller":"/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/engine_adapter/base.py:2624"}
+{"time":"2026-07-20T12:03:23", "level":"INFO", "message":"Executing SQL: /* SQLMESH_PLAN: 71d7f9c369b34897a97d8acab58dd12d */ CREATE OR REPLACE TABLE "stock_lakehouse"."sqlmesh__gold"."gold__fct_bs_assets__1570245438" AS SELECT "symbol" AS "symbol", "time_report_type" AS "time_report_type", "report_type" AS "financial_report_type", COALESCE(TRY_CAST("year" AS TEXT), LEFT("ingest_date", 4)) AS "year", NULL AS "period", TRY_CAST(NULL AS DECIMAL(30, 4)) AS "cash_and_valuables", TRY_CAST(NULL AS DECIMAL(30, 4)) AS "total_assets", CURRENT_TIMESTAMP AS "update_time", CURRENT_TIMESTAMP AS "_updated_at" FROM READ_PARQUET('s3://lakehouse/silver/fact_balance_sheet/**/*.parquet', "hive_partitioning" = TRUE) AS "_0"", "caller":"/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/engine_adapter/base.py:2624"}
+{"time":"2026-07-20T12:03:23", "level":"INFO", "message":"Evaluating snapshot SnapshotId<"stock_lakehouse"."gold"."fct_is_core_income": 2377937901>", "caller":"/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/snapshot/evaluator.py:711"}
+{"time":"2026-07-20T12:03:23", "level":"INFO", "message":"Inserting data for snapshot SnapshotId<"stock_lakehouse"."gold"."fct_is_core_income": 2377937901>", "caller":"/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/snapshot/evaluator.py:952"}
+{"time":"2026-07-20T12:03:23", "level":"INFO", "message":"Inserting batch (2026-07-19 00:00:00, 2026-07-20 00:00:00) into stock_lakehouse.sqlmesh__gold.gold__fct_is_core_income__3021568476'", "caller":"/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/snapshot/evaluator.py:984"}
+{"time":"2026-07-20T12:03:23", "level":"INFO", "message":"Executing SQL: /* SQLMESH_PLAN: 71d7f9c369b34897a97d8acab58dd12d */ DESCRIBE "stock_lakehouse"."sqlmesh__gold"."gold__fct_is_core_income__3021568476"", "caller":"/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/engine_adapter/base.py:2624"}
+{"time":"2026-07-20T12:03:23", "level":"INFO", "message":"Executing SQL: /* SQLMESH_PLAN: 71d7f9c369b34897a97d8acab58dd12d */ SELECT CURRENT_CATALOG", "caller":"/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/engine_adapter/base.py:2624"}
+{"time":"2026-07-20T12:03:23", "level":"INFO", "message":"Executing SQL: /* SQLMESH_PLAN: 71d7f9c369b34897a97d8acab58dd12d */ SELECT type FROM DUCKDB_DATABASES() WHERE database_name = 'stock_lakehouse'", "caller":"/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/engine_adapter/base.py:2624"}
+{"time":"2026-07-20T12:03:23", "level":"INFO", "message":"Executing SQL: /* SQLMESH_PLAN: 71d7f9c369b34897a97d8acab58dd12d */ CREATE OR REPLACE TABLE "stock_lakehouse"."sqlmesh__gold"."gold__fct_is_core_income__3021568476" AS SELECT "symbol" AS "symbol", "time_report_type" AS "time_report_type", "report_type" AS "financial_report_type", COALESCE(TRY_CAST("year" AS TEXT), LEFT("ingest_date", 4)) AS "year", NULL AS "period", TRY_CAST(NULL AS DECIMAL(30, 4)) AS "net_interest_income", TRY_CAST(NULL AS DECIMAL(30, 4)) AS "profit_before_tax", TRY_CAST(NULL AS DECIMAL(30, 4)) AS "profit_after_tax", CURRENT_TIMESTAMP AS "update_time", CURRENT_TIMESTAMP AS "_updated_at" FROM READ_PARQUET('s3://lakehouse/silver/fact_income_statement/**/*.parquet', "hive_partitioning" = TRUE) AS "_0"", "caller":"/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/engine_adapter/base.py:2624"}
+{"time":"2026-07-20T12:03:23", "level":"INFO", "message":"Evaluating snapshot SnapshotId<"stock_lakehouse"."gold"."fct_trading_ohlcv": 2157252845>", "caller":"/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/snapshot/evaluator.py:711"}
+{"time":"2026-07-20T12:03:24", "level":"INFO", "message":"Inserting data for snapshot SnapshotId<"stock_lakehouse"."gold"."fct_trading_ohlcv": 2157252845>", "caller":"/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/snapshot/evaluator.py:952"}
+{"time":"2026-07-20T12:03:24", "level":"INFO", "message":"Inserting batch (2026-07-19 00:00:00, 2026-07-20 00:00:00) into stock_lakehouse.sqlmesh__gold.gold__fct_trading_ohlcv__2885115593'", "caller":"/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/snapshot/evaluator.py:984"}
+{"time":"2026-07-20T12:03:24", "level":"INFO", "message":"Executing SQL: /* SQLMESH_PLAN: 71d7f9c369b34897a97d8acab58dd12d */ DESCRIBE "stock_lakehouse"."sqlmesh__gold"."gold__fct_trading_ohlcv__2885115593"", "caller":"/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/engine_adapter/base.py:2624"}
+{"time":"2026-07-20T12:03:24", "level":"INFO", "message":"Executing SQL: /* SQLMESH_PLAN: 71d7f9c369b34897a97d8acab58dd12d */ SELECT CURRENT_CATALOG", "caller":"/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/engine_adapter/base.py:2624"}
+{"time":"2026-07-20T12:03:24", "level":"INFO", "message":"Executing SQL: /* SQLMESH_PLAN: 71d7f9c369b34897a97d8acab58dd12d */ SELECT type FROM DUCKDB_DATABASES() WHERE database_name = 'stock_lakehouse'", "caller":"/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/engine_adapter/base.py:2624"}
+{"time":"2026-07-20T12:03:24", "level":"INFO", "message":"Executing SQL: /* SQLMESH_PLAN: 71d7f9c369b34897a97d8acab58dd12d */ CREATE OR REPLACE TABLE "stock_lakehouse"."sqlmesh__gold"."gold__fct_trading_ohlcv__2885115593" AS SELECT "t"."trade_key" AS "trade_key", "t"."symbol" AS "symbol", "c"."full_name" AS "company_name", "i"."industry_name" AS "industry_name", "m"."market_type" AS "market_type", TRY_CAST("t"."date" AS DATE) AS "trade_date", TRY_CAST("t"."close_price" AS DOUBLE) AS "close_price", TRY_CAST("t"."open_price" AS DOUBLE) AS "open_price", TRY_CAST("t"."high_price" AS DOUBLE) AS "high_price", TRY_CAST("t"."low_price" AS DOUBLE) AS "low_price", TRY_CAST("t"."volume" AS BIGINT) AS "volume", TRY_CAST("t"."foreign_buy" AS BIGINT) AS "foreign_buy", TRY_CAST("t"."foreign_sell" AS BIGINT) AS "foreign_sell", TRY_CAST("t"."foreign_value" AS DOUBLE) AS "foreign_net_value", "t"."year" AS "year", "t"."month" AS "month", CURRENT_TIMESTAMP AS "_updated_at" FROM READ_PARQUET('s3://lakehouse/silver/fact_stock_price/**/*.parquet', "hive_partitioning" = TRUE) AS "t" LEFT JOIN (SELECT "symbol", "full_name" FROM READ_PARQUET('s3://lakehouse/silver/dim_company/**/*.parquet', "hive_partitioning" = TRUE) AS "_0" WHERE "is_current" = TRUE) AS "c" ON "t"."symbol" = "c"."symbol" LEFT JOIN (SELECT DISTINCT "symbol", "industry_name" FROM READ_PARQUET('s3://lakehouse/silver/dim_industry/**/*.parquet', "hive_partitioning" = TRUE) AS "_1" WHERE "is_current" = TRUE) AS "i" ON "t"."symbol" = "i"."symbol" LEFT JOIN (SELECT DISTINCT "symbol", "market_name" AS "market_type" FROM READ_PARQUET('s3://lakehouse/silver/dim_market_type/**/*.parquet', "hive_partitioning" = TRUE) AS "_2") AS "m" ON "t"."symbol" = "m"."symbol"", "caller":"/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/engine_adapter/base.py:2624"}
+{"time":"2026-07-20T12:03:24", "level":"INFO", "message":"Execution failed for node EvaluateNode(snapshot_name='"stock_lakehouse"."gold"."dim_company_current"', interval=(1784419200000, 1784505600000), batch_index=0)", "caller":"/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/scheduler.py:618"}
+Traceback (most recent call last):
+  File "/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/utils/concurrency.py", line 234, in sequential_apply_to_dag
+    fn(node)
+  File "/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/scheduler.py", line 554, in run_node
+    audit_results = self.evaluate(
+                    ^^^^^^^^^^^^^^
+  File "/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/scheduler.py", line 229, in evaluate
+    wap_id = self.snapshot_evaluator.evaluate(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/snapshot/evaluator.py", line 186, in evaluate
+    result = self._evaluate_snapshot(
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/snapshot/evaluator.py", line 821, in _evaluate_snapshot
+    self._render_and_insert_snapshot(
+  File "/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/snapshot/evaluator.py", line 1041, in _render_and_insert_snapshot
+    apply(query_or_df, index)
+  File "/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/snapshot/evaluator.py", line 990, in apply
+    evaluation_strategy.insert(
+  File "/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/snapshot/evaluator.py", line 2418, in insert
+    self._replace_query_for_model(model, table_name, query_or_df, render_kwargs, **kwargs)
+  File "/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/snapshot/evaluator.py", line 2155, in _replace_query_for_model
+    self.adapter.replace_query(
+  File "/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/engine_adapter/shared.py", line 318, in internal_wrapper
+    return func(*list_args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/engine_adapter/base.py", line 524, in replace_query
+    return self._create_table_from_source_queries(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/engine_adapter/base.py", line 934, in _create_table_from_source_queries
+    self._create_table(
+  File "/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/engine_adapter/duckdb.py", line 188, in _create_table
+    super()._create_table(
+  File "/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/engine_adapter/base.py", line 977, in _create_table
+    self.execute(
+  File "/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/engine_adapter/base.py", line 2601, in execute
+    self._execute(sql, track_rows_processed, **kwargs)
+  File "/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/engine_adapter/base.py", line 2633, in _execute
+    self.cursor.execute(sql, **kwargs)
+duckdb.duckdb.IOException: IO Error: Connection error for HTTP GET to '//localhost:9000/lakehouse/?encoding-type=url&list-type=2&prefix=silver%2Fdim_company%2F'
+
+The above exception was the direct cause of the following exception:
+
+sqlmesh.utils.concurrency.NodeExecutionFailedError: Execution failed for node EvaluateNode(snapshot_name='"stock_lakehouse"."gold"."dim_company_current"', interval=(1784419200000, 1784505600000), batch_index=0)
+{"time":"2026-07-20T12:03:24", "level":"INFO", "message":"Execution failed for node EvaluateNode(snapshot_name='"stock_lakehouse"."gold"."fct_bs_assets"', interval=(1784419200000, 1784505600000), batch_index=0)", "caller":"/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/scheduler.py:618"}
+Traceback (most recent call last):
+  File "/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/utils/concurrency.py", line 234, in sequential_apply_to_dag
+    fn(node)
+  File "/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/scheduler.py", line 554, in run_node
+    audit_results = self.evaluate(
+                    ^^^^^^^^^^^^^^
+  File "/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/scheduler.py", line 229, in evaluate
+    wap_id = self.snapshot_evaluator.evaluate(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/snapshot/evaluator.py", line 186, in evaluate
+    result = self._evaluate_snapshot(
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/snapshot/evaluator.py", line 821, in _evaluate_snapshot
+    self._render_and_insert_snapshot(
+  File "/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/snapshot/evaluator.py", line 1041, in _render_and_insert_snapshot
+    apply(query_or_df, index)
+  File "/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/snapshot/evaluator.py", line 990, in apply
+    evaluation_strategy.insert(
+  File "/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/snapshot/evaluator.py", line 2418, in insert
+    self._replace_query_for_model(model, table_name, query_or_df, render_kwargs, **kwargs)
+  File "/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/snapshot/evaluator.py", line 2155, in _replace_query_for_model
+    self.adapter.replace_query(
+  File "/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/engine_adapter/shared.py", line 318, in internal_wrapper
+    return func(*list_args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/engine_adapter/base.py", line 524, in replace_query
+    return self._create_table_from_source_queries(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/engine_adapter/base.py", line 934, in _create_table_from_source_queries
+    self._create_table(
+  File "/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/engine_adapter/duckdb.py", line 188, in _create_table
+    super()._create_table(
+  File "/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/engine_adapter/base.py", line 977, in _create_table
+    self.execute(
+  File "/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/engine_adapter/base.py", line 2601, in execute
+    self._execute(sql, track_rows_processed, **kwargs)
+  File "/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/engine_adapter/base.py", line 2633, in _execute
+    self.cursor.execute(sql, **kwargs)
+duckdb.duckdb.IOException: IO Error: Connection error for HTTP GET to '//localhost:9000/lakehouse/?encoding-type=url&list-type=2&prefix=silver%2Ffact_balance_sheet%2F'
+
+The above exception was the direct cause of the following exception:
+
+sqlmesh.utils.concurrency.NodeExecutionFailedError: Execution failed for node EvaluateNode(snapshot_name='"stock_lakehouse"."gold"."fct_bs_assets"', interval=(1784419200000, 1784505600000), batch_index=0)
+{"time":"2026-07-20T12:03:24", "level":"INFO", "message":"Execution failed for node EvaluateNode(snapshot_name='"stock_lakehouse"."gold"."fct_is_core_income"', interval=(1784419200000, 1784505600000), batch_index=0)", "caller":"/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/scheduler.py:618"}
+Traceback (most recent call last):
+  File "/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/utils/concurrency.py", line 234, in sequential_apply_to_dag
+    fn(node)
+  File "/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/scheduler.py", line 554, in run_node
+    audit_results = self.evaluate(
+                    ^^^^^^^^^^^^^^
+  File "/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/scheduler.py", line 229, in evaluate
+    wap_id = self.snapshot_evaluator.evaluate(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/snapshot/evaluator.py", line 186, in evaluate
+    result = self._evaluate_snapshot(
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/snapshot/evaluator.py", line 821, in _evaluate_snapshot
+    self._render_and_insert_snapshot(
+  File "/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/snapshot/evaluator.py", line 1041, in _render_and_insert_snapshot
+    apply(query_or_df, index)
+  File "/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/snapshot/evaluator.py", line 990, in apply
+    evaluation_strategy.insert(
+  File "/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/snapshot/evaluator.py", line 2418, in insert
+    self._replace_query_for_model(model, table_name, query_or_df, render_kwargs, **kwargs)
+  File "/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/snapshot/evaluator.py", line 2155, in _replace_query_for_model
+    self.adapter.replace_query(
+  File "/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/engine_adapter/shared.py", line 318, in internal_wrapper
+    return func(*list_args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/engine_adapter/base.py", line 524, in replace_query
+    return self._create_table_from_source_queries(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/engine_adapter/base.py", line 934, in _create_table_from_source_queries
+    self._create_table(
+  File "/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/engine_adapter/duckdb.py", line 188, in _create_table
+    super()._create_table(
+  File "/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/engine_adapter/base.py", line 977, in _create_table
+    self.execute(
+  File "/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/engine_adapter/base.py", line 2601, in execute
+    self._execute(sql, track_rows_processed, **kwargs)
+  File "/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/engine_adapter/base.py", line 2633, in _execute
+    self.cursor.execute(sql, **kwargs)
+duckdb.duckdb.IOException: IO Error: Connection error for HTTP GET to '//localhost:9000/lakehouse/?encoding-type=url&list-type=2&prefix=silver%2Ffact_income_statement%2F'
+
+The above exception was the direct cause of the following exception:
+
+sqlmesh.utils.concurrency.NodeExecutionFailedError: Execution failed for node EvaluateNode(snapshot_name='"stock_lakehouse"."gold"."fct_is_core_income"', interval=(1784419200000, 1784505600000), batch_index=0)
+{"time":"2026-07-20T12:03:24", "level":"INFO", "message":"Execution failed for node EvaluateNode(snapshot_name='"stock_lakehouse"."gold"."fct_trading_ohlcv"', interval=(1784419200000, 1784505600000), batch_index=0)", "caller":"/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/scheduler.py:618"}
+Traceback (most recent call last):
+  File "/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/utils/concurrency.py", line 234, in sequential_apply_to_dag
+    fn(node)
+  File "/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/scheduler.py", line 554, in run_node
+    audit_results = self.evaluate(
+                    ^^^^^^^^^^^^^^
+  File "/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/scheduler.py", line 229, in evaluate
+    wap_id = self.snapshot_evaluator.evaluate(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/snapshot/evaluator.py", line 186, in evaluate
+    result = self._evaluate_snapshot(
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/snapshot/evaluator.py", line 821, in _evaluate_snapshot
+    self._render_and_insert_snapshot(
+  File "/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/snapshot/evaluator.py", line 1041, in _render_and_insert_snapshot
+    apply(query_or_df, index)
+  File "/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/snapshot/evaluator.py", line 990, in apply
+    evaluation_strategy.insert(
+  File "/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/snapshot/evaluator.py", line 2418, in insert
+    self._replace_query_for_model(model, table_name, query_or_df, render_kwargs, **kwargs)
+  File "/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/snapshot/evaluator.py", line 2155, in _replace_query_for_model
+    self.adapter.replace_query(
+  File "/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/engine_adapter/shared.py", line 318, in internal_wrapper
+    return func(*list_args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/engine_adapter/base.py", line 524, in replace_query
+    return self._create_table_from_source_queries(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/engine_adapter/base.py", line 934, in _create_table_from_source_queries
+    self._create_table(
+  File "/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/engine_adapter/duckdb.py", line 188, in _create_table
+    super()._create_table(
+  File "/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/engine_adapter/base.py", line 977, in _create_table
+    self.execute(
+  File "/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/engine_adapter/base.py", line 2601, in execute
+    self._execute(sql, track_rows_processed, **kwargs)
+  File "/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/engine_adapter/base.py", line 2633, in _execute
+    self.cursor.execute(sql, **kwargs)
+duckdb.duckdb.IOException: IO Error: Connection error for HTTP GET to '//localhost:9000/lakehouse/?encoding-type=url&list-type=2&prefix=silver%2Ffact_stock_price%2F'
+
+The above exception was the direct cause of the following exception:
+
+sqlmesh.utils.concurrency.NodeExecutionFailedError: Execution failed for node EvaluateNode(snapshot_name='"stock_lakehouse"."gold"."fct_trading_ohlcv"', interval=(1784419200000, 1784505600000), batch_index=0)
+{"time":"2026-07-20T12:03:24", "level":"INFO", "message":"Plan application failed.", "caller":"/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/context.py:1808"}
+Traceback (most recent call last):
+  File "/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/context.py", line 1800, in apply
+    self._apply(plan, circuit_breaker)
+  File "/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/context.py", line 2593, in _apply
+    self._scheduler.create_plan_evaluator(self).evaluate(
+  File "/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/plan/evaluator.py", line 105, in evaluate
+    self._evaluate_stages(plan_stages, plan)
+  File "/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/plan/evaluator.py", line 125, in _evaluate_stages
+    handler(stage, plan)
+  File "/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/plan/evaluator.py", line 264, in visit_backfill_stage
+    raise PlanError("Plan application failed.")
+sqlmesh.utils.errors.PlanError: Plan application failed.
+{"time":"2026-07-20T12:03:24", "level":"WARNING", "message":"[GoldProcessor] Gold skipped — silver data not yet available on MinIO or MinIO offline (Plan application failed.). Run bronze+silver first, then gold.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:980"}
+{"time":"2026-07-20T12:03:24", "level":"INFO", "message":"🔌 Đóng kết nối DuckDB.", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/processing/duckdb/duckdb_engine.py:77"}
+{"time":"2026-07-20T12:03:24", "level":"INFO", "message":"[GoldExecutor] Completed gold phase with status=SKIPPED", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:1492"}
+{"time":"2026-07-20T12:03:24", "level":"INFO", "message":"[RUN END] run_id=run_20260720_050315_b6cb09 | status=SUCCESS | duration=8.2s | rows_read=None | rows_written=None", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/processing/base_processing_subsystem/subsystem34_metadata_repo.py:183"}
+{"time":"2026-07-20T12:03:24", "level":"INFO", "message":"
+======================================================================
+  ETL Run Summary: run_20260720_050315_b6cb09
+======================================================================
+  Job:           master_etl_gold
+  Layer:         gold -> all_tables
+  Status:        SUCCESS
+  Start:         2026-07-20 05:03:15.889614+00:00
+  End:           2026-07-20 05:03:24.102855+00:00
+  Duration:      8.2s
+  Rows Read:     0
+  Rows Written:  0
+======================================================================
+", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/processing/base_processing_subsystem/subsystem34_metadata_repo.py:462"}
+COMPLETED | N/A | 8.2s
+{"time":"2026-07-20T12:03:24", "level":"INFO", "message":"Shutting down the event dispatcher", "caller":"/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/analytics/dispatcher.py:159"}
+{"time":"2026-07-20T12:03:30", "level":"INFO", "message":"Failed to emit events: HTTPSConnectionPool(host='analytics.tobikodata.com', port=443): Max retries exceeded with url: /v1/sqlmesh/ (Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x7fe638758950>: Failed to establish a new connection: [Errno 101] Network is unreachable'))", "caller":"/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/analytics/dispatcher.py:138"}
+{"time":"2026-07-20T12:03:32", "level":"INFO", "message":"Failed to emit events: HTTPSConnectionPool(host='analytics.tobikodata.com', port=443): Max retries exceeded with url: /v1/sqlmesh/ (Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x7fe6386e7ad0>: Failed to establish a new connection: [Errno 101] Network is unreachable'))", "caller":"/home/hungpham/ds_env/lib/python3.11/site-packages/sqlmesh/core/analytics/dispatcher.py:138"}
+
++++++++++++++++++++++++++++++++++++++
+
+
+{"time":"2026-07-20T14:38:47", "level":"ERROR", "message":"[SilverExecutor] stock_prices failed: invalid series dtype: expected `String`, got `datetime[ms]`", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:1456"}
+{"time":"2026-07-20T14:38:55", "level":"WARNING", "message":"[SilverProcessor] bronze/financial_report_summary is empty — skipping", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:541"}
+{"time":"2026-07-20T14:38:56", "level":"ERROR", "message":"[SilverExecutor] income_statement failed: invalid series dtype: expected `String`, got `datetime[ms]`", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:1456"}
+{"time":"2026-07-20T14:38:57", "level":"ERROR", "message":"[SilverExecutor] balance_sheet failed: invalid series dtype: expected `String`, got `datetime[ms]`", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:1456"}
+(ds_env) hungpham@DESKTOP-I46N00O:/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project$ python scripts/deploy_full_pipeline.py silver --symbols HPG --env dev --config platforms/orchestration/prefect/config/cophieu68_config.yaml
+
+Đây là lỗi sau khi chạy step silver
++++++++++++++++++++++++++++++++++++++++++++
+Còn dưới đây là lỗi khi chạy bronze:
+{"time":"2026-07-20T14:34:53", "level":"ERROR", "message":"[BronzeExecutor] HPG/financial_report_summary failed: argument 'schema_overrides': 'int' object cannot be converted to 'PyString'", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/scripts/deploy_full_pipeline.py:1356"}
+{"time":"2026-07-20T14:34:53", "level":"WARNING", "message":"[WARNING] Bronze HPG/financial_report_summary: argument 'schema_overrides': 'int' object cannot be converted to 'PyString' | record_id=None", "caller":"/mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project/platforms/processing/base_processing_subsystem/subsystem5_and_30_error_event_schema_and_escalate.py:114"}

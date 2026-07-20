@@ -1,0 +1,365 @@
+
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Debug Information — Stock Lakehouse ETL</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,"Segoe UI",system-ui,sans-serif;font-size:14px;line-height:1.65;background:#f7f8fa;color:#1f2328}
+  .wrap{max-width:960px;margin:0 auto;padding:28px 20px}
+  h1{font-size:20px;font-weight:700;color:#1f2328;border-bottom:2px solid #3b82d4;padding-bottom:10px;margin-bottom:6px}
+  .meta{font-size:12px;color:#57606a;margin-bottom:24px}
+  .badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600;margin-right:6px}
+  .badge-green{background:#d1fae5;color:#065f46}
+  .badge-blue{background:#dbeafe;color:#1e40af}
+  .badge-orange{background:#fef3c7;color:#92400e}
+  .badge-red{background:#fee2e2;color:#991b1b}
+  h2{font-size:15px;font-weight:700;color:#1f2328;margin:28px 0 12px;padding:6px 0 6px 12px;border-left:3px solid #3b82d4;background:#f0f4ff}
+  h3{font-size:13px;font-weight:700;color:#3b82d4;margin:16px 0 6px}
+  .bug-card{background:#fff;border:1px solid #e5e7eb;border-radius:6px;margin-bottom:12px;overflow:hidden}
+  .bug-header{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#f7f8fa;border-bottom:1px solid #e5e7eb}
+  .bug-num{font-size:11px;font-weight:700;color:#fff;background:#3b82d4;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .bug-title{font-weight:600;font-size:13px;flex:1}
+  .bug-body{padding:12px 14px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .bug-body.full{grid-template-columns:1fr}
+  .bug-field label{font-size:11px;font-weight:600;color:#57606a;text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px;display:block}
+  code{background:#f1f5f9;border:1px solid #e2e8f0;border-radius:3px;padding:1px 5px;font-family:"Cascadia Code","Consolas",monospace;font-size:12px;color:#c7254e}
+  pre{background:#f1f5f9;border:1px solid #e2e8f0;border-radius:4px;padding:10px 12px;font-size:12px;overflow-x:auto;font-family:"Cascadia Code","Consolas",monospace;color:#334155;line-height:1.5;margin:4px 0}
+  .fix-tag{display:inline-block;padding:2px 7px;background:#d1fae5;color:#065f46;border-radius:3px;font-size:11px;font-weight:600;margin-bottom:4px}
+  table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:16px}
+  th{background:#f0f4ff;color:#1e40af;font-weight:600;padding:7px 10px;text-align:left;border-bottom:2px solid #bfdbfe}
+  td{padding:7px 10px;border-bottom:1px solid #e5e7eb;vertical-align:top}
+  tr:last-child td{border-bottom:none}
+  tr:hover td{background:#fafbff}
+  .arch-box{background:#fff;border:1px solid #e5e7eb;border-radius:6px;padding:14px;margin-bottom:12px}
+  .layer{display:flex;align-items:center;gap:12px;padding:8px 12px;border-radius:4px;margin-bottom:6px;font-size:13px}
+  .layer-bronze{background:#fef3c7;border:1px solid #f59e0b}
+  .layer-silver{background:#f1f5f9;border:1px solid #94a3b8}
+  .layer-gold{background:#fffbeb;border:1px solid #d97706}
+  .layer-serve{background:#ecfdf5;border:1px solid #10b981}
+  .layer-label{font-weight:700;width:70px;flex-shrink:0}
+  .layer-arrow{text-align:center;color:#9ca3af;font-size:18px;padding-left:30px}
+  .checklist{background:#fff;border:1px solid #e5e7eb;border-radius:6px;padding:14px}
+  .checklist li{padding:4px 0;border-bottom:1px solid #f1f3f5;list-style:none;padding-left:20px;position:relative;font-size:13px}
+  .checklist li:last-child{border-bottom:none}
+  .checklist li::before{content:"□";position:absolute;left:0;color:#3b82d4;font-weight:700}
+  .stats-row{display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap}
+  .stat-box{background:#fff;border:1px solid #e5e7eb;border-radius:6px;padding:14px 18px;flex:1;min-width:120px;text-align:center}
+  .stat-num{font-size:28px;font-weight:700;color:#3b82d4}
+  .stat-lbl{font-size:12px;color:#57606a;margin-top:2px}
+  .tech-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:12px}
+  .tech-card{background:#fff;border:1px solid #e5e7eb;border-radius:6px;padding:12px 14px}
+  .tech-name{font-weight:700;font-size:13px;color:#1e40af;margin-bottom:6px}
+  .tech-rule{font-size:12px;padding:2px 0;color:#374151;border-bottom:1px solid #f1f3f5}
+  .tech-rule:last-child{border-bottom:none}
+  .tech-rule span{color:#c7254e;font-family:monospace;font-size:11px}
+  footer{text-align:center;margin-top:36px;padding-top:14px;border-top:1px solid #e5e7eb;font-size:11px;color:#9ca3af}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>🔧 Debug Information — Stock Lakehouse ETL Pipeline</h1>
+  <div class="meta">
+    Branch: <code>16072026_test_and_debug_pipeline</code>  | 
+    Stack: Polars · DuckDB · SQLMesh · MinIO/S3 · PostgreSQL · Prefect  | 
+    Python 3.11 (WSL ds_env)  |  File: <code>debug_information.txt</code>
+  </div>
+
+  
+  <div class="stats-row">
+    <div class="stat-box"><div class="stat-num">175</div><div class="stat-lbl">Unit Tests ✅</div></div>
+    <div class="stat-box"><div class="stat-num">14</div><div class="stat-lbl">Bugs Fixed</div></div>
+    <div class="stat-box"><div class="stat-num">7</div><div class="stat-lbl">Test Files</div></div>
+    <div class="stat-box"><div class="stat-num">4</div><div class="stat-lbl">Gold Models</div></div>
+    <div class="stat-box"><div class="stat-num">34</div><div class="stat-lbl">ETL Subsystems</div></div>
+  </div>
+
+  
+  <h2>PHẦN I — TỔNG KẾT BUGS ĐÃ PHÁT HIỆN &amp; KHẮC PHỤC</h2>
+
+  
+  <div class="bug-card">
+    <div class="bug-header">
+      <div class="bug-num">1</div>
+      <div class="bug-title">LAKEHOUSE_BASE: scheme s3a:// thay vì s3://</div>
+      <span class="badge badge-red">Runtime Error</span><span class="badge badge-green">Fixed</span>
+    </div>
+    <div class="bug-body">
+      <div class="bug-field"><label>File</label><code>scripts/deploy_full_pipeline.py:70</code></div>
+      <div class="bug-field"><label>Triệu chứng</label>FileNotFoundError / Connection refused khi đọc/ghi Parquet lên MinIO</div>
+      <div class="bug-field"><label>Nguyên nhân</label><code>LAKEHOUSE_BASE = "s3a://lakehouse"</code> — DuckDB httpfs &amp; s3fs chỉ hiểu <code>s3://</code>. <code>s3a://</code> là scheme của Apache Hadoop/HDFS</div>
+      <div class="bug-field"><label>Fix</label><div class="fix-tag">FIXED</div><pre>LAKEHOUSE_BASE = os.getenv("LAKEHOUSE_BASE_PATH", "s3://lakehouse")</pre></div>
+    </div>
+  </div>
+
+  
+  <div class="bug-card">
+    <div class="bug-header">
+      <div class="bug-num">2</div>
+      <div class="bug-title">S3_ENDPOINT có http:// prefix → DuckDB lỗi "//host:port"</div>
+      <span class="badge badge-red">IOException</span><span class="badge badge-green">Fixed</span>
+    </div>
+    <div class="bug-body">
+      <div class="bug-field"><label>File</label><code>deploy_full_pipeline.py:73</code> + <code>sqlmesh/config.yaml</code></div>
+      <div class="bug-field"><label>Triệu chứng</label><code>DuckDB IOException: Connection error to //localhost:9000/...</code></div>
+      <div class="bug-field"><label>Nguyên nhân</label>.env có <code>S3_ENDPOINT=http://localhost:9000</code>. DuckDB ghép thêm <code>http://</code> → URL thành <code>http://http://localhost:9000</code></div>
+      <div class="bug-field"><label>Fix Python</label><div class="fix-tag">FIXED</div><pre>_S3_ENDPOINT_RAW = os.getenv("S3_ENDPOINT", "http://localhost:9000")
+S3_ENDPOINT     = _S3_ENDPOINT_RAW.split("://")[-1]   # HOST:PORT → DuckDB
+S3_ENDPOINT_URL = _S3_ENDPOINT_RAW                    # http://HOST → s3fs</pre></div>
+      <div class="bug-field"><label>Fix SQLMesh pre_statements</label><div class="fix-tag">FIXED</div><pre>SET s3_endpoint=REGEXP_REPLACE(
+  '{{ env_var("S3_ENDPOINT","localhost:9000") }}',
+  '^https?://', ''
+);</pre></div>
+    </div>
+  </div>
+
+  
+  <div class="bug-card">
+    <div class="bug-header">
+      <div class="bug-num">3</div>
+      <div class="bug-title">S3 credentials đọc sai env var (MINIO_ROOT_USER thay vì AWS_ACCESS_KEY_ID)</div>
+      <span class="badge badge-orange">403 Auth Error</span><span class="badge badge-green">Fixed</span>
+    </div>
+    <div class="bug-body">
+      <div class="bug-field"><label>Nguyên nhân</label>Code đọc <code>MINIO_ROOT_USER</code> nhưng .env define <code>AWS_ACCESS_KEY_ID</code> — boto3/s3fs convention khác docker-compose convention</div>
+      <div class="bug-field"><label>Fix</label><div class="fix-tag">FIXED</div><pre>S3_KEY = os.getenv("AWS_ACCESS_KEY_ID",
+         os.getenv("MINIO_ROOT_USER", "minioadmin"))</pre></div>
+    </div>
+  </div>
+
+  
+  <div class="bug-card">
+    <div class="bug-header">
+      <div class="bug-num">4</div>
+      <div class="bug-title">SQLMesh secrets: block không inject vào DuckDB session variables</div>
+      <span class="badge badge-red">Config Bug</span><span class="badge badge-green">Fixed</span>
+    </div>
+    <div class="bug-body">
+      <div class="bug-field"><label>Nguyên nhân</label>SQLMesh <code>secrets:</code> block inject vào orchestrator, KHÔNG phải DuckDB session. DuckDB không nhận <code>s3_endpoint</code> → 403 error</div>
+      <div class="bug-field"><label>Fix</label><div class="fix-tag">FIXED</div>Thay <code>secrets:</code> bằng <code>pre_statements:</code> trong connection block — pre_statements chạy ngay sau khi DuckDB connection được mở</div>
+    </div>
+  </div>
+
+  
+  <div class="bug-card">
+    <div class="bug-header">
+      <div class="bug-num">5</div>
+      <div class="bug-title">gold_dim_company_current.sql: COALESCE reference cột không tồn tại</div>
+      <span class="badge badge-red">Binder Error</span><span class="badge badge-green">Fixed</span>
+    </div>
+    <div class="bug-body">
+      <div class="bug-field"><label>Triệu chứng</label><code>Binder Error: Referenced column 'company_name' not found</code></div>
+      <div class="bug-field"><label>Nguyên nhân</label>Bronze dict-flatten → Silver chỉ có <code>full_name</code>, không có <code>company_name</code>. SQL có <code>COALESCE(full_name, company_name)</code></div>
+      <div class="bug-field"><label>Fix</label><div class="fix-tag">FIXED</div><pre>-- SAI:  COALESCE(full_name, company_name) AS company_name
+-- ĐÚNG: full_name AS company_name
+WHERE COALESCE(TRY_CAST(is_current AS BOOLEAN), true) = true</pre></div>
+    </div>
+  </div>
+
+  
+  <div class="bug-card">
+    <div class="bug-header">
+      <div class="bug-num">6</div>
+      <div class="bug-title">gold_fct_trading_ohlcv.sql: JOIN dim_market_type không có cột symbol</div>
+      <span class="badge badge-orange">Logic Bug</span><span class="badge badge-green">Fixed</span>
+    </div>
+    <div class="bug-body">
+      <div class="bug-field"><label>Nguyên nhân</label><code>dim_market_type</code> là global dim (HOSE/HNX/UPCOM) — không có cột <code>symbol</code>. JOIN <code>ON t.symbol = m.symbol</code> → tất cả NULL</div>
+      <div class="bug-field"><label>Fix</label><div class="fix-tag">FIXED</div>Lấy <code>market_type_code</code> từ <code>dim_industry</code> (bảng này có cột <code>symbol</code>)<pre>LEFT JOIN dim_industry AS i ON t.symbol = i.symbol
+→ i.market_type_code AS market_type</pre></div>
+    </div>
+  </div>
+
+  
+  <div class="bug-card">
+    <div class="bug-header">
+      <div class="bug-num">7</div>
+      <div class="bug-title">_write_silver: partition_by=[] gây PyArrow ValueError</div>
+      <span class="badge badge-red">ValueError</span><span class="badge badge-green">Fixed</span>
+    </div>
+    <div class="bug-body">
+      <div class="bug-field"><label>Triệu chứng</label><code>ValueError: Must pass at least one partition column</code></div>
+      <div class="bug-field"><label>Nguyên nhân</label>PyArrow <code>pq.write_to_dataset(partition_cols=[])</code> → ValueError. Phải là <code>None</code> hoặc list có ≥1 phần tử</div>
+      <div class="bug-field"><label>Fix</label><div class="fix-tag">FIXED</div><pre>_parts = partition_by if partition_by else None
+# [] → None (non-partitioned), ['year','month'] → giữ nguyên</pre></div>
+    </div>
+  </div>
+
+  
+  <h3>Bugs #8–14 (tóm tắt)</h3>
+  <table>
+    <tr><th>#</th><th>Bug</th><th>File</th><th>Fix tóm tắt</th></tr>
+    <tr><td>8</td><td>S3 write: trailing "/" tạo object key là directory, không phải file</td><td>polars_engine.py</td><td><code>s3_path.rstrip("/") + "/data.parquet"</code></td></tr>
+    <tr><td>9</td><td>_read_bronze: không tìm thấy data do sai ingest_date partition</td><td>deploy_full_pipeline.py</td><td>2-step fallback: exact date → <code>/**/*.parquet</code> full scan</td></tr>
+    <tr><td>10</td><td>KeyError 'base_url' — config không unwrap project_params</td><td>deploy_full_pipeline.py</td><td>Helper <code>_params(config)</code> → <code>config.get("project_params", config)</code></td></tr>
+    <tr><td>11</td><td>environment từ YAML là dict thay vì string "dev"/"prod"</td><td>deploy_full_pipeline.py</td><td>Luôn dùng CLI <code>--env</code> value, không đọc từ YAML environment block</td></tr>
+    <tr><td>12</td><td>DeduplicationEngine KEEP_MAX_COL: ascending flag bị đảo ngược</td><td>subsystem7_deduplication.py</td><td><code>ascending = (strategy != KEEP_MAX_COL)</code></td></tr>
+    <tr><td>13</td><td>subsystem4: import path sai + logger 2-argument positional call</td><td>subsystem4_*.py</td><td>Absolute import path + <code>f"msg: {data}"</code> thay vì positional arg</td></tr>
+    <tr><td>14</td><td>Docker Compose: services thiếu network assignment → không giao tiếp được</td><td>docker-compose.dev.yml</td><td>Thêm <code>networks: [lakehouse_network, etl-net]</code> vào 7 services</td></tr>
+  </table>
+
+  
+  <h2>PHẦN II — MEDALLION ARCHITECTURE</h2>
+  <div class="arch-box">
+    <div class="layer layer-bronze"><span class="layer-label">🥉 BRONZE</span><span>s3://lakehouse/bronze/&lt;table&gt;/ingest_date=YYYY-MM-DD/*.parquet — Raw data, DQ tagged, Polars + requests crawl</span></div>
+    <div class="layer-arrow">↓ DuckDB + Polars transform (SilverProcessor)</div>
+    <div class="layer layer-silver"><span class="layer-label">🥈 SILVER</span><span>s3://lakehouse/silver/&lt;table&gt;/[partitions]/*.parquet — Cleaned, deduped, surrogate keys, SCD2 dims</span></div>
+    <div class="layer-arrow">↓ SQLMesh + DuckDB (GoldProcessor)</div>
+    <div class="layer layer-gold"><span class="layer-label">🥇 GOLD</span><span>DuckDB stock_lakehouse.db (SQLMesh managed) — Denormalized, Power BI ready, 4 models</span></div>
+    <div class="layer-arrow">↓ DuckDB → PostgreSQL ATTACH (ServingExecutor)</div>
+    <div class="layer layer-serve"><span class="layer-label">📊 SERVING</span><span>PostgreSQL etl_project DB — mart_kpi_daily cho Power BI / analytics consumers</span></div>
+  </div>
+
+  <h3>34 Kimball ETL Subsystems — Module Map</h3>
+  <table>
+    <tr><th>Sub#</th><th>Tên</th><th>File</th><th>Chức năng</th></tr>
+    <tr><td>1</td><td>DataProfiler</td><td>subsystem1_data_profiling.py</td><td>Schema analysis, null counts, distribution</td></tr>
+    <tr><td>4</td><td>DataCleansingEngine</td><td>subsystem4_*.py</td><td>Rule-based DQ validation</td></tr>
+    <tr><td>5/30</td><td>ErrorEventLog</td><td>subsystem5_and_30_*.py</td><td>Error event schema + fatal escalation</td></tr>
+    <tr><td>7</td><td>DeduplicationEngine</td><td>subsystem7_deduplication.py</td><td>KEEP_FIRST/LAST/MAX/MIN strategies</td></tr>
+    <tr><td>9/25</td><td>SCDManager</td><td>subsystem9_and_25_*.py</td><td>Slowly Changing Dimensions Type 1/2/3</td></tr>
+    <tr><td>10</td><td>SurrogateKeyGenerator</td><td>subsystem10_*.py</td><td>SHA-256 deterministic surrogate keys</td></tr>
+    <tr><td>22</td><td>JobScheduler</td><td>subsystem22_job_schedule.py</td><td>run_id generation, scheduling helpers</td></tr>
+    <tr><td>27</td><td>WorkflowMonitor</td><td>subsystem27_*.py</td><td>ETLRunRecord, duration tracking</td></tr>
+    <tr><td>29</td><td>LineageTracker</td><td>subsystem29_data_lineage.py</td><td>Data lineage graph recording</td></tr>
+    <tr><td>34</td><td>MetadataRepository</td><td>subsystem34_metadata_repo.py</td><td>Orchestrates 22/27/29/5 — central metadata hub</td></tr>
+  </table>
+
+  
+  <h2>PHẦN III — KIẾN THỨC STACK CÔNG NGHỆ CẦN NẮM</h2>
+
+  <div class="tech-grid">
+    <div class="tech-card">
+      <div class="tech-name">🐻‍❄️ Polars</div>
+      <div class="tech-rule">LazyFrame = query plan, chưa execute; cần <span>.collect()</span></div>
+      <div class="tech-rule"><span>scan_parquet()</span> → LazyFrame; <span>read_parquet()</span> → DataFrame</div>
+      <div class="tech-rule">Ghi S3: không dùng <span>write_parquet(storage_options)</span> — phải dùng s3fs + PyArrow</div>
+      <div class="tech-rule"><span>pl.concat(frames, how="diagonal")</span> → union với auto schema merge</div>
+      <div class="tech-rule"><span>.cast(dtype, strict=False)</span> → NaN thay lỗi (không raise)</div>
+      <div class="tech-rule"><span>partition_cols=[]</span> trong PyArrow → ValueError; dùng <span>None</span></div>
+    </div>
+    <div class="tech-card">
+      <div class="tech-name">🦆 DuckDB</div>
+      <div class="tech-rule">S3 endpoint: <span>SET s3_endpoint='HOST:PORT'</span> — KHÔNG có http://</div>
+      <div class="tech-rule">Extensions: <span>INSTALL httpfs; LOAD httpfs;</span> trước mọi S3 query</div>
+      <div class="tech-rule"><span>hive_partitioning=true</span> → tự đọc cột từ path: ingest_date=2026-07-18/</div>
+      <div class="tech-rule"><span>TRY_CAST(col AS BOOLEAN)</span> → NULL thay lỗi (safe)</div>
+      <div class="tech-rule"><span>REGEXP_REPLACE(str, '^https?://', '')</span> → strip http:// prefix</div>
+      <div class="tech-rule">MinIO: <span>s3_url_style='path'</span>, <span>s3_use_ssl=false</span></div>
+    </div>
+    <div class="tech-card">
+      <div class="tech-name">🔮 SQLMesh</div>
+      <div class="tech-rule"><span>pre_statements:</span> → inject SQL khi mở DuckDB connection ✓</div>
+      <div class="tech-rule"><span>secrets:</span> → KHÔNG inject vào DuckDB session ✗</div>
+      <div class="tech-rule">Model kinds: <span>FULL</span> (re-execute mỗi lần), <span>INCREMENTAL_BY_TIME_RANGE</span></div>
+      <div class="tech-rule"><span>env_var('NAME', 'default')</span> → đọc env var trong config templates</div>
+      <div class="tech-rule"><span>plan(auto_apply=True, no_prompts=True)</span> → non-interactive</div>
+      <div class="tech-rule">Gold "skipped": silver chưa tồn tại trên MinIO → chạy bronze+silver trước</div>
+    </div>
+    <div class="tech-card">
+      <div class="tech-name">🗄️ MinIO / S3</div>
+      <div class="tech-rule">Object storage: không có "thư mục" thực sự — chỉ có object keys</div>
+      <div class="tech-rule">Trailing "/" trong key → object hợp lệ nhưng KHÔNG phải directory</div>
+      <div class="tech-rule">Path-style URL: <span>http://HOST:PORT/BUCKET/KEY</span></div>
+      <div class="tech-rule">s3fs: <span>client_kwargs={"endpoint_url": "http://HOST:PORT"}</span></div>
+      <div class="tech-rule"><span>config_kwargs={"signature_version": "s3v4"}</span> — MinIO yêu cầu SigV4</div>
+      <div class="tech-rule">Console: <span>http://localhost:9001</span> — debug bucket/object browser</div>
+    </div>
+    <div class="tech-card">
+      <div class="tech-name">🐍 Python Logging</div>
+      <div class="tech-rule"><span>logger.warning("msg: %s", value)</span> → % format ✓</div>
+      <div class="tech-rule"><span>logger.warning(f"msg: {value}")</span> → f-string ✓</div>
+      <div class="tech-rule"><span>logger.warning("msg", obj)</span> → obj BỊ BỎ QUA ✗</div>
+      <div class="tech-rule"><span>exc_info=True</span> → include full traceback trong log</div>
+      <div class="tech-rule">Routing: <span>logger_manager.get_logger("logger.storage_log.duckdb")</span></div>
+      <div class="tech-rule">Logs: <span>logger_storage/&lt;category&gt;/&lt;name&gt;_error.log</span></div>
+    </div>
+    <div class="tech-card">
+      <div class="tech-name">⚙️ YAML Config Pattern</div>
+      <div class="tech-rule">Root: <span>environment:</span> (dict flags) + <span>project_params:</span> (actual config)</div>
+      <div class="tech-rule">Unwrap helper: <span>_params(config)</span> → <span>config.get("project_params", config)</span></div>
+      <div class="tech-rule">"environment" trong YAML ≠ "environment" trong SQLMesh (2 khái niệm khác)</div>
+      <div class="tech-rule">CLI <span>--env dev</span> → SQLMesh environment string</div>
+      <div class="tech-rule">YAML <span>environment.local: true</span> → runtime flag (local/staging/prod)</div>
+      <div class="tech-rule">Luôn dùng CLI value cho SQLMesh, không đọc từ YAML env block</div>
+    </div>
+  </div>
+
+  
+  <h2>PHẦN IV — TEST SUITE (175/175 ✅)</h2>
+  <table>
+    <tr><th>File</th><th>Tests</th><th>Covers</th></tr>
+    <tr><td>test_subsystem1_data_profiling.py</td><td>15</td><td>DataProfiler, DataQualityRecord, null analysis</td></tr>
+    <tr><td>test_subsystem4_data_cleansing.py</td><td>27</td><td>CleansingRuleSet, DataCleansingEngine, DQ violations</td></tr>
+    <tr><td>test_subsystem5_error_event.py</td><td>16</td><td>ErrorEvent, ErrorEventLog, has_fatal, summary</td></tr>
+    <tr><td>test_subsystem7_deduplication.py</td><td>22</td><td>KEEP_FIRST/LAST/MAX/MIN, SurrogateKeyDeduplicator</td></tr>
+    <tr><td>test_subsystem9_scd_manager.py</td><td>25</td><td>SCDManager SCD Type 1/2/3, row hash, is_current</td></tr>
+    <tr><td>test_subsystem10_surrogate_key.py</td><td>23</td><td>SHA-256 SK, determinism, prefix, length</td></tr>
+    <tr><td>test_subsystem22_27_29_34_infra.py</td><td>47</td><td>JobSchedule, ETLRunRecord, LineageTracker, MetadataRepository, run_context CM</td></tr>
+  </table>
+  <pre>python -m pytest tests/ -v --tb=short      # verbose + short traceback
+python -m pytest tests/ -q --tb=no         # quiet, chỉ hiện count
+python -m pytest tests/unit/test_FILE.py -k "test_name"  # 1 test cụ thể</pre>
+
+  
+  <h2>PHẦN V — CHECKLIST DEBUG KHI PIPELINE LỖI</h2>
+  <div class="checklist">
+    <ul>
+      <li><strong>Step 1:</strong> <code>docker ps</code> → MinIO (9000/9001), PostgreSQL (5432) đang chạy?</li>
+      <li><strong>Step 2:</strong> Browser <code>http://localhost:9001</code> → MinIO Console login được không?</li>
+      <li><strong>Step 3:</strong> <code>cat .env | grep -E "S3_|AWS_|MINIO_"</code> → credentials đúng chưa?</li>
+      <li><strong>Step 4:</strong> Kiểm tra Bronze data: <code>probe_minio.py</code> hoặc DuckDB <code>read_parquet('s3://lakehouse/bronze/**/*.parquet')</code></li>
+      <li><strong>Step 5:</strong> <code>SET s3_endpoint='localhost:9000'</code> — KHÔNG có http:// prefix</li>
+      <li><strong>Step 6:</strong> Silver 0 rows? → Chạy <code>--date YYYY-MM-DD</code> đúng với ngày bronze ingest</li>
+      <li><strong>Step 7:</strong> Gold skipped? → Silver data chưa tồn tại trên MinIO — chạy silver trước</li>
+      <li><strong>Step 8:</strong> Column not found? → <code>DESCRIBE SELECT * FROM read_parquet('s3://...')</code> kiểm tra schema thực tế</li>
+      <li><strong>Step 9:</strong> DQ issues? → <code>logger_storage/governance/data_quality/data_quality_warning.log</code></li>
+      <li><strong>Step 10:</strong> SQLMesh plan failed? → Đọc <code>logger_storage/processing/sqlmesh/sqlmesh_error.log</code></li>
+      <li><strong>Step 11:</strong> 403 MinIO? → Sai credentials hoặc <code>endpoint_url</code> thiếu <code>http://</code> (cho s3fs)</li>
+      <li><strong>Step 12:</strong> Import error? → Dùng absolute import path từ project root</li>
+    </ul>
+  </div>
+
+  
+  <h2>PHẦN VI — LỆNH CHẠY PIPELINE</h2>
+  <pre># Activate WSL conda env
+conda activate ds_env
+cd /mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project
+
+# Bronze — crawl + ingest
+python scripts/deploy_full_pipeline.py bronze --symbols HPG FPT --date 2026-07-18 --env dev \
+  --config platforms/orchestration/prefect/config/cophieu68_config.yaml
+
+# Silver — transform bronze → silver
+python scripts/deploy_full_pipeline.py silver --date 2026-07-18 --env dev \
+  --config platforms/orchestration/prefect/config/cophieu68_config.yaml
+
+# Gold — SQLMesh models
+python scripts/deploy_full_pipeline.py gold --date 2026-07-18 --env dev \
+  --config platforms/orchestration/prefect/config/cophieu68_config.yaml
+
+# Full pipeline (bronze → silver → gold → serving)
+python scripts/deploy_full_pipeline.py full --symbols HPG --date 2026-07-18 --env dev \
+  --config platforms/orchestration/prefect/config/cophieu68_config.yaml
+
+# Validate only (không chạy, chỉ check config)
+python scripts/deploy_full_pipeline.py validate --dry-run
+
+# Docker services
+docker compose -f infra/docker_compose/docker-compose.dev.yml up -d
+docker compose -f infra/docker_compose/docker-compose.dev.yml ps
+
+# Initialize MinIO buckets (lần đầu)
+python infra/init_lakehouse_storage.py
+
+# Run all tests
+python -m pytest tests/ -q</pre>
+
+  <footer>
+    <span>Stock Lakehouse ETL Pipeline · Branch: 16072026_test_and_debug_pipeline · 175 tests ✅ · Made with IBM Bob</span>
+  </footer>
+</div>
+</body>
+</html>

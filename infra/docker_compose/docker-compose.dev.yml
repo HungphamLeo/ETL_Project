@@ -61,6 +61,7 @@ services:
       - zookeeper
     networks:
       - lakehouse_network
+      - etl-net
 
   zookeeper:
     image: zookeeper:3.9
@@ -70,6 +71,7 @@ services:
     restart: unless-stopped
     networks:
       - lakehouse_network
+      - etl-net
   # ============================
   # MongoDB
   # ============================
@@ -101,6 +103,9 @@ services:
     environment:
       - JOB_MANAGER_RPC_ADDRESS=jobmanager
     command: jobmanager
+    networks:
+      - lakehouse_network
+      - etl-net
 
   taskmanager:
     image: flink:1.20.0-scala_2.12
@@ -111,8 +116,13 @@ services:
       - JOB_MANAGER_RPC_ADDRESS=jobmanager
       - TASK_MANAGER_NUMBER_OF_TASK_SLOTS=2
     command: taskmanager
+    networks:
+      - lakehouse_network
+      - etl-net
 
-#===============================
+  # ============================
+  # MinIO (S3-compatible storage)
+  # ============================
   minio:
     image: minio/minio:latest
     container_name: minio-lakehouse
@@ -133,6 +143,7 @@ services:
     restart: unless-stopped
     networks:
       - lakehouse_network
+      - etl-net
   # ============================
   # PostgreSQL
   # ============================
@@ -203,6 +214,9 @@ services:
       timeout: 5s
       retries: 5
       start_period: 15s
+    networks:
+      - lakehouse_network
+      - etl-net
 
   spark-worker:
     image: apache/spark:3.5.0
@@ -224,6 +238,9 @@ services:
     volumes:
       - ./jars:/opt/spark/custom_jars
       - ./data:/opt/spark/data
+    networks:
+      - lakehouse_network
+      - etl-net
 
   trino:
     image: trinodb/trino:458
@@ -238,6 +255,9 @@ services:
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/v1/info"]
       interval: 30s
+    networks:
+      - lakehouse_network
+      - etl-net
 # ============================
 # VOLUMES & NETWORKS
 # ============================
