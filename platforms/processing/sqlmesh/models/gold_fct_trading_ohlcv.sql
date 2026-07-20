@@ -4,10 +4,13 @@
 -- Target:     gold/fct_trading_ohlcv  (partitioned by year/month)
 -- Registry:   GOLD_FCT_TRADING_OHLCV
 --
--- NOTE về dim_market_type:
---   silver/dim_market_type không có cột symbol — đây là bảng dim toàn thị trường.
---   JOIN thông qua silver/dim_industry (company có cột industry_code → industry có market_type_code).
---   Đơn giản hoá: lấy market_type trực tiếp từ dim_industry nếu có, hoặc để NULL.
+-- Schema thực tế của silver dims:
+--   dim_industry   (từ CompanyBelongToIndustrySector):
+--       symbol, industry_code, industry_name, company_name, close_price, ...
+--       → KHÔNG có market_type_code
+--   dim_market_type (từ CompanyBelongToMarketType):
+--       symbol, market_type_code, market_type_name, company_name, ...
+--       → CÓ symbol → JOIN trực tiếp với fact_stock_price
 
 MODEL (
   name gold.fct_trading_ohlcv,
@@ -22,15 +25,14 @@ SELECT
   t.trade_key,
   t.symbol,
 
-  -- Denormalize from dim_company (latest snapshot, is_current có thể là boolean hoặc string)
-  c.full_name                                        AS company_name,
+  -- Denormalize company_name từ dim_company (is_current snapshot)
+  c.full_name                          AS company_name,
 
-  -- Denormalize from dim_industry (latest snapshot by symbol)
+  -- Denormalize industry_name từ dim_industry (per-symbol)
   i.industry_name,
 
-  -- market_type lấy từ dim_industry qua JOIN symbol (dim_market_type không có symbol column)
-  -- Nếu dim_industry không có market_type, giá trị sẽ là NULL (safe với LEFT JOIN)
-  i.market_type_code                                 AS market_type,
+  -- Denormalize market_type từ dim_market_type (per-symbol, có cột market_type_code)
+  m.market_type_code                   AS market_type,
 
   -- Trading columns — all arrive as Utf8 from Bronze/Silver, cast on the way out
   TRY_CAST(t.date AS DATE)             AS trade_date,
@@ -43,7 +45,7 @@ SELECT
   TRY_CAST(t.foreign_sell AS BIGINT)   AS foreign_sell,
   TRY_CAST(t.foreign_value AS DOUBLE)  AS foreign_net_value,
 
-  -- Partition columns (phải tồn tại trong silver — được thêm bởi SilverProcessor)
+  -- Partition columns (được thêm bởi SilverProcessor)
   t.year,
   t.month,
 
@@ -54,7 +56,7 @@ FROM read_parquet(
   hive_partitioning = true
 ) AS t
 
--- LEFT JOIN dim_company để lấy company_name
+-- dim_company: lấy full_name theo symbol (is_current snapshot)
 LEFT JOIN (
   SELECT symbol, full_name
   FROM read_parquet(
@@ -64,13 +66,23 @@ LEFT JOIN (
   WHERE COALESCE(TRY_CAST(is_current AS BOOLEAN), true) = true
 ) AS c ON t.symbol = c.symbol
 
--- LEFT JOIN dim_industry để lấy industry_name và market_type_code
--- dim_industry có cột symbol (mỗi company thuộc một ngành)
+-- dim_industry: lấy industry_name theo symbol
+-- Schema: symbol, industry_code, industry_name (KHÔNG có market_type_code)
 LEFT JOIN (
-  SELECT DISTINCT symbol, industry_name, market_type_code
+  SELECT DISTINCT symbol, industry_name
   FROM read_parquet(
     's3://lakehouse/silver/dim_industry/**/*.parquet',
     hive_partitioning = true
   )
   WHERE COALESCE(TRY_CAST(is_current AS BOOLEAN), true) = true
 ) AS i ON t.symbol = i.symbol
+
+-- dim_market_type: lấy market_type_code theo symbol
+-- Schema: symbol, market_type_code, market_type_name (CÓ symbol — crawled per-company)
+LEFT JOIN (
+  SELECT DISTINCT symbol, market_type_code
+  FROM read_parquet(
+    's3://lakehouse/silver/dim_market_type/**/*.parquet',
+    hive_partitioning = true
+  )
+) AS m ON t.symbol = m.symbol
