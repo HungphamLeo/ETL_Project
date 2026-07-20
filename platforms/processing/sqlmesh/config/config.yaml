@@ -3,16 +3,9 @@ gateways:
     connection:
       type: duckdb
       database: ./stock_lakehouse.db
-      # S3_ENDPOINT env var đã được strip http:// bởi deploy_full_pipeline.py
-      # (os.environ["S3_ENDPOINT"] = HOST:PORT trước khi SQLMesh Context khởi tạo)
-      pre_statements:
-        - "INSTALL httpfs; LOAD httpfs;"
-        - "SET s3_endpoint='{{ env_var('S3_ENDPOINT', 'localhost:9000') }}';"
-        - "SET s3_access_key_id='{{ env_var('AWS_ACCESS_KEY_ID', 'minioadmin') }}';"
-        - "SET s3_secret_access_key='{{ env_var('AWS_SECRET_ACCESS_KEY', 'minioadmin_secure_123@#') }}';"
-        - "SET s3_use_ssl=false;"
-        - "SET s3_url_style='path';"
-        - "SET s3_region='us-east-1';"
+      # NOTE: pre_statements bị remove — field này không tồn tại ở một số version SQLMesh.
+      # S3/MinIO config được inject qua Python sau khi Context khởi tạo.
+      # Xem: platforms/processing/sqlmesh/sqlmesh_engine.py → _configure_s3()
 
 default_gateway: local_duckdb
 
