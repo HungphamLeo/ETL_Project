@@ -67,10 +67,30 @@ load_dotenv()
 # CONSTANTS & ENV
 # ==========================================================================
 
-LAKEHOUSE_BASE = os.getenv("LAKEHOUSE_BASE_PATH", "s3a://lakehouse")
-S3_ENDPOINT = os.getenv("S3_ENDPOINT", "http://localhost:9000")
-S3_KEY = os.getenv("MINIO_ROOT_USER", "minioadmin")
-S3_SECRET = os.getenv("MINIO_ROOT_PASSWORD", "minioadmin_secure_123@#")
+# LAKEHOUSE_BASE: phải là s3:// (không phải s3a://).
+# DuckDB httpfs và s3fs chỉ hỗ trợ s3://, không hỗ trợ s3a:// (Hadoop scheme).
+LAKEHOUSE_BASE = os.getenv("LAKEHOUSE_BASE_PATH", "s3://lakehouse")
+
+# S3_ENDPOINT xử lý 2 dạng:
+#   - DuckDB httpfs cần HOST:PORT (không có http://)
+#   - s3fs/boto3 cần URL đầy đủ http://HOST:PORT
+_S3_ENDPOINT_RAW = os.getenv("S3_ENDPOINT", "http://localhost:9000")
+# Strip scheme cho DuckDB — "http://localhost:9000" → "localhost:9000"
+S3_ENDPOINT = _S3_ENDPOINT_RAW.split("://")[-1]
+# Giữ full URL cho s3fs (cần http:// prefix)
+S3_ENDPOINT_URL = _S3_ENDPOINT_RAW if "://" in _S3_ENDPOINT_RAW else f"http://{_S3_ENDPOINT_RAW}"
+
+# BUG-A FIX: SQLMesh đọc S3_ENDPOINT từ os.environ khi khởi tạo Context.
+# Phải ghi đè env var S3_ENDPOINT thành HOST:PORT (đã stripped) TRƯỚC khi
+# SQLMesh Context được khởi tạo — tránh lỗi "//localhost:9000" trong DuckDB httpfs.
+os.environ["S3_ENDPOINT"] = S3_ENDPOINT
+
+# Credentials: đọc AWS_* trước (boto3/s3fs convention), fallback MINIO_* (docker-compose convention)
+S3_KEY = os.getenv("AWS_ACCESS_KEY_ID", os.getenv("MINIO_ROOT_USER", "minioadmin"))
+S3_SECRET = os.getenv("AWS_SECRET_ACCESS_KEY", os.getenv("MINIO_ROOT_PASSWORD", "minioadmin_secure_123@#"))
+# Đồng bộ credentials vào os.environ để SQLMesh pre_statements nhận đúng
+os.environ.setdefault("AWS_ACCESS_KEY_ID", S3_KEY)
+os.environ.setdefault("AWS_SECRET_ACCESS_KEY", S3_SECRET)
 
 PG_HOST = os.getenv("POSTGRES_HOST", "localhost")
 PG_PORT = os.getenv("POSTGRES_PORT", "5432")
@@ -84,8 +104,9 @@ SQLMESH_GATEWAY = os.getenv("SQLMESH_GATEWAY", "local_duckdb")
 DEFAULT_SYMBOLS = ["FPT", "VNM", "HPG", "MBB", "SSI"]
 DEFAULT_CONFIG_PATH = PROJECT_ROOT / "platforms" / "orchestration" / "prefect" / "config" / "cophieu68_config.yaml"
 
+# STORAGE_OPTIONS dùng cho s3fs/boto3 (Polars write_parquet) — cần URL đầy đủ http://HOST:PORT
 STORAGE_OPTIONS: Dict[str, str] = {
-    "endpoint_url": S3_ENDPOINT,
+    "endpoint_url": S3_ENDPOINT_URL,
     "aws_access_key_id": S3_KEY,
     "aws_secret_access_key": S3_SECRET,
 }
@@ -384,16 +405,32 @@ class BronzePolarsIngester:
         #   1. Flatten nested pd.DataFrame → JSON string
         #   2. Cast EVERY value to str (Bronze = raw as-is, avoid Polars
         #      schema-mismatch when pd.read_html returns mixed-type columns)
+        #
+        # BUG-B FIX: schema_overrides={c: pl.Utf8 for c in flat[0].keys()} bị lỗi
+        # "'int' object cannot be converted to 'PyString'" khi record có giá trị int
+        # bị nhầm là column name. Nguyên nhân thực: flat[0] sau _evaluate_dq có thể
+        # có key là string nhưng value là int (vd: _dq_status index).
+        # Giải pháp: cast toàn bộ values sang str TRƯỚC khi tạo Polars DataFrame,
+        # KHÔNG dùng schema_overrides (Polars tự infer từ data sau khi đã str).
         import pandas as _pd
+        import numpy as _np
 
         flat: List[Dict[str, Any]] = []
         for rec in records:
             flat_rec: Dict[str, Any] = {}
             for k, v in rec.items():
+                if not isinstance(k, str):
+                    # Bỏ qua key không phải string (edge case với dict từ pandas)
+                    continue
                 if isinstance(v, _pd.DataFrame):
                     flat_rec[k] = v.to_json(orient="records")
                 elif v is None:
                     flat_rec[k] = None
+                elif isinstance(v, (_np.integer, _np.floating)):
+                    # numpy scalar → convert sang Python native trước khi str()
+                    flat_rec[k] = str(v.item())
+                elif isinstance(v, (_np.ndarray,)):
+                    flat_rec[k] = str(v.tolist())
                 else:
                     flat_rec[k] = str(v)
             flat.append(flat_rec)
@@ -403,7 +440,14 @@ class BronzePolarsIngester:
         else:
             dq_violations = []
 
-        df = pl.DataFrame(flat, schema_overrides={c: pl.Utf8 for c in flat[0].keys()})
+        if not flat:
+            self.logger.warning(f"[BronzeIngester] All records empty after normalisation for table={table_name}")
+            return {"saved_path": None, "rows": 0, "dq_violations": 0}
+
+        # Đảm bảo tất cả values trong flat là str hoặc None (Polars Utf8 compatible)
+        # schema_overrides chỉ dùng keys từ flat[0] — keys luôn là str sau normalize
+        str_cols = {c: pl.Utf8 for c in flat[0].keys() if isinstance(c, str)}
+        df = pl.DataFrame(flat, schema_overrides=str_cols)
 
         if symbol and "symbol" not in df.columns:
             df = df.with_columns(pl.lit(symbol.upper()).alias("symbol"))
@@ -506,6 +550,11 @@ class SilverProcessor:
 
         Uses hive_partitioning=true so `ingest_date` is re-materialised as a column.
         Returns a Polars DataFrame, or None if table is entirely empty/missing.
+
+        BUG-C FIX: Bronze Parquet có thể có cột datetime[ms] (do PyArrow auto-infer
+        khi ghi file hoặc do pandas DataFrame column dtype). Silver transforms dùng
+        .str.slice(), .str.contains() trên các cột này → lỗi "expected String, got
+        datetime[ms]". Sau khi đọc, cast TẤT CẢ cột không phải số sang Utf8.
         """
         import polars as pl
 
@@ -519,12 +568,42 @@ class SilverProcessor:
                 self.logger.debug(f"[SilverProcessor] read_parquet({glob}) failed: {exc}")
                 return None
 
+        def _normalise_dtypes(df: Any) -> Any:
+            """Cast tất cả cột datetime/date/time về Utf8 (ISO string).
+
+            Bronze layer lưu raw data dưới dạng string, nhưng PyArrow/DuckDB
+            đôi khi infer datetime khi đọc lại. Silver transforms mong đợi Utf8
+            cho tất cả cột (trừ numeric columns sẽ được cast riêng sau).
+            Các cột numeric (Int*, Float*, UInt*) giữ nguyên — không cast sang str
+            để tránh mất thông tin precision trong dedup/sort.
+            """
+            if df is None:
+                return None
+            cast_exprs = []
+            KEEP_NUMERIC = (
+                pl.Int8, pl.Int16, pl.Int32, pl.Int64,
+                pl.UInt8, pl.UInt16, pl.UInt32, pl.UInt64,
+                pl.Float32, pl.Float64,
+            )
+            for col_name, dtype in zip(df.columns, df.dtypes):
+                if isinstance(dtype, KEEP_NUMERIC):
+                    continue  # Giữ nguyên numeric
+                if dtype == pl.Utf8 or dtype == pl.String:
+                    continue  # Đã là string
+                # datetime, date, time, bool, categorical, ... → cast sang Utf8
+                cast_exprs.append(
+                    pl.col(col_name).cast(pl.Utf8, strict=False).alias(col_name)
+                )
+            if cast_exprs:
+                df = df.with_columns(cast_exprs)
+            return df
+
         # 1. Exact date partition
         exact_glob = f"{self.base}/bronze/{table_name}/ingest_date={target_date}/*.parquet"
         self.logger.info(f"[SilverProcessor] Reading bronze/{table_name} (exact: {target_date})")
         df = _query(exact_glob)
         if df is not None:
-            return df
+            return _normalise_dtypes(df)
 
         # 2. Fallback: scan all partitions — picks up data from any ingest date
         all_glob = f"{self.base}/bronze/{table_name}/**/*.parquet"
@@ -536,7 +615,7 @@ class SilverProcessor:
         if df is not None:
             self.logger.info(
                 f"[SilverProcessor] Fallback scan found {len(df)} rows in bronze/{table_name}")
-            return df
+            return _normalise_dtypes(df)
 
         self.logger.warning(f"[SilverProcessor] bronze/{table_name} is empty — skipping")
         return None

@@ -8,11 +8,12 @@ gateways:
       # pre_statements chạy mỗi lần SQLMesh mở kết nối DuckDB mới.
       #
       # QUAN TRỌNG: DuckDB httpfs yêu cầu s3_endpoint là HOST:PORT (không có http://).
-      # Biến môi trường S3_ENDPOINT có thể có prefix "http://" (vd: "http://localhost:9000").
-      # Dùng REGEXP_REPLACE để strip prefix trước khi SET — tránh lỗi "//localhost:9000".
+      # SQLMesh env_var() trả về RAW string — không thể dùng REGEXP_REPLACE trong string literal.
+      # → Logic strip http:// phải thực hiện trong Python code (deploy_full_pipeline.py S3_ENDPOINT).
+      # Ở đây env var S3_ENDPOINT đã được pre-strip → dùng trực tiếp.
       pre_statements:
         - "INSTALL httpfs; LOAD httpfs;"
-        - "SET s3_endpoint=REGEXP_REPLACE('{{ env_var('S3_ENDPOINT', 'localhost:9000') }}', '^https?://', '');"
+        - "SET s3_endpoint='{{ env_var('S3_ENDPOINT', 'localhost:9000') }}';"
         - "SET s3_access_key_id='{{ env_var('AWS_ACCESS_KEY_ID', 'minioadmin') }}';"
         - "SET s3_secret_access_key='{{ env_var('AWS_SECRET_ACCESS_KEY', 'minioadmin_secure_123@#') }}';"
         - "SET s3_use_ssl=false;"
