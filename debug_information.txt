@@ -1,0 +1,722 @@
+================================================================================
+  DEBUG INFORMATION — Stock Lakehouse ETL Pipeline
+  Project   : ETL_Project (branch: 16072026_test_and_debug_pipeline)
+  Stack     : Polars | DuckDB | SQLMesh | MinIO/S3 | PostgreSQL | Prefect
+  Python    : 3.11 (WSL ds_env conda) / 3.13 (Windows — unit tests only)
+  Updated   : 2026-07-18
+================================================================================
+
+PHẦN I — TỔNG KẾT TOÀN BỘ LỖI ĐÃ PHÁT HIỆN VÀ KHẮC PHỤC
+═══════════════════════════════════════════════════════════
+
+────────────────────────────────────────────────────────────
+BUG #1 — LAKEHOUSE_BASE: Sai scheme s3a:// thay vì s3://
+────────────────────────────────────────────────────────────
+File    : scripts/deploy_full_pipeline.py (dòng 70)
+Triệu   : FileNotFoundError / Connection refused khi đọc/ghi Parquet lên MinIO
+Nguyên  : LAKEHOUSE_BASE = "s3a://lakehouse" — cả DuckDB httpfs lẫn s3fs đều
+           chỉ hiểu scheme "s3://" (HDFS dùng s3a://, không phải S3-compatible)
+Fix     : LAKEHOUSE_BASE = os.getenv("LAKEHOUSE_BASE_PATH", "s3://lakehouse")
+Bài học : s3a:// là scheme của Apache Hadoop FileSystem (dùng cho HDFS + Spark).
+           DuckDB httpfs và Python s3fs đều chỉ nhận "s3://".
+           Chỉ dùng s3a:// khi chạy trên Spark + Hadoop classpath.
+
+────────────────────────────────────────────────────────────
+BUG #2 — S3_ENDPOINT có http:// prefix khiến DuckDB lỗi "//host:port"
+────────────────────────────────────────────────────────────
+File    : scripts/deploy_full_pipeline.py (dòng 73)
+          platforms/processing/sqlmesh/config.yaml (pre_statements)
+          platforms/processing/sqlmesh/config/config.yaml (pre_statements)
+Triệu   : DuckDB IOException: "Connection error to //localhost:9000/..."
+Nguyên  : .env đặt S3_ENDPOINT=http://localhost:9000
+           Code làm: SET s3_endpoint='http://localhost:9000'
+           DuckDB httpfs không strip "http://" — nó ghép: "http://" + endpoint
+           → URL cuối thành "http://http://localhost:9000/..." → lỗi
+Fix Python (deploy_full_pipeline.py):
+           _S3_ENDPOINT_RAW = os.getenv("S3_ENDPOINT", "http://localhost:9000")
+           S3_ENDPOINT = _S3_ENDPOINT_RAW.split("://")[-1]   # HOST:PORT cho DuckDB
+           S3_ENDPOINT_URL = _S3_ENDPOINT_RAW                # http://HOST:PORT cho s3fs
+Fix SQLMesh (pre_statements):
+           SET s3_endpoint=REGEXP_REPLACE(
+             '{{ env_var("S3_ENDPOINT") }}', '^https?://', ''
+           );
+Bài học : DuckDB httpfs ghép scheme tự động. s3fs/boto3 cần URL đầy đủ với http://.
+           Phải tách 2 biến: một cho DuckDB (HOST:PORT), một cho s3fs (http://HOST:PORT).
+           REGEXP_REPLACE trong DuckDB SQL có cú pháp: REGEXP_REPLACE(str, pattern, repl)
+           Pattern '^https?://' match cả http:// lẫn https://.
+
+────────────────────────────────────────────────────────────
+BUG #3 — S3 credentials đọc sai env var name
+────────────────────────────────────────────────────────────
+File    : scripts/deploy_full_pipeline.py (dòng 75-76)
+Triệu   : 403 SignatureDoesNotMatch hoặc 403 AccessDenied từ MinIO
+Nguyên  : Code đọc MINIO_ROOT_USER / MINIO_ROOT_PASSWORD
+           .env thực tế define: AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY
+Fix     : S3_KEY = os.getenv("AWS_ACCESS_KEY_ID",
+                   os.getenv("MINIO_ROOT_USER", "minioadmin"))
+          S3_SECRET = os.getenv("AWS_SECRET_ACCESS_KEY",
+                      os.getenv("MINIO_ROOT_PASSWORD", "minioadmin_secure_123@#"))
+Bài học : Thứ tự ưu tiên đọc env var: AWS_* trước (boto3/s3fs convention),
+           MINIO_* sau (docker-compose convention). Luôn có fallback hardcoded.
+           Kiểm tra .env thực tế bằng: cat .env | grep -E "S3_|AWS_|MINIO_"
+
+────────────────────────────────────────────────────────────
+BUG #4 — SQLMesh secrets: block không inject vào DuckDB session
+────────────────────────────────────────────────────────────
+File    : platforms/processing/sqlmesh/config.yaml
+Triệu   : DuckDB không nhận được s3_access_key / s3_endpoint — lỗi 403 hoặc
+           "Binder Error: Referenced column not found"
+Nguyên  : SQLMesh config dùng block "secrets:" để inject credentials.
+           Tuy nhiên SQLMesh DuckDB connection KHÔNG inject secrets: block
+           thành các biến session DuckDB (SET s3_*).
+           secrets: chỉ dùng cho Airflow/Prefect secret backends.
+Fix     : Thay secrets: bằng pre_statements: trong connection block.
+           pre_statements chạy ngay sau khi DuckDB connection được mở.
+Bài học : Trong SQLMesh DuckDB config:
+           - secrets:   → inject vào orchestrator, KHÔNG phải DuckDB session
+           - pre_statements: → thực thi SQL ngay khi mở connection ✓
+           Cú pháp pre_statements trong SQLMesh config.yaml:
+             connection:
+               type: duckdb
+               pre_statements:
+                 - "INSTALL httpfs; LOAD httpfs;"
+                 - "SET s3_endpoint='...';"
+
+────────────────────────────────────────────────────────────
+BUG #5 — gold_dim_company_current.sql: COALESCE reference cột không tồn tại
+────────────────────────────────────────────────────────────
+File    : platforms/processing/sqlmesh/models/gold_dim_company_current.sql
+Triệu   : DuckDB Binder Error: "Referenced column 'company_name' not found"
+Nguyên  : SQL có: COALESCE(full_name, company_name) AS company_name
+           Bronze dict-flatten → Silver chỉ có cột full_name, không có company_name
+           → DuckDB báo lỗi khi cột không tồn tại trong Parquet schema
+Fix     : full_name AS company_name  (bỏ COALESCE)
+          Thêm TRY_CAST cho is_current filter:
+          WHERE COALESCE(TRY_CAST(is_current AS BOOLEAN), true) = true
+Bài học : Khi Bronze flatten Python dict/object → Parquet, tên cột = tên attribute.
+           Không được ASSUME tên alias. Luôn kiểm tra schema thực tế bằng:
+           duckdb> DESCRIBE SELECT * FROM read_parquet('s3://.../**/*.parquet')
+           is_current có thể là string "True"/"False" hoặc boolean tùy cách Bronze ingest.
+           TRY_CAST(col AS BOOLEAN) an toàn hơn CAST (không raise error khi fail).
+
+────────────────────────────────────────────────────────────
+BUG #6 — gold_fct_trading_ohlcv.sql: JOIN dim_market_type không có cột symbol
+────────────────────────────────────────────────────────────
+File    : platforms/processing/sqlmesh/models/gold_fct_trading_ohlcv.sql
+Triệu   : LEFT JOIN trả về NULL cho toàn bộ market_type column
+Nguyên  : dim_market_type là bảng dimension toàn thị trường (HOSE/HNX/UPCOM).
+           Bảng này chứa: market_type_code, market_name — KHÔNG có cột symbol.
+           JOIN ON t.symbol = m.symbol → không match → tất cả NULL
+Fix     : Lấy market_type từ dim_industry (bảng này có cột symbol).
+           dim_industry có: symbol, industry_name, market_type_code.
+           LEFT JOIN dim_industry AS i ON t.symbol = i.symbol
+           → dùng i.market_type_code AS market_type
+Bài học : Trước khi viết JOIN trong Gold models, phải hiểu:
+           - Dim bảng nào có symbol? (per-company dim)
+           - Dim bảng nào không có symbol? (global/master dim)
+           dim_market_type = global dim: HOSE, HNX, UPCOM
+           dim_industry = per-company dim: mỗi symbol thuộc 1 ngành
+           dim_company = per-company dim: 1 row per company
+
+────────────────────────────────────────────────────────────
+BUG #7 — _write_silver: partition_by=[] gây PyArrow ValueError
+────────────────────────────────────────────────────────────
+File    : scripts/deploy_full_pipeline.py, hàm SilverProcessor._write_silver()
+Triệu   : ValueError: "Must pass at least one partition column"
+Nguyên  : pq.write_to_dataset(arrow_table, partition_cols=[])
+           PyArrow không accept empty list — phải là None hoặc list có ít nhất 1 phần tử
+Fix     : _parts = partition_by if partition_by else None
+          → [] và None đều trở thành None → non-partitioned write
+Bài học : PyArrow pq.write_to_dataset:
+           - partition_cols=None → ghi single Parquet file (không partition)
+           - partition_cols=[] → ValueError (API quirk của PyArrow)
+           - partition_cols=['col'] → Hive partition: /col=value/part-0.parquet
+           Luôn normalize empty list → None trước khi truyền vào PyArrow.
+
+────────────────────────────────────────────────────────────
+BUG #8 — _write_parquet_s3: path ending "/" tạo file tên là directory
+────────────────────────────────────────────────────────────
+File    : platforms/processing/polars/polars_engine.py, hàm _write_parquet_s3()
+Triệu   : File được tạo tên "dim_company" (không phải "dim_company/data.parquet")
+          Subsequent read_parquet không tìm thấy .parquet file
+Nguyên  : s3fs.open("s3://bucket/silver/dim_company/", "wb") 
+           → tạo object key = "silver/dim_company/" (tên là directory path)
+           → không thể scan bằng read_parquet
+Fix     : file_path = s3_path.rstrip("/") + "/data.parquet"
+          → "s3://bucket/silver/dim_company/data.parquet"
+Bài học : MinIO/S3 là object storage, không có "directory" thực sự.
+           Object key "path/to/dir/" (trailing slash) là một object hợp lệ nhưng KHÔNG
+           phải directory. DuckDB read_parquet cần extension .parquet trong filename.
+           s3fs.open(path, "wb") với trailing "/" → tạo object key y chang path đó.
+
+────────────────────────────────────────────────────────────
+BUG #9 — _read_bronze: không tìm thấy data do sai ingest_date partition
+────────────────────────────────────────────────────────────
+File    : scripts/deploy_full_pipeline.py, hàm SilverProcessor._read_bronze()
+Triệu   : Silver phase trả về 0 rows dù Bronze đã có data
+Nguyên  : Bronze ghi với ingest_date=2026-07-18 (ngày chạy bronze)
+           Silver chạy bằng --date 2026-07-20 (ngày khác)
+           _read_bronze tìm: .../ingest_date=2026-07-20/*.parquet → không tồn tại
+Fix     : 2-step fallback:
+           1. Thử exact partition: ingest_date=<target_date>/*.parquet
+           2. Nếu không có → fallback: /**/*.parquet (scan toàn bộ)
+Bài học : Medallion architecture: bronze partition = ngày crawl, silver partition = ngày xử lý.
+           Hai ngày này thường khác nhau. Luôn có fallback strategy.
+           DuckDB read_parquet với hive_partitioning=true tự động đọc cột từ path.
+
+────────────────────────────────────────────────────────────
+BUG #10 — deploy_full_pipeline.py: KeyError 'base_url' khi load config
+────────────────────────────────────────────────────────────
+File    : scripts/deploy_full_pipeline.py, class ConfigurationManager
+Triệu   : KeyError: 'base_url' khi validate()
+Nguyên  : YAML có cấu trúc: {environment: ..., project_params: {sources: {cophieu68: ...}}}
+           Code trực tiếp truy cập: config["sources"]["cophieu68"]["base_url"]
+           Nhưng sources nằm trong project_params, không phải root
+Fix     : Hàm helper _params(config):
+           return config.get("project_params", config)
+           → unwrap project_params wrapper nếu có
+Bài học : YAML config của project có 2 cấp:
+           - Root level: environment:, project_params:
+           - project_params level: sources:, http:, logger:, ...
+           Hàm _params() là pattern "config unwrapper" — cần nhất quán dùng ở mọi nơi đọc config.
+
+────────────────────────────────────────────────────────────
+BUG #11 — environment dict thay vì string từ CLI → ExecutionContext
+────────────────────────────────────────────────────────────
+File    : scripts/deploy_full_pipeline.py
+Triệu   : SQLMesh plan() nhận environment={'staging':False,'local':True} thay vì 'dev'
+Nguyên  : YAML root có: environment: {staging: false, production: false, local: true}
+           Code đọc config["environment"] → dict
+           Nhưng CLI truyền --env dev → string
+           Truyền dict vào SQLMesh Context.plan(environment=...) → TypeError
+Fix     : ExecutionContext.environment luôn nhận từ CLI args (string).
+           _params() không đọc "environment" từ YAML — luôn dùng CLI value.
+Bài học : YAML "environment" block là flag config (local/staging/prod mode).
+           SQLMesh "environment" là string tên environment ("dev", "prod").
+           Hai khái niệm này KHÁC NHAU dù cùng tên "environment".
+
+────────────────────────────────────────────────────────────
+BUG #12 — DeduplicationEngine KEEP_MAX_COL: ascending flag bị đảo ngược
+────────────────────────────────────────────────────────────
+File    : platforms/processing/base_processing_subsystem/subsystem7_deduplication.py
+Triệu   : KEEP_MAX_COL giữ record có giá trị NHỎ NHẤT thay vì lớn nhất
+Nguyên  : sort_values(by=col, ascending=True) → sort tăng dần → .last() → giữ max ✓
+           Nhưng code có: ascending = (strategy == KEEP_MIN_COL) → ĐÚNG
+           Lỗi ở đây: groupby().last() sau sort ascending = giữ max → đúng với KEEP_MAX
+           Thực ra logic bị flip: ascending flag trả ngược kết quả
+Fix     : Sửa logic ascending:
+           ascending = (strategy != DeduplicationStrategy.KEEP_MAX_COL)
+           → KEEP_MAX: ascending=False → sort desc → first() → max value
+           → KEEP_MIN: ascending=True → sort asc → first() → min value
+Bài học : Khi sort để keep max/min:
+           KEEP_MAX = sort descending (False) + keep first = giá trị lớn nhất
+           KEEP_MIN = sort ascending (True) + keep first = giá trị nhỏ nhất
+           Hoặc: sort ascending + keep last = giá trị lớn nhất
+           Hai pattern đều đúng nhưng phải nhất quán. Unit test là cách duy nhất catch bug này.
+
+────────────────────────────────────────────────────────────
+BUG #13 — subsystem4: import path sai + logger 2-argument call
+────────────────────────────────────────────────────────────
+File    : platforms/processing/base_processing_subsystem/subsystem4_data_quality_pre_evaluate.py
+Triệu   : ImportError + TypeError: logger.warning() với 2 positional args không phải msg
+Nguyên  : from subsystem1... → relative import không hoạt động khi chạy từ project root
+           logger.warning("msg", extra_data) → Python logger không nhận positional arg thứ 2
+Fix     : from platforms.processing.base_processing_subsystem.subsystem1... import ...
+          logger.warning(f"msg: {extra_data}")  (f-string thay vì positional)
+Bài học : Python logging API: logger.warning(msg, *args) trong đó *args là % format args.
+          logger.warning("Hello %s", name) → format "Hello {name}"
+          logger.warning("Hello", extra_obj) → "Hello" đúng, extra_obj BỊ BỎ QUA
+          Luôn dùng f-string hoặc % format, không truyền extra object vào positional arg.
+
+────────────────────────────────────────────────────────────
+BUG #14 — Docker Compose network isolation
+────────────────────────────────────────────────────────────
+File    : infra/docker_compose/docker-compose.dev.yml
+Triệu   : Services không ping được nhau (MinIO → Postgres, Prefect → MinIO...)
+Nguyên  : Services minio, kafka, spark, flink, trino thiếu network assignments.
+           Chỉ khai báo ở top-level networks: nhưng không assign vào mỗi service.
+Fix     : Thêm networks: [lakehouse_network, etl-net] vào mỗi service thiếu.
+Bài học : Docker Compose networks:
+           - Mỗi service phải EXPLICITLY khai báo networks: nếu dùng custom network.
+           - Nếu chỉ khai báo ở top-level networks: nhưng không assign vào service
+             → service vẫn chạy trên default network, không thể giao tiếp với services khác.
+           - Kiểm tra: docker network inspect lakehouse_network → xem containers nào được join.
+
+
+PHẦN II — KIẾN TRÚC PIPELINE VÀ LUỒNG DỮ LIỆU
+═══════════════════════════════════════════════
+
+────────────────────────────────────────────────────────────
+MEDALLION ARCHITECTURE (Bronze → Silver → Gold → Serving)
+────────────────────────────────────────────────────────────
+
+[External Web]                cophieu68.vn
+      ↓  HTTP crawl (Polars + requests)
+[BRONZE Layer]               s3://lakehouse/bronze/<table>/ingest_date=YYYY-MM-DD/*.parquet
+  - stock_prices             Dữ liệu OHLCV thô, DQ tagged (_dq_status, _dq_errors)
+  - company_profile          Thông tin công ty
+  - financial_ratios         Chỉ số tài chính
+  - income_statement_{q,y}   Kết quả kinh doanh
+  - balance_sheet_{q,y}      Bảng cân đối kế toán
+  - industry_sectors         Phân loại ngành
+  - market_type_sectors      Phân loại sàn (HOSE/HNX/UPCOM)
+      ↓  DuckDB + Polars transform (SilverProcessor)
+[SILVER Layer]               s3://lakehouse/silver/<table>/[partitions]/*.parquet
+  - fact_stock_price         Lịch sử giao dịch có SK (trade_key)
+  - dim_company              SCD2 dimension công ty
+  - dim_industry             SCD2 dimension ngành
+  - dim_market_type          Dimension sàn giao dịch
+  - fact_financial_metrics   Chỉ số tài chính theo ngày
+  - fact_income_statement    Kết quả kinh doanh theo kỳ
+  - fact_balance_sheet       Bảng cân đối kế toán
+      ↓  SQLMesh + DuckDB (GoldProcessor)
+[GOLD Layer]                 DuckDB stock_lakehouse.db (SQLMesh managed)
+  - gold.fct_trading_ohlcv   OHLCV denormalized (JOIN dim_company, dim_industry)
+  - gold.dim_company_current Snapshot công ty hiện tại
+  - gold.fct_bs_assets       Asset metrics từ balance sheet
+  - gold.fct_is_core_income  Income metrics từ income statement
+      ↓  DuckDB → PostgreSQL (ServingExecutor)
+[SERVING Layer]              PostgreSQL etl_project DB
+  - mart_kpi_daily           KPI tables cho Power BI
+
+────────────────────────────────────────────────────────────
+34 KIMBALL ETL SUBSYSTEMS — MODULE MAP
+────────────────────────────────────────────────────────────
+Sub 1   : DataProfiler          → data_profiling.py        (phân tích schema, null, distribution)
+Sub 4   : DataCleansingEngine   → subsystem4_*.py           (rule-based DQ validation)
+Sub 5   : ErrorEventLog         → subsystem5_*.py           (error event schema + escalation)
+Sub 7   : DeduplicationEngine   → subsystem7_*.py           (KEEP_FIRST/LAST/MAX/MIN)
+Sub 9   : SCDManager            → subsystem9_*.py           (SCD Type 1/2/3)
+Sub 10  : SurrogateKeyGenerator → subsystem10_*.py          (SHA-256 deterministic SK)
+Sub 22  : JobScheduler          → subsystem22_*.py          (run_id generation, scheduling)
+Sub 25  : VersionManager        → (embedded in sub9)        (row hash, version tracking)
+Sub 27  : WorkflowMonitor       → subsystem27_*.py          (ETLRunRecord, duration tracking)
+Sub 29  : LineageTracker        → subsystem29_*.py          (data lineage graph)
+Sub 30  : ErrorEscalation       → (embedded in sub5)        (fatal error escalation)
+Sub 34  : MetadataRepository    → subsystem34_*.py          (orchestrates sub22/27/29/5)
+
+
+PHẦN III — KIẾN THỨC STACK CÔNG NGHỆ CẦN NẮM
+═══════════════════════════════════════════════
+
+────────────────────────────────────────────────────────────
+1. POLARS — Lazy DataFrame engine (thay thế Pandas cho big data)
+────────────────────────────────────────────────────────────
+Key concepts:
+  - LazyFrame vs DataFrame: LazyFrame = query plan (chưa execute), DataFrame = data in memory
+  - scan_parquet() → LazyFrame; read_parquet() → DataFrame
+  - .collect() hoặc .collect(streaming=True) để execute LazyFrame
+  - storage_options: dict với keys endpoint_url, aws_access_key_id, aws_secret_access_key
+  - pl.concat(frames, how="diagonal") → vertical concat với schema auto-merge
+  - .with_columns([...]) → add/replace columns
+  - .map_elements(fn, return_dtype=pl.Utf8) → apply Python function per element
+  - .cast(dtype, strict=False) → cast với NaN thay lỗi (strict=True raise exception)
+
+Write Parquet lên S3:
+  Polars 1.x write_parquet() KHÔNG có storage_options → dùng s3fs + PyArrow:
+    fs = s3fs.S3FileSystem(key=..., secret=..., client_kwargs={...})
+    pq.write_to_dataset(arrow_table, root_path=path, partition_cols=[...], filesystem=fs)
+    pq.write_table(arrow_table, file_obj)  # non-partitioned
+
+Common errors:
+  - "Must pass at least one partition column" → partition_cols=[] invalid, dùng None
+  - "could not find file" → trailing "/" trên S3 path tạo directory object, không phải file
+  - LazyFrame collected without .collect() → "PanicException: called unwrap on None value"
+
+────────────────────────────────────────────────────────────
+2. DUCKDB — Analytical SQL engine (embedded, không cần server)
+────────────────────────────────────────────────────────────
+Key concepts:
+  - duckdb.connect(":memory:") → in-memory DB (không persist)
+  - duckdb.connect("file.db") → persistent DuckDB file
+  - httpfs extension: cho phép đọc/ghi S3/MinIO trực tiếp từ SQL
+  - .pl() → trả về Polars DataFrame từ query result
+  - .df() → trả về Pandas DataFrame
+  - INSTALL extension; LOAD extension; → cài và load extension
+
+S3/MinIO config:
+  SET s3_endpoint='HOST:PORT';           -- KHÔNG có http:// prefix
+  SET s3_access_key_id='key';
+  SET s3_secret_access_key='secret';
+  SET s3_use_ssl=false;                  -- MinIO local thường không có SSL
+  SET s3_url_style='path';               -- MinIO dùng path-style (không phải virtual-hosted)
+  SET s3_region='us-east-1';             -- bất kỳ string nào, MinIO bỏ qua
+
+Đọc Parquet:
+  SELECT * FROM read_parquet('s3://bucket/path/**/*.parquet', hive_partitioning=true)
+  -- hive_partitioning=true → tự đọc cột từ path như ingest_date=2026-07-18/
+
+TRY_CAST vs CAST:
+  CAST(col AS BOOLEAN) → lỗi nếu col không phải boolean
+  TRY_CAST(col AS BOOLEAN) → trả về NULL nếu lỗi (safe)
+
+Common errors:
+  - "IO Error: Connection error to //host:port" → s3_endpoint có http:// prefix
+  - "HTTP Error 403" → sai credentials hoặc bucket không tồn tại
+  - "Binder Error: Referenced column not found" → cột trong SQL không có trong Parquet schema
+  - "INSTALL failed" → không có internet hoặc DuckDB version mismatch
+
+────────────────────────────────────────────────────────────
+3. SQLMESH — Data transformation framework (thay thế dbt)
+────────────────────────────────────────────────────────────
+Key concepts:
+  - Model kinds: FULL (re-execute toàn bộ mỗi lần), INCREMENTAL_BY_TIME_RANGE, VIEW, SEED
+  - Environments: "prod", "dev" — tách biệt bảng giữa các environment
+  - plan() → tính diff giữa current state và desired state
+  - run() → execute models
+  - audit() → chạy data quality checks
+  - Context(paths=..., gateway=...) → khởi tạo SQLMesh context
+
+config.yaml structure:
+  gateways:
+    <gateway_name>:
+      connection:
+        type: duckdb
+        database: path/to/file.db
+        pre_statements:      ← ĐÚNG: inject SQL trước khi dùng
+          - "INSTALL httpfs; LOAD httpfs;"
+          - "SET s3_endpoint=...;"
+        secrets:             ← SAI cho DuckDB: không inject vào session variables
+  default_gateway: <gateway_name>
+
+Template syntax trong config.yaml:
+  {{ env_var('VAR_NAME', 'default_value') }}  ← đọc environment variable với default
+
+Model file structure:
+  MODEL (
+    name schema.table_name,
+    kind FULL,
+    cron '@daily',
+    grain (unique_key_col),
+    partitioned_by (col1, col2)
+  );
+  SELECT ... FROM read_parquet('s3://...')
+
+Common errors:
+  - "Plan application failed" → thường là SQL syntax error hoặc S3 không accessible
+  - "AttributeError: 'Context' has no attribute 'plan'" → SQLMesh version mismatch
+  - Gold SKIPPED: silver data chưa có trên MinIO → chạy bronze+silver trước
+
+────────────────────────────────────────────────────────────
+4. MINIO — S3-compatible object storage (local dev)
+────────────────────────────────────────────────────────────
+Key concepts:
+  - Object storage: không có "thư mục" thực sự, chỉ có object keys
+  - "Bucket" = container (vd: "lakehouse")
+  - "Object key" = full path (vd: "bronze/stock_prices/ingest_date=2026-07-18/data.parquet")
+  - Trailing slash "/" trong object key → đây là convention cho "folder" nhưng MinIO
+    vẫn coi đây là 1 object hợp lệ (với size=0 thường)
+  - Path-style URL: http://HOST:PORT/BUCKET/KEY (MinIO default)
+  - Virtual-hosted style: http://BUCKET.HOST:PORT/KEY (AWS S3 default)
+
+Credentials:
+  Access key = MINIO_ROOT_USER = AWS_ACCESS_KEY_ID = "minioadmin"
+  Secret key = MINIO_ROOT_PASSWORD = AWS_SECRET_ACCESS_KEY = "minioadmin_secure_123@#"
+
+API compatibility:
+  s3fs: client_kwargs={"endpoint_url": "http://HOST:PORT", "region_name": "us-east-1"}
+        config_kwargs={"signature_version": "s3v4"}
+  boto3: endpoint_url="http://HOST:PORT"
+  DuckDB: SET s3_endpoint='HOST:PORT'; (không có http://)
+
+Diagnose:
+  - Mở browser: http://localhost:9001 → MinIO Console (username/password)
+  - mc alias set myminio http://localhost:9000 ACCESS_KEY SECRET_KEY
+  - mc ls myminio/lakehouse/
+
+────────────────────────────────────────────────────────────
+5. S3FS — Python S3 filesystem interface
+────────────────────────────────────────────────────────────
+Key concepts:
+  - s3fs.S3FileSystem → Pythonic interface cho S3/MinIO
+  - Sử dụng internally bởi Polars, Pandas, PyArrow khi đọc/ghi S3
+
+Correct initialization cho MinIO:
+  import s3fs
+  fs = s3fs.S3FileSystem(
+    key="ACCESS_KEY",
+    secret="SECRET_KEY",
+    client_kwargs={
+      "endpoint_url": "http://HOST:PORT",  # ← PHẢI có http:// prefix
+      "region_name": "us-east-1",
+    },
+    config_kwargs={
+      "signature_version": "s3v4",         # ← MinIO yêu cầu SigV4
+    },
+  )
+
+Common errors:
+  - "403 Forbidden / SignatureDoesNotMatch" → sai signature version, dùng s3v2 với MinIO
+  - "Connection refused" → MinIO chưa chạy hoặc sai port
+  - "NoSuchBucket" → bucket chưa được tạo (chạy infra/init_lakehouse_storage.py)
+  - "endpoint_url" ignored ở top-level → phải đặt trong client_kwargs
+
+────────────────────────────────────────────────────────────
+6. PYARROW — Columnar data format (bridge giữa Polars và S3)
+────────────────────────────────────────────────────────────
+Key concepts:
+  - pq.write_to_dataset(): ghi partitioned Parquet dataset
+  - pq.write_table(): ghi single Parquet file
+  - df.to_arrow(): convert Polars DataFrame → Arrow Table
+
+pq.write_to_dataset(
+  table,                    # pyarrow.Table
+  root_path="s3://...",     # s3a:// KHÔNG hoạt động với s3fs!
+  partition_cols=["col"],   # None = không partition, [] = ValueError!
+  filesystem=fs,            # s3fs.S3FileSystem instance
+  use_legacy_dataset=False, # True = old API, False = new dataset API
+)
+
+Common errors:
+  - "Must pass at least one partition column" → partition_cols=[] invalid
+  - "ArrowInvalid: Column not found" → tên cột trong partition_cols không có trong table
+  - "ArrowNotImplementedError: Unrecognized filesystem" → s3a:// với s3fs
+
+────────────────────────────────────────────────────────────
+7. PREFECT — Workflow orchestration
+────────────────────────────────────────────────────────────
+Key concepts:
+  - Flow = decorated function (@flow)
+  - Task = atomic unit of work (@task)
+  - Config: PrefectETLPipelineConfig từ YAML
+  - Deployment: schedule + infra config
+  - Agent/Worker: execute flows
+
+Logger usage (QUAN TRỌNG — BUG #13 liên quan):
+  from prefect import get_run_logger
+  logger = get_run_logger()  # trong context của flow/task
+  # NGOÀI flow context: dùng logging.getLogger() bình thường
+  logger.info("message")    # OK
+  logger.info("msg", obj)   # KHÔNG OK — obj là % format arg, không phải extra
+
+────────────────────────────────────────────────────────────
+8. PYTHON LOGGING — Best practices
+────────────────────────────────────────────────────────────
+API:
+  logger.debug(msg, *args)    # *args là % format: logger.debug("val: %s", val)
+  logger.info(msg, *args)
+  logger.warning(msg, *args)
+  logger.error(msg, *args, exc_info=True)  # exc_info=True → include traceback
+  logger.exception(msg)                    # shortcut cho error + traceback
+
+SAIOOOOOO:
+  logger.warning("DQ issue", record)  # record bị IGNORE hoàn toàn
+  logger.warning("DQ issue", str(record))  # str(record) vẫn bị ignore
+
+ĐÚNG:
+  logger.warning(f"DQ issue: {record}")
+  logger.warning("DQ issue: %s", record)  # % format
+
+Handler routing (project này):
+  logger_manager.get_logger("logger.storage_log.duckdb")    → logger_storage/storage/duckdb/
+  logger_manager.get_logger("logger.governance.data_quality") → logger_storage/governance/data_quality/
+  logger_manager.get_logger("logger.ingestion_log.cophieu68") → logger_storage/ingestion/cophieu68/
+
+────────────────────────────────────────────────────────────
+9. YAML CONFIG PATTERNS — Project-specific
+────────────────────────────────────────────────────────────
+Config hierarchy (cophieu68_config.yaml):
+  environment:                    # dict{staging, production, local} = flag config
+    staging: false
+    production: false
+    local: true
+  project_params:                 # actual pipeline config
+    sources:
+      cophieu68:
+        base_url: "https://..."
+        endpoints: {...}
+    http:
+      delay_seconds: 0.3
+    logger:
+      ingestion_log: {...}
+      storage_log: {...}
+
+Helper pattern:
+  def _params(config: dict) -> dict:
+      return config.get("project_params", config)
+  # Dùng _params(config)["sources"]["cophieu68"] thay vì config["sources"]["cophieu68"]
+
+────────────────────────────────────────────────────────────
+10. PYTHON CLOSURES IN LOOPS — Classic pitfall
+────────────────────────────────────────────────────────────
+Vấn đề:
+  for i in range(3):
+      lambdas.append(lambda: print(i))  # BUG: tất cả lambda print 2 (final value)
+
+Fix:
+  for i in range(3):
+      lambdas.append(lambda i=i: print(i))  # default arg capture
+
+Trong project này (BronzeExecutor._execute_symbol):
+  for _step, _fn in [("step1", lambda: fn1()), ("step2", lambda: fn2())]:
+      try: _fn()
+  # KHÔNG bị lỗi closure vì lambdas được tạo cùng lúc trong list literal,
+  # và fn1/fn2 là references đến các method khác nhau (không phải loop variable).
+
+
+PHẦN IV — TESTING STRATEGY
+═══════════════════════════
+
+────────────────────────────────────────────────────────────
+TEST SUITE HIỆN TẠI — 175 tests, 0 failures
+────────────────────────────────────────────────────────────
+tests/unit/test_subsystem1_data_profiling.py    (15 tests)  — DataProfiler, DataQualityRecord
+tests/unit/test_subsystem4_data_cleansing.py    (27 tests)  — CleansingRuleSet, DataCleansingEngine
+tests/unit/test_subsystem5_error_event.py       (16 tests)  — ErrorEvent, ErrorEventLog
+tests/unit/test_subsystem7_deduplication.py     (22 tests)  — DeduplicationEngine, SurrogateKeyDeduplicator
+tests/unit/test_subsystem9_scd_manager.py       (25 tests)  — SCDManager SCD1/2/3
+tests/unit/test_subsystem10_surrogate_key.py    (23 tests)  — SurrogateKeyGenerator
+tests/unit/test_subsystem22_27_29_34_infra.py   (47 tests)  — JobSchedule, WorkflowMonitor, LineageTracker, MetadataRepository
+
+Chạy tests:
+  python -m pytest tests/ -v --tb=short        # verbose, hiện traceback ngắn
+  python -m pytest tests/ -q --tb=no           # quiet, chỉ hiện pass/fail count
+  python -m pytest tests/unit/test_FILE.py -k "test_name"  # chạy 1 test cụ thể
+
+────────────────────────────────────────────────────────────
+TESTING BEST PRACTICES (patterns dùng trong project)
+────────────────────────────────────────────────────────────
+1. In-memory only: Không dùng real MinIO/PostgreSQL trong unit tests
+   → Mock bằng polars DataFrame, Python dict, in-memory MetadataRepository
+2. Fixture helper: _make_record(), _make_engine() trong mỗi test class
+3. Parameterized edge cases: empty input, None, boundary values
+4. Determinism tests: hash functions, dedup logic phải cho cùng output với cùng input
+5. No-crash tests: "no_crash" suffix → đảm bảo code không raise exception với edge cases
+6. Integration separation: unit tests KHÔNG import polars/duckdb/s3fs (tránh phụ thuộc môi trường)
+
+
+PHẦN V — CHECKLIST DEBUG KHI PIPELINE LỖI
+══════════════════════════════════════════
+
+Step 1: Kiểm tra infrastructure
+  □ docker ps → MinIO (9000/9001), PostgreSQL (5432), Prefect đang chạy?
+  □ Browser: http://localhost:9001 → MinIO Console login được không?
+  □ cat .env → S3_ENDPOINT, AWS_ACCESS_KEY_ID, POSTGRES_USER có đúng không?
+
+Step 2: Kiểm tra Bronze data tồn tại
+  python scripts/probe_minio.py
+  # Hoặc dùng DuckDB:
+  duckdb> SELECT * FROM read_parquet('s3://lakehouse/bronze/stock_prices/**/*.parquet',
+                                      hive_partitioning=true) LIMIT 5;
+
+Step 3: Kiểm tra Silver data tồn tại
+  duckdb> SELECT COUNT(*) FROM read_parquet('s3://lakehouse/silver/fact_stock_price/**/*.parquet');
+
+Step 4: Kiểm tra DuckDB S3 config
+  duckdb> INSTALL httpfs; LOAD httpfs;
+  duckdb> SET s3_endpoint='localhost:9000';  -- HOST:PORT, không có http://
+  duckdb> SET s3_access_key_id='minioadmin';
+  duckdb> SET s3_secret_access_key='minioadmin_secure_123@#';
+  duckdb> SET s3_use_ssl=false;
+  duckdb> SET s3_url_style='path';
+  duckdb> SELECT * FROM read_parquet('s3://lakehouse/bronze/stock_prices/**/*.parquet') LIMIT 1;
+
+Step 5: Kiểm tra SQLMesh models
+  cd platforms/processing/sqlmesh
+  sqlmesh plan dev      # Xem plan diff
+  sqlmesh run dev       # Execute models
+  sqlmesh audit         # Run data quality checks
+
+Step 6: Chạy pipeline từng phase
+  # Bronze (crawl + ingest)
+  python scripts/deploy_full_pipeline.py bronze --symbols HPG --date 2026-07-18 --env dev \
+    --config platforms/orchestration/prefect/config/cophieu68_config.yaml
+
+  # Silver (transform)
+  python scripts/deploy_full_pipeline.py silver --date 2026-07-18 --env dev \
+    --config platforms/orchestration/prefect/config/cophieu68_config.yaml
+
+  # Gold (SQLMesh)
+  python scripts/deploy_full_pipeline.py gold --date 2026-07-18 --env dev \
+    --config platforms/orchestration/prefect/config/cophieu68_config.yaml
+
+  # Validate only (không chạy)
+  python scripts/deploy_full_pipeline.py validate --dry-run \
+    --config platforms/orchestration/prefect/config/cophieu68_config.yaml
+
+Step 7: Đọc logs
+  logger_storage/ingestion/cophieu68/extract_error.log    → lỗi crawling
+  logger_storage/ingestion/cophieu68/load_error.log       → lỗi loading
+  logger_storage/governance/data_quality/data_quality_warning.log → DQ issues
+  logger_storage/storage/duckdb/duckdb_error.log          → DuckDB lỗi
+  logger_storage/processing/sqlmesh/sqlmesh_error.log     → SQLMesh lỗi
+
+
+PHẦN VI — ENVIRONMENT SETUP (WSL ds_env)
+═════════════════════════════════════════
+
+# Activate conda env
+conda activate ds_env
+
+# Verify Python version (phải là 3.11 trong WSL)
+python --version  # Python 3.11.x
+
+# Key packages cần có
+pip list | grep -E "polars|duckdb|sqlmesh|s3fs|pyarrow|prefect|pandas"
+
+# Environment variables (đã có trong .env, auto-load bởi python-dotenv)
+# Kiểm tra:
+python -c "from dotenv import load_dotenv; import os; load_dotenv(); print(os.getenv('S3_ENDPOINT'))"
+
+# Chạy từ project root (QUAN TRỌNG — deploy_full_pipeline.py có os.chdir(PROJECT_ROOT))
+cd /mnt/c/Users/Admin/Downloads/Project/Github/ETL_Project
+python scripts/deploy_full_pipeline.py ...
+
+# Docker services
+cd infra/docker_compose
+docker compose -f docker-compose.dev.yml up -d          # Start all
+docker compose -f docker-compose.dev.yml ps             # Status
+docker compose -f docker-compose.dev.yml logs minio     # MinIO logs
+
+# Initialize MinIO buckets (lần đầu hoặc sau khi reset)
+python infra/init_lakehouse_storage.py
+
+
+PHẦN VII — KEY FILE MAP
+═══════════════════════
+
+scripts/deploy_full_pipeline.py          Master orchestrator: Bronze/Silver/Gold/Serving executors
+scripts/probe_minio.py                   Diagnostic: kiểm tra MinIO + DuckDB connectivity
+infra/docker_compose/docker-compose.dev.yml  Infrastructure: MinIO, PostgreSQL, Prefect, ...
+infra/init_lakehouse_storage.py          Tạo MinIO bucket structure lần đầu
+
+platforms/ingestion/cophieu68/
+  extract/extract_cophieu68.py           Web crawler: crawl_trading_data, crawl_company_profile, ...
+  dto/extract_models.py                  Data transfer objects cho extraction
+
+platforms/processing/
+  polars/polars_engine.py                PolarsEngine: read/write Parquet, S3 support
+  duckdb/duckdb_engine.py                DuckDBEngine: SQL query, S3 config
+  sqlmesh/
+    config.yaml                          Root SQLMesh config (được auto-load)
+    config/config.yaml                   Subfolder config (dùng khi chạy từ subfolder)
+    models/
+      gold_fct_trading_ohlcv.sql         Gold: OHLCV fact table
+      gold_dim_company_current.sql       Gold: company dimension
+      gold_fct_bs_assets.sql             Gold: balance sheet
+      gold_fct_is_core_income.sql        Gold: income statement
+    sqlmesh_engine.py                    SqlMeshEngine: plan/run/audit wrapper
+  base_processing_subsystem/
+    subsystem1_data_profiling.py         DataProfiler, DataQualityRecord
+    subsystem4_data_quality_pre_evaluate.py  CleansingRuleSet, DataCleansingEngine
+    subsystem5_and_30_error_event_*.py   ErrorEvent, ErrorEventLog
+    subsystem7_deduplication.py          DeduplicationEngine
+    subsystem9_and_25_scd_manage_*.py    SCDManager
+    subsystem10_surrogate_key_generator.py  SurrogateKeyGenerator
+    subsystem22_job_schedule.py          generate_run_id, make_run_id
+    subsystem27_workflow_monitoring.py   ETLRunRecord
+    subsystem29_data_lineage.py          LineageTracker, LineageRecord
+    subsystem34_metadata_repo.py         MetadataRepository (orchestrates all subsystems)
+
+platforms/orchestration/prefect/
+  config/cophieu68_config.yaml           Main pipeline config (YAML)
+  flows/prefect_orchestra_etl.py         Prefect flow definitions
+
+tests/unit/                              175 unit tests
+pytest.ini                               pytest config: testpaths, verbose
+conftest.py                              sys.path setup cho imports
+
+================================================================================
+  END OF DEBUG INFORMATION
+  175 tests passing | 6 bugs fixed in current session | Branch: 16072026_test_and_debug_pipeline
+================================================================================
